@@ -26,6 +26,9 @@
 	<skill name="MAGE_ELEMENTAL_WEAKNESS" mana="50" range="250" type="debuff" target="enemy" />
 	<skill name="MAGE_THUNDERSTORM" mana="70" range="180" type="damage" target="enemy" />
 
+	<!-- Elite -->
+	<skill name="MAGE_SOUND_OF_THUNDER" concentration="40" type="debuff" casttime="1" target="enemy" range="225" />
+
 
 
 	<!-- Priest Skills -->
@@ -137,7 +140,7 @@
 	<skill name="SCOUT_PIERCING_ARROW" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
 	<skill name="SCOUT_SNIPE" consumable="1" range="50" casttime="4" cooldown="15" type="buff" target="self" />
 	<skill name="SCOUT_DETECTION" concentration="9" type="buff" target="self" />
-	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="1" cooldown="20" type="damage" target="enemy" />
+	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="180" cooldown="20" type="damage" target="enemy" />
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_REFLECTED_SHOT" consumable="1" casttime="3" cooldown="20" type="damage" target="enemy" />
 	<skill name="SCOUT_CONCENTRATE" cooldown="360" type="buff" target="self" />
