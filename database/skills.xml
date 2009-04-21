@@ -118,6 +118,7 @@
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
 	<skill name="KNIGHT_PUNISHMENT" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_BASH" mana="50" manainc="5.0" range="10" cooldown="1" type="damage" target="enemy" />
+	<skill name="WARRIOR_THUNDERING" range="50" cooldown="15" type="damage" target="enemy" />
 
 
 	<!-- Scout skills -->

@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.11;
+local BOT_VERSION = 2.12;
 
 include("database.lua");
 include("addresses.lua");
@@ -68,9 +68,10 @@ function main()
 			end
 
 
+			local sk = startKey;
+			if( getVersion() >= 100 ) then sk = getStartKey(); end;
 			cprintf(cli.red, "You have died... Sorry.\n");
-			printf("Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
-				getKeyName(startKey))
+			printf("Script paused until you revive yourself. Press %s when you\'re ready to continue.\n", sk)
 			logMessage("Player died.\n");
 			stopPE();
 		end
@@ -97,12 +98,14 @@ function main()
 			cprintf(cli.green, "Moving to (%d, %d)\n", wp.X, wp.Z);
 			local success, reason = player:moveTo(wp);
 
-			player:checkPotions();
-			player:checkSkills();
 
-		
 			if( player.TargetPtr ~= 0 and (not player:haveTarget()) ) then
 				player:clearTarget();
+			end
+
+			if( player.TargetPtr == 0 ) then
+				player:checkPotions();
+				player:checkSkills();
 			end
 		
 
