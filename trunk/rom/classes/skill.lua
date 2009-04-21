@@ -35,6 +35,7 @@ CSkill = class(
 
 		self.priority = 0; -- Internal use
 
+
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
 			self.Mana = copyfrom.Mana;

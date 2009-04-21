@@ -16,6 +16,11 @@ function settings.load()
 			settings.hotkeys[ v:getAttribute("description") ] = { };
 			settings.hotkeys[ v:getAttribute("description") ].key = key[v:getAttribute("key")];
 			settings.hotkeys[ v:getAttribute("description") ].modifier = key[v:getAttribute("modifier")];
+
+			if( key[v:getAttribute("key")] == nil ) then
+				local err = sprintf("settings.xml error: %s does not name a valid hotkey!", v:getAttribute("key"));
+				error(err, 0);
+			end
 		end
 	end
 
@@ -68,6 +73,11 @@ function settings.loadProfile(name)
 			settings.profile.hotkeys[v:getAttribute("name")] = {};
 			settings.profile.hotkeys[v:getAttribute("name")].key = key[v:getAttribute("key")];
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
+
+			if( key[v:getAttribute("key")] == nil ) then
+				local err = sprintf("profile error: %s does not name a valid hotkey!", v:getAttribute("key"));
+				error(err, 0);
+			end
 		end
 	end
 

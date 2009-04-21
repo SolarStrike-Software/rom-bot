@@ -54,6 +54,7 @@ function CPlayer:checkSkills()
 			end
 			printf("Finished casting\n");
 			yrest(1000);
+			return;
 		end
 	end
 end
@@ -160,6 +161,7 @@ function CPlayer:fight()
 		end
 
 
+
 		if( target.HP ~= lastTargetHP ) then
 			lastHitTime = os.time();
 			lastTargetHP = target.HP;
@@ -182,15 +184,15 @@ function CPlayer:fight()
 
 		local suggestedRange = 45;
 		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
-			if( settings.profile.options.COMBAT_RANGE ~= nil ) then
-				suggestedRange = settings.profile.options.COMBAT_RANGE;
+			if( settings.profile.options.COMBAT_DISTANCE ~= nil ) then
+				suggestedRange = settings.profile.options.COMBAT_DISTANCE;
 			else
 				suggestedRange = 155;
 			end
 		end
 
 		if( dist > suggestedRange ) then
-			printf("Moving in\n");
+			printf("Moving in | Suggested range: %d | Distance: %d\n", suggestedRange, dist);
 			-- move into distance
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 			local posX, posZ;
