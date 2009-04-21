@@ -53,7 +53,7 @@ function CPlayer:checkSkills()
 					yrest(10);
 					self:update();
 				end
-				printf("Finished casting\n");
+				printf(language[20]);
 			else
 				yrest(500); -- assume 0.5 second yrest
 			end
@@ -107,7 +107,7 @@ function CPlayer:fight()
 	local target = self:getTarget();
 	self.Fighting = true;
 
-	cprintf(cli.green, "Engaging enemy [%s] in combat...\n", target.Name);
+	cprintf(cli.green, language[22], target.Name);
 
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
@@ -174,14 +174,14 @@ function CPlayer:fight()
 		if( target.HP ~= lastTargetHP ) then
 			lastHitTime = os.time();
 			lastTargetHP = target.HP;
-			printf("Target HP changed\n");
+			printf(language[23]);
 		end
 
 		local dist = distance(self.X, self.Z, target.X, target.Z);
 
 		-- We're a bit TOO close...
 		if( dist < 5.0 ) then
-			printf("Too close. backing up\n");
+			printf(language[24]);
 			keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 			yrest(200);
 			keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
@@ -202,7 +202,7 @@ function CPlayer:fight()
 		end
 
 		if( dist > suggestedRange ) then
-			printf("Moving in | Suggested range: %d | Distance: %d\n", suggestedRange, dist);
+			printf(language[25], suggestedRange, dist);
 			-- move into distance
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 			local posX, posZ;
@@ -232,7 +232,18 @@ function CPlayer:fight()
 		local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 		local angleDif = angleDifference(angle, self.Direction);
 		local correctingAngle = false;
+		local startTime = os.time();
+		-- TODO:
 		while( angleDif > math.rad(15) ) do
+			if( self.HP <= 0 or self.Alive == false ) then
+				return;
+			end;
+
+			if( os.difftime(os.time(), startTime) > 5 ) then
+				printf(language[26]);
+				break;
+			end;
+
 			correctingAngle = true;
 			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 				-- rotate left
@@ -314,7 +325,7 @@ function CPlayer:fight()
 	end;
 
 
-	cprintf(cli.green, "Target dead/lost\n");
+	cprintf(cli.green, language[27]);
 	self.Fighting = false;
 end
 
@@ -341,6 +352,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	-- If more than X degrees off, correct before moving.
 	local rotateStartTime = os.time();
 	while( angleDif > math.rad(25) ) do
+		if( self.HP <= 0 or self.Alive == false ) then
+			return false, WF_NONE;
+		end;
+
 		if( os.difftime(os.time(), rotateStartTime) > 3.0 ) then
 			-- Sometimes both left and right rotate get stuck down.
 			-- Press them both to make sure they are fully released.
@@ -378,8 +393,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local lastDistImprove = os.time();
 	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 	while( dist > 25.0 ) do
-		if( self.HP == 0 ) then
-			return;
+		if( self.HP <= 0 or self.Alive == false ) then
+			return false, WF_NONE;
 		end;
 
 		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
@@ -411,7 +426,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			end;
 
 			if( target:getTarget().Address == self.Address ) then
-				cprintf(cli.turquoise, "Stopping waypoint::target acquired\n");
+				cprintf(cli.turquoise, language[28]);
 				success = false;
 				failreason = WF_TARGET;
 				break;
@@ -427,7 +442,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			lastDist = dist;
 		elseif(  dist > lastDist + 40 ) then
 			-- Make sure we didn't pass it up
-			printf("Dist break.\n");
+			printf(language[29]);
 			success = false;
 			failreason = WF_DIST;
 			break;
@@ -511,8 +526,6 @@ function CPlayer:haveTarget()
 			local target = self:getTarget();
 			if( target:haveTarget() and target.TargetPtr ~= player.Address and (not self:isFriend(CPawn(target.TargetPtr))) ) then
 				local otherPlayer = target:getTarget();
-				local msg = sprintf("Avoided KS-ing %s", otherPlayer.Name);
-				logMessage(msg);
 				return false;
 			end
 
@@ -523,7 +536,7 @@ function CPlayer:haveTarget()
 
 			-- Not a valid enemy
 			if( not target.Attackable ) then
-				printf("Target not attackable: [%s]\n", target.Name);
+				printf(language[30], target.Name);
 				return false;
 			end
 
@@ -541,21 +554,19 @@ function CPlayer:update()
 	local tmpAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 	if( tmpAddress ~= self.Address ) then
 		self.Address = tmpAddress;
-		cprintf(cli.green, "Player address changed: 0x%X\n", self.Address);
+		cprintf(cli.green, language[40], self.Address);
 	end;
 
-	local memerrmsg = "Failed to read memory";
-
 	CPawn.update(self); -- run base function
-	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), memerrmsg) ~= 0);
+	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), language[41]) ~= 0);
 
-	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), memerrmsg);
+	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]);
 
-	--local Vec1 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec1_offset), memerrmsg);
-	--local Vec2 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec2_offset), memerrmsg);
+	--local Vec1 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec1_offset), language[41]);
+	--local Vec2 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec2_offset), language[41]);
 
-	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), memerrmsg);
-	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), memerrmsg);
+	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
+	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;

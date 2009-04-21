@@ -9,11 +9,11 @@
 		<hotkey description="STRAFF_RIGHT" key="VK_D" modifier="" />
 		<hotkey description="JUMP" key="VK_SPACE" modifier="" />
 
-		<hotkey description="CLEAR_TARGET" key="VK_ESCAPE" modifier="" />
 		<hotkey description="TARGET" key="VK_TAB" modifier="" />
 	</hotkeys>
 
 	<options>
 		<option name="MELEE_DISTANCE" value="45" />
+		<option name="LANGUAGE" value="english" />
 	</options>
 </settings>

@@ -11,6 +11,7 @@ settings_default = {
 	},
 	options = {
 		MELEE_DISTANCE = 45,
+		LANGUAGE = "english",
 	},
 	profile = {
 		options = {
@@ -24,7 +25,7 @@ settings_default = {
 			RETURNPATH = nil,
 			PATH_TYPE = "waypoints",
 			WANDER_RADIUS = 500,
-			WAYPOINT_DEVIATION = 25,
+			WAYPOINT_DEVIATION = 0,
 			LOOT = true,
 			LOOT_TIME = 2000,
 			ENERGY_STORAGE_1 = "none",
@@ -179,11 +180,12 @@ function settings.loadProfile(name)
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
-			local name, hotkey, modifier, level;
+			local name, hotkey, modifier, level, priority;
 			name = v:getAttribute("name");
 			hotkey = key[v:getAttribute("hotkey")];
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
+			priority = v:getAttribute("priority");
 
 			if( level == nil or level < 1 ) then
 				level = 1;
@@ -194,10 +196,13 @@ function settings.loadProfile(name)
 				local err = sprintf("ERROR: \'%s\' is not defined in the database!", name);
 				error(err, 0);
 			end
+
 			local tmp = CSkill(database.skills[name]);
 			tmp.hotkey = hotkey;
 			tmp.modifier = modifier;
 			tmp.Level = level;
+
+			if( priority ) then tmp.priority = priority; end
 
 			table.insert(settings.profile.skills, tmp);
 		end

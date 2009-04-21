@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.32;
+local BOT_VERSION = 2.33;
 
 include("database.lua");
 include("addresses.lua");
@@ -26,6 +26,7 @@ __WPL = nil; -- Way Point List
 __RPL = nil; -- Return Point List
 
 
+
 function main()
 	if( getVersion() < 100 ) then
 		while( keyPressed(startKey) ) do yrest(1); end;
@@ -46,6 +47,14 @@ function main()
 
 	attach(getWin());
 
+	if( not checkExecutableCompatible() ) then
+		cprintf(cli.yellow, "!! Notice: !!\n");
+		printf("The game may have been updated or altered.\n" ..
+			"It is recommended that you run rom/update.lua\n\n");
+	end
+
+
+
 	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 	printf("Attempt to read playerAddress\n");
 
@@ -64,6 +73,26 @@ function main()
 	settings.load();
 	settings.loadProfile(player.Name);
 
+
+	-- Load "english" first, to fill in any gaps in the users' set language.
+	local function setLanguage(name)
+		include(getExecutionPath() .. "/language/" .. name .. ".lua");
+	end
+
+	local lang_base = {};
+	setLanguage("english");
+	for i,v in pairs(language) do lang_base[i] = v; end;
+	setLanguage(settings.options.LANGUAGE);
+	for i,v in pairs(lang_base) do
+		if( language[i] == nil ) then
+			language[i] = v;
+		end
+	end;
+	lang_base = nil; -- Not needed anymore, destroy it.
+	logMessage("Language: " .. settings.options.LANGUAGE);
+
+
+
 	if( settings.profile.options.PATH_TYPE == "waypoints" ) then
 		__WPL = CWaypointList();
 	elseif( settings.profile.options.PATH_TYPE == "wander" ) then
@@ -77,12 +106,12 @@ function main()
 
 	if( settings.profile.options.WAYPOINTS ) then
 		__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
-		cprintf(cli.green, "Loaded waypoint path %s\n", settings.profile.options.WAYPOINTS);
+		cprintf(cli.green, language[0], settings.profile.options.WAYPOINTS);
 	end
 
 	if( settings.profile.options.RETURNPATH ) then
 		__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
-		cprintf(cli.green, "Loaded return path %s\n", settings.profile.options.RETURNPATH);
+		cprintf(cli.green, language[1], settings.profile.options.RETURNPATH);
 	end
 
 	-- Start at the closest waypoint.
@@ -99,17 +128,17 @@ function main()
 				yrest(500);
 				local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
 				saveScreenshot(getWin(), sfn);
-				printf("Saved a screenshot to: %s\n", sfn);
+				printf(language[2], sfn);
 			end
 
 
 			if( settings.profile.hotkeys.RES_MACRO ) then
-				cprintf(cli.red, "Died. Resurrecting player...\n");
+				cprintf(cli.red, language[3]);
 				keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 				yrest(5000);
 
-				cprintf(cli.red, "Returning to waypoints after 1 minute.\n");
-				yrest(60*1000); -- wait 1 minute before going about your path.
+				cprintf(cli.red, language[4]);
+				yrest(60000); -- wait 1 minute before going about your path.
 			end
 
 			-- Must have a resurrect macro and waypoints set to be able to use
@@ -142,7 +171,7 @@ function main()
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and target:getTarget().Address ~= player.Address and (not player:isFriend(CPawn(target.TargetPtr))) ) then
-					cprintf(cli.red, "IGNORING TARGET: Anti-KS\n");
+					cprintf(cli.red, language[5], target.Name);
 				else
 					player:fight();
 				end
@@ -160,7 +189,7 @@ function main()
 				wpnum = __WPL.CurrentWaypoint;
 			end;
 
-			cprintf(cli.green, "Moving to waypoint #%d, (%d, %d)\n", wpnum, wp.X, wp.Z);
+			cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);
 			local success, reason = player:moveTo(wp);
 
 
@@ -180,7 +209,7 @@ function main()
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
 						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 						player.Returning = false;
-						cprintf(cli.yellow, "Completed return path. Resuming normal waypoints.\n");
+						cprintf(cli.yellow, language[7]);
 					else
 						__RPL:advance();
 					end
@@ -188,19 +217,18 @@ function main()
 					__WPL:advance();
 				end
 			else
-				cprintf(cli.red, "Waypoint movement failed!\n");
+				cprintf(cli.red, language[8]);
 				if( reason == WF_DIST ) then
 					distBreakCount = distBreakCount + 1;
 				else
 					if( distBreakCount > 0 ) then
 						distBreakCount = 0;
-						printf("Dist breaks reset\n");
 					end
 				end
 
 				if( reason == WF_STUCK or distBreakCount > 3 ) then
 					-- Get ourselves unstuck, then!
-					cprintf(cli.red, "Unsticking player...\n");
+					cprintf(cli.red, language[9]);
 					distBreakCount = 0;
 					player:clearTarget();
 					player:unstick();
