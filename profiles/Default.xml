@@ -33,4 +33,18 @@
 		<skill name="WARRIOR_CUNNING_ATTACK" hotkey="VK_1" modifier="" />
 		<skill name="WARRIOR_ENRAGED" hotkey="VK_4" modifier="" />
 	</skills>
+
+	<onDeath>
+		-- Additional Lua code to execute on death
+	</onDeath>
+
+	<onLeaveCombat>
+		-- Additional Lua code to execute after killing an enemy
+	</onLeaveCombat>
+
+	<onSkillCast>
+		-- Additional Lua code to execute when casting a skill
+		-- Note: arg1 contains the skill being used.
+		-- i.e. arg1.Name will be the name of the skill being cast.
+	</onSkillCast>
 </profile>

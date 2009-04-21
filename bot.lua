@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.15;
+local BOT_VERSION = 2.25;
 
 include("database.lua");
 include("addresses.lua");
@@ -41,9 +41,12 @@ function main()
 
 	local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 	player = CPlayer(playerPtr);
+	player:initialize();
 	player:update();
 
+
 	printf("playerAddr: 0x%X\n", player.Address);
+	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
 	settings.load();
 	settings.loadProfile(player.Name);
@@ -65,6 +68,15 @@ function main()
 				local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
 				saveScreenshot(getWin(), sfn);
 				printf("Saved a screenshot to: %s\n", sfn);
+
+				if( type(settings.profile.events.onDeath) == "function" ) then
+
+					local status,err = pcall(settings.profile.events.onDeath);
+					if( status == false ) then
+						local msg = sprintf("onDeath error: %s", err);
+						error(msg);
+					end
+				end
 			end
 
 
