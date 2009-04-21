@@ -1,0 +1,8 @@
+<waypoints>
+	<waypoint x="39" z="67" />
+	<waypoint x="-38" z="69" />
+	<waypoint x="-58" z="17" />
+	<waypoint x="39" z="14">
+		__WPL:reverse();
+	</waypoint>
+</waypoints>
