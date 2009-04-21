@@ -1,3 +1,5 @@
+local BOT_VERSION = 2.11;
+
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
@@ -28,6 +30,10 @@ function main()
 	if( args[2] == "update" and getVersion() >= 100 ) then
 		include("update.lua");
 	end
+
+	local versionMsg = sprintf("RoM Bot Version %0.2f", BOT_VERSION);
+	cprintf(cli.lightblue, versionMsg .. "\n");
+	logMessage(versionMsg);
 
 	database.load();
 
@@ -107,8 +113,8 @@ function main()
 				if( reason == WF_DIST ) then
 					distBreakCount = distBreakCount + 1;
 				else
-					distBreakCount = 0;
 					if( distBreakCount > 0 ) then
+						distBreakCount = 0;
 						printf("Dist breaks reset\n");
 					end
 				end
@@ -117,6 +123,7 @@ function main()
 					-- Get ourselves unstuck, then!
 					cprintf(cli.red, "Unsticking player...\n");
 					distBreakCount = 0;
+					player:clearTarget();
 					player:unstick();
 				end
 			end

@@ -149,6 +149,9 @@ function CPlayer:fight()
 	while( self:haveTarget() ) do
 		-- If we die, break
 		if( self.HP == 0 ) then
+			if( settings.profile.options.COMBAT_TYPE == "melee" ) then
+				unregisterTimer("timedAttack");
+			end
 			self.Fighting = false;
 			return;
 		end;
@@ -186,7 +189,8 @@ function CPlayer:fight()
 
 		-- Move closer to the target if needed
 
-		local suggestedRange = 45;
+		local suggestedRange = settings.options.MELEE_DISTANCE;
+		if( suggestedRange == nil ) then suggestedRange = 45; end;
 		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
 			if( settings.profile.options.COMBAT_DISTANCE ~= nil ) then
 				suggestedRange = settings.profile.options.COMBAT_DISTANCE;
@@ -212,13 +216,6 @@ function CPlayer:fight()
 				posZ = self.Z + math.sin(angle) * (movedist);
 				success, reason = player:moveTo(CWaypoint(posX, posZ), true);
 			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
-				--[[
-				-- Run right at them and begin combat
-				local movedist = dist - 5; if( movedist < 0 ) then movedist = 0; end;
-
-				posX = self.X + math.cos(angle) * (movedist);
-				posZ = self.Z + math.sin(angle) * (movedist);
-				]]
 				success, reason = player:moveTo(target, true);
 			end
 
@@ -285,6 +282,13 @@ function CPlayer:fight()
 
 				-- now take a 'step' backward (closes loot bag if full inventory)
 				keyboardPress(settings.hotkeys.MOVE_BACKWARD.key);
+
+				-- Maybe take a step forward to pick up a buff.
+				if( math.random(100) > 20 ) then
+					keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+					yrest(100);
+					keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+				end
 			end
 		end
 
