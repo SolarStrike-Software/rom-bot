@@ -7,6 +7,9 @@ CWaypointList = class(
 		self.Waypoints = {};
 		self.CurrentWaypoint = 1;
 		self.Direction = WPT_FORWARD;
+		self.OrigX = player.X;
+		self.OrigZ = player.Z;
+		self.Radius = 500;
 	end
 );
 
@@ -25,6 +28,8 @@ function CWaypointList:load(filename)
 
 		table.insert(self.Waypoints, tmp);
 	end
+
+	self.CurrentWaypoint = 1;
 end
 
 function CWaypointList:advance()
@@ -43,7 +48,17 @@ function CWaypointList:advance()
 end
 
 function CWaypointList:getNextWaypoint()
-	return self.Waypoints[self.CurrentWaypoint];
+	local tmp = CWaypoint(self.Waypoints[self.CurrentWaypoint]);
+	if( settings.profile.options.WAYPOINT_DEVIATION < 2 ) then
+		return tmp;
+	end
+
+	local halfdev = settings.profile.options.WAYPOINT_DEVIATION/2;
+
+	tmp.X = tmp.X + math.random(halfdev) - halfdev;
+	tmp.Z = tmp.Z + math.random(halfdev) - halfdev;
+
+	return tmp; --self.Waypoints[self.CurrentWaypoint];
 end
 
 -- Sets the "direction" (forward/backward) to travel
