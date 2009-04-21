@@ -36,28 +36,28 @@ function CPlayer:checkSkills()
 			if( v.CastTime > 0 ) then
 				local startTime = os.time();
 				while( not self.Casting ) do
-					yrest(100);
+					yrest(50);
 					self:update();
 					if( os.difftime(os.time(), startTime) > v.CastTime ) then
 						self.Casting = true; -- force it.
 						break;
 					end
 				end;
+
+				while(self.Casting) do
+					-- Waiting for casting to finish...
+					yrest(10);
+					self:update();
+				end
+				printf("Finished casting\n");
 			else
 				yrest(500); -- assume 0.5 second yrest
 			end
-			
-			while(self.Casting) do
-				-- Waiting for casting to finish...
-				yrest(100);
-				self:update();
-			end
-			printf("Finished casting\n");
 
 			if( v.CastTime == 0 ) then
-				yrest(1000);
+				yrest(500);
 			else
-				yrest(200);
+				yrest(100);
 			end;
 		end
 	end
@@ -158,9 +158,6 @@ function CPlayer:fight()
 
 		target = self:getTarget();
 
-		self:checkPotions();
-		self:checkSkills();
-
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			logMessage("Taking too long to damage target, breaking sequence...\n");
@@ -254,6 +251,8 @@ function CPlayer:fight()
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 		end
 
+		self:checkPotions();
+		self:checkSkills();
 
 		yrest(100);
 		target:update();
@@ -273,12 +272,18 @@ function CPlayer:fight()
 	if( self.TargetPtr ~= 0 ) then
 		if( settings.profile.options.LOOT == true ) then
 			local dist = distance(self.X, self.Z, target.X, target.Z);
+			local lootdist = 100;
 
-			if( dist < 100 ) then -- only loot when close by
+			if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+				lootdist = settings.profile.options.COMBAT_DISTANCE;
+			end
+
+
+			if( dist < lootdist ) then -- only loot when close by
 				-- "attack" is also the hotkey to loot, strangely.
 				yrest(500);
 				keyboardPress(settings.profile.hotkeys.ATTACK.key);
-				yrest(settings.profile.options.LOOT_TIME);
+				yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 
 				-- now take a 'step' backward (closes loot bag if full inventory)
 				keyboardPress(settings.hotkeys.MOVE_BACKWARD.key);
@@ -286,7 +291,7 @@ function CPlayer:fight()
 				-- Maybe take a step forward to pick up a buff.
 				if( math.random(100) > 20 ) then
 					keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
-					yrest(100);
+					yrest(500);
 					keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 				end
 			end
