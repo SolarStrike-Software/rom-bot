@@ -370,7 +370,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			return;
 		end;
 
-		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
+		if( canTarget == false and os.difftime(os.time(), startTime) > 2 ) then
 			canTarget = true;
 		end
 

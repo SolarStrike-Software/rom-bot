@@ -1,4 +1,4 @@
-staticcharbase_address = 0x881B78;
+staticcharbase_address = 0x884D98; -- 0x8A1CB0
 charPtr_offset = 0x56C;
 charX_offset = 0x2C;
 charY_offset = 0x30;
@@ -19,5 +19,5 @@ charDirVectorPtr_offset = 0xCC;
 inBattle_offset = 0x552;
 camUVec1_offset = 0xF4;
 camUVec2_offset = 0xFC;
-castbar_staticbase = 0x8B7860;
+castbar_staticbase = 0x8BAA88;
 castbar_offset = 0x24;
