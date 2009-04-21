@@ -40,6 +40,7 @@ function main()
 
 	local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 	player = CPlayer(playerPtr);
+	player:update();
 
 	cprintf(cli.green, "RoM waypoint creator\n");
 	printf("Hotkeys:\n  (%s)\tInsert new waypoint(at player position)\n"
