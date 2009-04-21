@@ -24,7 +24,7 @@ function main()
 		while( keyPressed(getStartKey()) ) do yrest(1); end;
 	end
 
-	-- If run with "update" paremeter, update addresses.lua.
+	-- If run with "update" parameter, update addresses.lua.
 	if( args[2] == "update" and getVersion() >= 100 ) then
 		include("update.lua");
 	end

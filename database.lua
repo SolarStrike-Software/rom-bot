@@ -30,6 +30,10 @@ function database.load()
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
 
+		if( cooldown == 0 ) then
+			cooldown = 1;
+		end
+
 		if( type == "damage" ) then type = STYPE_DAMAGE; priority = 70; end;
 		if( type == "hot" ) then type = STYPE_HOT; priority = 110; end;
 		if( type == "heal" ) then type = STYPE_HEAL; priority = 100; end;

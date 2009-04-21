@@ -86,7 +86,7 @@
 	<skill name="ROGUE_VILLAINY" energy="35" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_LACERATION" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
-	<skill name="ROGUE_HIDE" type="buff" target="self" />
+	<skill name="ROGUE_HIDE" type="buff" target="self" inbattle="false" cooldown="30" />
 	<skill name="ROGUE_BLIND_STAB" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
 	<skill name="ROGUE_SHADOW_STEP" energy="20" range="100" type="damage" target="enemy" />  

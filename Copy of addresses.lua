@@ -1,5 +1,5 @@
 staticcharbase_address = 0x86AB78;
-charPtr_offset = 0x560;
+charPtr_offset = 0x568; --0x560;
 charX_offset = 0x2C;
 charY_offset = 0x30;
 charZ_offset = 0x34;
