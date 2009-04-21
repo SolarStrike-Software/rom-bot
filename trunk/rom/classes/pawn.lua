@@ -16,6 +16,7 @@ CPawn = class(
 		self.Z = 0.0;
 		self.TargetPtr = 0;
 		self.Direction = 0.0;
+		self.Attackable = false;
 
 		-- Directed more at player, but may be changed later.
 		self.Battling = false; -- The actual "in combat" flag.
@@ -53,6 +54,8 @@ function CPawn:update()
 	self.Y = memoryReadFloat(proc, self.Address + charY_offset);
 	self.Z = memoryReadFloat(proc, self.Address + charZ_offset);
 
+	self.Attackable = (memoryReadByte(proc, self.Address + pawnAttackable_offset) ~= 0);
+
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana
 		self.MP = 1;
@@ -63,6 +66,14 @@ function CPawn:update()
 		-- Prevent division by zero for entities that have no secondary mana
 		self.MP2 = 1;
 		self.MaxMP2 = 1;
+	end
+
+	if( self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
+		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
+		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
+		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
+
+		error("Error reading memory in CPawn:update()");
 	end
 end
 

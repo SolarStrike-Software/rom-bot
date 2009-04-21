@@ -1,7 +1,7 @@
 <skills>
 	<!-- Mage Skills -->
-	<skill name="MAGE_FIREBALL" mana="30" manainc="3" range="225" cooldown="6" type="damage" target="enemy" />
-	<skill name="MAGE_LIGHTNING" mana="20" manainc="2.0" range="150" cooldown="20" type="damage" target="enemy" />
+	<skill name="MAGE_FIREBALL" mana="30" manainc="3" range="225" cooldown="6" priority="65" type="damage" target="enemy" />
+	<skill name="MAGE_LIGHTNING" mana="20" manainc="2.0" range="150" minrange="75" priority="100" cooldown="20" type="damage" target="enemy" />
 	<skill name="MAGE_INTENSIFICATION" mana="10" cooldown="20" type="buff" target="self" />
 	<skill name="MAGE_SILENCE" mana="50" range="150" cooldown="24" type="debuff" target="enemy" />
 	<skill name="MAGE_FIRE_WARD" mana="120" cooldown="600" type="buff" target="self" />
@@ -32,7 +32,7 @@
 
 
 	<!-- Priest Skills -->
-	<skill name="PRIEST_INSTANT_HEAL" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
+	<skill name="PRIEST_URGENT_HEAL" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
 	<skill name="PRIEST_RISING_TIDE" mana="15" manainc="1.09" range="217" casttime="2" type="damage" target="enemy" />
 	<skill name="PRIEST_REGENERATE" mana="35" manainc="3.47" cooldown="15" range="180" type="hot" target="friendly" />
 	<skill name="PRIEST_HOLY_AURA" mana="60" cooldown="120" type="buff" target="self" />
@@ -43,8 +43,8 @@
 	<skill name="PRIEST_HEAL" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
 	<skill name="PRIEST_BONE_CHILL" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
 	<skill name="PRIEST_ICE_FOG" mana="44" range="240" casttime="3" cooldown="10" type="damage" target="enemy" />
-	<skill name="PRIEST_HOLY_SPIRIT_VOW" mana="500" range="225" type="buff" cooldown="1800" target="friendly" />
-	<skill name="PRIEST_RESSURECTION" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
+	<skill name="PRIEST_SOUL_BOND" mana="500" range="225" type="buff" cooldown="1800" target="friendly" />
+	<skill name="PRIEST_RESURRECTION" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
 	<skill name="PRIEST_GRACE_OF_LIFE" mana="30" manainc="3.0" range="200" type="buff" target="friendly" cooldown="1800" />
 	<skill name="PRIEST_GROUP_HEAL" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
 
@@ -85,11 +85,11 @@
 	<skill name="KNIGHT_CHARGE" range="120" cooldown="30" type="charge" target="enemy" />
 
 	<!-- Rogue skills -->
-	<skill name="ROGUE_SHADOWFACE" energy="30" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOWSTAB" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="600" target="self" />
-	<skill name="ROGUE_VILLAINY" energy="35" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_LOW_BLOW" energy="35" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
-	<skill name="ROGUE_LACERATION" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="ROGUE_WOUND_ATTACK" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
 	<skill name="ROGUE_HIDE" type="buff" target="self" inbattle="false" cooldown="30" />
 	<skill name="ROGUE_BLIND_STAB" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
@@ -107,7 +107,7 @@
 	<skill name="ROGUE_EVASION" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COMBO_THROW" consumable="1" range="150" cooldown="3.3" type="damage" target="enemy" />
 	<skill name="ROGUE_SHADOW_PRISON" energy="49" range="180" type="damage" target="enemy" />
-	<skill name="ROGUE_SHARPEN" cooldown="300" type="buff" target="self" />
+	<skill name="ROGUE_INFORMER" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" cooldown="300" type="buff" target="self" />
 
 	<!-- Knight skills -->

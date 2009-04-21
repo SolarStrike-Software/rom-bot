@@ -26,6 +26,7 @@ function database.load()
 		maxhpper = v:getAttribute("maxhpper");
 		manainc = v:getAttribute("manainc");
 		level = v:getAttribute("level");
+		priority = v:getAttribute("priority");
 
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
@@ -34,11 +35,11 @@ function database.load()
 			cooldown = 1;
 		end
 
-		if( type == "damage" ) then type = STYPE_DAMAGE; priority = 70; end;
-		if( type == "hot" ) then type = STYPE_HOT; priority = 110; end;
-		if( type == "heal" ) then type = STYPE_HEAL; priority = 100; end;
-		if( type == "buff" ) then type = STYPE_BUFF; priority = 90; end;
-		if( type == "dot" ) then type = STYPE_DOT; priority = 80; end;
+		if( not priority and type == "damage" ) then type = STYPE_DAMAGE; priority = 70; end;
+		if( not priority and type == "hot" ) then type = STYPE_HOT; priority = 110; end;
+		if( not priority and type == "heal" ) then type = STYPE_HEAL; priority = 100; end;
+		if( not priority and type == "buff" ) then type = STYPE_BUFF; priority = 90; end;
+		if( not priority and type == "dot" ) then type = STYPE_DOT; priority = 80; end;
 
 		if( target == "enemy" ) then target = STARGET_ENEMY; end;
 		if( target == "self" ) then target = STARGET_SELF; end;

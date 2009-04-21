@@ -10,6 +10,10 @@ WF_STUCK = 3;  -- Failed waypoint because we are stuck on something.
 
 CPlayer = class(CPawn);
 
+function CPlayer:initialize()
+	memoryWriteInt(getProc(), self.Address + castbar_offset, 0);
+end
+
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills()
@@ -102,6 +106,9 @@ function CPlayer:fight()
 		return false;
 	end
 
+	local target = self:getTarget();
+	printf("Target attackable: %s\n", target.Attackable);
+
 	self.Fighting = true;
 
 	-- Keep tapping the attack button once every few seconds
@@ -109,6 +116,7 @@ function CPlayer:fight()
 	local function timedAttack()
 		self:update();
 		if( self.Casting ) then
+			printf("Casting...\n");
 			-- Don't interupt casting
 			return;
 		end;
@@ -266,6 +274,14 @@ function CPlayer:fight()
 		unregisterTimer("timedAttack");
 	end
 
+	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
+		local status,err = pcall(settings.profile.events.onLeaveCombat);
+		if( status == false ) then
+			local msg = sprintf("onLeaveCombat error: %s", err);
+			error(msg);
+		end
+	end
+
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
@@ -370,7 +386,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			return;
 		end;
 
-		if( canTarget == false and os.difftime(os.time(), startTime) > 2 ) then
+		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
 			canTarget = true;
 		end
 
@@ -509,6 +525,11 @@ function CPlayer:haveTarget()
 				return false;
 			end;
 
+			-- Not a valid enemy
+			if( not target.Attackable ) then
+				return false;
+			end
+
 			return true;
 		else
 			return true;
@@ -520,8 +541,7 @@ end
 
 function CPlayer:update()
 	CPawn.update(self); -- run base function
-
-	self.Casting = (memoryReadBytePtr(getProc(), castbar_staticbase, castbar_offset) == 1);
+	self.Casting = (memoryReadInt(getProc(), self.Address + castbar_offset) ~= 0);
 
 	self.Battling = memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset);
 
@@ -532,6 +552,11 @@ function CPlayer:update()
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
 
 	self.Direction = math.atan2(Vec2, Vec1);
+
+
+	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
+		error("Error reading memory in CPlayer:update()");
+	end
 
 
 	-- If we were able to load our profile options...

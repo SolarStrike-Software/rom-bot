@@ -1,7 +1,14 @@
 settings = {
 	hotkeys = {},
 	options = {},
-	profile = { options = {}, hotkeys = {}, skills = {}, friends = {} }
+	profile = {
+		options = {}, hotkeys = {}, skills = {}, friends = {},
+		events = {
+			onDeath = nil,
+			onLeaveCombat = nil,
+			onSkillCast = nil,
+		}
+	},
 };
 
 function settings.load()
@@ -62,11 +69,20 @@ end
 
 
 function settings.loadProfile(name)
-	settings.profile = { options = {}, hotkeys = {}, skills = {}, friends = {} } -- Delete old settings.
+	-- Delete old profile settings (if they even exist), restore defaults
+	settings.profile = {
+		options = {}, hotkeys = {}, skills = {}, friends = {},
+		events = {
+			onDeath = nil,
+			onLeaveCombat = nil,
+			onSkillCast = nil,
+		}
+	}
 
 	local filename = getExecutionPath() .. "/profiles/" .. name .. ".xml";
 	local root = xml.open(filename);
 	local elements = root:getElements();
+
 
 	local loadOptions = function(node)
 		local elements = node:getElements();
@@ -90,6 +106,40 @@ function settings.loadProfile(name)
 			end
 		end
 	end
+
+	local loadOnDeathEvent = function(node)
+		local luaCode = tostring(node:getValue());
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onDeath = loadstring(luaCode);
+			if( type(settings.profile.events.onDeath) ~= "function" ) then
+				settings.profile.events.onDeath = nil;
+			end;
+		end
+	end
+
+	local loadOnLeaveCombatEvent = function(node)
+		local luaCode = tostring(node:getValue());
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onLeaveCombat = loadstring(luaCode);
+			if( type(settings.profile.events.onLeaveCombat) ~= "function" ) then
+				settings.profile.events.onLeaveCombat = nil;
+			end;
+		end
+	end
+
+	local loadOnSkillCastEvent = function(node)
+		local luaCode = tostring(node:getValue());
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onSkillCast = loadstring(luaCode);
+			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
+				settings.profile.events.onSkillCast = nil;
+			end;
+		end
+	end
+
 
 	local skillSort = function(tab1, tab2)
 		if( tab2.priority < tab1.priority ) then
@@ -150,6 +200,12 @@ function settings.loadProfile(name)
 			loadSkills(v);
 		elseif( string.lower(name) == "friends" ) then
 			loadFriends(v);
+		elseif( string.lower(name) == "ondeath" ) then
+			loadOnDeathEvent(v);
+		elseif( string.lower(name) == "onleavecombat" ) then
+			loadOnLeaveCombatEvent(v);
+		elseif( string.lower(name) == "onskillcast" ) then
+			loadOnSkillCastEvent(v);
 		end
 	end
 

@@ -52,7 +52,7 @@ function main()
 		if( keyPressed(wpKey) == false and lastwpKey == true ) then
 			player:update();
 			local tmp = CWaypoint(player.X, player.Z);
-			printf("Recorded. Continue to the next. Press %s to save and quit\n", getKeyName(saveKey));
+			printf("\aRecorded. Continue to the next. Press %s to save and quit\n", getKeyName(saveKey));
 			table.insert(wpList, tmp);
 		end
 		if( keyPressed(wpKey) ) then

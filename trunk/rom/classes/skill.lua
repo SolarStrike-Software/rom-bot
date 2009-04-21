@@ -77,7 +77,6 @@ function CSkill:canUse()
 
 	-- This skill cannot be used in battle
 	if( player.Battling and self.InBattle == false ) then
-		printf("Cannot be used in battle\n");
 		return false;
 	end
 
@@ -127,6 +126,11 @@ function CSkill:use()
 	local estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
 	printf("Casting \'%s\', level %d, mana: %d\n", self.Name, self.Level, estimatedMana);
 
+	if( self.hotkey == nil ) then
+		local str = sprintf("Bad skill hotkey name: %s", tostring(self.Name));
+		error(str);
+	end
+
 	self.LastCastTime = os.time() + self.CastTime;
 	if( self.modifier ) then
 		keyboardHold(self.modifier);
@@ -134,6 +138,15 @@ function CSkill:use()
 	keyboardPress(self.hotkey);
 	if( self.modifier ) then
 		keyboardRelease(self.modifier);
+	end
+
+	if( type(settings.profile.events.onSkillCast) == "function" ) then
+		arg1 = self;
+		local status,err = pcall(settings.profile.events.onSkillCast);
+		if( status == false ) then
+			local msg = sprintf("onSkillCast error: %s", err);
+			error(msg);
+		end
 	end
 
 end
