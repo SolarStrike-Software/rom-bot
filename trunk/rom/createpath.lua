@@ -3,8 +3,13 @@ include("classes/player.lua");
 include("classes/waypoint.lua");
 include("functions.lua");
 
-startKey = key.VK_DELETE;
-stopKey = key.VK_END;
+if( getVersion() < 100 ) then
+	startKey = key.VK_DELETE;
+	stopKey = key.VK_END;
+else
+	setStartKey(key.VK_DELETE);
+	setStopKey(key.VK_END);
+end
 
 wpKey = key.VK_NUMPAD1; -- insert a movement point
 saveKey = key.VK_NUMPAD3; -- save the waypoints

@@ -6,14 +6,23 @@ include("classes/waypointlist.lua");
 include("functions.lua");
 include("settings.lua");
 
-startKey = key.VK_DELETE;
-stopKey = key.VK_END;
+if( getVersion() < 100 ) then
+	startKey = key.VK_DELETE;
+	stopKey = key.VK_END;
+else
+	setStartKey(key.VK_DELETE);
+	setStopKey(key.VK_END);
+end
 
 
 __WPL = CWaypointList();
 
 function main()
-	while( keyPressed(startKey) ) do yrest(1); end;
+	if( getVersion() < 100 ) then
+		while( keyPressed(startKey) ) do yrest(1); end;
+	else
+		while( keyPressed(getStartKey()) ) do yrest(1); end;
+	end
 
 	-- If run with "update" paremeter, update addresses.lua.
 	if( args[2] == "update" and getVersion() >= 100 ) then

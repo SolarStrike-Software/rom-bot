@@ -12,7 +12,7 @@
 		<option name="ENERGY_STORAGE_1" value="rage" />
 		<option name="ENERGY_STORAGE_2" value="energy" />
 		<option name="POTION_COOLDOWN" value="15" />
-		<option name="MAX_FIGHT_TIME" value="20" />
+		<option name="MAX_FIGHT_TIME" value="30" />
 		<option name="DOT_PERCENT" value="90" />
 	</options>
 

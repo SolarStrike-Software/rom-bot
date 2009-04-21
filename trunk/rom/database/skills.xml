@@ -12,7 +12,7 @@
 	<skill name="MAGE_PLASMA_ARROW" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
 	<skill name="MAGE_ELECTRIC_BOLT" mana="30" manainc="3.0" range="200" casttime="1" type="dot" target="enemy" />
 	<skill name="MAGE_GALAXY" mana="35" manainc="3.5" range="150" type="damage" target="enemy" />
-	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" manainc="3.25" range="200" type="buff" target="self" />
+	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" manainc="3.25" cooldown="1800" range="200" type="buff" target="self" />
 
 	<!-- TODO: More info needed (mana increase per level) -->
 	<skill name="MAGE_DISCHARGE" type="damage" target="enemy" />

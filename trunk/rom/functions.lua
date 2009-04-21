@@ -1,4 +1,12 @@
 function getWin()
+	local skey = 0;
+
+	if( getVersion() < 100 ) then
+		skey = startKey;
+	else
+		skey = getStartKey();
+	end
+
 	if( __WIN == nil or not windowValid(__WIN) ) then
 		local winlist = findWindowList("Runes of Magic");
 
@@ -9,12 +17,12 @@ function getWin()
 		if( #winlist > 1 ) then
 			cprintf(cli.yellow, "Multiple RoM windows found. Keep the RoM "
 				.. "window to attach this bot to on top, and press %s.\n",
-				getKeyName(startKey));
+				getKeyName(skey));
 
-			while( not keyPressed(startKey) ) do
+			while( not keyPressed(skey) ) do
 				yrest(10);
 			end
-			while( keyPressed(startKey) ) do
+			while( keyPressed(skey) ) do
 				yrest(10);
 			end
 
@@ -50,9 +58,17 @@ function distance(x1, y1, x2, y2)
 end
 
 function pauseCallback()
+	local skey = 0;
+
+	if( getVersion() < 100 ) then
+		skey = startKey;
+	else
+		skey = getStartKey();
+	end
+
 	-- If settings haven't been loaded...skip the cleanup.
 	if( not settings ) then
-		printf("Paused. Press %s again to continue.\n", getKeyName(startKey));
+		printf("Paused. Press %s again to continue.\n", getKeyName(skey));
 		return;
 	end;
 
@@ -81,6 +97,7 @@ function pauseCallback()
 		keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
 	end
 
-	printf("Paused. Press %s again to continue.\n", getKeyName(startKey));
+
+	printf("Paused. Press %s again to continue.\n", getKeyName(skey));
 end
 atPause(pauseCallback);
