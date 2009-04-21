@@ -1,0 +1,15 @@
+<settings>
+	<hotkeys>
+		<!-- Cannot use modifiers -->
+		<hotkey description="MOVE_FORWARD" key="VK_W" modifier="" />
+		<hotkey description="MOVE_BACKWARD" key="VK_S" modifier="" />
+		<hotkey description="ROTATE_LEFT" key="VK_Q" modifier="" />
+		<hotkey description="ROTATE_RIGHT" key="VK_E" modifier="" />
+		<hotkey description="STRAFF_LEFT" key="VK_A" modifier="" />
+		<hotkey description="STRAFF_RIGHT" key="VK_D" modifier="" />
+		<hotkey description="JUMP" key="VK_SPACE" modifier="" />
+
+		<hotkey description="CLEAR_TARGET" key="VK_ESCAPE" modifier="" />
+		<hotkey description="TARGET" key="VK_TAB" modifier="" />
+	</hotkeys>
+</settings>
