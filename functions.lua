@@ -1,3 +1,17 @@
+if(DEBUG_ASSERT == nil ) then DEBUG_ASSERT = false; end;
+function debugAssert(args)
+	if( DEBUG_ASSERT ) then
+		if( not args ) then
+			error("Error in memory reading", 2);
+		else
+			return args;
+		end
+	else
+		return args;
+	end
+end
+
+
 function getWin()
 	local skey = 0;
 
@@ -54,6 +68,10 @@ function angleDifference(angle1, angle2)
 end
 
 function distance(x1, y1, x2, y2)
+	if( x1 == nil or y1 == nil or x2 == nil or y2 == nil ) then
+		error("Error: nil value passed to distance()", 2);
+	end
+
 	return math.sqrt( (y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) );
 end
 
@@ -73,7 +91,7 @@ function pauseCallback()
 	end;
 
 
-	if( settings.hotkeys.MOVE_FORWARD ) then
+	if( settings.hotkeys.MOVE_FORWARD) then
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	end
 
@@ -85,7 +103,7 @@ function pauseCallback()
 		keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
 	end
 
-	if( settings.hotkeys.ROTATE_RIGHT ) then
+	if( settings.hotkeys.ROTATE_RIGHT) then
 		keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
 	end
 
@@ -101,3 +119,15 @@ function pauseCallback()
 	printf("Paused. Press %s again to continue.\n", getKeyName(skey));
 end
 atPause(pauseCallback);
+
+
+
+function pauseOnDeath()
+	local sk = startKey;
+	if( getVersion() >= 100 ) then sk = getStartKey(); end;
+	cprintf(cli.red, "You have died... Sorry.\n");
+	printf("Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
+		getKeyName(sk))
+	logMessage("Player died.\n");
+	stopPE();
+end

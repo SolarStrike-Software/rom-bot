@@ -1,15 +1,48 @@
-settings = {
-	hotkeys = {},
-	options = {},
+settings_default = {
+	hotkeys = {
+		MOVE_FORWARD = {key = _G.key.VK_W, modifier = nil},
+		MOVE_BACKWARD = {key = _G.key.VK_S, modifier = nil},
+		ROTATE_LEFT = {key = _G.key.VK_A, modifier = nil},
+		ROTATE_RIGHT = {key = _G.key.VK_D, modifier = nil},
+		STRAFF_LEFT = {key = _G.key.VK_Q, modifier = nil},
+		STRAFF_RIGHT = {key = _G.key.VK_E, modifier = nil},
+		JUMP = {key = _G.key.VK_SPACE, modifier = nil},
+		TARGET = {key = _G.key.VK_TAB, modifier = nil},
+	},
+	options = {
+		MELEE_DISTANCE = 45,
+	},
 	profile = {
-		options = {}, hotkeys = {}, skills = {}, friends = {},
+		options = {
+			HP_LOW = 85,
+			MP_LOW_POTION = 50,
+			HP_LOW_POTION = 40,
+			COMBAT_TYPE = "melee",
+			COMBAT_DISTANCE = 200,
+			ANTI_KS = true,
+			WAYPOINTS = "myWaypoints.xml",
+			RETURNPATH = nil,
+			PATH_TYPE = "waypoints",
+			WANDER_RADIUS = 500,
+			WAYPOINT_DEVIATION = 25,
+			LOOT = true,
+			LOOT_TIME = 2000,
+			ENERGY_STORAGE_1 = "none",
+			ENERGY_STORAGE_2 = "none",
+			POTION_COOLDOWN = 15,
+			MAX_FIGHT_TIME = 30,
+			DOT_PERCENT = 90,
+			
+		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
-			onDeath = nil,
+			onDeath = function () pauseOnDeath(); end,
 			onLeaveCombat = nil,
 			onSkillCast = nil,
 		}
 	},
 };
+
+settings = settings_default;
 
 function settings.load()
 	local filename = getExecutionPath() .. "/settings.xml";
@@ -63,21 +96,14 @@ function settings.load()
 	checkHotkeys("STRAFF_LEFT");
 	checkHotkeys("STRAFF_RIGHT");
 	checkHotkeys("JUMP");
-	checkHotkeys("CLEAR_TARGET");
+	--checkHotkeys("CLEAR_TARGET");
 	checkHotkeys("TARGET");
 end
 
 
 function settings.loadProfile(name)
 	-- Delete old profile settings (if they even exist), restore defaults
-	settings.profile = {
-		options = {}, hotkeys = {}, skills = {}, friends = {},
-		events = {
-			onDeath = nil,
-			onLeaveCombat = nil,
-			onSkillCast = nil,
-		}
-	}
+	settings.profile = settings_default.profile;
 
 	local filename = getExecutionPath() .. "/profiles/" .. name .. ".xml";
 	local root = xml.open(filename);

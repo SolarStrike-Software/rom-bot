@@ -59,13 +59,13 @@
 
 	<!-- Warrior skills -->
 	<skill name="WARRIOR_SLASH" rage="25" range="25" type="damage" cooldown="1" target="enemy" />
-	<skill name="WARRIOR_ENRAGED" cooldown="20" type="buff" target="self" inbattle="false" />
+	<skill name="WARRIOR_ENRAGED" cooldown="40" type="buff" target="self" inbattle="false" />
 	<skill name="WARRIOR_WHIRLWIND" cooldown="30" rage="50" type="damage" target="enemy" />
 	<skill name="WARRIOR_BERSERK" rage="25" cooldown="60" type="buff" target="self" />
 	<skill name="WARRIOR_DEFENSIVE_FORMATION" rage="25" cooldown="120" type="buff" target="self" />
 
 	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="600" target="self" />
-	<skill name="WARRIOR_CUNNING_ATTACK" rage="20" type="damage" target="enemy" />
+	<skill name="WARRIOR_PROBING_ATTACK" rage="20" type="damage" target="enemy" />
 	<skill name="WARRIOR_WEAK_SPOT" debuff="vulnerable" range="50" type="damage" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
 	<skill name="WARRIOR_TACTICAL_ATTACK" rage="15" range="50" type="damage" target="enemy" />

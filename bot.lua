@@ -1,12 +1,17 @@
-local BOT_VERSION = 2.25;
+local BOT_VERSION = 2.32;
 
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
+include("classes/waypointlist_wander.lua");
 include("functions.lua");
 include("settings.lua");
+
+
+DEBUG_ASSERT = true; -- Change to 'true' to debug memory reading problems.
+
 
 if( getVersion() < 100 ) then
 	startKey = key.VK_DELETE;
@@ -17,7 +22,9 @@ else
 end
 
 
-__WPL = CWaypointList();
+__WPL = nil; -- Way Point List
+__RPL = nil; -- Return Point List
+
 
 function main()
 	if( getVersion() < 100 ) then
@@ -39,8 +46,14 @@ function main()
 
 	attach(getWin());
 
-	local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-	player = CPlayer(playerPtr);
+	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+	printf("Attempt to read playerAddress\n");
+
+	if( playerAddress == nil ) then playerAddress = 0; end;
+	logMessage(sprintf("Using static base address 0x%X, player address 0x%X",
+		tonumber(staticcharbase_address), tonumber(playerAddress)));
+
+	player = CPlayer(playerAddress);
 	player:initialize();
 	player:update();
 
@@ -50,8 +63,27 @@ function main()
 
 	settings.load();
 	settings.loadProfile(player.Name);
-	__WPL = CWaypointList();
-	__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
+
+	if( settings.profile.options.PATH_TYPE == "waypoints" ) then
+		__WPL = CWaypointList();
+	elseif( settings.profile.options.PATH_TYPE == "wander" ) then
+		__WPL = CWaypointListWander();
+		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
+	else
+		error("Unknown PATH_TYPE in profile.", 0);
+	end
+
+	__RPL = CWaypointList();
+
+	if( settings.profile.options.WAYPOINTS ) then
+		__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
+		cprintf(cli.green, "Loaded waypoint path %s\n", settings.profile.options.WAYPOINTS);
+	end
+
+	if( settings.profile.options.RETURNPATH ) then
+		__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
+		cprintf(cli.green, "Loaded return path %s\n", settings.profile.options.RETURNPATH);
+	end
 
 	-- Start at the closest waypoint.
 	__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
@@ -60,7 +92,7 @@ function main()
 	while(true) do
 		player:update();
 
-		if( player.HP == 0 ) then
+		if( not player.Alive ) then
 			-- Take a screenshot. Only works on MicroMacro 1.0 or newer
 			if( getVersion() >= 100 ) then
 				showWindow(getWin(), sw.show);
@@ -68,24 +100,36 @@ function main()
 				local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
 				saveScreenshot(getWin(), sfn);
 				printf("Saved a screenshot to: %s\n", sfn);
-
-				if( type(settings.profile.events.onDeath) == "function" ) then
-
-					local status,err = pcall(settings.profile.events.onDeath);
-					if( status == false ) then
-						local msg = sprintf("onDeath error: %s", err);
-						error(msg);
-					end
-				end
 			end
 
 
-			local sk = startKey;
-			if( getVersion() >= 100 ) then sk = getStartKey(); end;
-			cprintf(cli.red, "You have died... Sorry.\n");
-			printf("Script paused until you revive yourself. Press %s when you\'re ready to continue.\n", sk)
-			logMessage("Player died.\n");
-			stopPE();
+			if( settings.profile.hotkeys.RES_MACRO ) then
+				cprintf(cli.red, "Died. Resurrecting player...\n");
+				keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
+				yrest(5000);
+
+				cprintf(cli.red, "Returning to waypoints after 1 minute.\n");
+				yrest(60*1000); -- wait 1 minute before going about your path.
+			end
+
+			-- Must have a resurrect macro and waypoints set to be able to use
+			-- a return path!
+			if( settings.profile.hotkeys.RES_MACRO and player.Returning == false and
+			__RPL ~= nil ) then
+				player.Returning = true;
+				__RPL:setWaypointIndex(1); -- Start from the beginning
+			end
+
+
+			if( type(settings.profile.events.onDeath) == "function" ) then
+				local status,err = pcall(settings.profile.events.onDeath);
+				if( status == false ) then
+					local msg = sprintf("onDeath error: %s", err);
+					error(msg);
+				end
+			else
+				pauseOnDeath();
+			end
 		end
 
 
@@ -106,8 +150,17 @@ function main()
 				player:fight();
 			end
 		else
-			local wp = __WPL:getNextWaypoint();
-			cprintf(cli.green, "Moving to (%d, %d)\n", wp.X, wp.Z);
+			local wp = nil; local wpnum = nil;
+
+			if( player.Returning ) then
+				wp = __RPL:getNextWaypoint();
+				wpnum = __RPL.CurrentWaypoint;
+			else
+				wp = __WPL:getNextWaypoint();
+				wpnum = __WPL.CurrentWaypoint;
+			end;
+
+			cprintf(cli.green, "Moving to waypoint #%d, (%d, %d)\n", wpnum, wp.X, wp.Z);
 			local success, reason = player:moveTo(wp);
 
 
@@ -122,7 +175,18 @@ function main()
 		
 
 			if( success ) then
-				__WPL:advance();
+				if( player.Returning ) then
+					-- Completed. Return to normal waypoints.
+					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
+						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+						player.Returning = false;
+						cprintf(cli.yellow, "Completed return path. Resuming normal waypoints.\n");
+					else
+						__RPL:advance();
+					end
+				else
+					__WPL:advance();
+				end
 			else
 				cprintf(cli.red, "Waypoint movement failed!\n");
 				if( reason == WF_DIST ) then

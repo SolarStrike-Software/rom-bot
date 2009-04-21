@@ -17,6 +17,7 @@ CPawn = class(
 		self.TargetPtr = 0;
 		self.Direction = 0.0;
 		self.Attackable = false;
+		self.Alive = true;
 
 		-- Directed more at player, but may be changed later.
 		self.Battling = false; -- The actual "in combat" flag.
@@ -31,6 +32,7 @@ CPawn = class(
 		self.Concentration = 0;
 		self.MaxConcentration = 0;
 		self.PotionLastUseTime = 0;
+		self.Returning = false; -- Whether following the return path, or regular waypoints
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -38,21 +40,25 @@ CPawn = class(
 
 function CPawn:update()
 	local proc = getProc();
-	self.HP = memoryReadInt(proc, self.Address + charHP_offset);
-	self.MaxHP = memoryReadInt(proc, self.Address + charMaxHP_offset);
-	self.MP = memoryReadInt(proc, self.Address + charMP_offset);
-	self.MaxMP = memoryReadInt(proc, self.Address + charMaxMP_offset);
-	self.MP2 = memoryReadInt(proc, self.Address + charMP2_offset);
-	self.MaxMP2 = memoryReadInt(proc, self.Address + charMaxMP2_offset);
-	self.Name = memoryReadString(proc, self.Address + charName_offset);
-	self.Level = memoryReadInt(proc, self.Address + charLevel_offset);
-	self.Level2 = memoryReadInt(proc, self.Address + charLevel2_offset);
+	local memerrmsg = "Failed to read memory";
 
-	self.TargetPtr = memoryReadInt(proc, self.Address + charTargetPtr_offset);
+	self.Alive = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg) ~= 9;
+	self.HP = debugAssert(memoryReadInt(proc, self.Address + charHP_offset), memerrmsg);
 
-	self.X = memoryReadFloat(proc, self.Address + charX_offset);
-	self.Y = memoryReadFloat(proc, self.Address + charY_offset);
-	self.Z = memoryReadFloat(proc, self.Address + charZ_offset);
+	self.MaxHP = debugAssert(memoryReadInt(proc, self.Address + charMaxHP_offset), memerrmsg);
+	self.MP = debugAssert(memoryReadInt(proc, self.Address + charMP_offset), memerrmsg);
+	self.MaxMP = debugAssert(memoryReadInt(proc, self.Address + charMaxMP_offset), memerrmsg);
+	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + charMP2_offset), memerrmsg);
+	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + charMaxMP2_offset), memerrmsg);
+	self.Name = debugAssert(memoryReadString(proc, self.Address + charName_offset), memerrmsg);
+	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
+	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + charLevel2_offset), memerrmsg);
+
+	self.TargetPtr = debugAssert(memoryReadInt(proc, self.Address + charTargetPtr_offset), memerrmsg);
+
+	self.X = debugAssert(memoryReadFloat(proc, self.Address + charX_offset), memerrmsg);
+	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
+	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
 	self.Attackable = (memoryReadByte(proc, self.Address + pawnAttackable_offset) ~= 0);
 
@@ -68,7 +74,7 @@ function CPawn:update()
 		self.MaxMP2 = 1;
 	end
 
-	if( self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
+	if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
 		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
 		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
 		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
@@ -93,7 +99,11 @@ function CPawn:haveTarget()
 		return false;
 	end
 
-	return (tmp.HP > 0);
+	if( tmp.HP < 1 ) then
+		return false;
+	end;
+
+	return (tmp.Alive);
 end
 
 function CPawn:getTarget()
@@ -106,7 +116,7 @@ end
 
 function CPawn:alive()
 	self:update();
-	if( HP <= 0 ) then
+	if( not self.Alive ) then
 		return false;
 	else
 		return true;

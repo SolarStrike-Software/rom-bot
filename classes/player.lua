@@ -99,24 +99,21 @@ function CPlayer:checkPotions()
 end
 
 function CPlayer:fight()
-	cprintf(cli.green, "Engaging enemy in combat...\n");
-
 	self:update();
 	if( not self:haveTarget() ) then
 		return false;
 	end
 
 	local target = self:getTarget();
-	printf("Target attackable: %s\n", target.Attackable);
-
 	self.Fighting = true;
+
+	cprintf(cli.green, "Engaging enemy [%s] in combat...\n", target.Name);
 
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
 	local function timedAttack()
 		self:update();
 		if( self.Casting ) then
-			printf("Casting...\n");
 			-- Don't interupt casting
 			return;
 		end;
@@ -156,7 +153,7 @@ function CPlayer:fight()
 
 	while( self:haveTarget() ) do
 		-- If we die, break
-		if( self.HP == 0 ) then
+		if( self.HP < 1 or self.Alive == false ) then
 			if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				unregisterTimer("timedAttack");
 			end
@@ -336,7 +333,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	if( self.TargetPtr ~= 0 ) then
 		local target = CPawn(self.TargetPtr);
 		if( target.HP <= 1 ) then
-			--keyboardPress(settings.hotkeys.CLEAR_TARGET.key);
 			self:clearTarget();
 		end
 	end
@@ -527,6 +523,7 @@ function CPlayer:haveTarget()
 
 			-- Not a valid enemy
 			if( not target.Attackable ) then
+				printf("Target not attackable: [%s]\n", target.Name);
 				return false;
 			end
 
@@ -540,13 +537,25 @@ function CPlayer:haveTarget()
 end
 
 function CPlayer:update()
+	-- Ensure that our address hasn't changed. If it has, fix it.
+	local tmpAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+	if( tmpAddress ~= self.Address ) then
+		self.Address = tmpAddress;
+		cprintf(cli.green, "Player address changed: 0x%X\n", self.Address);
+	end;
+
+	local memerrmsg = "Failed to read memory";
+
 	CPawn.update(self); -- run base function
-	self.Casting = (memoryReadInt(getProc(), self.Address + castbar_offset) ~= 0);
+	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), memerrmsg) ~= 0);
 
-	self.Battling = memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset);
+	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), memerrmsg);
 
-	local Vec1 = memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec1_offset);
-	local Vec2 = memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec2_offset);
+	--local Vec1 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec1_offset), memerrmsg);
+	--local Vec2 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec2_offset), memerrmsg);
+
+	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), memerrmsg);
+	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), memerrmsg);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;

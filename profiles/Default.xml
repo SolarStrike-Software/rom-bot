@@ -8,6 +8,10 @@
 		<option name="COMBAT_DISTANCE" value="200" />
 		<option name="ANTI_KS" value="true" />
 		<option name="WAYPOINTS" value="bandits.xml" />
+		<option name="RETURNPATH" value="bandits_return.xml" />
+		<option name="PATH_TYPE" value="waypoints" />
+		<option name="WANDER_RADIUS" value="500" />
+		<option name="WAYPOINT_DEVIATION" value="50" />
 		<option name="LOOT" value="true" />
 		<option name="LOOT_TIME" value="2000" />
 		<option name="ENERGY_STORAGE_1" value="rage" />
@@ -26,16 +30,18 @@
 		<hotkey name="HP_POTION" key="VK_MINUS" modifier="" />
 		<hotkey name="MP_POTION" key="VK_EQUAL" modifier="" />
 		<hotkey name="ATTACK" key="VK_0" modifier="" />
+		<hotkey name="RES_MACRO" key="VK_9" modifier="" />
 	</hotkeys>
 
 	<skills>
 		<skill name="WARRIOR_SLASH" hotkey="VK_3" modifier="" />
-		<skill name="WARRIOR_CUNNING_ATTACK" hotkey="VK_1" modifier="" />
+		<skill name="WARRIOR_PROBING_ATTACK" hotkey="VK_1" modifier="" />
 		<skill name="WARRIOR_ENRAGED" hotkey="VK_4" modifier="" />
 	</skills>
 
 	<onDeath>
 		-- Additional Lua code to execute on death
+		pauseOnDeath(); -- Stop the script
 	</onDeath>
 
 	<onLeaveCombat>
