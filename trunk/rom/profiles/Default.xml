@@ -1,10 +1,11 @@
 <profile>
 	<options>
-		<option name="HP_LOW" value="50" />
+		<option name="HP_LOW" value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
 
 		<option name="COMBAT_TYPE" value="melee" />
+		<option name="COMBAT_DISTANCE" value="200" />
 		<option name="ANTI_KS" value="true" />
 		<option name="WAYPOINTS" value="bandits.xml" />
 		<option name="LOOT" value="true" />

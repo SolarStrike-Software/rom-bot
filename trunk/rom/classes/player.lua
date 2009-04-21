@@ -130,11 +130,11 @@ function CPlayer:fight()
 	--self:checkSkills();
 
 
-	-- start melee attack (even if out of range)
-	timedAttack();
-
 	if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 		registerTimer("timedAttack", secondsToTimer(2), timedAttack);
+
+		-- start melee attack (even if out of range)
+		timedAttack();
 	end
 
 	local target = self:getTarget();
@@ -182,7 +182,11 @@ function CPlayer:fight()
 
 		local suggestedRange = 45;
 		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
-			suggestedRange = 155;
+			if( settings.profile.options.COMBAT_RANGE ~= nil ) then
+				suggestedRange = settings.profile.options.COMBAT_RANGE;
+			else
+				suggestedRange = 155;
+			end
 		end
 
 		if( dist > suggestedRange ) then
@@ -513,9 +517,6 @@ function CPlayer:update()
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
 
 	self.Direction = math.atan2(Vec2, Vec1);
-
-	local guildbase = memoryReadInt(getProc(), staticcharbase_address);
-	self.Guild = memoryReadString(getProc(), guildbase + charGuild_offset);
 
 
 	-- If we were able to load our profile options...
