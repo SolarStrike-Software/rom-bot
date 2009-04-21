@@ -53,8 +53,12 @@ function CPlayer:checkSkills()
 				self:update();
 			end
 			printf("Finished casting\n");
-			yrest(1000);
-			return;
+
+			if( v.CastTime == 0 ) then
+				yrest(1000);
+			else
+				yrest(200);
+			end;
 		end
 	end
 end

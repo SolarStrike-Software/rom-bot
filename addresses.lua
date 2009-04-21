@@ -1,4 +1,4 @@
-staticcharbase_address = 0x84E7CC;
+staticcharbase_address = 0x879B88;
 charPtr_offset = 0x568;
 charX_offset = 0x2C;
 charY_offset = 0x30;
