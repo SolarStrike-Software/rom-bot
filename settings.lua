@@ -1,5 +1,6 @@
 settings = {
 	hotkeys = {},
+	options = {},
 	profile = { options = {}, hotkeys = {}, skills = {}, friends = {} }
 };
 
@@ -24,11 +25,20 @@ function settings.load()
 		end
 	end
 
+	local loadOptions = function (node)
+		local elements = node:getElements();
+		for i,v in pairs(elements) do
+			settings.options[ v:getAttribute("name") ] = v:getAttribute("value");
+		end
+	end
+
 	for i,v in pairs(elements) do
 		local name = v:getName();
 
 		if( string.lower(name) == "hotkeys" ) then
 			loadHotkeys(v);
+		elseif( string.lower(name) == "options" ) then
+			loadOptions(v);
 		end
 	end
 
@@ -155,4 +165,9 @@ function settings.loadProfile(name)
 	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and settings.profile.options.COMBAT_TYPE ~= "melee" ) then
 		error("COMBAT_TYPE must be \"ranged\" or \"melee\"", 0);
 	end
+
+	-- Make sure they didn't use the same type of energy storage for both (hence breaking it)
+	if( settings.profile.options.ENERGY_STORAGE_1 == settings.profile.options.ENERGY_STORAGE_2 ) then
+		error("Do not use the same energy storage for primary and secondary!\nEdit your profile to fix this.", 0);
+	end;
 end

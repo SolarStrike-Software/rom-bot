@@ -12,4 +12,8 @@
 		<hotkey description="CLEAR_TARGET" key="VK_ESCAPE" modifier="" />
 		<hotkey description="TARGET" key="VK_TAB" modifier="" />
 	</hotkeys>
+
+	<options>
+		<option name="MELEE_DISTANCE" value="45" />
+	</options>
 </settings>
