@@ -124,7 +124,7 @@ end
 
 function CSkill:use()
 	local estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
-	printf("Casting \'%s\', level %d, mana: %d\n", self.Name, self.Level, estimatedMana);
+	printf(language[21], self.Name);
 
 	if( self.hotkey == nil ) then
 		local str = sprintf("Bad skill hotkey name: %s", tostring(self.Name));

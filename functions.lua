@@ -1,3 +1,23 @@
+local updatePattern = string.char(0x5F, 0x5E, 0x5B, 0x8B, 0xE5, 0x5D, 0xC3, 0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x53);
+local updatePatternMask = "xxxxxxxx????x";
+
+function getUpdatePattern()
+	return updatePattern;
+end
+
+function getUpdatePatternMask()
+	return updatePatternMask;
+end
+
+function checkExecutableCompatible()
+	if( findPatternInProcess(getProc(), updatePattern, updatePatternMask,
+	patternstart_address, 1) == 0 ) then
+		return false;
+	end
+
+	return true;
+end
+
 if(DEBUG_ASSERT == nil ) then DEBUG_ASSERT = false; end;
 function debugAssert(args)
 	if( DEBUG_ASSERT ) then
