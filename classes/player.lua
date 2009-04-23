@@ -522,6 +522,8 @@ end
 
 function CPlayer:haveTarget()
 	if( CPawn.haveTarget(self) ) then
+		local target = self:getTarget();
+
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
 			return false;
@@ -534,12 +536,12 @@ function CPlayer:haveTarget()
 		]]
 
 		if( settings.profile.options.ANTI_KS ) then
-			local target = self:getTarget();
-
 			-- They must have 100% HP, unless you're helping a friend
-			if( (target.HP / target.MaxHP < 100) and (not self:isFriend(CPawn(target.TargetPtr))) ) then
-				return false;
-			end
+			local targetOfTarget = CPawn(target.TargetPtr);
+
+			--if( (target.HP / target.MaxHP < 100) and (not self:isFriend(targetOfTarget)) ) then
+			--	return false;
+			--end
 
 			if( target:haveTarget() and target.TargetPtr ~= player.Address ) then
 				return false;
@@ -631,6 +633,10 @@ end
 
 -- returns true if this CPawn is registered as a friend
 function CPlayer:isFriend(pawn)
+	if( not pawn ) then
+		error("CPlayer:isFriend() received nil\n", 2);
+	end;
+
 	if( not settings ) then
 		return false;
 	end;
