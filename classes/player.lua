@@ -298,12 +298,18 @@ function CPlayer:fight()
 			local dist = distance(self.X, self.Z, target.X, target.Z);
 			local lootdist = 100;
 
+			-- Set to combat distance; update later if loot distance is set
 			if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
 				lootdist = settings.profile.options.COMBAT_DISTANCE;
 			end
 
+			if( settings.profile.options.LOOT_DISTANCE ) then
+				lootdist = settings.profile.options.LOOT_DISTANCE;
+			end
+
 
 			if( dist < lootdist ) then -- only loot when close by
+				cprintf(cli.green, language[31]);
 				-- "attack" is also the hotkey to loot, strangely.
 				yrest(500);
 				keyboardPress(settings.profile.hotkeys.ATTACK.key);
@@ -318,10 +324,12 @@ function CPlayer:fight()
 					yrest(500);
 					keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 				end
+			else
+				cprintf(cli.green, language[32]);
 			end
 		end
 
-		self:clearTarget();
+		--self:clearTarget();
 	end;
 
 
@@ -529,19 +537,17 @@ function CPlayer:haveTarget()
 			return false;
 		end;
 
-		--[[
-		if( self:isFriend(CPawn(target.TargetPtr)) ) then
-			return false;
-		end
-		]]
-
 		if( settings.profile.options.ANTI_KS ) then
 			-- They must have 100% HP, unless you're helping a friend
 			local targetOfTarget = CPawn(target.TargetPtr);
 
-			--if( (target.HP / target.MaxHP < 100) and (not self:isFriend(targetOfTarget)) ) then
-			--	return false;
-			--end
+			if( target.TargetPtr ~= self.Address ) then
+				if( (targetOfTarget.Address ~= 0) and
+				(target.HP / target.MaxHP < 100) and
+				(not self:isFriend(targetOfTarget)) ) then
+					return false;
+				end
+			end
 
 			if( target:haveTarget() and target.TargetPtr ~= player.Address ) then
 				return false;
