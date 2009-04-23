@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.34;
+local BOT_VERSION = 2.35;
 
 include("database.lua");
 include("addresses.lua");
@@ -10,7 +10,7 @@ include("functions.lua");
 include("settings.lua");
 
 
-DEBUG_ASSERT = true; -- Change to 'true' to debug memory reading problems.
+DEBUG_ASSERT = false; -- Change to 'true' to debug memory reading problems.
 
 
 if( getVersion() < 100 ) then
