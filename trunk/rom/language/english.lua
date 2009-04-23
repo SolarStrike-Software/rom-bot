@@ -21,6 +21,8 @@ language = {
 	[28] = "Stopping waypoint: Target acquired.\n",
 	[29] = "Distance break.\n",
 	[30] = "Target not attackable: %s\n",
+	[31] = "Looting target.\n",
+	[32] = "Target too far away; not looting.\n",
 
 
 	[40] = "Player address changed: 0x%X\n",

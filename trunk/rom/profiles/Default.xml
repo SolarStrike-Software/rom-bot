@@ -14,6 +14,7 @@
 		<option name="WAYPOINT_DEVIATION" value="50" />
 		<option name="LOOT" value="true" />
 		<option name="LOOT_TIME" value="2000" />
+		<option name="LOOT_DISTANCE" value="100" />
 		<option name="ENERGY_STORAGE_1" value="rage" />
 		<option name="ENERGY_STORAGE_2" value="energy" />
 		<option name="POTION_COOLDOWN" value="15" />
