@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.33;
+local BOT_VERSION = 2.34;
 
 include("database.lua");
 include("addresses.lua");
@@ -34,9 +34,22 @@ function main()
 		while( keyPressed(getStartKey()) ) do yrest(1); end;
 	end
 
-	-- If run with "update" parameter, update addresses.lua.
-	if( args[2] == "update" and getVersion() >= 100 ) then
-		include("update.lua");
+	local forcedProfile = nil;
+
+	for i = 2,#args do
+		if( args[i] == "update" and getVersion() >= 100 ) then
+			include("update.lua");
+		end
+
+		local foundpos = string.find(args[i], ":", 1, true);
+		if( foundpos ) then
+			local var = string.sub(args[i], 1, foundpos-1);
+			local val = string.sub(args[i], foundpos+1);
+
+			if( var == "profile" ) then
+				forcedProfile = val;
+			end;
+		end
 	end
 
 	local versionMsg = sprintf("RoM Bot Version %0.2f", BOT_VERSION);
@@ -71,7 +84,14 @@ function main()
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
 	settings.load();
-	settings.loadProfile(player.Name);
+
+	if( forcedProfile ) then
+		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, forcedProfile));
+		settings.loadProfile(forcedProfile);
+	else
+		settings.loadProfile(player.Name);
+		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, player.Name));
+	end
 
 
 	-- Load "english" first, to fill in any gaps in the users' set language.
