@@ -5,8 +5,7 @@
 	<skill name="MAGE_INTENSIFICATION" mana="10" cooldown="20" type="buff" target="self" />
 	<skill name="MAGE_SILENCE" mana="50" range="150" cooldown="24" type="debuff" target="enemy" />
 	<skill name="MAGE_FIRE_WARD" mana="120" cooldown="600" type="buff" target="self" />
-	<skill name="MAGE_ELEMENTAL_CATAL" cooldown="600" type="buff" target="self" />
-  
+	<skill name="MAGE_ELEMENTAL_CATALYST" cooldown="300" type="buff" target="self" />
 	<skill name="MAGE_FLAME" mana="20" manainc="2.0" range="225" casttime="3" type="damage" target="enemy" />
 	<skill name="MAGE_ELECTROSTATIC_CHARGE" mana="75" manainc="7.5" cooldown="45" type="buff" target="self"  />
 	<skill name="MAGE_PLASMA_ARROW" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
@@ -38,7 +37,7 @@
 	<skill name="PRIEST_HOLY_AURA" mana="60" cooldown="120" type="buff" target="self" />
 	<skill name="PRIEST_MAGIC_BARRIER" mana="120" manainc="12.0" type="buff" cooldown="600" target="self" />
 	<skill name="PRIEST_BLESSING_OF_RAIN" mana="120" type="buff" cooldown="600" target="self" />
-	<skill name="PRIEST_SOUL_SOURCE" cooldown="600" type="heal" target="self" />
+	<skill name="PRIEST_SOUL_SOURCE" cooldown="300" type="heal" target="self" priority="100" />
 	<skill name="PRIEST_WAVE_ARMOR" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" />
 	<skill name="PRIEST_HEAL" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
 	<skill name="PRIEST_BONE_CHILL" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
@@ -52,12 +51,7 @@
 	<skill name="PRIEST_ANGELS_BLESSING" mana="100" manainc="10.0" range="200" type="buff" target="friendly" cooldown="600" />
 	<skill name="PRIEST_SNAKE_CURSE" energy="30" casttime="1" range="180" cooldown="12" type="dot" target="enemy" />
 	<skill name="PRIEST_INFECTIOUS_WOUND" energy="30" range="200" cooldown="12" type="dot" target="enemy" />
-
-
-	<!-- Mage/Priest lvl 15 combo only skill -->
 	<!-- TODO: don't attack while frozen -->
-	<!-- lvl3: 32 -->
-	<!-- lvl16: 87 -->
 	<skill name="PRIEST_FREEZE" mana="35" manainc="3.75" casttime="1" type="damage" target="enemy" />
 
 
@@ -67,8 +61,7 @@
 	<skill name="WARRIOR_WHIRLWIND" cooldown="30" rage="50" type="damage" target="enemy" />
 	<skill name="WARRIOR_BERSERK" rage="25" cooldown="60" type="buff" target="self" />
 	<skill name="WARRIOR_DEFENSIVE_FORMATION" rage="25" cooldown="120" type="buff" target="self" />
-
-	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="600" target="self" />
+	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="300" target="self" />
 	<skill name="WARRIOR_PROBING_ATTACK" rage="20" type="damage" target="enemy" />
 	<skill name="WARRIOR_SOFT_SPOT" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
@@ -119,7 +112,7 @@
 
 	<!-- Knight skills -->
 	<skill name="KNIGHT_HOLY_STRIKE" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
-	<skill name="KNIGHT_HOLY_SHIELD" cooldown="600" type="buff" target="self" />
+	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" target="self" />
 	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="120" type="buff" target="self" />
 	<skill name="KNIGHT_CHAIN_OF_LIGHT" mana="24" range="50" cooldown="60" type="damage" target="enemy" />
 	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />
@@ -139,7 +132,7 @@
 	<skill name="SCOUT_BLOOD_ARROW" cooldown="60" type="buff" target="self" />
 	<skill name="SCOUT_THROAT_ATTACK" concentration="30" range="50" type="damage" target="enemy" />
 	<skill name="SCOUT_WRIST_ATTACK" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
-	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="600" type="buff" target="self" />
+	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="300" type="buff" target="self" />
 	<skill name="SCOUT_WIND_ARROWS" concentration="8" range="225" type="damage" target="enemy" />
 	<skill name="SCOUT_FROST_ARROW" concentration="20" cooldown="1800" type="buff" target="self" />
 	<skill name="SCOUT_MANA_DRAIN_SHOT" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
