@@ -90,7 +90,7 @@
 
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" energy="30" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="600" target="self" />
+	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="300" target="self" />
 	<skill name="ROGUE_LOW_BLOW" energy="35" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
@@ -113,6 +113,9 @@
 	<skill name="ROGUE_SHADOW_PRISON" energy="49" range="180" type="damage" target="enemy" />
 	<skill name="ROGUE_INFORMER" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" cooldown="300" type="buff" target="self" />
+
+	<!-- Rogue/Priest elite skills -->
+	<skill name="ROGUE_QUICKNESS_AURA" mana="27" manainc="3" type="buff" cooldown="600" target="self" />
 
 	<!-- Knight skills -->
 	<skill name="KNIGHT_HOLY_STRIKE" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
