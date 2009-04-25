@@ -81,6 +81,31 @@
 	<skill name="WARRIOR_THUNDERING" range="50" cooldown="15" type="damage" target="enemy" />
 	<skill name="KNIGHT_CHARGE" range="120" cooldown="30" type="charge" target="enemy" />
 
+
+	<!-- Elite -->
+	<skill name="WARRIOR_SKULL_BREAKER" concentration="30" range="50" />
+	<skill name="WARRIOR_STUN_SHOT" concentration="30" range="150" cooldown="10" />
+	<skill name="WARRIOR_AIM_FOR_THE_WOUND" concentration="30" range="200" cooldown="10" />
+	<skill name="WARRIOR_SWORD_BREATH" concentration="25" range="150" cooldown="8" />
+	<skill name="WARRIOR_BLOOD_DANCE" range="50" cooldown="8" maxhpper="50" />
+	<skill name="WARRIOR_FRENZIED_ATTACK" energy="50" cooldown="120" target="self" type="buff" />
+	<skill name="WARRIOR_KEEN_ATTACK" energy="20" range="50" target="self" type="buff" />
+	<skill name="WARRIOR_ELECTRICAL_RAGE" rage="20" range="50" />
+	<skill name="WARRIOR_LIGHTNINGS_TOUCH" mana="30" range="50" />
+	<skill name="WARRIOR_SENSE_OF_DANGER" cooldown="300" mana="50" maxhpper="30" target="self" type="buff" />
+	<skill name="WARRIOR_THUNDER_SWORD" mana="30" range="150" cooldown="6" />
+	<skill name="WARRIOR_ELECTRIC_ATTACK" mana="40" cooldown="25" target="self" type="buff" />
+	<skill name="WARRIOR_DEFENDERS_ROAR" mana="30" cooldown="120" target="self" type="buff" />
+	<skill name="WARRIOR_INTERRUPTING_STRIKE" rage="30" cooldown="10" />
+	<skill name="WARRIOR_BLOODLUST" maxhpper="50" target="self" type="buff" />
+	<skill name="WARRIOR_OPPORTUNITY" rage="15" range="50" />
+	<skill name="WARRIOR_WHIRLWIND_SHIELD" mana="30" cooldown="6" />
+	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" cooldown="20" target="self" type="buff" />
+	<skill name="WARRIOR_IGNORE_PAIN" cooldown="300" target="self" type="buff" />
+	<skill name="WARRIOR_SHIELD_BASH" mana="30" range="50" />
+	<skill name="WARRIOR_SURPRISE_ATTACK" range="150" minrage="60" cooldown="12" /> 
+
+
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="300" target="self" />
@@ -107,7 +132,7 @@
 	<skill name="ROGUE_INFORMER" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" cooldown="300" type="buff" target="self" />
 
-	<!-- Rogue/Priest elite skills -->
+	<!-- Elite -->
 	<skill name="ROGUE_QUICKNESS_AURA" mana="27" manainc="3" type="buff" cooldown="600" target="self" />
 
 	<!-- Knight skills -->
