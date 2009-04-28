@@ -25,9 +25,9 @@ language = {
 	[28] = "Stoppe Wegpunkt: Ziel erworben.\n",
 	[29] = "Distanzabbruch.\n",
 	[30] = "Ziel nicht angreifbar: %s\n",
-	[31] = "Pl\129nderungen Ziel.\n",
-	[32] = "Ziel zu weit entfernt, nicht zu pl\129ndern.\n",
-	[33] = "Entfernen Ziel.\n",
+	[31] = "Pl\129nderungen Gegnerische.\n",
+	[32] = "Gegnerische zu weit entfernt, nicht zu pl\129ndern.\n",
+	[33] = "Entfernen Gegnerische.\n",
 
 	[40] = "Spieleradresse ge\132ndert: 0x%X\n",
 	[41] = "Speicherlesung schlug fehl",
