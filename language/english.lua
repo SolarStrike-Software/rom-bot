@@ -9,6 +9,8 @@ language = {
 	[7] = "Completed return path. Resuming normal waypoints.\n",
 	[8] = "Waypoint movement failed!\n",
 	[9] = "Unsticking player...\n",
+	[10] = "Using HP potion.\n",
+	[11] = "Using MP potion.\n",
 
 	[20] = "Finished casting\n",
 	[21] = "Casting \'%s\'\n",
@@ -23,6 +25,7 @@ language = {
 	[30] = "Target not attackable: %s\n",
 	[31] = "Looting target.\n",
 	[32] = "Target too far away; not looting.\n",
+	[33] = "Clearing target.\n",
 
 
 	[40] = "Player address changed: 0x%X\n",
