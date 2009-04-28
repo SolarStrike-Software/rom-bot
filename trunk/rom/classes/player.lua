@@ -82,6 +82,8 @@ function CPlayer:checkPotions()
 		keyboardPress(settings.profile.hotkeys.HP_POTION.key);
 		if( modifier ) then keyboardRelease(modifier); end
 
+		cprintf(cli.green, language[10]);
+
 		yrest(1000);
 	end
 
@@ -92,6 +94,8 @@ function CPlayer:checkPotions()
 			if( modifier ) then keyboardHold(modifier); end
 			keyboardPress(settings.profile.hotkeys.MP_POTION.key);
 			if( modifier ) then keyboardRelease(modifier); end
+
+			cprintf(cli.green, language[11]);
 
 			yrest(1000);
 		end
@@ -634,6 +638,7 @@ function CPlayer:update()
 end
 
 function CPlayer:clearTarget()
+	cprintf(cli.green, language[33]);
 	memoryWriteInt(getProc(), self.Address + charTargetPtr_offset, 0);
 end
 
