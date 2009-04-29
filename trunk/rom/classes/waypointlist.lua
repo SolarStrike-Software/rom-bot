@@ -15,6 +15,9 @@ CWaypointList = class(
 
 function CWaypointList:load(filename)
 	local root = xml.open(filename);
+	if( not root ) then
+		error("Failed to load waypoints from \'%s\'", filename);
+	end
 	local elements = root:getElements();
 
 	self.Waypoints = {}; -- Delete current waypoints.
