@@ -182,6 +182,7 @@
 	<skill name="ROGUE_ENERGY_THIEF" concentration="20" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COMBAT_MASTER" concentration="30" cooldown="600" type="buff" target="self" />
 	<skill name="ROGUE_POISON_TRAP" mana="30" manainc="3" cooldown="10" />
+	<skill name="ROGUE_BOOBY_TRAP" mana="30" cooldown="10" />
 	<skill name="ROGUE_PARALYSING_TRAP" mana="20" cooldown="20" />
 	<skill name="ROGUE_MAGIC_BREAKER" mana="200" range="150" cooldown="60" />
 	<!-- TODO: Poison Flame requires poisonous state -->
