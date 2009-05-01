@@ -203,7 +203,7 @@
 	<skill name="KNIGHT_HOLY_STRIKE" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
 	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" target="self" />
 	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="120" type="buff" target="self" />
-	<skill name="KNIGHT_CHAIN_OF_LIGHT" mana="24" range="50" cooldown="60" type="damage" target="enemy" />
+	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
 	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />
 	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" target="self" />
 	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
@@ -211,7 +211,13 @@
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
 	<skill name="KNIGHT_PUNISHMENT" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_BASH" mana="50" manainc="5.0" range="10" cooldown="1" type="damage" target="enemy" />
-
+	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
+	<skill name="KNIGHT_SHIELD_OF_TRUTH" mana="150" cooldown="60" type="buff" target="self" inbattle="true" />
+	<!-- TODO: Must have at least 1 light seal on target -->
+	<skill name="KNIGHT_SHOCK" mana="25" cooldown="30" range="150" />
+	<skill name="KNIGHT_HATRED_STRIKE" mana="50" cooldown="120" />
+	<skill name="KNIGHT_SHIELD_OF_DISCIPLINE" mana="99" cooldown="60" type="buff" target="self" inbattle="true" />
+	<skill name="KNIGHT_HALL_OF_DEAD_HEROES" cooldown="1800" maxhpper="30" />
 
 	<!-- Elite -->
 	<skill name="KNIGHT_WHIRLWIND_SHIELD" mana="20" cooldown="6" />
