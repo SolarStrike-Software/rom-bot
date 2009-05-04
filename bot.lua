@@ -146,6 +146,14 @@ function main()
 		player:update();
 
 		if( not player.Alive ) then
+			-- Make sure they aren't still trying to run off
+			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+			keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
+			keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
+			keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
+			keyboardRelease(settings.hotkeys.STRAFF_LEFT.key);
+			keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
+
 			-- Take a screenshot. Only works on MicroMacro 1.0 or newer
 			if( getVersion() >= 100 ) then
 				showWindow(getWin(), sw.show);
@@ -153,6 +161,14 @@ function main()
 				local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
 				saveScreenshot(getWin(), sfn);
 				printf(language[2], sfn);
+			end
+
+			if( type(settings.profile.events.onDeath) == "function" ) then
+				local status,err = pcall(settings.profile.events.onDeath);
+				if( status == false ) then
+					local msg = sprintf("onDeath error: %s", err);
+					error(msg);
+				end
 			end
 
 
@@ -171,15 +187,6 @@ function main()
 			__RPL ~= nil ) then
 				player.Returning = true;
 				__RPL:setWaypointIndex(1); -- Start from the beginning
-			end
-
-
-			if( type(settings.profile.events.onDeath) == "function" ) then
-				local status,err = pcall(settings.profile.events.onDeath);
-				if( status == false ) then
-					local msg = sprintf("onDeath error: %s", err);
-					error(msg);
-				end
 			else
 				pauseOnDeath();
 			end
