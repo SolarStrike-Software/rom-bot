@@ -575,7 +575,7 @@ end
 function CPlayer:update()
 	-- Ensure that our address hasn't changed. If it has, fix it.
 	local tmpAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-	if( tmpAddress ~= self.Address ) then
+	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
 	end;
