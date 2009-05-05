@@ -179,6 +179,7 @@ function main()
 
 				cprintf(cli.red, language[4]);
 				yrest(60000); -- wait 1 minute before going about your path.
+				player:update();
 			end
 
 			-- Must have a resurrect macro and waypoints set to be able to use
