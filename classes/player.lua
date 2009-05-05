@@ -545,22 +545,21 @@ function CPlayer:haveTarget()
 			-- They must have 100% HP, unless you're helping a friend
 			local targetOfTarget = CPawn(target.TargetPtr);
 
-			if( target.TargetPtr ~= self.Address ) then
-				if( (targetOfTarget.Address ~= 0) and
-				(target.HP / target.MaxHP < 100) and
-				(not self:isFriend(targetOfTarget)) ) then
-					return false;
-				end
-			end
-
-			if( target:haveTarget() and target.TargetPtr ~= player.Address ) then
-				return false;
-			end
-
 			-- Not a valid enemy
 			if( not target.Attackable ) then
 				printf(language[30], target.Name);
 				return false;
+			end
+
+
+			-- If they aren't targeting us, and they have less than full HP
+			-- then they must be fighting somebody else.
+			-- If it's a friend, then it is a valid target; help them.
+			if( target.TargetPtr ~= self.Address ) then
+				if( target.HP < target.MaxHP and
+				not self:isFriend(targetOfTarget) ) then
+					return false;
+				end
 			end
 
 			return true;
