@@ -542,9 +542,6 @@ function CPlayer:haveTarget()
 		end;
 
 		if( settings.profile.options.ANTI_KS ) then
-			-- They must have 100% HP, unless you're helping a friend
-			local targetOfTarget = CPawn(target.TargetPtr);
-
 			-- Not a valid enemy
 			if( not target.Attackable ) then
 				printf(language[30], target.Name);
@@ -556,9 +553,24 @@ function CPlayer:haveTarget()
 			-- then they must be fighting somebody else.
 			-- If it's a friend, then it is a valid target; help them.
 			if( target.TargetPtr ~= self.Address ) then
-				if( target.HP < target.MaxHP and
-				not self:isFriend(targetOfTarget) ) then
-					return false;
+
+				-- If the target's TargetPtr is 0,
+				-- that doesn't necessarily mean they don't
+				-- have a target (game bug, not a bug in the bot)
+				if( target.TargetPtr == 0 ) then
+					if( target.HP < target.MaxHP ) then
+						return false;
+					end
+				else
+					-- They definitely have a target.
+					-- If it is a friend, we can help.
+					-- Otherwise, leave it alone.
+
+					local targetOfTarget = CPawn(target.TargetPtr);
+
+					if( not self:isFriend(targetOfTarget) ) then
+						return false;
+					end
 				end
 			end
 
