@@ -27,6 +27,14 @@ __RPL = nil; -- Return Point List
 
 
 function resumeCallback()
+	printf("Resumed.\n");
+
+	-- Make sure our player exists before trying to update it
+	if( player ) then
+		-- Make sure we aren't using potentially old data
+		player:update();
+	end
+
 	if( settings.profile.options.PATH_TYPE == "wander" ) then
 		__WPL.OrigX = player.X;
 		__WPL.OrigZ = player.Z;
