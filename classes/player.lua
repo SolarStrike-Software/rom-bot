@@ -239,7 +239,7 @@ function CPlayer:fight()
 		local startTime = os.time();
 		-- TODO:
 		while( angleDif > math.rad(15) ) do
-			if( self.HP <= 0 or self.Alive == false ) then
+			if( self.HP < 1 or self.Alive == false ) then
 				return;
 			end;
 
@@ -364,7 +364,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	-- If more than X degrees off, correct before moving.
 	local rotateStartTime = os.time();
 	while( angleDif > math.rad(25) ) do
-		if( self.HP <= 0 or self.Alive == false ) then
+		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
 
@@ -405,7 +405,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local lastDistImprove = os.time();
 	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 	while( dist > 25.0 ) do
-		if( self.HP <= 0 or self.Alive == false ) then
+		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
 
@@ -591,13 +591,11 @@ function CPlayer:update()
 		cprintf(cli.green, language[40], self.Address);
 	end;
 
+
 	CPawn.update(self); -- run base function
 	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), language[41]) ~= 0);
 
 	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]);
-
-	--local Vec1 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec1_offset), language[41]);
-	--local Vec2 = debugAssert(memoryReadFloatPtr(getProc(), self.Address + charDirVectorPtr_offset, camUVec2_offset), language[41]);
 
 	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
 	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);

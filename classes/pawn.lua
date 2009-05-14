@@ -41,8 +41,10 @@ CPawn = class(
 function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";
+	local tmp;
 
-	self.Alive = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg) ~= 9;
+	tmp = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg);
+	self.Alive = not(tmp == 9 or tmp == 8);
 	self.HP = debugAssert(memoryReadInt(proc, self.Address + charHP_offset), memerrmsg);
 
 	self.MaxHP = debugAssert(memoryReadInt(proc, self.Address + charMaxHP_offset), memerrmsg);
