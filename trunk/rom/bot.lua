@@ -26,12 +26,17 @@ __WPL = nil; -- Way Point List
 __RPL = nil; -- Return Point List
 
 
+function resumeCallback()
+	if( settings.profile.options.PATH_TYPE == "wander" ) then
+		__WPL.OrigX = player.X;
+		__WPL.OrigZ = player.Z;
+	end
+end
+atResume(resumeCallback);
 
-print("\n\169\83\111\108\97\114\83\116\114\105\107\11\116\n");
 print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
 "\83\111\102\116\119\97\114\101\44\32\119\119\119\46\115" ..
 "\111\108\97\114\115\116\114\105\107\101\46\110\101\116\n");
-
 function main()
 	if( getVersion() < 100 ) then
 		while( keyPressed(startKey) ) do yrest(1); end;
