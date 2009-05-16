@@ -413,7 +413,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			canTarget = true;
 		end
 
-		if( canTarget and (not ignoreCycleTargets) ) then
+		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) ) then
 			if(settings.hotkeys.TARGET.modifier) then
 				keyboardHold(settings.hotkeys.TARGET.modifier);
 			end
@@ -595,7 +595,7 @@ function CPlayer:update()
 	CPawn.update(self); -- run base function
 	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), language[41]) ~= 0);
 
-	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]);
+	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]) == 1;
 
 	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
 	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);
