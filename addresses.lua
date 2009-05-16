@@ -19,6 +19,6 @@ charLevel2_offset = 0x384;
 charName_offset = 0x278;
 charTargetPtr_offset = 0x260;
 pawnAttackable_offset = 0x3F6;
-inBattle_offset = 0x55E;
+inBattle_offset = 0x572;
 camUVec1_offset = 0x38;
 camUVec2_offset = 0x40;
