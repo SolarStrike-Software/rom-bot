@@ -28,6 +28,8 @@ language = {
 	[31] = "Pl\129nderungen Gegnerische.\n",
 	[32] = "Gegnerische zu weit entfernt, nicht zu pl\129ndern.\n",
 	[33] = "Entfernen Gegnerische.\n",
+	[34] = "Aggro Wartezeit aus.\n",
+	[35] = "Warten auf w\129tend Feinde.\n",
 
 	[40] = "Spieleradresse ge\132ndert: 0x%X\n",
 	[41] = "Speicherlesung schlug fehl",

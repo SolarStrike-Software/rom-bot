@@ -13,6 +13,7 @@
 	</hotkeys>
 
 	<options>
+		<option name="ENABLE_FIGHT_SLOW_TURN" value="false" />
 		<option name="MELEE_DISTANCE" value="45" />
 		<option name="LANGUAGE" value="english" />
 	</options>
