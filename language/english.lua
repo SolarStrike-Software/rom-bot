@@ -26,6 +26,8 @@ language = {
 	[31] = "Looting target.\n",
 	[32] = "Target too far away; not looting.\n",
 	[33] = "Clearing target.\n",
+	[34] = "Aggro wait time out.\n",
+	[35] = "Waiting on aggressive enemies.\n",
 
 
 	[40] = "Player address changed: 0x%X\n",

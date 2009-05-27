@@ -223,6 +223,11 @@ function CPlayer:fight()
 				success, reason = player:moveTo(CWaypoint(posX, posZ), true);
 			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				success, reason = player:moveTo(target, true);
+
+				-- Start melee attacking
+				if( settings.profile.options.COMBAT_TYPE == "melee" ) then
+					timedAttack();
+				end
 			end
 
 			if( not success ) then
@@ -232,43 +237,45 @@ function CPlayer:fight()
 			yrest(500);
 		end
 
-		-- Make sure we're facing the enemy
-		local angle = math.atan2(target.Z - self.Z, target.X - self.X);
-		local angleDif = angleDifference(angle, self.Direction);
-		local correctingAngle = false;
-		local startTime = os.time();
-		-- TODO:
-		while( angleDif > math.rad(15) ) do
-			if( self.HP < 1 or self.Alive == false ) then
-				return;
-			end;
+		if( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
+			-- Make sure we're facing the enemy
+			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
+			local angleDif = angleDifference(angle, self.Direction);
+			local correctingAngle = false;
+			local startTime = os.time();
 
-			if( os.difftime(os.time(), startTime) > 5 ) then
-				printf(language[26]);
-				break;
-			end;
+			while( angleDif > math.rad(15) ) do
+				if( self.HP < 1 or self.Alive == false ) then
+					return;
+				end;
 
-			correctingAngle = true;
-			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
-				-- rotate left
-				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-				keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
-			else
-				-- rotate right
-				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-				keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+				if( os.difftime(os.time(), startTime) > 5 ) then
+					printf(language[26]);
+					break;
+				end;
+
+				correctingAngle = true;
+				if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
+					-- rotate left
+					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+				else
+					-- rotate right
+					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+				end
+
+				yrest(100);
+				self:update();
+				target:update();
+				angle = math.atan2(target.Z - self.Z, target.X - self.X);
+				angleDif = angleDifference(angle, self.Direction);
 			end
 
-			yrest(100);
-			self:update();
-			target:update();
-			angle = math.atan2(target.Z - self.Z, target.X - self.X);
-			angleDif = angleDifference(angle, self.Direction);
-		end
-
-		if( correctingAngle ) then
-			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			if( correctingAngle ) then
+				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			end
 		end
 
 		self:checkPotions();
@@ -333,7 +340,7 @@ function CPlayer:fight()
 			end
 		end
 
-		--self:clearTarget();
+		self:clearTarget();
 	end;
 
 
@@ -397,7 +404,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
-	yrest(100);
+	yrest(10);
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);

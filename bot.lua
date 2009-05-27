@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.38;
+local BOT_VERSION = 2.39;
 
 include("database.lua");
 include("addresses.lua");
@@ -224,6 +224,26 @@ function main()
 			else
 				player:fight();
 			end
+
+			player:update();
+			if( player.Battling ) then
+				cprintf(cli.green, language[35]);
+			end;
+
+			local aggroWaitStart = os.time();
+			while(player.Battling) do
+				if( player:haveTarget() ) then
+					break;
+				end;
+
+				if( os.difftime(aggroWaitStart, os.time()) > 3 ) then
+					cprintf(cli.red, language[34]);
+					break;
+				end;
+
+				yrest(10);
+				player:update();
+			end
 		else
 			local wp = nil; local wpnum = nil;
 
@@ -281,7 +301,7 @@ function main()
 				end
 			end
 
-			yrest(100);
+			yrest(10);
 
 		end
 	end

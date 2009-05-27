@@ -10,6 +10,7 @@ settings_default = {
 		TARGET = {key = _G.key.VK_TAB, modifier = nil},
 	},
 	options = {
+		ENABLE_FIGHT_SLOW_TURN = false,
 		MELEE_DISTANCE = 45,
 		LANGUAGE = "english",
 	},
