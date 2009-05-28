@@ -404,7 +404,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
-	yrest(10);
+	yrest(100);
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
