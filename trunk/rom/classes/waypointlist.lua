@@ -1,7 +1,6 @@
 WPT_FORWARD = 1;
 WPT_BACKWARD = 2;
 
-
 CWaypointList = class(
 	function(self)
 		self.Waypoints = {};
@@ -24,10 +23,24 @@ function CWaypointList:load(filename)
 
 	for i,v in pairs(elements) do
 		local x,z = v:getAttribute("x"), v:getAttribute("z");
+		local type = v:getAttribute("type");
 		local action = v:getValue();
 
 		local tmp = CWaypoint(x, z);
 		if( action ) then tmp.Action = action; end;
+		if( type ) then
+			if( type == "TRAVEL" ) then
+				tmp.Type = WPT_TRAVEL;
+			elseif( type == "NORMAL" ) then
+				tmp.Type = WPT_NORMAL;
+			else
+				-- Undefined type, assume WPT_NORMAL
+				tmp.Type = WPT_NORMAL;
+			end
+		else
+			-- No type set, assume WPT_NORMAL
+			tmp.Type = WPT_NORMAL;
+		end
 
 		table.insert(self.Waypoints, tmp);
 	end

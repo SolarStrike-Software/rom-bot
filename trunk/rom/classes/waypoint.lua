@@ -1,3 +1,6 @@
+WPT_NORMAL = 1;
+WPT_TRAVEL = 2;
+
 CWaypoint = class(
 	function (self, _X, _Z)
 		-- If we're copying from a waypoint
@@ -6,11 +9,12 @@ CWaypoint = class(
 			self.X = copyfrom.X;
 			self.Z = copyfrom.Z;
 			self.Action = copyfrom.Action;
-			
+			self.Type = copyfrom.Type;
 		else
 			self.X = _X;
 			self.Z = _Z;
 			self.Action = nil; -- String containing Lua code to execute when reacing the point.
+			self.Type = WTP_NORMAL;
 		end
 
 		if( not self.X ) then self.X = 0.0; end;

@@ -359,6 +359,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		ignoreCycleTargets = false;
 	end;
 
+	if( waypoint.Type == WPT_TRAVEL ) then
+		ignoreCycleTargets = true;
+	end;
+
 	-- Make sure we don't have a garbage (dead) target
 	if( self.TargetPtr ~= 0 ) then
 		local target = CPawn(self.TargetPtr);
