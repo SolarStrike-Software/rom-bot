@@ -15,7 +15,7 @@ function CWaypointListWander:getNextWaypoint()
 	local X = self.OrigX + math.random(-halfrad, halfrad);
 	local Z = self.OrigZ + math.random(-halfrad, halfrad);
 
-	return CWaypoint(X, Z);
+	return CWaypoint(X, Z); -- TODO: Make sure this works
 end
 
 
