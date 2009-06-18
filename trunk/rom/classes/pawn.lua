@@ -1,7 +1,36 @@
+PT_NONE = 0;
+PT_PLAYER = 1;
+PT_NPC = 4;
+PT_NODE = 4;
+
+CLASS_NONE = -1;
+CLASS_WARRIOR = 1;
+CLASS_HUNTER = 2;
+CLASS_ROGUE = 3;
+CLASS_MAGE = 4;
+CLASS_PRIEST = 5;
+CLASS_KNIGHT = 6;
+CLASS_RUNEDANCER = 7;
+CLASS_DRUID = 8;
+
+local classEnergyMap = {
+	[CLASS_NONE] = "none",
+	[CLASS_WARRIOR] = "rage",
+	[CLASS_HUNTER] = "concentration",
+	[CLASS_ROGUE] = "energy",
+	[CLASS_MAGE] = "mana",
+	[CLASS_PRIEST] = "mana",
+	[CLASS_KNIGHT] = "mana",
+	[CLASS_RUNEDANCER] = "mana",
+	[CLASS_DRUID] = "mana",
+};
+
 CPawn = class(
 	function (self, ptr)
 		self.Address = ptr;
 		self.Name = "<UNKNOWN>";
+		self.Id = 0;
+		self.Type = PT_NONE;
 		self.Guild = "<UNKNOWN>";
 		self.Level = 1;
 		self.Level2 = 1;
@@ -53,6 +82,8 @@ function CPawn:update()
 	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + charMP2_offset), memerrmsg);
 	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + charMaxMP2_offset), memerrmsg);
 	self.Name = debugAssert(memoryReadString(proc, self.Address + charName_offset), memerrmsg);
+	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
+	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
 	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + charLevel2_offset), memerrmsg);
 
@@ -62,7 +93,9 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
-	self.Attackable = (memoryReadByte(proc, self.Address + pawnAttackable_offset) ~= 0);
+	self.Attackable = debugAssert(memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg) ~= 0;
+	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
+	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + charClass2_offset), memerrmsg);
 
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana
@@ -82,6 +115,47 @@ function CPawn:update()
 		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
 
 		error("Error reading memory in CPawn:update()");
+	end
+
+
+	-- Set the correct mana/rage/whatever
+	local energyStorage1;
+	local energyStorage2;
+
+	energyStorage1 = classEnergyMap[self.Class1];
+	energyStorage2 = classEnergyMap[self.Class2];
+	if( energyStorage1 == energyStorage2 ) then
+		energyStorage2 = "none";
+	end;
+
+
+
+	if( energyStorage1 == "mana" ) then
+		self.Mana = self.MP;
+		self.MaxMana = self.MaxMP;
+	elseif( energyStorage1 == "rage" ) then
+		self.Rage = self.MP;
+		self.MaxRage = self.MaxMP;
+	elseif( energyStorage1 == "energy" ) then
+		self.Energy = self.MP;
+		self.MaxEnergy = self.MaxMP;
+	elseif( energyStorage1 == "concentration" ) then
+		self.Concentration = self.MP;
+		self.MaxConcentration = self.MaxMP;
+	end
+
+	if( energyStorage2 == "mana" ) then
+		self.Mana = self.MP2;
+		self.MaxMana = self.MaxMP2;
+		elseif( energyStorage2 == "rage" ) then
+		self.Rage = self.MP2;
+		self.MaxRage = self.MaxMP2;
+	elseif( energyStorage2 == "energy" ) then
+		self.Energy = self.MP2;
+		self.MaxEnergy = self.MaxMP2;
+		elseif( energyStorage2 == "concentration" ) then
+		self.Concentration = self.MP2;
+		self.MaxConcentration = self.MaxMP2;
 	end
 end
 

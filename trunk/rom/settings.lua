@@ -30,8 +30,6 @@ settings_default = {
 			LOOT = true,
 			LOOT_TIME = 2000,
 			LOOT_DISTANCE = nil,
-			ENERGY_STORAGE_1 = "none",
-			ENERGY_STORAGE_2 = "none",
 			POTION_COOLDOWN = 15,
 			MAX_FIGHT_TIME = 30,
 			DOT_PERCENT = 90,
@@ -255,8 +253,4 @@ function settings.loadProfile(name)
 		error("COMBAT_TYPE must be \"ranged\" or \"melee\"", 0);
 	end
 
-	-- Make sure they didn't use the same type of energy storage for both (hence breaking it)
-	if( settings.profile.options.ENERGY_STORAGE_1 == settings.profile.options.ENERGY_STORAGE_2 ) then
-		error("Do not use the same energy storage for primary and secondary!\nEdit your profile to fix this.", 0);
-	end;
 end
