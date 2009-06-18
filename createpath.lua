@@ -27,7 +27,7 @@ function saveWaypoints(list)
 
 	file:write("<waypoints>\n");
 	for i,v in pairs(list) do
-		local str = sprintf("\t<waypoint x=\"%d\" z=\"%d\" />\n", v.X, v.Z);
+		local str = sprintf("\t<!-- #%2d --><waypoint x=\"%d\" z=\"%d\"></waypoint>\n", i, v.X, v.Z);
 		file:write(str);
 	end
 	file:write("</waypoints>\n");
@@ -52,7 +52,8 @@ function main()
 		if( keyPressed(wpKey) == false and lastwpKey == true ) then
 			player:update();
 			local tmp = CWaypoint(player.X, player.Z);
-			printf("Recorded. Continue to the next. Press %s to save and quit\n", getKeyName(saveKey));
+			printf("Recorded [#%2d] Continue to the next. Press %s to save and quit\n",
+				#wpList + 1, getKeyName(saveKey));
 			table.insert(wpList, tmp);
 		end
 		if( keyPressed(wpKey) ) then
@@ -66,7 +67,7 @@ function main()
 			break;
 		end
 
-		yrest(100);
+		yrest(10);
 	end
 
 end

@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.39;
+local BOT_VERSION = 2.40;
 
 include("database.lua");
 include("addresses.lua");
@@ -6,6 +6,7 @@ include("classes/player.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
 include("classes/waypointlist_wander.lua");
+include("classes/node.lua");
 include("functions.lua");
 include("settings.lua");
 
@@ -53,6 +54,8 @@ function main()
 	end
 
 	local forcedProfile = nil;
+	local forcedPath = nil;
+	local forcedRetPath = nil;
 
 	for i = 2,#args do
 		if( args[i] == "update" and getVersion() >= 100 ) then
@@ -66,7 +69,11 @@ function main()
 
 			if( var == "profile" ) then
 				forcedProfile = val;
-			end;
+			elseif( var == "path" ) then
+				forcedPath = val;
+			elseif( var == "retpath" ) then
+				forcedRetPath = val;
+			end
 		end
 	end
 
@@ -97,6 +104,8 @@ function main()
 	player:initialize();
 	player:update();
 
+	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
+	printf("mousePawn: 0x%X\n", mousePawn.Address);
 
 	printf("playerAddr: 0x%X\n", player.Address);
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
@@ -129,8 +138,6 @@ function main()
 	lang_base = nil; -- Not needed anymore, destroy it.
 	logMessage("Language: " .. settings.options.LANGUAGE);
 
-
-
 	if( settings.profile.options.PATH_TYPE == "waypoints" ) then
 		__WPL = CWaypointList();
 	elseif( settings.profile.options.PATH_TYPE == "wander" ) then
@@ -142,14 +149,22 @@ function main()
 
 	__RPL = CWaypointList();
 
-	if( settings.profile.options.WAYPOINTS ) then
-		__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
-		cprintf(cli.green, language[0], settings.profile.options.WAYPOINTS);
+	if( forcedPath ) then
+		__WPL:load(getExecutionPath() .. "/waypoints/" .. forcedPath .. ".xml");
+	else
+		if( settings.profile.options.WAYPOINTS ) then
+			__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
+			cprintf(cli.green, language[0], settings.profile.options.WAYPOINTS);
+		end
 	end
 
-	if( settings.profile.options.RETURNPATH ) then
-		__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
-		cprintf(cli.green, language[1], settings.profile.options.RETURNPATH);
+	if( forcedRetPath ) then
+		__RPL:load(getExecutionPath() .. "/waypoints/" .. forcedRetPath .. ".xml");
+	else
+		if( settings.profile.options.RETURNPATH ) then
+			__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
+			cprintf(cli.green, language[1], settings.profile.options.RETURNPATH);
+		end
 	end
 
 	-- Start at the closest waypoint.
@@ -236,7 +251,7 @@ function main()
 					break;
 				end;
 
-				if( os.difftime(aggroWaitStart, os.time()) > 3 ) then
+				if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
 					cprintf(cli.red, language[34]);
 					break;
 				end;
@@ -283,7 +298,10 @@ function main()
 					__WPL:advance();
 				end
 			else
-				cprintf(cli.red, language[8]);
+				if( not reason == WF_TARGET ) then
+					cprintf(cli.red, language[8]);
+				end
+
 				if( reason == WF_DIST ) then
 					distBreakCount = distBreakCount + 1;
 				else

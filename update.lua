@@ -42,25 +42,30 @@ function rewriteAddresses()
 
 		sprintf("staticcharbase_address = 0x%X;\n", staticcharbase_address) ..
 		sprintf("charPtr_offset = 0x%X;\n", charPtr_offset) ..
-		sprintf("castbar_offset = 0x%X;\n", castbar_offset) ..
+		sprintf("mousePtr_offset = 0x%X;\n", mousePtr_offset) ..
+		sprintf("pawnId_offset = 0x%X;\n", pawnId_offset) ..
+		sprintf("pawnType_offset = 0x%X;\n", pawnType_offset) ..
 		sprintf("charX_offset = 0x%X;\n", charX_offset) ..
 		sprintf("charY_offset = 0x%X;\n", charY_offset) ..
 		sprintf("charZ_offset = 0x%X;\n", charZ_offset) ..
+		sprintf("camUVec1_offset = 0x%X;\n", camUVec1_offset) ..
+		sprintf("camUVec2_offset = 0x%X;\n", camUVec2_offset) ..
 		sprintf("charAlive_offset = 0x%X;\n", charAlive_offset) ..
+		sprintf("castbar_offset = 0x%X;\n", castbar_offset) ..
+		sprintf("charTargetPtr_offset = 0x%X;\n", charTargetPtr_offset) ..
+		sprintf("charName_offset = 0x%X;\n", charName_offset) ..
 		sprintf("charHP_offset = 0x%X;\n", charHP_offset) ..
 		sprintf("charMaxHP_offset = 0x%X;\n", charMaxHP_offset) ..
 		sprintf("charMP_offset = 0x%X;\n", charMP_offset) ..
 		sprintf("charMaxMP_offset = 0x%X;\n", charMaxMP_offset) ..
 		sprintf("charMP2_offset = 0x%X;\n", charMP2_offset) ..
 		sprintf("charMaxMP2_offset = 0x%X;\n", charMaxMP2_offset) ..
+		sprintf("charClass1_offset = 0x%X;\n", charClass1_offset) ..
 		sprintf("charLevel_offset = 0x%X;\n", charLevel_offset) ..
+		sprintf("charClass2_offset = 0x%X;\n", charClass2_offset) ..
 		sprintf("charLevel2_offset = 0x%X;\n", charLevel2_offset) ..
-		sprintf("charName_offset = 0x%X;\n", charName_offset) ..
-		sprintf("charTargetPtr_offset = 0x%X;\n", charTargetPtr_offset) ..
 		sprintf("pawnAttackable_offset = 0x%X;\n", pawnAttackable_offset) ..
-		sprintf("inBattle_offset = 0x%X;\n", inBattle_offset) ..
-		sprintf("camUVec1_offset = 0x%X;\n", camUVec1_offset) ..
-		sprintf("camUVec2_offset = 0x%X;\n", camUVec2_offset)
+		sprintf("inBattle_offset = 0x%X;\n", inBattle_offset)
 	);
 
 	file:close();

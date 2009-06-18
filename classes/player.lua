@@ -10,6 +10,127 @@ WF_STUCK = 3;  -- Failed waypoint because we are stuck on something.
 
 CPlayer = class(CPawn);
 
+function CPlayer:harvest()
+	if( foregroundWindow() ~= getWin() ) then
+		return;
+	end
+
+	local function scan()
+		local mousePawn;
+		-- Screen dimension variables
+		local wx, wy, ww, wh = windowRect(getWin());
+		local halfWidth = ww/2;
+		local halfHeight = wh/2;
+
+		-- Scan rect variables
+		local scanWidth = 10; -- Width, in 'steps', of the area to scan
+		local scanHeight = 8; -- Height, in 'steps', of area to scan
+		local scanXMultiplier = 1.0;
+		local scanYMultiplier = 1.1;
+		local scanStepSize = 35; -- Distance, in pixels, between 'steps'
+
+
+		local mx, my; -- Mouse x/y temp values
+
+		mouseSet(wx + (halfWidth*scanXMultiplier - (scanWidth/2*scanStepSize)),
+		wy  + (halfHeight*scanYMultiplier - (scanHeight/2*scanStepSize)));
+		yrest(100);
+
+		-- Scan nearby area for a node
+		for y = 0,scanHeight-1 do
+			my = math.ceil(halfHeight * scanYMultiplier - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
+
+			for x = 0,scanWidth-1 do
+				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
+
+				mouseSet(wx + mx, wy + my);
+				yrest(10);
+				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+
+				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
+					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
+					and database.nodes[mousePawn.Id] ) then
+					return mousePawn.Address, mx, my;
+				end
+			end
+		end
+
+		return 0, nil, nil;
+	end
+
+
+	detach(); -- Remove attach bindings
+	local mouseOrigX, mouseOrigY = mouseGetPos();
+	local foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+
+	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
+		-- We found something. Lets harvest it.
+
+		-- If out of distance, move and rescan
+		local mousePawn = CPawn(foundHarvestNode);
+		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
+
+		if( dist > 35 and dist < 150 ) then
+			printf("Move in\n");
+			self:moveTo( CWaypoint(mousePawn.X, mousePawn.Z), true );
+			yrest(200);
+			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+		end
+
+		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
+
+			self:update();
+			if( self.Battling ) then
+				break;
+			end;
+
+			local wx,wy = windowRect(getWin());
+			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+			yrest(50);
+			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+			yrest(50);
+
+			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
+			and database.nodes[mousePawn.Id] ~= nil ) then
+				-- Node is still here
+
+				-- Begin gathering
+				mouseLClick();
+				yrest(100);
+				mouseLClick();
+
+				-- Wait for a few seconds... constantly check for aggro
+				local startWaitTime = os.time();
+				while( os.difftime(os.time(), startWaitTime) < 2 ) do
+					yrest(100);
+					self:update();
+
+					-- Make sure it didn't disapear
+					mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+					if( mousePawn.Address == 0 ) then
+						break;
+					end;
+
+					if( self.Battling ) then
+						break;
+					end
+				end
+
+				self:update();
+
+			else
+				-- Node is gone
+				break;
+			end
+		end
+	end
+
+	mouseSet(mouseOrigX, mouseOrigY);
+	attach(getWin()); -- Re-attach bindings
+end
+
+
 function CPlayer:initialize()
 	memoryWriteInt(getProc(), self.Address + castbar_offset, 0);
 end
@@ -374,7 +495,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	-- If more than X degrees off, correct before moving.
 	local rotateStartTime = os.time();
-	while( angleDif > math.rad(25) ) do
+	while( angleDif > math.rad(35) ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -394,10 +515,14 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			-- rotate left
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 			keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+
+			--self:faceDirection( angle );
 		else
 			-- rotate right
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+
+			--self:faceDirection( angle );
 		end
 
 		yrest(100);
@@ -408,14 +533,14 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
-	yrest(100);
+	yrest(50);
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	local lastDistImprove = os.time();
 	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
-	while( dist > 25.0 ) do
+	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -478,6 +603,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end
 
+		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
+		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
+		angleDif = angleDifference(angle, self.Direction);
+
 		-- Continue to make sure we're facing the right direction
 		if( angleDif > math.rad(15) ) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
@@ -492,18 +621,22 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
 					yrest(100);
 			end
-		else
+		elseif( angleDif > 0.0 ) then
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			self:faceDirection(angle);
+
+			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+		else
+			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );	
 		end
 
-		keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		yrest(100);
 		self:update();
 		waypoint:update();
-		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
-		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
-		angleDif = angleDifference(angle, self.Direction);
+
 	end
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
@@ -521,6 +654,21 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	end
 
 	return success, failreason;
+end
+
+
+-- Forces the player to face a direction.
+-- 'dir' should be in radians
+function CPlayer:faceDirection(dir)
+	local Vec1 = math.cos(dir);
+	local Vec2 = math.sin(dir);
+
+	--local pVec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
+	--local pVec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);
+
+	memoryWriteFloat(getProc(), self.Address + camUVec1_offset, Vec1);
+	memoryWriteFloat(getProc(), self.Address + camUVec2_offset, Vec2);
+
 end
 
 -- Attempt to unstick the player
@@ -546,6 +694,10 @@ end
 function CPlayer:haveTarget()
 	if( CPawn.haveTarget(self) ) then
 		local target = self:getTarget();
+
+		if( target == nil ) then
+			return false;
+		end;
 
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
@@ -622,6 +774,7 @@ function CPlayer:update()
 	end
 
 
+	--[[ Deprecated; Moved to pawn.lua
 	-- If we were able to load our profile options...
 	if( settings and settings.profile.options ) then
 		local energyStorage1 = settings.profile.options.ENERGY_STORAGE_1;
@@ -655,6 +808,8 @@ function CPlayer:update()
 			self.MaxConcentration = self.MaxMP2;
 		end
 	end
+	]]
+
 end
 
 function CPlayer:clearTarget()

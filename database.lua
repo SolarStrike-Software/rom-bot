@@ -1,5 +1,6 @@
 database =  {
-	skills = {};
+	skills = {},
+	nodes = {}
 };
 
 function database.load()
@@ -96,4 +97,31 @@ function database.load()
 		database.skills[name] = tmp;
 	end
 
+
+
+	root = xml.open(getExecutionPath() .. "/database/nodes.xml");
+	elements = root:getElements();
+
+	for i,v in pairs(elements) do
+		local name, id, type;
+		local tmp = CNode();
+
+		name = v:getAttribute("name");
+		id = v:getAttribute("id");
+		type = v:getAttribute("type");
+
+		if( type == "WOOD" ) then
+			type = NTYPE_WOOD;
+		elseif( type == "ORE" ) then
+			type = NTYPE_ORE;
+		elseif( type == "HERB" ) then
+			type = NTYPE_HERB;
+		end;
+
+		tmp.Name = name;
+		tmp.Id = id;
+		tmp.Type = type;
+
+		database.nodes[id] = tmp;
+	end
 end
