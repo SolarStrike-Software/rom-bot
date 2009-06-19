@@ -9,6 +9,8 @@ CWaypointList = class(
 		self.OrigX = player.X;
 		self.OrigZ = player.Z;
 		self.Radius = 500;
+		self.FileName = nil;
+		self.Mode = "waypoints";
 	end
 );
 
@@ -19,6 +21,7 @@ function CWaypointList:load(filename)
 	end
 	local elements = root:getElements();
 
+	self.FileName = getFileName(filename);
 	self.Waypoints = {}; -- Delete current waypoints.
 
 	for i,v in pairs(elements) do
@@ -47,6 +50,20 @@ function CWaypointList:load(filename)
 
 	self.CurrentWaypoint = 1;
 end
+
+
+function CWaypointList:getFileName()
+	return self.FileName;
+end
+
+function CWaypointList:setMode(mode)
+	self.Mode = mode;
+end
+
+function CWaypointList:getMode()
+	return self.Mode;
+end
+
 
 function CWaypointList:advance()
 
