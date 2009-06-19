@@ -106,13 +106,15 @@ function pauseCallback()
 		skey = getStartKey();
 	end
 
+	local msg = sprintf("Paused. (%s) to continue, (CTRL+L) exit to shell, (CTRL+C) quit\n", getKeyName(skey));
+		
 	-- If settings haven't been loaded...skip the cleanup.
 	if( not settings ) then
-		printf("Paused. Press %s again to continue.\n", getKeyName(skey));
+		printf(msg);
 		return;
 	end;
 
-
+	
 	if( settings.hotkeys.MOVE_FORWARD) then
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	end
@@ -137,8 +139,8 @@ function pauseCallback()
 		keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
 	end
 
-
-	printf("Paused. Press %s again to continue.\n", getKeyName(skey));
+	
+	printf(msg);
 end
 atPause(pauseCallback);
 

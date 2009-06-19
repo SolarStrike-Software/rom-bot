@@ -138,23 +138,24 @@ function main()
 	lang_base = nil; -- Not needed anymore, destroy it.
 	logMessage("Language: " .. settings.options.LANGUAGE);
 
-	if( settings.profile.options.PATH_TYPE == "waypoints" ) then
-		__WPL = CWaypointList();
-	elseif( settings.profile.options.PATH_TYPE == "wander" ) then
+	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
 		__WPL = CWaypointListWander();
 		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
+		__WPL:setMode("wander");
+	elseif( settings.profile.options.PATH_TYPE == "waypoints" or forcedPath ) then
+		__WPL = CWaypointList();
 	else
 		error("Unknown PATH_TYPE in profile.", 0);
 	end
 
 	__RPL = CWaypointList();
 
-	if( forcedPath ) then
+	-- This logic prevents files from being loaded if wandering was forced
+	if( forcedPath and not (forcedPath == "wander") ) then
 		__WPL:load(getExecutionPath() .. "/waypoints/" .. forcedPath .. ".xml");
 	else
 		if( settings.profile.options.WAYPOINTS ) then
 			__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
-			cprintf(cli.green, language[0], settings.profile.options.WAYPOINTS);
 		end
 	end
 
@@ -163,10 +164,19 @@ function main()
 	else
 		if( settings.profile.options.RETURNPATH ) then
 			__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
-			cprintf(cli.green, language[1], settings.profile.options.RETURNPATH);
 		end
 	end
 
+	-- Output filename only if mode isnt set to wandering
+	if not( __WPL:getMode() == "wander" )	then
+		cprintf(cli.green, language[0], __WPL:getFileName());
+	end
+
+	if( __RPL:getFileName() ) then
+		cprintf(cli.green, language[1], __RPL:getFileName());
+	end
+	
+	
 	-- Start at the closest waypoint.
 	__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 
