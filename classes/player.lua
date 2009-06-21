@@ -205,7 +205,9 @@ function CPlayer:checkPotions()
 
 		cprintf(cli.green, language[10]);
 
-		yrest(1000);
+		if( self.Fighting ) then
+			yrest(1000);
+		end
 	end
 
 	-- If we need to use a mana potion(if we even have mana)
@@ -218,7 +220,9 @@ function CPlayer:checkPotions()
 
 			cprintf(cli.green, language[11]);
 
-			yrest(1000);
+			if( self.Fighting ) then
+				yrest(1000);
+			end
 		end
 	end
 end
@@ -422,42 +426,16 @@ function CPlayer:fight()
 		end
 	end
 
+	yrest(200);
+
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
 	if( self.TargetPtr ~= 0 ) then
 		if( settings.profile.options.LOOT == true ) then
-			local dist = distance(self.X, self.Z, target.X, target.Z);
-			local lootdist = 100;
-
-			-- Set to combat distance; update later if loot distance is set
-			if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
-				lootdist = settings.profile.options.COMBAT_DISTANCE;
-			end
-
-			if( settings.profile.options.LOOT_DISTANCE ) then
-				lootdist = settings.profile.options.LOOT_DISTANCE;
-			end
-
-
-			if( dist < lootdist ) then -- only loot when close by
-				cprintf(cli.green, language[31]);
-				-- "attack" is also the hotkey to loot, strangely.
-				yrest(500);
-				keyboardPress(settings.profile.hotkeys.ATTACK.key);
-				yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-
-				-- now take a 'step' backward (closes loot bag if full inventory)
-				keyboardPress(settings.hotkeys.MOVE_BACKWARD.key);
-
-				-- Maybe take a step forward to pick up a buff.
-				if( math.random(100) > 20 ) then
-					keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
-					yrest(500);
-					keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-				end
-			else
-				cprintf(cli.green, language[32]);
+			if( not self.Battling ) then
+				-- Skip looting when under attack
+				self:loot();
 			end
 		end
 
@@ -467,6 +445,48 @@ function CPlayer:fight()
 
 	cprintf(cli.green, language[27]);
 	self.Fighting = false;
+end
+
+function CPlayer:loot()
+	local target = self:getTarget();
+
+	if( target == nil or target.Address == 0 ) then
+		return;
+	end
+
+	local dist = distance(self.X, self.Z, target.X, target.Z);
+	local lootdist = 100;
+
+	-- Set to combat distance; update later if loot distance is set
+	if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+		lootdist = settings.profile.options.COMBAT_DISTANCE;
+	end
+
+	if( settings.profile.options.LOOT_DISTANCE ) then
+		lootdist = settings.profile.options.LOOT_DISTANCE;
+	end
+
+
+	if( dist < lootdist ) then -- only loot when close by
+		cprintf(cli.green, language[31]);
+		-- "attack" is also the hotkey to loot, strangely.
+		yrest(500);
+		keyboardPress(settings.profile.hotkeys.ATTACK.key);
+		yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+
+		-- now take a 'step' backward (closes loot bag if full inventory)
+		keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
+
+		-- Maybe take a step forward to pick up a buff.
+		if( math.random(100) > 80 ) then
+			keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+			yrest(500);
+			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+		end
+	else
+		cprintf(cli.green, language[32]);
+	end
+
 end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets)
