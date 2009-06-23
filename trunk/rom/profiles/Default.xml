@@ -18,6 +18,9 @@
 		<option name="POTION_COOLDOWN" value="15" />
 		<option name="MAX_FIGHT_TIME" value="15" />
 		<option name="DOT_PERCENT" value="90" />
+
+		<option name="LOGOUT_TIME" value="0" />
+		<option name="LOGOUT_SHUTDOWN" value="false" />
 	</options>
 
 	<friends>
@@ -30,6 +33,7 @@
 		<hotkey name="MP_POTION" key="VK_EQUAL" modifier="" />
 		<hotkey name="ATTACK" key="VK_0" modifier="" />
 		<hotkey name="RES_MACRO" key="VK_9" modifier="" />
+		<hotkey name="LOGOUT_MACRO" key="VK_8" modifier="" />
 	</hotkeys>
 
 	<skills>

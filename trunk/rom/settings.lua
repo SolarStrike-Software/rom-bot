@@ -33,6 +33,8 @@ settings_default = {
 			POTION_COOLDOWN = 15,
 			MAX_FIGHT_TIME = 30,
 			DOT_PERCENT = 90,
+			LOGOUT_TIME = 0,
+			LOGOUT_SHUTDOWN = false,
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {

@@ -144,6 +144,27 @@ function pauseCallback()
 end
 atPause(pauseCallback);
 
+function resumeCallback()
+	printf("Resumed.\n");
+
+	-- Make sure our player exists before trying to update it
+	if( player ) then
+		-- Make sure we aren't using potentially old data
+		player:update();
+	end
+
+	if( settings.profile.options.PATH_TYPE == "wander" ) then
+		__WPL.OrigX = player.X;
+		__WPL.OrigZ = player.Z;
+	end
+
+	-- Re-set our bot start time to now
+	if( player ) then
+		player.BotStartTime = os.time();
+		printf("Bot start time reset\n");
+	end
+end
+atResume(resumeCallback);
 
 
 function pauseOnDeath()
