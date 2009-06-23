@@ -132,7 +132,6 @@ function main()
 		error("Unknown PATH_TYPE in profile.", 0);
 	end
 
-	__RPL = CWaypointList();
 
 	-- This logic prevents files from being loaded if wandering was forced
 	if( forcedPath and not (forcedPath == "wander") ) then
@@ -144,9 +143,11 @@ function main()
 	end
 
 	if( forcedRetPath ) then
+		__RPL = CWaypointList();
 		__RPL:load(getExecutionPath() .. "/waypoints/" .. forcedRetPath .. ".xml");
 	else
 		if( settings.profile.options.RETURNPATH ) then
+			__RPL = CWaypointList();
 			__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
 		end
 	end
@@ -156,7 +157,7 @@ function main()
 		cprintf(cli.green, language[0], __WPL:getFileName());
 	end
 
-	if( __RPL:getFileName() ) then
+	if( __RPL and __RPL:getFileName() ) then
 		cprintf(cli.green, language[1], __RPL:getFileName());
 	end
 	
