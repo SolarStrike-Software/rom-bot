@@ -48,6 +48,7 @@ CPawn = class(
 		self.Attackable = false;
 		self.Alive = true;
 
+
 		-- Directed more at player, but may be changed later.
 		self.Battling = false; -- The actual "in combat" flag.
 		self.Fighting = false; -- Internal use, does not depend on the client's battle flag
@@ -62,6 +63,7 @@ CPawn = class(
 		self.MaxConcentration = 0;
 		self.PotionLastUseTime = 0;
 		self.Returning = false; -- Whether following the return path, or regular waypoints
+		self.BotStartTime = os.time(); -- Records when the bot was started.
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

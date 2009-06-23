@@ -32,4 +32,7 @@ language = {
 
 	[40] = "Player address changed: 0x%X\n",
 	[41] = "Failed to read memory",
+
+	[50] = "Auto-logging out.\n",
+	[51] = "Shutting system down.\n",
 };

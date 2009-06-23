@@ -719,6 +719,18 @@ function CPlayer:haveTarget()
 			return false;
 		end;
 
+		-- PK protect
+		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
+			if ( self.Battling == false ) then   -- if we don't have aggro then
+				return false;         -- he is not a valid target
+			end;
+
+			if( self.Battling == true  and         -- we have aggro
+				target.TargetPtr ~= self.Address ) then   -- but not from the PK player
+				return false;         
+			end;
+		end;
+
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
 			return false;
@@ -835,6 +847,7 @@ end
 function CPlayer:clearTarget()
 	cprintf(cli.green, language[33]);
 	memoryWriteInt(getProc(), self.Address + charTargetPtr_offset, 0);
+	self.TargetPtr = 0;
 end
 
 -- returns true if this CPawn is registered as a friend
@@ -856,4 +869,41 @@ function CPlayer:isFriend(pawn)
 	end
 
 	return false;
+end
+
+function CPlayer:logoutCheck()
+	if(self.Battling == true) then
+		return;
+	end;
+
+	if( settings.profile.options.LOGOUT_TIME > 0 ) then
+		local elapsed = os.difftime(os.time(), self.BotStartTime);
+
+		if( elapsed >= settings.profile.options.LOGOUT_TIME * 60 ) then
+			cprintf(cli.yellow, language[50]);
+
+			if( settings.profile.hotkeys.LOGOUT_MACRO ) then
+				keyboardPress(settings.profile.hotkeys.LOGOUT_MACRO.key);
+				yrest(12000); -- Wait for the log out to process
+			else
+				local PID = findProcessByWindow(getWin()); -- Get process ID
+				os.execute("TASKKILL /PID " .. PID .. " /F");
+				while(true) do
+					-- Wait for process to close...
+					if( findProcessByWindow(__WIN) ~= PID ) then
+						printf("Process successfully closed\n");
+						break;
+					end;
+					yrest(100);
+				end
+			end
+
+			if( settings.profile.options.LOGOUT_SHUTDOWN ) then
+				cprintf(cli.yellow, language[51]);
+				os.execute("\"%windir%\\system32\\shutdown.exe -s -t 30\" "); --Shutdown in 30 seconds.
+			end
+
+			error("Exiting: Auto-logout", 0); -- Not really an error, but it will drop us back to shell.
+		end
+	end
 end

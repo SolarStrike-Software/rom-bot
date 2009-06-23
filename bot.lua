@@ -27,22 +27,6 @@ __WPL = nil; -- Way Point List
 __RPL = nil; -- Return Point List
 
 
-function resumeCallback()
-	printf("Resumed.\n");
-
-	-- Make sure our player exists before trying to update it
-	if( player ) then
-		-- Make sure we aren't using potentially old data
-		player:update();
-	end
-
-	if( settings.profile.options.PATH_TYPE == "wander" ) then
-		__WPL.OrigX = player.X;
-		__WPL.OrigZ = player.Z;
-	end
-end
-atResume(resumeCallback);
-
 print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
 "\83\111\102\116\119\97\114\101\44\32\119\119\119\46\115" ..
 "\111\108\97\114\115\116\114\105\107\101\46\110\101\116\n");
@@ -183,6 +167,7 @@ function main()
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
 		player:update();
+		player:logoutCheck();
 
 		if( not player.Alive ) then
 			-- Make sure they aren't still trying to run off
@@ -232,13 +217,12 @@ function main()
 			end
 		end
 
+		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
+			player:clearTarget();
+		end
+
 
 		if( player:haveTarget() ) then
-			if( player.Target == player.Address ) then
-				player:clearTarget();
-				-- Clear target so that we can more easily pick up aggroed monsters.
-			end;
-
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and target:getTarget().Address ~= player.Address and (not player:isFriend(CPawn(target.TargetPtr))) ) then
