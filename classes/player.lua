@@ -77,12 +77,17 @@ function CPlayer:harvest()
 			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
 		end
 
+		local startHarvestTime = os.time();
 		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
 
 			self:update();
 			if( self.Battling ) then
 				break;
 			end;
+
+			if( os.difftime(os.time(), startHarvestTime) > 30 ) then
+				break;
+			end
 
 			local wx,wy = windowRect(getWin());
 			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
@@ -294,7 +299,7 @@ function CPlayer:fight()
 
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
-			logMessage("Taking too long to damage target, breaking sequence...\n");
+			printf("Taking too long to damage target, breaking sequence...\n");
 			break;
 		end
 
