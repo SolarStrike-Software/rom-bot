@@ -97,8 +97,18 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
-	local attackableFlag = debugAssert(memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg);
-	self.Attackable = (attackableFlag == -19 or attackableFlag == -1);
+	-- Compatability
+	local _memoryReadByte = memoryReadUByte;
+	if( _memoryReadByte == nil ) then
+		_memoryReadByte = memoryReadByte;
+	end;
+
+	local attackableFlag = debugAssert(_memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg);
+	self.Attackable = (attackableFlag == 255 or attackableFlag == 237);
+
+	--if( player and self.Address ~= player.Address ) then
+	--	printf("AttackableFlag: %s\n", attackableFlag);
+	--end
 
 	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
 	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + charClass2_offset), memerrmsg);
