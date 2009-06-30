@@ -83,7 +83,9 @@ function CPawn:update()
 	self.MaxMP = debugAssert(memoryReadInt(proc, self.Address + charMaxMP_offset), memerrmsg);
 	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + charMP2_offset), memerrmsg);
 	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + charMaxMP2_offset), memerrmsg);
-	self.Name = debugAssert(memoryReadString(proc, self.Address + charName_offset), memerrmsg);
+
+	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
+	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
@@ -95,7 +97,9 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
-	self.Attackable = debugAssert(memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg) ~= 0;
+	local attackableFlag = debugAssert(memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg);
+	self.Attackable = (attackableFlag == -19 or attackableFlag == -1);
+
 	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
 	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + charClass2_offset), memerrmsg);
 

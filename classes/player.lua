@@ -431,7 +431,7 @@ function CPlayer:fight()
 		end
 	end
 
-	yrest(200);
+	yrest(500);
 
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
