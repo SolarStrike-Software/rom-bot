@@ -15,7 +15,7 @@ function findOffsets()
 	end
 
 	patternstart_address = found;
-	staticbase = memoryReadInt(getProc(), found + 8);
+	staticbase = memoryReadInt(getProc(), found + 13);
 
 	if( staticbase == nil ) then
 		error("Found pattern, but unable to read memory.\n");
