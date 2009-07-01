@@ -98,24 +98,9 @@ function distance(x1, y1, x2, y2)
 	return math.sqrt( (y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) );
 end
 
-function pauseCallback()
-	local skey = 0;
 
-	if( getVersion() < 100 ) then
-		skey = startKey;
-	else
-		skey = getStartKey();
-	end
-
-	local msg = sprintf("Paused. (%s) to continue, (CTRL+L) exit to shell, (CTRL+C) quit\n", getKeyName(skey));
-		
-	-- If settings haven't been loaded...skip the cleanup.
-	if( not settings ) then
-		printf(msg);
-		return;
-	end;
-
-	
+-- Used in pause/exit callbacks. Just releases hotkeys.
+local function releaseKeys()
 	if( settings.hotkeys.MOVE_FORWARD) then
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	end
@@ -139,11 +124,32 @@ function pauseCallback()
 	if( settings.hotkeys.STRAFF_RIGHT ) then
 		keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
 	end
+end
 
-	
+function pauseCallback()
+	local msg = sprintf("Paused. (%s) to continue, (CTRL+L) exit to shell, (CTRL+C) quit\n",
+		getKeyName(getStartKey()));
+		
+	-- If settings haven't been loaded...skip the cleanup.
+	if( not settings ) then
+		printf(msg);
+		return;
+	end;
+
+	releaseKeys();	
 	printf(msg);
 end
 atPause(pauseCallback);
+
+function exitCallback()
+	-- If settings haven't been loaded...skip the cleanup.
+	if( not settings ) then
+		return;
+	end;
+
+	releaseKeys();
+end
+atExit(exitCallback);
 
 function resumeCallback()
 	printf("Resumed.\n");
