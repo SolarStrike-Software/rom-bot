@@ -85,7 +85,7 @@ function CPlayer:harvest()
 				break;
 			end;
 
-			if( os.difftime(os.time(), startHarvestTime) > 30 ) then
+			if( os.difftime(os.time(), startHarvestTime) > 45 ) then
 				break;
 			end
 
@@ -809,43 +809,6 @@ function CPlayer:update()
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
 		error("Error reading memory in CPlayer:update()");
 	end
-
-
-	--[[ Deprecated; Moved to pawn.lua
-	-- If we were able to load our profile options...
-	if( settings and settings.profile.options ) then
-		local energyStorage1 = settings.profile.options.ENERGY_STORAGE_1;
-		local energyStorage2 = settings.profile.options.ENERGY_STORAGE_2;
-
-		if( energyStorage1 == "mana" ) then
-			self.Mana = self.MP;
-			self.MaxMana = self.MaxMP;
-		elseif( energyStorage1 == "rage" ) then
-			self.Rage = self.MP;
-			self.MaxRage = self.MaxMP;
-		elseif( energyStorage1 == "energy" ) then
-			self.Energy = self.MP;
-			self.MaxEnergy = self.MaxMP;
-		elseif( energyStorage1 == "concentration" ) then
-			self.Concentration = self.MP;
-			self.MaxConcentration = self.MaxMP;
-		end
-
-		if( energyStorage2 == "mana" ) then
-			self.Mana = self.MP2;
-			self.MaxMana = self.MaxMP2;
-		elseif( energyStorage2 == "rage" ) then
-			self.Rage = self.MP2;
-			self.MaxRage = self.MaxMP2;
-		elseif( energyStorage2 == "energy" ) then
-			self.Energy = self.MP2;
-			self.MaxEnergy = self.MaxMP2;
-		elseif( energyStorage2 == "concentration" ) then
-			self.Concentration = self.MP2;
-			self.MaxConcentration = self.MaxMP2;
-		end
-	end
-	]]
 
 end
 
