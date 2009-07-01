@@ -49,6 +49,7 @@ function CWaypointList:load(filename)
 	end
 
 	self.CurrentWaypoint = 1;
+	self.Mode = "waypoints";
 end
 
 

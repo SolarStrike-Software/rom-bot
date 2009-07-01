@@ -14,13 +14,9 @@ include("settings.lua");
 DEBUG_ASSERT = false; -- Change to 'true' to debug memory reading problems.
 
 
-if( getVersion() < 100 ) then
-	startKey = key.VK_DELETE;
-	stopKey = key.VK_END;
-else
-	setStartKey(key.VK_DELETE);
-	setStopKey(key.VK_END);
-end
+setStartKey(key.VK_DELETE);
+setStopKey(key.VK_END);
+
 
 
 __WPL = nil; -- Way Point List
@@ -135,6 +131,7 @@ function main()
 
 	-- This logic prevents files from being loaded if wandering was forced
 	if( forcedPath and not (forcedPath == "wander") ) then
+		__WPL = CWaypointList();
 		__WPL:load(getExecutionPath() .. "/waypoints/" .. forcedPath .. ".xml");
 	else
 		if( settings.profile.options.WAYPOINTS ) then
