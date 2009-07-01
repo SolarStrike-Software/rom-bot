@@ -106,9 +106,10 @@ function CPawn:update()
 	local attackableFlag = debugAssert(_memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg);
 	self.Attackable = (attackableFlag == 255 or attackableFlag == 237);
 
-	--if( player and self.Address ~= player.Address ) then
-	--	printf("AttackableFlag: %s\n", attackableFlag);
-	--end
+	if( attackableFlag < 0 ) then
+		error("Your MicroMacro installation appears to be out of date and incompatible with\nthis script. " ..
+			"Download the latest version of MicroMacro 1.0 from\nwww.solarstrike.net forums.", 0);
+	end
 
 	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
 	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + charClass2_offset), memerrmsg);
