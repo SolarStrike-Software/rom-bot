@@ -258,7 +258,7 @@
 	<skill name="SCOUT_MANA_DRAIN_SHOT" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
 	<skill name="SCOUT_LASSO" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
 	<skill name="SCOUT_PIERCING_ARROW" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
-	<skill name="SCOUT_SNIPE" consumable="1" range="50" casttime="4" cooldown="15" type="buff" target="self" />
+	<skill name="SCOUT_SNIPE" consumable="1" range="240" casttime="4" cooldown="15" type="buff" target="self" />
 	<skill name="SCOUT_DETECTION" concentration="9" type="buff" target="self" />
 	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="180" cooldown="20" type="damage" target="enemy" />
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
