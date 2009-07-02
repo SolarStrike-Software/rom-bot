@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.41;
+local BOT_VERSION = 2.42;
 
 include("database.lua");
 include("addresses.lua");
