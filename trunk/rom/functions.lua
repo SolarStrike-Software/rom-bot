@@ -168,7 +168,10 @@ function resumeCallback()
 	-- Re-set our bot start time to now
 	if( player ) then
 		player.BotStartTime = os.time();
-		printf("Bot start time reset\n");
+
+		if( settings.profile.options.LOGOUT_TIME > 0 ) then
+			printf("Bot start time reset\n");
+		end
 	end
 end
 atResume(resumeCallback);
