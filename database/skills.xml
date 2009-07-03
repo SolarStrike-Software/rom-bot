@@ -58,10 +58,10 @@
 	<skill name="PRIEST_URGENT_HEAL" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
 	<skill name="PRIEST_RISING_TIDE" mana="15" manainc="1.09" range="217" casttime="2" type="damage" target="enemy" />
 	<skill name="PRIEST_REGENERATE" mana="35" manainc="3.47" cooldown="15" range="180" type="hot" target="friendly" />
-	<skill name="PRIEST_HOLY_AURA" mana="60" cooldown="120" type="buff" target="self" />
+	<skill name="PRIEST_HOLY_AURA" mana="60" cooldown="120" type="buff" target="self" inbattle="true" />
 	<skill name="PRIEST_MAGIC_BARRIER" mana="120" manainc="12.0" type="buff" cooldown="600" target="self" />
 	<skill name="PRIEST_BLESSING_OF_RAIN" mana="120" type="buff" cooldown="600" target="self" />
-	<skill name="PRIEST_SOUL_SOURCE" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" />
+	<skill name="PRIEST_SOUL_SOURCE" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
 	<skill name="PRIEST_WAVE_ARMOR" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" />
 	<skill name="PRIEST_HEAL" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
 	<skill name="PRIEST_BONE_CHILL" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
