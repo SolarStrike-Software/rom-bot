@@ -69,6 +69,8 @@ function main()
 		cprintf(cli.yellow, "!! Notice: !!\n");
 		printf("The game may have been updated or altered.\n" ..
 			"It is recommended that you run rom/update.lua\n\n");
+
+		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
 
