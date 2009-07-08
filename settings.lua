@@ -35,6 +35,8 @@ settings_default = {
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
 			LOGOUT_SHUTDOWN = false,
+			TARGET_LEVELDIF_BELOW = 99,
+			TARGET_LEVELDIF_ABOVE = 99,
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
