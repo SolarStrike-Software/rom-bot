@@ -724,6 +724,18 @@ function CPlayer:haveTarget()
 			return false;
 		end;
 
+		if( ( target.Level - self.Level ) > settings.profile.options.TARGET_LEVELDIF_ABOVE  or
+		( self.Level - target.Level ) > settings.profile.options.TARGET_LEVELDIF_BELOW ) then
+			if ( self.Battling == false ) then	-- if we don't have aggro then
+				return false;			-- he is not a valid target
+			end;
+
+			if( self.Battling == true  and		-- we have aggro
+			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+				return false;         
+			end;
+		end;
+
 		-- PK protect
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 			if ( self.Battling == false ) then   -- if we don't have aggro then
