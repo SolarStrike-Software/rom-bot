@@ -29,7 +29,6 @@ CSkill = class(
 		self.Level = 1;
 
 		self.MaxHpPer = 100; -- Must have less than this % HP to cast
-
 		self.hotkey = 0;
 		self.modifier = 0;
 
@@ -113,8 +112,17 @@ function CSkill:canUse()
 	end
 
 	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
-		if( (player.HP/player.MaxHP * 100) > settings.profile.options.HP_LOW ) then
-			return false;
+		local hpper = (player.HP/player.MaxHP * 100);
+
+		if( self.MaxHpPer ~= 100 ) then
+			if( hpper > self.MaxHpPer ) then
+				return false;
+			end
+		else
+			-- Inherit from settings' HP_LOW
+			if( hpper > settings.profile.options.HP_LOW ) then
+				return false;
+			end
 		end
 	end
 

@@ -8,7 +8,7 @@
 		<option name="COMBAT_DISTANCE" value="200" />
 		<option name="ANTI_KS" value="true" />
 		<option name="WAYPOINTS" value="bandits.xml" />
-		<option name="RETURNPATH" value="bandits_return.xml" />
+		<option name="RETURNPATH" value="" />
 		<option name="PATH_TYPE" value="waypoints" />
 		<option name="WANDER_RADIUS" value="500" />
 		<option name="WAYPOINT_DEVIATION" value="0" />
@@ -22,7 +22,7 @@
 		<option name="LOGOUT_TIME" value="0" />
 		<option name="LOGOUT_SHUTDOWN" value="false" />
 
-		<! -- attack monsters 10 levels above or below your level -->
+		<!-- attack monsters 10 levels above or below your level -->
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
 		<option name="TARGET_LEVELDIF_ABOVE" value="10" />
 	</options>

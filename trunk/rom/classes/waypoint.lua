@@ -1,5 +1,5 @@
-WPT_NORMAL = 1;
-WPT_TRAVEL = 2;
+WPT_NORMAL = 3;
+WPT_TRAVEL = 4;
 
 CWaypoint = class(
 	function (self, _X, _Z)
