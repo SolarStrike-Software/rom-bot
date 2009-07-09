@@ -184,12 +184,26 @@ function settings.loadProfile(name)
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
-			local name, hotkey, modifier, level, priority;
+			local name, hotkey, modifier, level;
 			name = v:getAttribute("name");
 			hotkey = key[v:getAttribute("hotkey")];
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
+
+
+			-- Over-ride attributes
+			local priority, maxhpper, inbattle
 			priority = v:getAttribute("priority");
+			maxhpper = tonumber(v:getAttribute("hpper"));
+			inbattle = v:getAttribute("inbattle");
+
+			if( inbattle ) then
+				if( inbattle == "true" ) then
+					inbattle = true;
+				else
+					inbattle = false;
+				end;
+			end
 
 			if( level == nil or level < 1 ) then
 				level = 1;
@@ -207,6 +221,8 @@ function settings.loadProfile(name)
 			tmp.Level = level;
 
 			if( priority ) then tmp.priority = priority; end
+			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
+			if( inbattle ) then tmp.InBattle = inbattle; end;
 
 			table.insert(settings.profile.skills, tmp);
 		end

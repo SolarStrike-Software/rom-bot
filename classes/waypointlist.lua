@@ -11,6 +11,8 @@ CWaypointList = class(
 		self.Radius = 500;
 		self.FileName = nil;
 		self.Mode = "waypoints";
+
+		self.Type = 0; -- UNSET
 	end
 );
 
@@ -20,6 +22,15 @@ function CWaypointList:load(filename)
 		error("Failed to load waypoints from \'%s\'", filename);
 	end
 	local elements = root:getElements();
+	local type = root:getAttribute("type");
+
+	if( type ) then
+		if( type == "TRAVEL" ) then
+			self.Type = WPT_TRAVEL;
+		elseif( type == "NORMAL" ) then
+			self.Type = WPT_NORMAL;
+		end
+	end
 
 	self.FileName = getFileName(filename);
 	self.Waypoints = {}; -- Delete current waypoints.
@@ -83,6 +94,13 @@ end
 
 function CWaypointList:getNextWaypoint()
 	local tmp = CWaypoint(self.Waypoints[self.CurrentWaypoint]);
+
+	-- TYPE override
+	if( self.Type ~= 0 ) then
+		tmp.Type = self.Type;
+	end
+
+
 	if( settings.profile.options.WAYPOINT_DEVIATION < 2 ) then
 		return tmp;
 	end
@@ -92,7 +110,7 @@ function CWaypointList:getNextWaypoint()
 	tmp.X = tmp.X + math.random(halfdev) - halfdev;
 	tmp.Z = tmp.Z + math.random(halfdev) - halfdev;
 
-	return tmp; --self.Waypoints[self.CurrentWaypoint];
+	return tmp;
 end
 
 -- Sets the "direction" (forward/backward) to travel
