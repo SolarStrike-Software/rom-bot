@@ -8,6 +8,8 @@ settings_default = {
 		STRAFF_RIGHT = {key = _G.key.VK_E, modifier = nil},
 		JUMP = {key = _G.key.VK_SPACE, modifier = nil},
 		TARGET = {key = _G.key.VK_TAB, modifier = nil},
+		START_BOT = {key = _G.key.VK_DELETE, modifier = nil},
+		STOP_BOT = {key = _G.key.VK_END, modifier = nil}
 	},
 	options = {
 		ENABLE_FIGHT_SLOW_TURN = false,
@@ -101,7 +103,6 @@ function settings.load()
 	checkHotkeys("STRAFF_LEFT");
 	checkHotkeys("STRAFF_RIGHT");
 	checkHotkeys("JUMP");
-	--checkHotkeys("CLEAR_TARGET");
 	checkHotkeys("TARGET");
 end
 

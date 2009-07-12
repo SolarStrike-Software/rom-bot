@@ -27,3 +27,5 @@ charClass2_offset = 0x2CC;
 charLevel2_offset = 0x2D0;
 pawnAttackable_offset = 0x28E;
 inBattle_offset = 0x672;
+
+party1_offset = 0x0C;
