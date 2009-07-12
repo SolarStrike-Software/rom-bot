@@ -821,7 +821,6 @@ function CPlayer:update()
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
 		error("Error reading memory in CPlayer:update()");
 	end
-
 end
 
 function CPlayer:clearTarget()

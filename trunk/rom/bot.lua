@@ -1,4 +1,4 @@
-local BOT_VERSION = 2.43;
+BOT_VERSION = 2.43;
 
 include("database.lua");
 include("addresses.lua");
@@ -13,9 +13,9 @@ include("settings.lua");
 
 DEBUG_ASSERT = false; -- Change to 'true' to debug memory reading problems.
 
-
-setStartKey(key.VK_DELETE);
-setStopKey(key.VK_END);
+settings.load();
+setStartKey(settings.hotkeys.START_BOT.key);
+setStopKey(settings.hotkeys.STOP_BOT.key);
 
 
 
@@ -92,16 +92,20 @@ function main()
 	printf("playerAddr: 0x%X\n", player.Address);
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
-	settings.load();
+	--settings.load();
+	--setStartKey(settings.hotkeys.START_BOT.key);
+	--setStopKey(settings.hotkeys.STOP_BOT.key);
 
+	-- Set window name, install timer to automatically do it once a second
 	if( forcedProfile ) then
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, forcedProfile));
 		settings.loadProfile(forcedProfile);
+		registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, forcedProfile);
 	else
 		settings.loadProfile(player.Name);
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, player.Name));
+		registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, player.Name);
 	end
-
 
 	-- Load "english" first, to fill in any gaps in the users' set language.
 	local function setLanguage(name)
