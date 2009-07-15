@@ -438,9 +438,13 @@ function CPlayer:fight()
 	self:update();
 	if( self.TargetPtr ~= 0 ) then
 		if( settings.profile.options.LOOT == true ) then
-			if( not self.Battling ) then
-				-- Skip looting when under attack
+			if( settings.profile.options.LOOT_IN_COMBAT == true ) then
 				self:loot();
+			else
+				if( not self.Battling ) then
+					-- Skip looting when under attack
+					self:loot();
+				end
 			end
 		end
 
@@ -520,7 +524,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	-- If more than X degrees off, correct before moving.
 	local rotateStartTime = os.time();
-	while( angleDif > math.rad(35) ) do
+	local turningDir = -1; -- 0 = left, 1 = right
+	while( angleDif > math.rad(65) ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -550,15 +555,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			--self:faceDirection( angle );
 		end
 
-		yrest(100);
+		yrest(50);
 		self:update();
 		angleDif = angleDifference(angle, self.Direction);
 	end
 
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-
-	yrest(50);
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);

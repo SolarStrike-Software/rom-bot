@@ -31,6 +31,7 @@ settings_default = {
 			WAYPOINT_DEVIATION = 0,
 			LOOT = true,
 			LOOT_TIME = 2000,
+			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
 			POTION_COOLDOWN = 15,
 			MAX_FIGHT_TIME = 30,

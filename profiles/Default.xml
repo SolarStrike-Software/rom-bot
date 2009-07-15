@@ -14,6 +14,7 @@
 		<option name="WAYPOINT_DEVIATION" value="0" />
 		<option name="LOOT" value="true" />
 		<option name="LOOT_TIME" value="2000" />
+		<option name="LOOT_IN_COMBAT" value="true" />
 		<option name="LOOT_DISTANCE" value="100" />
 		<option name="POTION_COOLDOWN" value="15" />
 		<option name="MAX_FIGHT_TIME" value="15" />
