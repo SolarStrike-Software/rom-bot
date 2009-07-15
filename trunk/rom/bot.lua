@@ -317,7 +317,7 @@ function main()
 				end
 			end
 
-			yrest(10);
+			coroutine.yield();
 
 		end
 	end
