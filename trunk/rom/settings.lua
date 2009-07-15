@@ -40,6 +40,7 @@ settings_default = {
 			LOGOUT_SHUTDOWN = false,
 			TARGET_LEVELDIF_BELOW = 99,
 			TARGET_LEVELDIF_ABOVE = 99,
+			QUICK_TURN = false,
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
