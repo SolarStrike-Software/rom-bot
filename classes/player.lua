@@ -530,6 +530,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			return false, WF_NONE;
 		end;
 
+		if( settings.profile.options.QUICK_TURN == true ) then
+			self:faceDirection(angle);
+			angleDif = angleDifference(angle, self.Direction);
+			break;
+		end
+
 		if( os.difftime(os.time(), rotateStartTime) > 3.0 ) then
 			-- Sometimes both left and right rotate get stuck down.
 			-- Press them both to make sure they are fully released.

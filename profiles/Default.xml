@@ -26,6 +26,8 @@
 		<!-- attack monsters 10 levels above or below your level -->
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
 		<option name="TARGET_LEVELDIF_ABOVE" value="10" />
+
+		<option name="QUICK_TURN" value="false" />
 	</options>
 
 	<friends>
