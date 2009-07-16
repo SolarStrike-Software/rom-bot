@@ -11,7 +11,7 @@ function database.load()
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
 		local name, mana, rage, energy, concentration, range, minrange, casttime, cooldown, type, target;
-		local maxhpper, priority, manainc, level;
+		local toggleable, maxhpper, priority, manainc, level;
 
 		name = v:getAttribute("name");
 		mana = v:getAttribute("mana");
@@ -24,6 +24,7 @@ function database.load()
 		cooldown = v:getAttribute("cooldown");
 		type = v:getAttribute("type");
 		target = v:getAttribute("target");
+		toggleable = v:getAttribute("toggleable");
 		maxhpper = v:getAttribute("maxhpper");
 		manainc = v:getAttribute("manainc");
 		level = v:getAttribute("level");
@@ -89,6 +90,7 @@ function database.load()
 		if(cooldown) then tmp.Cooldown = cooldown; end;
 		if(type) then tmp.Type = type; end;
 		if(target) then tmp.Target = target; end;
+		if(toggleable) then tmp.Toggleable = toggleable; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
 		if(priority) then tmp.priority = priority; end;
 		if(manainc) then tmp.ManaInc = manainc; end;
