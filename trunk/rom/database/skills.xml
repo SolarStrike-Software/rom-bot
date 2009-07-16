@@ -246,6 +246,7 @@
 
 
 	<!-- Scout skills -->
+	<skill name="SCOUT_AUTOSHOT" consumable="1" range="180" cooldown="3.5" type="damage" target="enemy" toggleable="true" />
 	<skill name="SCOUT_SHOT" consumable="1" range="200" cooldown="4" type="damage" target="enemy" />
 	<skill name="SCOUT_VAMPIRE_ARROWS" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
 	<skill name="SCOUT_JOINT_BLOW" concentration="30" range="50" type="damage" target="enemy" />

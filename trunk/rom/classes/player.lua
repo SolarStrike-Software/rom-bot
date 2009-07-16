@@ -140,6 +140,15 @@ function CPlayer:initialize()
 	memoryWriteInt(getProc(), self.Address + castbar_offset, 0);
 end
 
+-- Resets "toggled" skills to off
+function CPlayer:resetSkills()
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Toggled ) then
+			v.Toggled = false;
+		end
+	end
+end
+
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills()
@@ -418,6 +427,8 @@ function CPlayer:fight()
 			break;
 		end
 	end
+
+	self:resetSkills();
 
 	if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 		unregisterTimer("timedAttack");

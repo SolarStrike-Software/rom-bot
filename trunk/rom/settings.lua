@@ -193,7 +193,6 @@ function settings.loadProfile(name)
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
 
-
 			-- Over-ride attributes
 			local priority, maxhpper, inbattle
 			priority = v:getAttribute("priority");
@@ -223,6 +222,7 @@ function settings.loadProfile(name)
 			tmp.modifier = modifier;
 			tmp.Level = level;
 
+			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
 			if( inbattle ) then tmp.InBattle = inbattle; end;

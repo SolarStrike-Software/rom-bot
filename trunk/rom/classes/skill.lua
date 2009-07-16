@@ -29,6 +29,9 @@ CSkill = class(
 		self.Level = 1;
 
 		self.MaxHpPer = 100; -- Must have less than this % HP to cast
+		self.Toggleable = false;
+		self.Toggled = false;
+
 		self.hotkey = 0;
 		self.modifier = 0;
 
@@ -48,8 +51,9 @@ CSkill = class(
 			self.Type = copyfrom.Type;
 			self.Target = copyfrom.Target;
 			self.InBattle = copyfrom.InBattle;
-			self.MaxHpPer = copyfrom.MaxHpPer;
 			self.ManaInc = copyfrom.ManaInc;
+			self.MaxHpPer = copyfrom.MaxHpPer;
+			self.Toggleable = copyfrom.Toggleable;
 			self.priority = copyfrom.priority;
 		end
 	end
@@ -126,6 +130,10 @@ function CSkill:canUse()
 		end
 	end
 
+	if( self.Toggleable and self.Toggled == true ) then
+		return false;
+	end
+
 	return true;
 end
 
@@ -155,6 +163,10 @@ function CSkill:use()
 			local msg = sprintf("onSkillCast error: %s", err);
 			error(msg);
 		end
+	end
+
+	if( self.Toggleable ) then
+		self.Toggled = true;
 	end
 
 end
