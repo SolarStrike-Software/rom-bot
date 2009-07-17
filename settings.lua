@@ -135,7 +135,7 @@ function settings.loadProfile(name)
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
 
 			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf("profile error: %s does not name a valid hotkey!", v:getAttribute("key"));
+				local err = sprintf("profile error: %s does not name a valid hotkey!", tostring(v:getAttribute("key")));
 				error(err, 0);
 			end
 		end
