@@ -46,7 +46,7 @@ function getWin()
 	end
 
 	if( __WIN == nil or not windowValid(__WIN) ) then
-		local winlist = findWindowList("Runes of Magic");
+		local winlist = findWindowList("Runes of Magic", "Radiant Arcana");
 
 		if( #winlist == 0 ) then
 			error("RoM window not found! RoM must be running first.", 0);

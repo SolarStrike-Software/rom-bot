@@ -376,7 +376,10 @@ function CPlayer:fight()
 			yrest(500);
 		end
 
-		if( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
+		if( settings.profile.options.QUICK_TURN ) then
+			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
+			self:faceDirection(angle);
+		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
 			-- Make sure we're facing the enemy
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 			local angleDif = angleDifference(angle, self.Direction);
@@ -448,7 +451,9 @@ function CPlayer:fight()
 	-- Loot and clear target.
 	self:update();
 	if( self.TargetPtr ~= 0 ) then
-		if( settings.profile.options.LOOT == true ) then
+		local target = CPawn(self.TargetPtr);
+
+		if( settings.profile.options.LOOT == true and target.HP <= 0 ) then
 			if( settings.profile.options.LOOT_IN_COMBAT == true ) then
 				self:loot();
 			else
@@ -532,6 +537,11 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 	end
 
+	-- QUICK_TURN only
+	if( settings.profile.options.QUICK_TURN == true ) then
+		self:faceDirection(angle);
+		angleDif = angleDifference(angle, self.Direction);
+	end
 
 	-- If more than X degrees off, correct before moving.
 	local rotateStartTime = os.time();
@@ -540,12 +550,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
-
-		if( settings.profile.options.QUICK_TURN == true ) then
-			self:faceDirection(angle);
-			angleDif = angleDifference(angle, self.Direction);
-			break;
-		end
 
 		if( os.difftime(os.time(), rotateStartTime) > 3.0 ) then
 			-- Sometimes both left and right rotate get stuck down.
@@ -653,7 +657,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		angleDif = angleDifference(angle, self.Direction);
 
 		-- Continue to make sure we're facing the right direction
-		if( angleDif > math.rad(15) ) then
+		if( angleDif > math.rad(15) and settings.profile.options.QUICK_TURN == false ) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
 
