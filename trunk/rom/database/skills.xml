@@ -70,6 +70,8 @@
 	<skill name="PRIEST_RESURRECTION" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
 	<skill name="PRIEST_GRACE_OF_LIFE" mana="30" manainc="3.0" range="200" type="buff" target="friendly" cooldown="1800" />
 	<skill name="PRIEST_GROUP_HEAL" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
+	<!-- TODO: Chain of Light needs manainc -->
+	<skill name="PRIEST_CHAIN_OF_LIGHT" mana="60" range="217" minrange="180" casttime="6" type="damage" target="enemy" />
 
 	<!-- Elite -->
 	<skill name="PRIEST_BATTLE_MONK_STANCE" mana="20" cooldown="600" type="buff" target="self" />
