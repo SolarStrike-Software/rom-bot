@@ -24,7 +24,7 @@ CSkill = class(
 		self.LastCastTime = 0; --os.time();
 		self.Type = STYPE_DAMAGE;
 		self.Target = STARGET_ENEMY;
-		self.InBattle = true; -- "true" = usable only in battle, false = out of battle
+		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
 		self.ManaInc = 0; -- Increase in mana per level
 		self.Level = 1;
 
@@ -82,6 +82,11 @@ function CSkill:canUse()
 	if( player.Battling and self.InBattle == false ) then
 		return false;
 	end
+
+	-- This skill can only be used in battle
+	if( not player.Battling and self.InBattle == true ) then
+		return false;
+	end   
 
 	-- Needs an enemy target
 	if( self.Target == STARGET_ENEMY ) then

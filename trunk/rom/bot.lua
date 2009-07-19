@@ -3,6 +3,7 @@ BOT_VERSION = 2.44;
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
+include("classes/camera.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
 include("classes/waypointlist_wander.lua");
@@ -27,18 +28,12 @@ print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
 "\83\111\102\116\119\97\114\101\44\32\119\119\119\46\115" ..
 "\111\108\97\114\115\116\114\105\107\101\46\110\101\116\n");
 function main()
-	if( getVersion() < 100 ) then
-		while( keyPressed(startKey) ) do yrest(1); end;
-	else
-		while( keyPressed(getStartKey()) ) do yrest(1); end;
-	end
-
 	local forcedProfile = nil;
 	local forcedPath = nil;
 	local forcedRetPath = nil;
 
 	for i = 2,#args do
-		if( args[i] == "update" and getVersion() >= 100 ) then
+		if( args[i] == "update" ) then
 			include("update.lua");
 		end
 
@@ -79,12 +74,17 @@ function main()
 	printf("Attempt to read playerAddress\n");
 
 	if( playerAddress == nil ) then playerAddress = 0; end;
-	logMessage(sprintf("Using static base address 0x%X, player address 0x%X",
+	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
 		tonumber(staticcharbase_address), tonumber(playerAddress)));
 
 	player = CPlayer(playerAddress);
 	player:initialize();
 	player:update();
+
+	local cameraAddress = memoryReadIntPtr(getProc(), staticcharbase_address, camPtr_offset);
+	if( cameraAddress == nil ) then cameraAddress = 0; end;
+
+	camera = CCamera(cameraAddress);
 
 	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
 	printf("mousePawn: 0x%X\n", mousePawn.Address);

@@ -1,21 +1,46 @@
-local updatePattern = string.char(0x85, 0xED, 0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x45, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0x56, 0x50);
-local updatePatternMask = "xxxx????xx?xx????xx";
+local charUpdatePattern = string.char(0x85, 0xED, 0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x45, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0x56, 0x50);
+local charUpdateMask = "xxxx????xx?xx????xx";
+local charUpdateOffset = 13;
+
+local camUpdatePattern = string.char(0x83, 0x3D, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x53, 0x8B, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF, 0x55);
+local camUpdateMask = "xx????xxxx????x";
+local camUpdateOffset = 2;
 
 local romMouseRClickFlag = 0x8000;
 local romMouseLClickFlag = 0x80;
 
-function getUpdatePattern()
-	return updatePattern;
+function getCharUpdatePattern()
+	return charUpdatePattern;
 end
 
-function getUpdatePatternMask()
-	return updatePatternMask;
+function getCharUpdateMask()
+	return charUpdateMask;
 end
 
+function getCharUpdateOffset()
+	return charUpdateOffset;
+end
+
+function getCamUpdatePattern()
+	return camUpdatePattern;
+end
+
+function getCamUpdateMask()
+	return camUpdateMask;
+end
+
+function getCamUpdateOffset()
+	return camUpdateOffset;
+end
 
 function checkExecutableCompatible()
-	if( findPatternInProcess(getProc(), updatePattern, updatePatternMask,
-	patternstart_address, 1) == 0 ) then
+	if( findPatternInProcess(getProc(), charUpdatePattern, charUpdateMask,
+	charpatternstart_address, 1) == 0 ) then
+		return false;
+	end
+
+	if( findPatternInProcess(getProc(), camUpdatePattern, camUpdateMask,
+	campatternstart_address, 1) == 0 ) then
 		return false;
 	end
 

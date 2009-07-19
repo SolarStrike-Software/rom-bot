@@ -540,6 +540,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	-- QUICK_TURN only
 	if( settings.profile.options.QUICK_TURN == true ) then
 		self:faceDirection(angle);
+		self:update();
 		angleDif = angleDifference(angle, self.Direction);
 	end
 
@@ -657,9 +658,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		angleDif = angleDifference(angle, self.Direction);
 
 		-- Continue to make sure we're facing the right direction
-		if( angleDif > math.rad(15) and settings.profile.options.QUICK_TURN == false ) then
-			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-			keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
+		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
+			self:faceDirection(angle);
+		end
+
+		if( angleDif > math.rad(15) ) then
+			--keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+			--keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
 
 			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
@@ -670,15 +675,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
 					yrest(100);
 			end
-		elseif( angleDif > 0.0 ) then
+		elseif( angleDif > math.rad(1) ) then
+			self:faceDirection(angle);
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			self:faceDirection(angle);
-
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		else
-			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );	
+			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		end
 
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
@@ -712,12 +715,10 @@ function CPlayer:faceDirection(dir)
 	local Vec1 = math.cos(dir);
 	local Vec2 = math.sin(dir);
 
-	--local pVec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
-	--local pVec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);
+	memoryWriteFloat(getProc(), self.Address + chardirXUVec_offset, Vec1);
+	memoryWriteFloat(getProc(), self.Address + chardirYUVec_offset, Vec2);
 
-	memoryWriteFloat(getProc(), self.Address + camUVec1_offset, Vec1);
-	memoryWriteFloat(getProc(), self.Address + camUVec2_offset, Vec2);
-
+	camera:setRotation(dir);
 end
 
 -- Attempt to unstick the player
@@ -833,8 +834,8 @@ function CPlayer:update()
 
 	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]) == 1;
 
-	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec1_offset), language[41]);
-	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + camUVec2_offset), language[41]);
+	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirXUVec_offset), language[41]);
+	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirYUVec_offset), language[41]);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
