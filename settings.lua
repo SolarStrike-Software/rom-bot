@@ -199,10 +199,11 @@ function settings.loadProfile(name)
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			inbattle = v:getAttribute("inbattle");
 
-			if( inbattle ) then
+			if( inbattle ~= nil ) then
 				if( inbattle == "true" ) then
 					inbattle = true;
-				else
+				end;
+				if( inbattle == "false" ) then
 					inbattle = false;
 				end;
 			end
@@ -225,7 +226,7 @@ function settings.loadProfile(name)
 			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
-			if( inbattle ) then tmp.InBattle = inbattle; end;
+			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
 
 			table.insert(settings.profile.skills, tmp);
 		end
