@@ -723,6 +723,35 @@ end
 
 -- Attempt to unstick the player
 function CPlayer:unstick()
+
+-- after 4x unsuccesfull unsticks try to reach next waypoint
+	if( self.unstick_counter == 5 ) then
+		if( self.Returning ) then
+			__RPL:advance();
+		else
+			__WPL:advance();
+		end;
+		return;	
+	end;
+
+-- after 8x unstick try to run away a little and then go to the nearest waypoint
+	if( self.unstick_counter == 9 ) then
+	 	-- turn and move back for 10 seconds
+		keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
+		yrest(1900);
+		keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+		keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+		yrest(10000);
+		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+		self:update();
+		if( player.Returning ) then
+			__RPL:setWaypointIndex(__RPL:getNearestWaypoint(player.X, player.Z));
+		else
+			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+		end;
+		return;
+	end;								-- STEPH13
+
  	-- Move back for x seconds
 	keyboardHold(settings.hotkeys.MOVE_BACKWARD.key);
 	yrest(1000);
@@ -876,6 +905,8 @@ function CPlayer:isFriend(pawn)
 end
 
 function CPlayer:logoutCheck()
+-- timed logout check
+
 	if(self.Battling == true) then
 		return;
 	end;
@@ -886,28 +917,43 @@ function CPlayer:logoutCheck()
 		if( elapsed >= settings.profile.options.LOGOUT_TIME * 60 ) then
 			cprintf(cli.yellow, language[50]);
 
-			if( settings.profile.hotkeys.LOGOUT_MACRO ) then
-				keyboardPress(settings.profile.hotkeys.LOGOUT_MACRO.key);
-				yrest(12000); -- Wait for the log out to process
-			else
-				local PID = findProcessByWindow(getWin()); -- Get process ID
-				os.execute("TASKKILL /PID " .. PID .. " /F");
-				while(true) do
-					-- Wait for process to close...
-					if( findProcessByWindow(__WIN) ~= PID ) then
-						printf("Process successfully closed\n");
-						break;
-					end;
-					yrest(100);
-				end
-			end
-
-			if( settings.profile.options.LOGOUT_SHUTDOWN ) then
-				cprintf(cli.yellow, language[51]);
-				os.execute("\"%windir%\\system32\\shutdown.exe -s -t 30\" "); --Shutdown in 30 seconds.
-			end
-
-			error("Exiting: Auto-logout", 0); -- Not really an error, but it will drop us back to shell.
+		self:logout();
 		end
 	end
+end
+
+function CPlayer:logout(fc_shutdown)
+-- importing:
+--   fc_shutdown true/false/nil
+--   if nil, profile option 'settings.profile.options.LOGOUT_SHUTDOWN'
+--   will decide if shutdown or not occurs
+
+	if( fc_shutdown == nil  and  settings.profile.options.LOGOUT_SHUTDOWN == true ) then
+		fc_shutdown = true;
+	end;
+
+	if( settings.profile.hotkeys.LOGOUT_MACRO ) then
+		keyboardPress(settings.profile.hotkeys.LOGOUT_MACRO.key);
+		yrest(30000);	-- Wait for the log out to process
+	else
+		local PID = findProcessByWindow(getWin()); -- Get process ID
+		os.execute("TASKKILL /PID " .. PID .. " /F");
+		while(true) do
+			-- Wait for process to close...
+			if( findProcessByWindow(__WIN) ~= PID ) then
+				printf("Process successfully closed\n");
+				break;
+			end;
+			yrest(100);
+		end
+	end
+
+	if( fc_shutdown ) then
+		cprintf(cli.yellow, language[51]);
+printf("DEBUG: ************* SHUTDOWN ************\n");
+--		os.execute("\"%windir%\\system32\\shutdown.exe -s -t 30\" "); --Shutdown in 30 seconds.
+	end
+
+	error("Exiting: Auto-logout", 0); -- Not really an error, but it will drop us back to shell.
+
 end
