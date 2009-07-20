@@ -750,7 +750,7 @@ function CPlayer:unstick()
 			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 		end;
 		return;
-	end;								-- STEPH13
+	end;
 
  	-- Move back for x seconds
 	keyboardHold(settings.hotkeys.MOVE_BACKWARD.key);
@@ -950,8 +950,7 @@ function CPlayer:logout(fc_shutdown)
 
 	if( fc_shutdown ) then
 		cprintf(cli.yellow, language[51]);
-printf("DEBUG: ************* SHUTDOWN ************\n");
---		os.execute("\"%windir%\\system32\\shutdown.exe -s -t 30\" "); --Shutdown in 30 seconds.
+		os.execute("\"%windir%\\system32\\shutdown.exe -s -t 30\" "); --Shutdown in 30 seconds.
 	end
 
 	error("Exiting: Auto-logout", 0); -- Not really an error, but it will drop us back to shell.
