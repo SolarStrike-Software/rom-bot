@@ -283,6 +283,7 @@ function main()
 		
 
 			if( success ) then
+				player.unstick_counter = 0;	-- reset unstick counter
 				if( player.Returning ) then
 					-- Completed. Return to normal waypoints.
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
@@ -313,6 +314,8 @@ function main()
 					cprintf(cli.red, language[9]);
 					distBreakCount = 0;
 					player:clearTarget();
+					player.unstick_counter = player.unstick_counter + 1;
+					if( player.unstick_counter > 10 ) then player:logout(); end;	-- to many tries, logout
 					player:unstick();
 				end
 			end

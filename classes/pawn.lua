@@ -64,6 +64,7 @@ CPawn = class(
 		self.PotionLastUseTime = 0;
 		self.Returning = false; -- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
+		self.unstick_counter = 0; -- counts unstick tries, resets if waypoint reached
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
