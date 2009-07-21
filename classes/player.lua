@@ -217,6 +217,7 @@ function CPlayer:checkPotions()
 		keyboardPress(settings.profile.hotkeys.HP_POTION.key);
 		if( modifier ) then keyboardRelease(modifier); end
 
+		self.PotionLastUseTime = os.time();
 		cprintf(cli.green, language[10]);
 
 		if( self.Fighting ) then
@@ -232,6 +233,7 @@ function CPlayer:checkPotions()
 			keyboardPress(settings.profile.hotkeys.MP_POTION.key);
 			if( modifier ) then keyboardRelease(modifier); end
 
+			self.PotionLastUseTime = os.time();
 			cprintf(cli.green, language[11]);
 
 			if( self.Fighting ) then
