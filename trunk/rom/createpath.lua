@@ -31,6 +31,8 @@ end
 wpKey = key.VK_NUMPAD1;		-- insert a movement point
 harvKey = key.VK_NUMPAD2;	-- insert a harvest point	
 saveKey = key.VK_NUMPAD3;	-- save the waypoints
+restartKey = key.VK_NUMPAD9;	-- restart waypoints script
+
 
 function saveWaypoints(list)
 	keyboardBufferClear();
@@ -72,10 +74,11 @@ function main()
 	player:update();
 
 	cprintf(cli.green, "RoM waypoint creator\n");
-	printf("Hotkeys:\n  (%s)\tInsert new waypoint(at player position)\n"
-		.. "  (%s)\tInsert new harvest waypoint(at player position)\n"	
-		.. "  (%s)\tSave waypoints\n",
-		getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey));
+	printf("Hotkeys:\n  (%s)\tInsert new waypoint (at player position)\n"
+		.. "  (%s)\tInsert new harvest waypoint (at player position)\n"	
+		.. "  (%s)\tSave waypoints and quit\n"
+		.. "  (%s)\tSave waypoints and restart\n",
+		getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), getKeyName(restartKey) );
 
 	while(true) do
 
@@ -94,12 +97,18 @@ function main()
 			hf_key = "SAVE";
 		end;
 
+		if( keyPressed(restartKey) ) then	-- restart key pressed
+			hf_key_pressed = true;
+			hf_key = "RESTART";
+		end;
+
 		if( hf_key_pressed == false ) then	-- key released, do the work
 
 			-- SAVE Key: save waypoint file and exit
 			if( hf_key == "SAVE" ) then
 				saveWaypoints(wpList);
-				break;
+				hf_key = " ";	-- clear last pressed key
+				error("   ", 0); -- Not really an error, but it will drop us back to shell.
 			end;
 
 			-- waypoint or harvest point key: create a waypoint/harvest waypoint
@@ -127,6 +136,12 @@ function main()
 
 			end;
 
+			if( hf_key == "RESTART" ) then
+				saveWaypoints(wpList);
+				hf_key = " ";	-- clear last pressed key
+				break;
+			end;
+
 			hf_key = " ";	-- clear last pressed key
 		end;
 
@@ -134,4 +149,7 @@ function main()
 	end
 
 end
-startMacro(main, true);
+
+while (true) do
+	startMacro(main, true);
+end;
