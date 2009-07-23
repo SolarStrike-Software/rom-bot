@@ -81,7 +81,13 @@ function CPlayer:harvest()
 		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
 
 			self:update();
-			if( self.Battling ) then
+
+			if( self.Battling ) then	-- we get aggro, stop harversting
+				if( self.Returning ) then	-- set wp one back to harverst wp
+					__RPL:backward();	-- again after the fight
+				else
+					__WPL:backward();
+				end;
 				break;
 			end;
 
@@ -726,12 +732,24 @@ end
 -- Attempt to unstick the player
 function CPlayer:unstick()
 
--- after 4x unsuccesfull unsticks try to reach next waypoint
-	if( self.unstick_counter == 5 ) then
+-- after 2x unsuccesfull unsticks try to reach last waypoint
+	if( self.unstick_counter == 3 ) then
 		if( self.Returning ) then
-			__RPL:advance();
+			__RPL:backward();
 		else
-			__WPL:advance();
+			__WPL:backward();
+		end;
+		return;	
+	end;
+
+-- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
+	if( self.unstick_counter == 6 ) then
+		if( self.Returning ) then
+			__RPL:advance();	-- forward to sticky wp
+			__RPL:advance();	-- and one more
+		else
+			__WPL:advance();	-- forward to sticky wp
+			__WPL:advance();	-- and one more
 		end;
 		return;	
 	end;
@@ -767,8 +785,10 @@ function CPlayer:unstick()
 		straffkey = settings.hotkeys.STRAFF_RIGHT.key;
 	end
 
+	local straff_bonus = self.unstick_counter * 120;
+
 	keyboardHold(straffkey);
-	yrest(500 + math.random(500));
+	yrest(500 + math.random(500) + straff_bonus);
 	keyboardRelease(straffkey);
 end
 

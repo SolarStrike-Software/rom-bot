@@ -283,7 +283,14 @@ function main()
 		
 
 			if( success ) then
-				player.unstick_counter = 0;	-- reset unstick counter
+
+-- if we stick directly at a wp the counter would reseted even if we are sticked
+-- hence we reset the counter only after 3 successfull waypoints
+				player.success_waypoints = player.success_waypoints + 1;
+				if( player.success_waypoints > 3 ) then
+					player.unstick_counter = 0;	-- reset unstick counter
+				end;
+
 				if( player.Returning ) then
 					-- Completed. Return to normal waypoints.
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
@@ -314,7 +321,8 @@ function main()
 					cprintf(cli.red, language[9]);
 					distBreakCount = 0;
 					player:clearTarget();
-					player.unstick_counter = player.unstick_counter + 1;
+					player.success_waypoints = 0;	-- counter for successfull waypoints in row
+					player.unstick_counter = player.unstick_counter + 1;	-- count our unstick tries
 					if( player.unstick_counter > 10 ) then player:logout(); end;	-- to many tries, logout
 					player:unstick();
 				end
