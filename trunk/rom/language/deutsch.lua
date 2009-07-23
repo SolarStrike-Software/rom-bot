@@ -34,6 +34,6 @@ language = {
 	[40] = "Spieleradresse ge\132ndert: 0x%X\n",
 	[41] = "Speicherlesung schlug fehl",
 
-	[50] = "Automatisches Ausloggen.\n",
+	[50] = "%s  Automatisches Ausloggen\n",
 	[51] = "Herunterfahren des Systems.\n"
 };

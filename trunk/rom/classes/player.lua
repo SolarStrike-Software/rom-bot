@@ -956,9 +956,7 @@ function CPlayer:logoutCheck()
 		local elapsed = os.difftime(os.time(), self.BotStartTime);
 
 		if( elapsed >= settings.profile.options.LOGOUT_TIME * 60 ) then
-			cprintf(cli.yellow, language[50]);
-
-		self:logout();
+			self:logout();
 		end
 	end
 end
@@ -968,6 +966,8 @@ function CPlayer:logout(fc_shutdown)
 --   fc_shutdown true/false/nil
 --   if nil, profile option 'settings.profile.options.LOGOUT_SHUTDOWN'
 --   will decide if shutdown or not occurs
+
+	cprintf(cli.yellow, language[50], os.date() );	-- Logout at %time%
 
 	if( fc_shutdown == nil  and  settings.profile.options.LOGOUT_SHUTDOWN == true ) then
 		fc_shutdown = true;
