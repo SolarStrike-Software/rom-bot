@@ -66,7 +66,8 @@ CPawn = class(
 		self.BotStartTime = os.time(); -- Records when the bot was started.
 		self.unstick_counter = 0; -- counts unstick tries, resets if waypoint reached
 		self.success_waypoints = 0; -- count consecutively successfull reached waypoints 
-
+		self.Cast_to_target = 0; -- count casts to our enemy target
+		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
 );

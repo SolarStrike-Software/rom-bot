@@ -172,6 +172,11 @@ function CPlayer:checkSkills()
 				self:update();
 			end
 
+			-- break cast if aggro before casting
+			if( self:check_aggro_before_cast(false) ) then	-- without jump
+				return;
+			end;
+
 			v:use();
 			yrest(100);
 			self:update();
@@ -181,6 +186,10 @@ function CPlayer:checkSkills()
 			if( v.CastTime > 0 ) then
 				local startTime = os.time();
 				while( not self.Casting ) do
+					-- break cast with jump if aggro before casting finished
+					if( self:check_aggro_before_cast(true) ) then	-- with jump
+						return;
+					end;
 					yrest(50);
 					self:update();
 					if( os.difftime(os.time(), startTime) > v.CastTime ) then
@@ -190,6 +199,10 @@ function CPlayer:checkSkills()
 				end;
 
 				while(self.Casting) do
+					-- break cast with jump if aggro before casting finished
+					if( self:check_aggro_before_cast(true) ) then	--  with jump
+						return;
+					end;
 					-- Waiting for casting to finish...
 					yrest(10);
 					self:update();
@@ -198,6 +211,11 @@ function CPlayer:checkSkills()
 			else
 				yrest(500); -- assume 0.5 second yrest
 			end
+
+			-- count cast to enemy targets
+			if( v.Target == 0 ) then	-- target is unfriendly
+				self.Cast_to_target = self.Cast_to_target + 1;
+			end;
 
 			if( v.CastTime == 0 ) then
 				yrest(500);
@@ -301,6 +319,7 @@ function CPlayer:fight()
 	local target = self:getTarget();
 	local lastHitTime = os.time();
 	local lastTargetHP = target.HP;
+	self.Cast_to_target = 0;				-- reset counter cast at enemy target
 
 	while( self:haveTarget() ) do
 		-- If we die, break
@@ -977,4 +996,30 @@ function CPlayer:logout(fc_shutdown)
 
 	error("Exiting: Auto-logout", 0); -- Not really an error, but it will drop us back to shell.
 
+end
+
+function CPlayer:check_aggro_before_cast(_jump)
+-- break cast in last moment / works not for groups, because you get battling flag from your groupmembers  !!!
+-- works also if target is not visible and we get aggro from another mob
+-- _jump = true       abort cast with jump hotkey
+
+	self:update();
+	if( self.Battling == false )  then		-- no aggro
+--	if( self.Battling == false  or			-- no aggro
+--	    self.Cast_to_target ~= 0 ) then		-- not first cast to target
+		return false;
+	end;
+			
+	local target = self:getTarget();
+	if( self.TargetPtr ~= 0 ) then  target:update(); end;
+
+	-- check if the target is attacking us, if not we can break and take the other mob
+	if( target.TargetPtr ~= self.Address  ) then	-- target is no attacking us
+		if( _jump == true ) then		-- jump to abort casting
+			keyboardPress(settings.hotkeys.JUMP.key);
+		end;
+		cprintf(cli.green, "Aggro during first strike/cast, abort that cast/target: %s\n", target.Name);
+		self:clearTarget();
+		return true;
+	end;
 end
