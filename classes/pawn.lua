@@ -65,6 +65,7 @@ CPawn = class(
 		self.Returning = false; -- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
 		self.unstick_counter = 0; -- counts unstick tries, resets if waypoint reached
+		self.success_waypoints = 0; -- count consecutively successfull reached waypoints 
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

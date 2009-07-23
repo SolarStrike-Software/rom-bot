@@ -92,6 +92,21 @@ function CWaypointList:advance()
 	end
 end
 
+function CWaypointList:backward()
+
+	if( self.Direction == WPT_FORWARD ) then
+		self.CurrentWaypoint = self.CurrentWaypoint - 1;
+		if( self.CurrentWaypoint < 1 ) then
+			self.CurrentWaypoint = #self.Waypoints;
+		end
+	else
+		self.CurrentWaypoint = self.CurrentWaypoint + 1;
+		if( self.CurrentWaypoint > #self.Waypoints ) then
+			self.CurrentWaypoint = 1;
+		end
+	end
+end
+
 function CWaypointList:getNextWaypoint()
 	local tmp = CWaypoint(self.Waypoints[self.CurrentWaypoint]);
 
