@@ -107,9 +107,11 @@ function CPlayer:harvest()
 				-- Node is still here
 
 				-- Begin gathering
+				keyboardHold(key.VK_SHIFT);
 				mouseLClick();
 				yrest(100);
 				mouseLClick();
+				keyboardRelease(key.VK_SHIFT);
 
 				-- Wait for a few seconds... constantly check for aggro
 				local startWaitTime = os.time();
