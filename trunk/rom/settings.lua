@@ -244,6 +244,8 @@ function settings.loadProfile(name)
 		end
 	end
 
+	local hf_temp = name;	-- remember profile name shortly
+
 	for i,v in pairs(elements) do
 		local name = v:getName();
 
@@ -261,6 +263,42 @@ function settings.loadProfile(name)
 			loadOnLeaveCombatEvent(v);
 		elseif( string.lower(name) == "onskillcast" ) then
 			loadOnSkillCastEvent(v);
+		elseif( string.lower(name) == "skills_warrior"  and
+		        player.Class1 == CLASS_WARRIOR ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_hunter"  and
+		        player.Class1 == CLASS_HUNTER ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_rogue"  and
+		        player.Class1 == CLASS_ROGUE ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_mage"  and
+		        player.Class1 == CLASS_MAGE ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_priest"  and
+		        player.Class1 == CLASS_PRIEST ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_knight"  and
+		        player.Class1 == CLASS_KNIGHT ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_runedancer"  and
+		        player.Class1 == CLASS_RUNEDANCER ) then
+			loadSkills(v);
+		elseif( string.lower(name) == "skills_druid"  and
+		        player.Class1 == CLASS_DRUID ) then
+			loadSkills(v);
+		else		-- warning for other stuff and misspellings
+			if ( string.lower(name) ~= "skills_warrior"     and
+			     string.lower(name) ~= "skills_hunter"      and
+		 	     string.lower(name) ~= "skills_rogue"       and
+	 		     string.lower(name) ~= "skills_mage"        and
+			     string.lower(name) ~= "skills_priest"      and
+			     string.lower(name) ~= "skills_knight"      and
+			     string.lower(name) ~= "skills_runedancer"  and
+			     string.lower(name) ~= "skills_druid" )     then
+--				cprintf(cli.yellow, language[60], string.lower(name), hf_temp);
+				printf(" *** Unknown tag \'%s\' found in profile \'%s.xml\'. Please check your profile! ***\n", string.lower(name), hf_temp);
+			end;
 		end
 	end
 
