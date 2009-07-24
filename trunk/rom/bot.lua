@@ -56,6 +56,23 @@ function main()
 	cprintf(cli.lightblue, versionMsg .. "\n");
 	logMessage(versionMsg);
 
+	-- Load "english" first, to fill in any gaps in the users' set language.
+	local function setLanguage(name)
+		include(getExecutionPath() .. "/language/" .. name .. ".lua");
+	end
+
+	local lang_base = {};
+	setLanguage("english");
+	for i,v in pairs(language) do lang_base[i] = v; end;
+	setLanguage(settings.options.LANGUAGE);
+	for i,v in pairs(lang_base) do
+		if( language[i] == nil ) then
+			language[i] = v;
+		end
+	end;
+	lang_base = nil; -- Not needed anymore, destroy it.
+	logMessage("Language: " .. settings.options.LANGUAGE);
+
 	database.load();
 
 	attach(getWin());
@@ -92,10 +109,6 @@ function main()
 	printf("playerAddr: 0x%X\n", player.Address);
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
-	--settings.load();
-	--setStartKey(settings.hotkeys.START_BOT.key);
-	--setStopKey(settings.hotkeys.STOP_BOT.key);
-
 	-- Set window name, install timer to automatically do it once a second
 	if( forcedProfile ) then
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, forcedProfile));
@@ -106,23 +119,6 @@ function main()
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, player.Name));
 		registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, player.Name);
 	end
-
-	-- Load "english" first, to fill in any gaps in the users' set language.
-	local function setLanguage(name)
-		include(getExecutionPath() .. "/language/" .. name .. ".lua");
-	end
-
-	local lang_base = {};
-	setLanguage("english");
-	for i,v in pairs(language) do lang_base[i] = v; end;
-	setLanguage(settings.options.LANGUAGE);
-	for i,v in pairs(lang_base) do
-		if( language[i] == nil ) then
-			language[i] = v;
-		end
-	end;
-	lang_base = nil; -- Not needed anymore, destroy it.
-	logMessage("Language: " .. settings.options.LANGUAGE);
 
 	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
 		__WPL = CWaypointListWander();
@@ -283,9 +279,8 @@ function main()
 		
 
 			if( success ) then
-
--- if we stick directly at a wp the counter would reseted even if we are sticked
--- hence we reset the counter only after 3 successfull waypoints
+				-- if we stick directly at a wp the counter would reseted even if we are sticked
+				-- hence we reset the counter only after 3 successfull waypoints
 				player.success_waypoints = player.success_waypoints + 1;
 				if( player.success_waypoints > 3 ) then
 					player.unstick_counter = 0;	-- reset unstick counter
