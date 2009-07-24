@@ -5,7 +5,7 @@ WF_NONE = 0;   -- We didn't fail
 WF_TARGET = 1; -- Failed waypoint because we have a target
 WF_DIST = 2;   -- Broke because our distance somehow increased. It happens.
 WF_STUCK = 3;  -- Failed waypoint because we are stuck on something.
-
+WF_COMBAT = 4; -- stopped waypoint because we are in combat
 
 
 CPlayer = class(CPawn);
@@ -483,6 +483,8 @@ function CPlayer:fight()
 		local target = CPawn(self.TargetPtr);
 
 		if( settings.profile.options.LOOT == true and target.HP <= 0 ) then
+-- client bug: sometimes the target is death but still have HP, thats the reason 
+-- why we skip sometimes looting
 			if( settings.profile.options.LOOT_IN_COMBAT == true ) then
 				self:loot();
 			else
@@ -628,38 +630,27 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			canTarget = true;
 		end
 
+-- stop moving if aggro, bot will stand and wait until to get the target from the client
+	 	if( self.Battling ) then
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+--if( p_debug02 == true ) then	printf("DEBUG: *** diff: %s\n", os.difftime(os.time(), hf_aggro_start_time )); end
+			success = false;
+			failreason = WF_COMBAT;
+			break;
+		end;
+
+
+-- look for a new target while moving
 		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) ) then
-			if(settings.hotkeys.TARGET.modifier) then
-				keyboardHold(settings.hotkeys.TARGET.modifier);
-			end
-			keyboardPress(settings.hotkeys.TARGET.key);
-			if(settings.hotkeys.TARGET.modifier) then
-				keyboardRelease(settings.hotkeys.TARGET.modifier);
-			end
-
-			yrest(10);
-		end
-
-
-		-- We've got a target, fight it instead of worrying about our waypoint.
-		if( self:haveTarget() and self.Fighting == false ) then
-			local target = self:getTarget();
-			if( not target:haveTarget() ) then
-				-- Target is free, attack it.
-				cprintf(cli.turquoise, "Stopping waypoint::target acquired\n");
+			if( self:findTarget() ) then	-- find a new target
+				cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
 				success = false;
 				failreason = WF_TARGET;
 				break;
 			end;
-
-			if( target:getTarget().Address == self.Address ) then
-				cprintf(cli.turquoise, language[28]);
-				success = false;
-				failreason = WF_TARGET;
-				break;
-			end
 		end
-
 
 		self:checkPotions();
 
@@ -1016,12 +1007,51 @@ function CPlayer:check_aggro_before_cast(_jump)
 	if( self.TargetPtr ~= 0 ) then  target:update(); end;
 
 	-- check if the target is attacking us, if not we can break and take the other mob
-	if( target.TargetPtr ~= self.Address  ) then	-- target is no attacking us
+	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
+	    target.HP/target.MaxHP*100 > 90 ) then			-- target is alive and no attacking us
+-- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
+-- and at the same time the target HP are above 0
+-- so we say > 90% life is alive :-)
+
 		if( _jump == true ) then		-- jump to abort casting
 			keyboardPress(settings.hotkeys.JUMP.key);
 		end;
 		cprintf(cli.green, "Aggro during first strike/cast, abort that cast/target: %s\n", target.Name);
+--cprintf(cli.green, "DEBUG target.TargetPtr %s target.HP %s self.Address %s\n", target.TargetPtr, target.HP, self.Address);
 		self:clearTarget();
 		return true;
 	end;
+end
+
+-- find a target with the ingame target key
+-- is used while moving and could also used before moving or after fight
+function CPlayer:findTarget()
+
+	if(settings.hotkeys.TARGET.modifier) then
+		keyboardHold(settings.hotkeys.TARGET.modifier);
+	end
+	keyboardPress(settings.hotkeys.TARGET.key);
+	if(settings.hotkeys.TARGET.modifier) then
+		keyboardRelease(settings.hotkeys.TARGET.modifier);
+	end
+
+	yrest(10);
+
+	-- We've got a target, fight it instead of worrying about our waypoint.
+
+	if( self:haveTarget() ) then
+--	if( self:haveTarget() and self.Fighting == false ) then
+-- do we nee self.Fighting == false check?
+-- not sure, so I just deleted it to see what happens
+
+-- all other checks are within the self:haveTarget(), so the target should be ok
+		local target = self:getTarget();
+		local dist = distance(self.X, self.Z, target.X, target.Z);
+		cprintf(cli.green, "Select new target %s in distance %s\n", target.Name, dist);
+
+		return true;
+	else
+		return false;
+	end;
+	
 end

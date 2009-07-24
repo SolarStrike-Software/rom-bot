@@ -5,7 +5,7 @@ PT_NODE = 4;
 
 CLASS_NONE = -1;
 CLASS_WARRIOR = 1;
-CLASS_HUNTER = 2;
+CLASS_SCOUT = 2;
 CLASS_ROGUE = 3;
 CLASS_MAGE = 4;
 CLASS_PRIEST = 5;
@@ -16,7 +16,7 @@ CLASS_DRUID = 8;
 local classEnergyMap = {
 	[CLASS_NONE] = "none",
 	[CLASS_WARRIOR] = "rage",
-	[CLASS_HUNTER] = "concentration",
+	[CLASS_SCOUT] = "concentration",
 	[CLASS_ROGUE] = "energy",
 	[CLASS_MAGE] = "mana",
 	[CLASS_PRIEST] = "mana",
