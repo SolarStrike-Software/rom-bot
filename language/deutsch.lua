@@ -35,5 +35,7 @@ language = {
 	[41] = "Speicherlesung schlug fehl",
 
 	[50] = "%s  Automatisches Ausloggen\n",
-	[51] = "Herunterfahren des Systems.\n"
+	[51] = "Herunterfahren des Systems.\n",
+
+	[60] = "Unbekannt tag %s in %s.xml Profil. Bitte \129berprüfen Sie Ihr Profil!\n",
 };

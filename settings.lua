@@ -296,8 +296,7 @@ function settings.loadProfile(name)
 			     string.lower(name) ~= "skills_knight"      and
 			     string.lower(name) ~= "skills_runedancer"  and
 			     string.lower(name) ~= "skills_druid" )     then
---				cprintf(cli.yellow, language[60], string.lower(name), hf_temp);
-				printf(" *** Unknown tag \'%s\' found in profile \'%s.xml\'. Please check your profile! ***\n", string.lower(name), hf_temp);
+				cprintf(cli.yellow, language[60], string.lower(name), hf_temp);
 			end;
 		end
 	end
