@@ -266,8 +266,8 @@ function settings.loadProfile(name)
 		elseif( string.lower(name) == "skills_warrior"  and
 		        player.Class1 == CLASS_WARRIOR ) then
 			loadSkills(v);
-		elseif( string.lower(name) == "skills_hunter"  and
-		        player.Class1 == CLASS_HUNTER ) then
+		elseif( string.lower(name) == "skills_scout"  and
+		        player.Class1 == CLASS_SCOUT ) then
 			loadSkills(v);
 		elseif( string.lower(name) == "skills_rogue"  and
 		        player.Class1 == CLASS_ROGUE ) then
@@ -289,7 +289,7 @@ function settings.loadProfile(name)
 			loadSkills(v);
 		else		-- warning for other stuff and misspellings
 			if ( string.lower(name) ~= "skills_warrior"     and
-			     string.lower(name) ~= "skills_hunter"      and
+			     string.lower(name) ~= "skills_scout"       and
 		 	     string.lower(name) ~= "skills_rogue"       and
 	 		     string.lower(name) ~= "skills_mage"        and
 			     string.lower(name) ~= "skills_priest"      and

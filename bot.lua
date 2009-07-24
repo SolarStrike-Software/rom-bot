@@ -221,6 +221,26 @@ function main()
 			player:clearTarget();
 		end
 
+-- if aggro then wait for target from client
+-- we come back to that coding place if we stop moving because of aggro
+		if( player.Battling ) then
+			cprintf(cli.green, language[35]);
+		end;
+		local aggroWaitStart = os.time();
+		while(player.Battling) do
+			if( player:haveTarget() ) then
+				break;
+			end;
+
+			if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
+				cprintf(cli.red, language[34]);
+				break;
+			end;
+
+			yrest(10);
+			player:update();
+		end
+
 
 		if( player:haveTarget() ) then
 			local target = player:getTarget();
@@ -234,25 +254,28 @@ function main()
 				player:fight();
 			end
 
-			player:update();
-			if( player.Battling ) then
-				cprintf(cli.green, language[35]);
-			end;
-
-			local aggroWaitStart = os.time();
-			while(player.Battling) do
-				if( player:haveTarget() ) then
-					break;
-				end;
-
-				if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
-					cprintf(cli.red, language[34]);
-					break;
-				end;
-
-				yrest(10);
-				player:update();
-			end
+-- if I understand right, thats the wait stuff if we get another mob while in the fight function
+-- would say we handle the 'wait for target' stuff outside the 'player:haveTarget ...
+-- means before, because thats also the place to wait if we get aggro while in the moving function
+--			player:update();
+--			if( player.Battling ) then
+--				cprintf(cli.green, language[35]);
+--			end;
+--
+--			local aggroWaitStart = os.time();
+--			while(player.Battling) do
+--				if( player:haveTarget() ) then
+--					break;
+--				end;
+--
+--				if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
+--					cprintf(cli.red, language[34]);
+--					break;
+--				end;
+--
+--				yrest(10);
+--				player:update();
+--			end
 		else
 			local wp = nil; local wpnum = nil;
 
@@ -302,6 +325,10 @@ function main()
 				if( not reason == WF_TARGET ) then
 					cprintf(cli.red, language[8]);
 				end
+
+				if( reason == WF_COMBAT ) then
+					cprintf(cli.turquoise, "We get aggro. Stop moving to waypoint.\n");
+				end;
 
 				if( reason == WF_DIST ) then
 					distBreakCount = distBreakCount + 1;
