@@ -7,7 +7,7 @@
 	<skill name="MAGE_FIRE_WARD" mana="120" cooldown="600" type="buff" target="self" />
 	<skill name="MAGE_ELEMENTAL_CATALYST" cooldown="300" type="buff" target="self" />
 	<skill name="MAGE_FLAME" mana="20" manainc="2.0" range="225" casttime="3" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTROSTATIC_CHARGE" mana="75" manainc="7.5" cooldown="45" type="buff" target="self"  />
+	<skill name="MAGE_ELECTROSTATIC_CHARGE" mana="75" manainc="7.5" cooldown="20" type="buff" target="self"  />
 	<skill name="MAGE_PLASMA_ARROW" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
 	<skill name="MAGE_ELECTRIC_BOLT" mana="30" manainc="3.0" range="200" casttime="1" type="dot" target="enemy" />
 	<skill name="MAGE_GALAXY" mana="35" manainc="3.5" range="150" type="damage" target="enemy" />
