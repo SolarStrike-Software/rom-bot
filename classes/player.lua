@@ -37,6 +37,7 @@ function CPlayer:harvest()
 		yrest(100);
 
 		-- Scan nearby area for a node
+		keyboardHold(key.VK_SHIFT);	-- press shift so you can scan trough players
 		for y = 0,scanHeight-1 do
 			my = math.ceil(halfHeight * scanYMultiplier - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
 
@@ -54,6 +55,8 @@ function CPlayer:harvest()
 				end
 			end
 		end
+		keyboardRelease(key.VK_SHIFT);
+
 
 		return 0, nil, nil;
 	end
@@ -475,7 +478,12 @@ function CPlayer:fight()
 		end
 	end
 
-	yrest(500);
+	-- give client a little time to update battle flag, if we loot even at combat
+	-- we don't need the time
+	if( settings.profile.options.LOOT_IN_COMBAT ~= true ) then
+		yrest(800);
+	end;
+
 
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
@@ -1046,7 +1054,7 @@ function CPlayer:findTarget()
 -- all other checks are within the self:haveTarget(), so the target should be ok
 		local target = self:getTarget();
 		local dist = distance(self.X, self.Z, target.X, target.Z);
-		cprintf(cli.green, "Select new target %s in distance %s\n", target.Name, dist);
+		cprintf(cli.green, "Select new target %s in distance %d\n", target.Name, dist);
 
 		return true;
 	else

@@ -105,12 +105,14 @@ function CSkill:canUse()
 	end
 
 	-- Out of range
-	if( player:distanceToTarget() > self.Range ) then
+	if( player:distanceToTarget() > self.Range  and
+	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill
 		return false;
 	end
 
 	-- Too close
-	if( player:distanceToTarget() < self.MinRange ) then
+	if( player:distanceToTarget() < self.MinRange  and
+	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill 
 		return false;
 	end
 
