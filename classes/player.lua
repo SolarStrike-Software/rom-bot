@@ -338,6 +338,7 @@ function CPlayer:fight()
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf("Taking too long to damage target, breaking sequence...\n");
+			self:clearTarget();
 			break;
 		end
 
@@ -482,9 +483,7 @@ function CPlayer:fight()
 	if( self.TargetPtr ~= 0 ) then
 		local target = CPawn(self.TargetPtr);
 
-		if( settings.profile.options.LOOT == true and target.HP <= 0 ) then
--- client bug: sometimes the target is death but still have HP, thats the reason 
--- why we skip sometimes looting
+		if( settings.profile.options.LOOT == true ) then
 			if( settings.profile.options.LOOT_IN_COMBAT == true ) then
 				self:loot();
 			else
