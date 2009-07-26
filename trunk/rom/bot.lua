@@ -221,8 +221,10 @@ function main()
 				keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 				yrest(5000);
 
-				cprintf(cli.red, language[4]);
-				yrest(60000); -- wait 1 minute before going about your path.
+				if( player.Level > 10 ) then
+					cprintf(cli.red, language[4]);
+					yrest(60000); -- wait 1 minute before going about your path.
+				end;
 				player:update();
 			end
 
