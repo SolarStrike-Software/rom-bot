@@ -161,8 +161,28 @@ function main()
 	end
 	
 	
-	-- Start at the closest waypoint.
-	__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+	-- look for the closest waypoint / return path point to start
+	if( __RPL ) then	-- return path points available ?
+		-- compare closest waypoint with closest returnpath point
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		local wp = __WPL:getNextWaypoint();
+		local dist_to_wp = distance(player.X, player.Z, wp.X, wp.Z)
+		
+		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
+		local wp = __RPL:getNextWaypoint();
+		local dist_to_rp = distance(player.X, player.Z, wp.X, wp.Z)
+		
+		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
+			player.Returning = true;	-- then use return path first
+			cprintf(cli.yellow, language[12]);	-- Starting with return path
+		else
+			player.Returning = false;	-- use normale waypoint path
+		end;
+	else
+		-- no return path available, so we select the closest normal wayoint
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+	end;
+	
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
@@ -277,17 +297,19 @@ function main()
 --				player:update();
 --			end
 		else
-			local wp = nil; local wpnum = nil;
+			local wp = nil; local wpnum = nil; local hf_temp = nil;
 
 			if( player.Returning ) then
 				wp = __RPL:getNextWaypoint();
 				wpnum = __RPL.CurrentWaypoint;
+				hf_temp = language[13];				-- returnpath
 			else
 				wp = __WPL:getNextWaypoint();
 				wpnum = __WPL.CurrentWaypoint;
+				hf_temp = "";
 			end;
 
-			cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);
+			cprintf(cli.green, language[6], hf_temp, wpnum, wp.X, wp.Z);	-- Moving to %swaypoint
 			local success, reason = player:moveTo(wp);
 
 
