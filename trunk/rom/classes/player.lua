@@ -845,7 +845,14 @@ function CPlayer:haveTarget()
 
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
-			return false;
+			if ( self.Battling == false ) then   -- if we don't have aggro then
+				return false;         -- he is not a valid target
+			end;
+
+			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
+				target.TargetPtr ~= self.Address ) then   -- but not from that target
+				return false;         
+			end;
 		end;
 
 		if( settings.profile.options.ANTI_KS ) then
