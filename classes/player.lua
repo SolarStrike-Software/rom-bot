@@ -638,7 +638,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 
 -- stop moving if aggro, bot will stand and wait until to get the target from the client
-	 	if( self.Battling ) then
+	 	if( self.Battling and ( self.Fighting == false ) ) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
