@@ -623,6 +623,17 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
+	-- direction ok, now look for a target before start movig
+	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
+		if( self:findTarget() ) then			-- find a new target
+--			cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
+			cprintf(cli.turquoise, "Stopping waypoint: Target acquired before moving.\n");	-- stopping waypoint::target acquired
+			success = false;
+			failreason = WF_TARGET;
+			return success, failreason;
+		end;
+	end;
+
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
