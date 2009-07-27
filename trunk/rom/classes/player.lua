@@ -162,9 +162,9 @@ end
 
 -- Check if you can use any skills, and use them
 -- if they are needed.
-function CPlayer:checkSkills()
+function CPlayer:checkSkills(_targettype)
 	for i,v in pairs(settings.profile.skills) do
-		if( v:canUse() ) then
+		if( v:canUse(_targettype) ) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			if( v.CastTime > 0 ) then
 				yrest(200); -- Wait to stop only if not an instant cast spell
@@ -638,7 +638,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
-	 	if( self.Battling and ( self.Fighting == false ) ) then
+	 	-- only if not in the fight stuff coding (means self.Fighting == false )
+	 	if( self.Battling and ( self.Fighting == false )  and
+	 	    os.difftime(os.time(), player.LastAggroTimout ) > 10 ) then		-- dont stop 10sec after last aggro wait timeout
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
@@ -659,6 +661,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 
 		self:checkPotions();
+		self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
 
 		-- We're still making progress
 		if( dist < lastDist ) then
@@ -1029,7 +1032,7 @@ function CPlayer:check_aggro_before_cast(_jump)
 		if( _jump == true ) then		-- jump to abort casting
 			keyboardPress(settings.hotkeys.JUMP.key);
 		end;
-		cprintf(cli.green, "Aggro during first strike/cast, abort that cast/target: %s\n", target.Name);
+		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
 		return true;
 	end;
@@ -1059,7 +1062,7 @@ function CPlayer:findTarget()
 -- all other checks are within the self:haveTarget(), so the target should be ok
 		local target = self:getTarget();
 		local dist = distance(self.X, self.Z, target.X, target.Z);
-		cprintf(cli.green, "Select new target %s in distance %d\n", target.Name, dist);
+		cprintf(cli.green, language[37], target.Name, dist);	-- Select new target %s in distance
 
 		return true;
 	else
@@ -1116,11 +1119,9 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 		return;								-- go back
 	end;
 	
---	self:clearTarget();		-- get rid of mob, so we dont cast while resting
-
 	local restStart = os.time();		-- set start timer
 
-	cprintf(cli.green, "Resting up to %s sec for full mana and full HP.\n", ( _restfix + _restrnd ) );		-- resting x sec for Mana and HP
+	cprintf(cli.green, language[38], ( _restfix + _restrnd ) );		-- resting x sec for Mana and HP
 
 	while ( true ) do
 
@@ -1128,13 +1129,13 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
-			cprintf(cli.green, "Stop resting because of aggro.\n");   -- get aggro 
+			cprintf(cli.green, language[39] );   -- get aggro 
 			return;
 		end;
 		
 		-- check if resttime finished
 		if( os.difftime(os.time(), restStart ) > ( _restfix + _restrnd ) ) then
-			cprintf(cli.green, "Resting finished after %s seconds.\n", ( _restfix + _restrnd ) );   -- full at sec x
+			cprintf(cli.green, language[70], ( _restfix + _restrnd ) );   -- Resting finished after %s seconds
 			return;
 		end;
 
@@ -1150,22 +1151,20 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 				end;
 				if( self.Battling ) then          -- we get aggro,
 					self:clearTarget();       -- get rid of mob to be able to target attackers
-					cprintf(cli.green, "Stop resting because of aggro.");   -- get aggro 
+					cprintf(cli.green, language[39] );   -- Stop resting because of aggro
 					return;
 				end;
 				self:checkPotions();   
--- TODO: we just need a change to get sure, we only cast friendly spells to ourselfe
---				self:checkSkills(); 		-- check if we need to cast buffs/heals.
+				self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
 				yrest(100);
 			end;
 
-			printf("Resting finished after %s seconds.\n", os.difftime(os.time(), restStart ) );   -- full at sec x
+			cprintf(cli.green, language[70], os.difftime(os.time(), restStart ) );   -- full at sec x
 			return;
 		end;
 
 		self:checkPotions();   
--- TODO: we just need a change to get sure, we only cast friendly spells to ourselfe
---		self:checkSkills(); 		-- check if we need to cast buffs/heals.
+		self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
 
 		yrest(100);
 
