@@ -29,7 +29,11 @@ function CWaypointList:load(filename)
 			self.Type = WPT_TRAVEL;
 		elseif( type == "NORMAL" ) then
 			self.Type = WPT_NORMAL;
+		else
+			self.Type = WPT_NORMAL;
 		end
+	else
+		self.Type = WPT_NORMAL;
 	end
 
 	self.FileName = getFileName(filename);
