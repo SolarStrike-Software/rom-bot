@@ -41,6 +41,8 @@ settings_default = {
 			TARGET_LEVELDIF_BELOW = 99,
 			TARGET_LEVELDIF_ABOVE = 99,
 			QUICK_TURN = false,
+			MP_REST = 15,
+			HP_REST = 15,
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
