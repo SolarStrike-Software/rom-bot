@@ -63,6 +63,7 @@ function rewriteAddresses()
 		sprintf("staticcambase_address = 0x%X;\n", staticcambase_address) ..
 		"\n" ..
 		sprintf("charPtr_offset = 0x%X;\n", charPtr_offset) ..
+		sprintf("camPtr_offset = 0x%X;\n", camPtr_offset) ..
 		sprintf("mousePtr_offset = 0x%X;\n", mousePtr_offset) ..
 		sprintf("pawnId_offset = 0x%X;\n", pawnId_offset) ..
 		sprintf("pawnType_offset = 0x%X;\n", pawnType_offset) ..
@@ -88,6 +89,9 @@ function rewriteAddresses()
 		sprintf("pawnAttackable_offset = 0x%X;\n", pawnAttackable_offset) ..
 		sprintf("inBattle_offset = 0x%X;\n", inBattle_offset) ..
 		"\n" ..
+		sprintf("camX_offset = 0x%X;\n", camX_offset) ..
+		sprintf("camY_offset = 0x%X;\n", camY_offset) ..
+		sprintf("camZ_offset = 0x%X;\n", camZ_offset) ..
 		sprintf("camXUVec_offset = 0x%X;\n", camXUVec_offset) ..
 		sprintf("camYUVec_offset = 0x%X;\n", camYUVec_offset) ..
 		sprintf("camZUVec_offset = 0x%X;\n", camZUVec_offset)
