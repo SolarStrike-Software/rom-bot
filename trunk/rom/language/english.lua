@@ -5,15 +5,15 @@ language = {
 	[3] = "Died. Resurrecting player...\n",
 	[4] = "Returning to waypoints after 1 minute.\n",
 	[5] = "Ignoring target (%s): Anti-KS\n",
-	[6] = "Moving to %swaypoint #%d, (%d, %d)\n",
+	[6] = "Moving to waypoint #%d, (%d, %d)\n",
 	[7] = "Completed return path. Resuming normal waypoints.\n",
 	[8] = "Waypoint movement failed!\n",
 	[9] = "Unsticking player...\n",
 	[10] = "Using HP potion.\n",
 	[11] = "Using MP potion.\n",
 	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
-	[13] = "return path ",
-
+	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
+	
 	[20] = "Finished casting\n",
 	[21] = "Casting \'%s\'\n",
 	[22] = "Engaging enemy [%s] in combat.\n",

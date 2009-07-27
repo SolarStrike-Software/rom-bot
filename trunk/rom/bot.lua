@@ -243,8 +243,15 @@ function main()
 			player:clearTarget();
 		end
 
--- if aggro then wait for target from client
--- we come back to that coding place if we stop moving because of aggro
+		-- rest after getting new target and before starting fight
+		-- rest for 50 sec + rnd(39), at most until full, after that additional rnd(10)
+		if( player:haveTarget() ) then	
+			player:rest( 50, 39, "full", 0 );			-- rest befor next fight
+		end;
+
+
+		-- if aggro then wait for target from client
+		-- we come back to that coding place if we stop moving because of aggro
 		if( player.Battling ) then
 			cprintf(cli.green, language[35]);
 		end;
@@ -299,19 +306,18 @@ function main()
 --				player:update();
 --			end
 		else
-			local wp = nil; local wpnum = nil; local hf_temp = nil;
+			local wp = nil; local wpnum = nil;
 
 			if( player.Returning ) then
 				wp = __RPL:getNextWaypoint();
 				wpnum = __RPL.CurrentWaypoint;
-				hf_temp = language[13];				-- returnpath
+				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z);	-- Moving to returnpath waypoint
 			else
 				wp = __WPL:getNextWaypoint();
 				wpnum = __WPL.CurrentWaypoint;
-				hf_temp = "";
+				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);	-- Moving to waypoint
 			end;
 
-			cprintf(cli.green, language[6], hf_temp, wpnum, wp.X, wp.Z);	-- Moving to %swaypoint
 			local success, reason = player:moveTo(wp);
 
 

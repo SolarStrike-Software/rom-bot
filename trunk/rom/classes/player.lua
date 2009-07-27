@@ -637,19 +637,18 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			canTarget = true;
 		end
 
--- stop moving if aggro, bot will stand and wait until to get the target from the client
+		-- stop moving if aggro, bot will stand and wait until to get the target from the client
 	 	if( self.Battling and ( self.Fighting == false ) ) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
---if( p_debug02 == true ) then	printf("DEBUG: *** diff: %s\n", os.difftime(os.time(), hf_aggro_start_time )); end
 			success = false;
 			failreason = WF_COMBAT;
 			break;
 		end;
 
 
--- look for a new target while moving
+		-- look for a new target while moving
 		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) ) then
 			if( self:findTarget() ) then	-- find a new target
 				cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
@@ -1031,7 +1030,6 @@ function CPlayer:check_aggro_before_cast(_jump)
 			keyboardPress(settings.hotkeys.JUMP.key);
 		end;
 		cprintf(cli.green, "Aggro during first strike/cast, abort that cast/target: %s\n", target.Name);
---cprintf(cli.green, "DEBUG target.TargetPtr %s target.HP %s self.Address %s\n", target.TargetPtr, target.HP, self.Address);
 		self:clearTarget();
 		return true;
 	end;
@@ -1068,4 +1066,109 @@ function CPlayer:findTarget()
 		return false;
 	end;
 	
+end
+
+
+function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
+-- rest to restore mana and healthpoint if under a certain level
+-- this function could also be used, if you want to rest in a waypoint file, it will
+-- detect aggro while resting and fight back
+--
+--  player:rest( _restfix,[ _restrnd[, time|full[, _restaddrnd]]])
+--
+-- _restfix  ( base time to rest in sec)
+-- _restrnd  ( max random addition to basetime in sec)
+-- _resttype ( time / full )  time = rest the given time  full = stop resting after being full   default = time
+-- _restaddrnd  ( max random addition after being full in sec)
+--
+-- if using type 'full', the bot will only rest if HP or MP is below a defined level 
+-- you define that level in your profile with the options MP_REST and HP_REST
+--
+-- e.g.
+-- player:rest(20)                 will rest for 20 seconds.
+-- player:rest(60, 20)             will rest between 60 and 80 seconds.
+-- player:rest(90, 40, "full")     will rest up to between 90 and 130 seconds, and stop resting 
+--                                 if being full
+-- player:rest(20, 40, "full, 20") will rest up to between 20 and 60 seconds, and stop resting 
+--                                 if being full, and wait after that between 1-20 seconds
+--
+-- to look not so bottish, please use the random time options!!!
+--
+	self:update();
+	if( self.Battling == true) then return; end;		-- if aggro, go back
+
+	-- setting default values
+	if( _restfix     == nil  or  _restfix  == 0 )   then _restfix     = 10; end;
+	if( _resttype    == nil )                       then _resttype    = "time"; end;	-- default restype is 'time"
+
+	if( _restrnd     == nil  or  _restrnd  == 0 )   then _restrnd  = 0; 
+	else _restrnd  = math.random( _restrnd ); end;
+
+	if( _restaddrnd  == nil  or  _restaddrnd == 0 ) then _restaddrnd  = 0; 
+	else _restaddrnd  = math.random( _restaddrnd ); end;
+
+	-- some classes dont have mana, in that cases Player.mana = 0
+	local hf_mana_rest = (player.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
+	local hf_hp_rest   = (player.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
+
+	if( player.Mana >= hf_mana_rest  and player.HP >= hf_hp_rest and
+	    _resttype == 'full' ) then	-- nothing to do
+		return;								-- go back
+	end;
+	
+--	self:clearTarget();		-- get rid of mob, so we dont cast while resting
+
+	local restStart = os.time();		-- set start timer
+
+	cprintf(cli.green, "Resting up to %s sec for full mana and full HP.\n", ( _restfix + _restrnd ) );		-- resting x sec for Mana and HP
+
+	while ( true ) do
+
+		self:update();
+
+		if( self.Battling ) then          -- we get aggro,
+			self:clearTarget();       -- get rid of mob to be able to target attackers
+			cprintf(cli.green, "Stop resting because of aggro.\n");   -- get aggro 
+			return;
+		end;
+		
+		-- check if resttime finished
+		if( os.difftime(os.time(), restStart ) > ( _restfix + _restrnd ) ) then
+			cprintf(cli.green, "Resting finished after %s seconds.\n", ( _restfix + _restrnd ) );   -- full at sec x
+			return;
+		end;
+
+		-- check if HP/Mana full
+		if( player.Mana == player.MaxMana  and		-- some chars have MaxMana = 0
+ 	 	    player.HP   == player.MaxHP    and
+ 	 	    _resttype   == "full" ) then		-- Mana and HP are full
+			local restAddStart = os.time();		-- set additional rest timer
+			while ( true ) do	-- rnd addition
+				self:update();
+				if( os.difftime(os.time(), restAddStart ) > _restaddrnd ) then
+					break;
+				end;
+				if( self.Battling ) then          -- we get aggro,
+					self:clearTarget();       -- get rid of mob to be able to target attackers
+					cprintf(cli.green, "Stop resting because of aggro.");   -- get aggro 
+					return;
+				end;
+				self:checkPotions();   
+-- TODO: we just need a change to get sure, we only cast friendly spells to ourselfe
+--				self:checkSkills(); 		-- check if we need to cast buffs/heals.
+				yrest(100);
+			end;
+
+			printf("Resting finished after %s seconds.\n", os.difftime(os.time(), restStart ) );   -- full at sec x
+			return;
+		end;
+
+		self:checkPotions();   
+-- TODO: we just need a change to get sure, we only cast friendly spells to ourselfe
+--		self:checkSkills(); 		-- check if we need to cast buffs/heals.
+
+		yrest(100);
+
+	end;			-- end of while
+
 end
