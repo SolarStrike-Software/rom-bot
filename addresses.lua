@@ -32,11 +32,9 @@ charLevel2_offset = 0x2D0;
 pawnAttackable_offset = 0x28E;
 inBattle_offset = 0x672;
 
-
 camX_offset = 0x100;
 camY_offset = 0x104;
 camZ_offset = 0x108;
-
 camXUVec_offset = 0x124;
 camYUVec_offset = 0x128;
 camZUVec_offset = 0x12C;
