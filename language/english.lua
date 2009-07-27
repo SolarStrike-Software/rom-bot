@@ -13,6 +13,7 @@ language = {
 	[11] = "Using MP potion.\n",
 	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
 	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
+	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",	
 	
 	[20] = "Finished casting\n",
 	[21] = "Casting \'%s\'\n",
@@ -30,6 +31,10 @@ language = {
 	[33] = "Clearing target.\n",
 	[34] = "Aggro wait time out.\n",
 	[35] = "Waiting on aggressive enemies.\n",
+	[36] = "Aggro during first strike/cast, abort that cast/target: %s\n",
+	[37] = "Select new target %s in distance %d\n",
+	[38] = "Resting up to %s sec for full mana and full HP.\n",
+	[39] = "Stop resting because of aggro.\n",	
 
 
 	[40] = "Player address changed: 0x%X\n",
@@ -39,4 +44,6 @@ language = {
 	[51] = "Shutting system down.\n",
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
+	
+	[70] = "Resting finished after %s seconds.\n",	
 };

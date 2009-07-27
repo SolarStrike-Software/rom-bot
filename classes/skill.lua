@@ -60,12 +60,19 @@ CSkill = class(
 );
 
 
-function CSkill:canUse()
+function CSkill:canUse(_targettype)
 	if( hotkey == 0 ) then return false; end; --hotkey must be set!
 
 	-- Still cooling down...
 	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
 		return false;
+	end
+
+	-- only special target types?
+	if( _targettype ) then
+		if( _targettype ~= self.Target ) then
+			return false;
+		end;
 	end
 
 	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then

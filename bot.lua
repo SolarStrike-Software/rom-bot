@@ -246,7 +246,7 @@ function main()
 		-- rest after getting new target and before starting fight
 		-- rest for 50 sec + rnd(39), at most until full, after that additional rnd(10)
 		if( player:haveTarget() ) then	
-			player:rest( 50, 39, "full", 0 );			-- rest befor next fight
+			player:rest( 50, 39, "full", 10 );			-- rest befor next fight
 		end;
 
 
@@ -263,6 +263,7 @@ function main()
 
 			if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
 				cprintf(cli.red, language[34]);
+				player.LastAggroTimout = os.time();	-- remeber aggro timeout
 				break;
 			end;
 
@@ -272,6 +273,7 @@ function main()
 
 
 		if( player:haveTarget() ) then
+		-- fight the mob / target
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and target:getTarget().Address ~= player.Address and (not player:isFriend(CPawn(target.TargetPtr))) ) then
@@ -306,6 +308,7 @@ function main()
 --				player:update();
 --			end
 		else
+		-- not target, move to wp
 			local wp = nil; local wpnum = nil;
 
 			if( player.Returning ) then
@@ -327,7 +330,7 @@ function main()
 
 			if( player.TargetPtr == 0 ) then
 				player:checkPotions();
-				player:checkSkills();
+				player:checkSkills( STARGET_SELF );	-- only cast friendly spells to ourselfe
 			end
 		
 
@@ -353,11 +356,11 @@ function main()
 				end
 			else
 				if( not reason == WF_TARGET ) then
-					cprintf(cli.red, language[8]);
+					cprintf(cli.red, language[8]);		-- Waypoint movement failed
 				end
 
-				if( reason == WF_COMBAT ) then
-					cprintf(cli.turquoise, "We get aggro. Stop moving to waypoint.\n");
+				if( reason == WF_COMBAT ) then	
+					cprintf(cli.turquoise, language[14]);	-- We get aggro. Stop moving to waypoint 
 				end;
 
 				if( reason == WF_DIST ) then

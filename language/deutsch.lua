@@ -15,6 +15,7 @@ language = {
 	[11] = "Mit MP Trank.\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Bewege zu R\129ckkehrpfad Wegpunkt #%d, (%d, %d)\n",
+	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
 
 	[20] = "Aus\129bung abgeschlossen\n",
 	[21] = "\154be \'%s\' aus\n",
@@ -32,6 +33,11 @@ language = {
 	[33] = "Entfernen Gegnerische.\n",
 	[34] = "Aggro Wartezeit aus.\n",
 	[35] = "Warten auf w\129tend Feinde.\n",
+	[36] = "Im Kampf bevor wir unser Ziel angegriffen haben. Wir brechen unser aktuelles Ziel ab: %s\n",
+	[37] = "Neues Ziel \'%s\' ausgew\132hlt. Entfernung %d\n",
+	[38] = "Pausiere für %s Sekunden um Mana und Gesundheit zu regenerien.\n",
+	[39] = "Wir werden angegriffen. Pausieren wird abgebrochen.\n",	
+	
 
 	[40] = "Spieleradresse ge\132ndert: 0x%X\n",
 	[41] = "Speicherlesung schlug fehl",
@@ -39,5 +45,7 @@ language = {
 	[50] = "%s  Automatisches Ausloggen\n",
 	[51] = "Herunterfahren des Systems.\n",
 
-	[60] = "Unbekannt tag %s in %s.xml Profil. Bitte \129berprüfen Sie Ihr Profil!\n",
+	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berprüfen Sie Ihr Profil!\n",
+	
+	[70] = "Pausieren nach %s Sekunden beendet.\n",		
 };
