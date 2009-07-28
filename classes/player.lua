@@ -1083,15 +1083,15 @@ function CPlayer:findTarget()
 end
 
 
-function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
+function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 -- rest to restore mana and healthpoint if under a certain level
 -- this function could also be used, if you want to rest in a waypoint file, it will
 -- detect aggro while resting and fight back
 --
 --  player:rest( _restfix,[ _restrnd[, time|full[, _restaddrnd]]])
 --
--- _restfix  ( base time to rest in sec)
--- _restrnd  ( max random addition to basetime in sec)
+-- _restmin  ( minimum rest time in sec)
+-- _restmax  ( maximum rest time sec)
 -- _resttype ( time / full )  time = rest the given time  full = stop resting after being full   default = time
 -- _restaddrnd  ( max random addition after being full in sec)
 --
@@ -1100,10 +1100,10 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 --
 -- e.g.
 -- player:rest(20)                 will rest for 20 seconds.
--- player:rest(60, 20)             will rest between 60 and 80 seconds.
--- player:rest(90, 40, "full")     will rest up to between 90 and 130 seconds, and stop resting 
+-- player:rest(60, 80)             will rest between 60 and 80 seconds.
+-- player:rest(90, 130, "full")     will rest up to between 90 and 130 seconds, and stop resting 
 --                                 if being full
--- player:rest(20, 40, "full, 20") will rest up to between 20 and 60 seconds, and stop resting 
+-- player:rest(20, 60, "full, 20") will rest up to between 20 and 60 seconds, and stop resting 
 --                                 if being full, and wait after that between 1-20 seconds
 --
 -- to look not so bottish, please use the random time options!!!
@@ -1111,12 +1111,17 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 	self:update();
 	if( self.Battling == true) then return; end;		-- if aggro, go back
 
+	local hf_resttime;
+	
 	-- setting default values
-	if( _restfix     == nil  or  _restfix  == 0 )   then _restfix     = 10; end;
+	if( _restmin     == nil  or  _restmin  == 0 )   then _restmin     = 10; end;
 	if( _resttype    == nil )                       then _resttype    = "time"; end;	-- default restype is 'time"
 
-	if( _restrnd     == nil  or  _restrnd  == 0 )   then _restrnd  = 0; 
-	else _restrnd  = math.random( _restrnd ); end;
+	if ( _restmax >  _restmin ) then
+		hf_resttime = _restmin + math.random( _restmax - _restmin );
+	else
+		hf_resttime = _restmin;
+	end;
 
 	if( _restaddrnd  == nil  or  _restaddrnd == 0 ) then _restaddrnd  = 0; 
 	else _restaddrnd  = math.random( _restaddrnd ); end;
@@ -1132,7 +1137,7 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 	
 	local restStart = os.time();		-- set start timer
 
-	cprintf(cli.green, language[38], ( _restfix + _restrnd ) );		-- resting x sec for Mana and HP
+	cprintf(cli.green, language[38], ( hf_resttime ) );		-- resting x sec for Mana and HP
 
 	while ( true ) do
 
@@ -1145,8 +1150,8 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 		end;
 		
 		-- check if resttime finished
-		if( os.difftime(os.time(), restStart ) > ( _restfix + _restrnd ) ) then
-			cprintf(cli.green, language[70], ( _restfix + _restrnd ) );   -- Resting finished after %s seconds
+		if( os.difftime(os.time(), restStart ) > ( hf_resttime ) ) then
+			cprintf(cli.green, language[70], ( hf_resttime ) );   -- Resting finished after %s seconds
 			return;
 		end;
 
@@ -1170,7 +1175,7 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 				yrest(100);
 			end;
 
-			cprintf(cli.green, language[70], os.difftime(os.time(), restStart ) );   -- full at sec x
+			cprintf(cli.green, language[70], os.difftime(os.time(), restStart ) );   -- full after x sec
 			return;
 		end;
 
@@ -1180,5 +1185,14 @@ function CPlayer:rest(_restfix, _restrnd, _resttype, _restaddrnd)
 		yrest(100);
 
 	end;			-- end of while
+
+end
+
+function CPlayer:restrnd(_probability, _restmin, _restmax)
+-- call the rest function with a given probability
+
+	if( math.random( 100 ) < _probability ) then
+		self:rest(_restmin, _restmax, "time", 0 )
+	end;
 
 end
