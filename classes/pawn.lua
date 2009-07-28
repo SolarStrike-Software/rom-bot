@@ -1,5 +1,6 @@
 PT_NONE = 0;
 PT_PLAYER = 1;
+PT_MONSTER = 2;
 PT_NPC = 4;
 PT_NODE = 4;
 
@@ -12,6 +13,9 @@ CLASS_PRIEST = 5;
 CLASS_KNIGHT = 6;
 CLASS_RUNEDANCER = 7;
 CLASS_DRUID = 8;
+
+ATTACKABLE_MASK_PLAYER = 0x10000;
+ATTACKABLE_MASK_MONSTER = 0xE0000;
 
 local classEnergyMap = {
 	[CLASS_NONE] = "none",
@@ -92,6 +96,7 @@ function CPawn:update()
 	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
+
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
 	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + charLevel2_offset), memerrmsg);
 
@@ -101,18 +106,17 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
-	-- Compatability
-	local _memoryReadByte = memoryReadUByte;
-	if( _memoryReadByte == nil ) then
-		_memoryReadByte = memoryReadByte;
-	end;
+	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + pawnAttackable_offset), memerrmsg);
+	--printf("attackableFlag: %d  (0x%X)\n", attackableFlag, self.Address + pawnAttackable_offset);
 
-	local attackableFlag = debugAssert(_memoryReadByte(proc, self.Address + pawnAttackable_offset), memerrmsg);
-	self.Attackable = (attackableFlag == 255 or attackableFlag == 237);
-
-	if( attackableFlag < 0 ) then
-		error("Your MicroMacro installation appears to be out of date and incompatible with\nthis script. " ..
-			"Download the latest version of MicroMacro 1.0 from\nwww.solarstrike.net forums.", 0);
+	if( self.Type == PT_MONSTER ) then
+		self.Attackable = true;
+	else
+		if( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ) then
+			self.Attackable = true;
+		else
+			self.Attackable = false;
+		end
 	end
 
 	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
