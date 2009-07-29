@@ -221,11 +221,22 @@ function main()
 				keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 				yrest(5000);
 
-				if( player.Level > 10 ) then
+				if( player.Level > 9 ) then
 					cprintf(cli.red, language[4]);
 					yrest(60000); -- wait 1 minute before going about your path.
 				end;
 				player:update();
+			end
+
+			-- print out the reasons for not automatic returning
+			if( not settings.profile.hotkeys.RES_MACRO ) then
+				cprintf(cli.yellow, "You don't a RES_MACRO defined in your profile! Hence no automatic returning.\n");
+			end
+			if(player.Returning) then
+				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
+			end
+			if(__RPL == nil) then
+				cprintf(cli.yellow, "You don't have a defined return path in your profile. Hence no automatic returning.1\n");
 			end
 
 			-- Must have a resurrect macro and waypoints set to be able to use
