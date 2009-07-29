@@ -165,8 +165,8 @@ end
 function CPlayer:checkSkills(_targettype)
 	for i,v in pairs(settings.profile.skills) do
 		if( v:canUse(_targettype) ) then
-			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			if( v.CastTime > 0 ) then
+				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 				yrest(200); -- Wait to stop only if not an instant cast spell
 			end
 
