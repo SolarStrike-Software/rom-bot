@@ -36,8 +36,6 @@ function CWaypointList:load(filename)
 		self.Type = WPT_NORMAL;
 	end
 
-	cprintf(cli.green, language[0], getFileName(filename) );	-- load waypoint path file 
-
 	self.FileName = getFileName(filename);
 	self.Waypoints = {}; -- Delete current waypoints.
 
