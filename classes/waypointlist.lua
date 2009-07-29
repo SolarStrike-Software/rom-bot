@@ -36,6 +36,8 @@ function CWaypointList:load(filename)
 		self.Type = WPT_NORMAL;
 	end
 
+	cprintf(cli.green, language[0], getFileName(filename) );	-- load waypoint path file 
+
 	self.FileName = getFileName(filename);
 	self.Waypoints = {}; -- Delete current waypoints.
 
@@ -56,8 +58,8 @@ function CWaypointList:load(filename)
 				tmp.Type = WPT_NORMAL;
 			end
 		else
-			-- No type set, assume WPT_NORMAL
-			tmp.Type = WPT_NORMAL;
+			-- No type set, assume Type from header tag
+			tmp.Type = self.Type;
 		end
 
 		table.insert(self.Waypoints, tmp);
@@ -114,11 +116,12 @@ end
 function CWaypointList:getNextWaypoint()
 	local tmp = CWaypoint(self.Waypoints[self.CurrentWaypoint]);
 
-	-- TYPE override
-	if( self.Type ~= 0 ) then
-		tmp.Type = self.Type;
-	end
-
+-- no more needed, because self.Type is always define, if not it has the
+-- default WPT_NORMAL / and it should never overwrite if any there
+--	-- TYPE override
+--	if( self.Type ~= 0 ) then
+--		tmp.Type = self.Type;
+--	end
 
 	if( settings.profile.options.WAYPOINT_DEVIATION < 2 ) then
 		return tmp;
