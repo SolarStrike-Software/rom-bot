@@ -1196,3 +1196,64 @@ function CPlayer:restrnd(_probability, _restmin, _restmax)
 	end;
 
 end
+
+function CPlayer:sleep()
+-- the bot will sleep but still fight back attackers
+
+	self.Sleeping = true;	-- we are sleeping
+
+--	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up or %s to really stop the bot.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key), getKeyName(settings.hotkeys.STOP_BOT.key) );  
+	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );  
+
+	while(true) do
+
+		local hf_key_pressed = false;
+
+--		if( keyPressed(settings.hotkeys.STOP_BOT.key) ) then	-- sleep/pause key pressed
+--			hf_key_pressed = true;
+--			hf_key = "STOP";
+--		end;
+		if( keyPressed(settings.hotkeys.START_BOT.key) ) then	-- start key pressed
+			hf_key_pressed = true;
+			hf_key = "AWAKE";
+		end;
+
+		if( hf_key_pressed == false ) then	-- key released, do the work
+
+			-- STOP Key: stop the bot really
+			-- does not work proper becaus auf the pausecallback assigned to the
+			-- top key
+--			if( hf_key == "STOP" ) then
+--				hf_key = " ";	-- clear last pressed key
+--
+--				-- now the stop work is done by the function pauseCallback()
+--				-- but we clear the flag to be awake after restart
+--				self.Sleeping = false;	-- we are awake
+--				stopPE();		-- we now really stop the bot
+--				return;			-- after stop, now go back
+--			end;
+
+			-- START Key: wake up
+			if( hf_key == "AWAKE" ) then
+				hf_key = " ";	-- clear last pressed key
+
+				cprintf(cli.yellow, "Awake from sleep after pressing %s at %s\n", getKeyName(settings.hotkeys.START_BOT.key),  os.date() );  
+				self.Sleeping = false;	-- we are awake
+				return;
+			end;
+
+			hf_key = " ";	-- clear last pressed key
+		end;
+
+		self:update();
+		-- wake up if aggro, but we don't clear the sleeping flag
+		if( self.Battling ) then          -- we get aggro,
+			self:clearTarget();       -- get rid of mob to be able to target attackers
+			cprintf(cli.yellow, "Awake from sleep because of aggro at %s\n", os.date() );  
+			return;
+		end;
+
+		yrest(10);
+--		cprintf(cli.yellow, "DEBUG: Sleeping %s\n", os.date() );  
+	end
+end

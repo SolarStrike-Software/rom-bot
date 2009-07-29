@@ -72,6 +72,7 @@ CPawn = class(
 		self.success_waypoints = 0; -- count consecutively successfull reached waypoints 
 		self.Cast_to_target = 0; -- count casts to our enemy target
 		self.LastAggroTimout = 0;	-- remeber last time we wait in vain for an aggro mob
+		self.Sleeping = false;	-- sleep mode with fight back if attacked
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

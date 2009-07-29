@@ -243,10 +243,21 @@ function main()
 			player:clearTarget();
 		end
 
+
+		-- go back to sleep, if in sleep mode
+		if( player.Sleeping == true ) then
+			yrest(800);	-- wait a little for the aggro flag
+			player:update();
+			if( player.Battling == false ) then 
+				player:sleep(); 
+			end;
+		end;	-- go sleeping if sleeping flag is set
+
+
 		-- rest after getting new target and before starting fight
-		-- rest for 50 sec + rnd(39), at most until full, after that additional rnd(10)
+		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
 		if( player:haveTarget() ) then	
-			player:rest( 50, 39, "full", 10 );			-- rest befor next fight
+			player:rest( 50, 99, "full", 10 );			-- rest befor next fight
 		end;
 
 
