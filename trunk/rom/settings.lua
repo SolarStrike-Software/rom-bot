@@ -43,6 +43,7 @@ settings_default = {
 			QUICK_TURN = false,
 			MP_REST = 15,
 			HP_REST = 15,
+			WAYPOINTS_REVERSE = false,
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
