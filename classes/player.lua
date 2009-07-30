@@ -765,7 +765,7 @@ end
 function CPlayer:unstick()
 
 -- after 2x unsuccesfull unsticks try to reach last waypoint
-	if( self.unstick_counter == 3 ) then
+	if( self.Unstick_counter == 3 ) then
 		if( self.Returning ) then
 			__RPL:backward();
 		else
@@ -775,7 +775,7 @@ function CPlayer:unstick()
 	end;
 
 -- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
-	if( self.unstick_counter == 6 ) then
+	if( self.Unstick_counter == 6 ) then
 		if( self.Returning ) then
 			__RPL:advance();	-- forward to sticky wp
 			__RPL:advance();	-- and one more
@@ -787,7 +787,7 @@ function CPlayer:unstick()
 	end;
 
 -- after 8x unstick try to run away a little and then go to the nearest waypoint
-	if( self.unstick_counter == 9 ) then
+	if( self.Unstick_counter == 9 ) then
 	 	-- turn and move back for 10 seconds
 		keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
 		yrest(1900);
@@ -817,7 +817,7 @@ function CPlayer:unstick()
 		straffkey = settings.hotkeys.STRAFF_RIGHT.key;
 	end
 
-	local straff_bonus = self.unstick_counter * 120;
+	local straff_bonus = self.Unstick_counter * 120;
 
 	keyboardHold(straffkey);
 	yrest(500 + math.random(500) + straff_bonus);

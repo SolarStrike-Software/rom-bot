@@ -1,0 +1,20 @@
+<waypoints type="TRAVEL">
+	<!-- # 1 --><waypoint x="-3106" z="-7877"></waypoint>
+	<!-- # 2 --><waypoint x="-3262" z="-7861"></waypoint>
+	<!-- # 3 --><waypoint x="-3442" z="-7866"></waypoint>
+	<!-- # 4 --><waypoint x="-3604" z="-7893"></waypoint>
+	<!-- # 5 --><waypoint x="-3671" z="-8017"></waypoint>
+	<!-- # 6 --><waypoint x="-3750" z="-8211"></waypoint>
+	<!-- # 7 --><waypoint x="-3831" z="-8364"></waypoint>
+	<!-- # 8 --><waypoint x="-3773" z="-8491"></waypoint>
+	<!-- # 9 --><waypoint x="-3720" z="-8597"></waypoint>
+	<!-- #10 --><waypoint x="-3696" z="-8685">player:sleep();</waypoint>
+	<!-- #11 --><waypoint x="-3585" z="-8682"></waypoint>
+	<!-- #12 --><waypoint x="-3416" z="-8690"></waypoint>
+	<!-- #13 --><waypoint x="-3193" z="-8850"></waypoint>
+	<!-- #14 --><waypoint x="-2928" z="-8982"></waypoint>
+	<!-- #15 --><waypoint x="-2600" z="-9067"></waypoint>
+	<!-- #16 --><waypoint x="-2397" z="-9260"></waypoint>
+	<!-- #17 --><waypoint x="-2360" z="-9456"></waypoint>
+	<!-- #18 --><waypoint x="-2248" z="-9620">load_paths("demo3");</waypoint>
+</waypoints>

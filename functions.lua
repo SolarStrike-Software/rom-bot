@@ -223,3 +223,62 @@ function timedSetWindowName(profile)
 		LAST_PLAYER_Z = player.Z;
 	end
 end
+
+function load_paths( _wp_path, _rp_path)
+-- load given waypoint path and return path file
+-- if you don't specify a return path the function will look for
+-- a default return path based on the waypoint path name and
+-- the settings.profile.options.RETURNPATH_SUFFIX
+
+	-- check if function is not called empty
+	if( not _wp_path ) and ( not _rp_path ) then
+		cprintf(cli.yellow, "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n");
+		return;
+	end;
+	if( _wp_path == "" or _wp_path == " " ) then _wp_path = nil; end;
+	
+	-- check suffix and remember default return path name
+	local rp_default;
+	if(_wp_path ~= nil) then
+		if( string.find(_wp_path,".",1,true) ) then	-- filetype defined
+			rp_default = string.sub(_wp_path,1,string.find(_wp_path,".",1,true)-1) .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
+		else						-- no filetype
+			rp_default = _wp_path .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
+		end;
+	end;
+	if( _wp_path  and   not string.find(_wp_path,".",1,true) ) then _wp_path = _wp_path .. ".xml"; end;
+	if( _rp_path  and   not string.find(_rp_path,".",1,true) ) then _rp_path = _rp_path .. ".xml"; end;
+
+	-- waypoint path is defined ... load it
+	if( _wp_path ) then
+		__WPL:load(getExecutionPath() .. "/waypoints/" .. _wp_path );
+		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
+		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+	end
+
+	-- look for default return path with suffix '_return'
+	if( not _rp_path ) then
+		local file = io.open(getExecutionPath() .. "/waypoints/" .. rp_default , "r");
+		if( file ) then	-- file exits
+			file:close();
+			cprintf(cli.green, "Return path found with default naming: %s\n", rp_default );	
+			_rp_path = rp_default;	-- set default
+		else
+			cprintf(cli.yellow, "No return path with default naming %s found.\n", rp_default );
+		end;
+	end
+	
+	-- return path defined or default found ... load it
+	if( _rp_path ) then
+		if( not __RPL ) then  		-- define object if not there
+			__RPL = CWaypointList(); 
+		end;
+		__RPL:load(getExecutionPath() .. "/waypoints/" .. _rp_path );
+		cprintf(cli.green, language[1], __RPL:getFileName());	-- Loaded return path 		
+	else
+		if( __RPL ) then  		-- clear old returnpath object
+			__RPL = nil; 
+		end;
+	end;
+
+end
