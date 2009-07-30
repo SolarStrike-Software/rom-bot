@@ -232,7 +232,7 @@ function main()
 				player:update();
 
 				if( not player.Alive ) then
-					cprintf(cli.yellow, "You are still death. There is a problem with automatic reanimation. Did you set your ingame makro \'/script AcceptResurrect();\' to the key \'%s\'?\n", getKeyName(settings.profile.hotkeys.RES_MACRO.key));
+					cprintf(cli.yellow, "You are still death. There is a problem with automatic reanimation. Did you set your ingame makro \'/script AcceptResurrect();\' to the key %s?\n", getKeyName(settings.profile.hotkeys.RES_MACRO.key));
 					pauseOnDeath();
 				end;
 
@@ -240,7 +240,7 @@ function main()
 
 			-- print out the reasons for not automatic returning
 			if( not settings.profile.hotkeys.RES_MACRO ) then
-				cprintf(cli.yellow, "You don't a RES_MACRO defined in your profile! Hence no automatic returning.\n");
+				cprintf(cli.yellow, "You don't have a RES_MACRO defined in your profile! Hence no automatic returning.\n");
 			end
 --			if(player.Returning) then
 --				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
@@ -256,6 +256,13 @@ function main()
 			__RPL ~= nil ) then
 				player.Returning = true;
 				__RPL:setWaypointIndex(1); -- Start from the beginning
+
+				player.Death_counter = player.Death_counter + 1;
+				cprintf(cli.yellow, "You died %s times from at most %s deaths/automatic reanimations.\n", player.Death_counter, settings.profile.options.MAX_DEATHS);
+				-- check maximal death if automatic mode
+				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
+					player:logout();
+				end
 			else
 				pauseOnDeath();
 			end
@@ -378,9 +385,9 @@ function main()
 			if( success ) then
 				-- if we stick directly at a wp the counter would reseted even if we are sticked
 				-- hence we reset the counter only after 3 successfull waypoints
-				player.success_waypoints = player.success_waypoints + 1;
-				if( player.success_waypoints > 3 ) then
-					player.unstick_counter = 0;	-- reset unstick counter
+				player.Success_waypoints = player.Success_waypoints + 1;
+				if( player.Success_waypoints > 3 ) then
+					player.Unstick_counter = 0;	-- reset unstick counter
 				end;
 
 				if( player.Returning ) then
@@ -417,9 +424,9 @@ function main()
 					cprintf(cli.red, language[9]);
 					distBreakCount = 0;
 					player:clearTarget();
-					player.success_waypoints = 0;	-- counter for successfull waypoints in row
-					player.unstick_counter = player.unstick_counter + 1;	-- count our unstick tries
-					if( player.unstick_counter > 10 ) then player:logout(); end;	-- to many tries, logout
+					player.Success_waypoints = 0;	-- counter for successfull waypoints in row
+					player.Unstick_counter = player.Unstick_counter + 1;	-- count our unstick tries
+					if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then player:logout(); end;	-- to many tries, logout
 					player:unstick();
 				end
 			end

@@ -1,5 +1,7 @@
 <profile>
 	<options>
+		<!-- try the bot with a new char mage or priest         -->
+		<!-- at the pioneer village. Use demo.xml waypoint file -->
 		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />

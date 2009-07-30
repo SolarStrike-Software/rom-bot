@@ -44,6 +44,9 @@ settings_default = {
 			MP_REST = 15,
 			HP_REST = 15,
 			WAYPOINTS_REVERSE = false,
+			MAX_DEATHS = 10,
+			MAX_UNSTICK_TRIALS = 10,
+			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {

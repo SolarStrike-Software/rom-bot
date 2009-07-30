@@ -17,5 +17,9 @@
 	<!-- #16 --><waypoint x="-3670" z="-7448">player:harvest();</waypoint>
 	<!-- #17 --><waypoint x="-3750" z="-7594"></waypoint>
 	<!-- #18 --><waypoint x="-3919" z="-7663"></waypoint>
-	<!-- #19 --><waypoint x="-3861" z="-7817"></waypoint>
+	<!-- #19 --><waypoint x="-3861" z="-7817">
+	if( player.Level > 2 ) then
+		load_paths("demo2");
+  	end
+	</waypoint>
 </waypoints>
