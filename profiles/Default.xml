@@ -1,24 +1,24 @@
 <profile>
 	<options>
-		<option name="HP_LOW" value="85" />
+		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
 
-		<option name="COMBAT_TYPE" value="melee" />
-		<option name="COMBAT_DISTANCE" value="200" />
-		<option name="ANTI_KS" value="true" />
-		<option name="WAYPOINTS" value="bandits.xml" />
-		<option name="RETURNPATH" value="" />
-		<option name="PATH_TYPE" value="waypoints" />
-		<option name="WANDER_RADIUS" value="500" />
+		<option name="COMBAT_TYPE"        value="ranged" />
+		<option name="COMBAT_DISTANCE"    value="200" />
+		<option name="ANTI_KS"            value="true" />
+		<option name="WAYPOINTS"          value="demo.xml" />
+		<option name="RETURNPATH"         value="demo_return.xml" />
+		<option name="PATH_TYPE"          value="waypoints" />
+		<option name="WANDER_RADIUS"      value="500" />
 		<option name="WAYPOINT_DEVIATION" value="0" />
-		<option name="LOOT" value="true" />
-		<option name="LOOT_TIME" value="2000" />
-		<option name="LOOT_IN_COMBAT" value="true" />
-		<option name="LOOT_DISTANCE" value="100" />
-		<option name="POTION_COOLDOWN" value="15" />
-		<option name="MAX_FIGHT_TIME" value="15" />
-		<option name="DOT_PERCENT" value="90" />
+		<option name="LOOT"               value="true" />
+		<option name="LOOT_TIME"          value="2000" />
+		<option name="LOOT_IN_COMBAT"     value="true" />
+		<option name="LOOT_DISTANCE"      value="100" />
+		<option name="POTION_COOLDOWN"    value="15" />
+		<option name="MAX_FIGHT_TIME"     value="15" />
+		<option name="DOT_PERCENT"        value="90" />
 
 		<!-- rest if HP or Mana is below that level -->
 		<option name="HP_REST" value="15" />
@@ -27,9 +27,9 @@
 		<option name="LOGOUT_TIME" value="0" />
 		<option name="LOGOUT_SHUTDOWN" value="false" />
 
-		<!-- attack monsters 10 levels above or below your level -->
+		<!-- attack monsters 3 levels above or 10 below your level -->
+		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
-		<option name="TARGET_LEVELDIF_ABOVE" value="10" />
 
 		<option name="QUICK_TURN" value="false" />
 	</options>
@@ -40,22 +40,47 @@
 	</friends>
 
 	<hotkeys>
-		<hotkey name="HP_POTION" key="VK_MINUS" modifier="" />
-		<hotkey name="MP_POTION" key="VK_EQUAL" modifier="" />
-		<hotkey name="ATTACK" key="VK_0" modifier="" />
-		<hotkey name="RES_MACRO" key="VK_9" modifier="" />
-		<hotkey name="LOGOUT_MACRO" key="VK_8" modifier="" />
+		<hotkey name="HP_POTION"    key="VK_MINUS" />
+		<hotkey name="MP_POTION"    key="VK_EQUAL" />
+		<hotkey name="ATTACK"       key="VK_0" />
+		<hotkey name="RES_MACRO"    key="VK_9" />
+		<hotkey name="LOGOUT_MACRO" key="VK_8" />
 	</hotkeys>
 
-	<skills>
-		<skill name="WARRIOR_SLASH" hotkey="VK_3" modifier="" />
-		<skill name="WARRIOR_PROBING_ATTACK" hotkey="VK_1" modifier="" />
-		<skill name="WARRIOR_ENRAGED" hotkey="VK_4" modifier="" />
-	</skills>
+	<!-- define your skills depending from your actual primary class -->
+	<!-- see the example for a priest/mage respectively mage/priest  -->
+	<!-- delete skills you don't have or don't want to use. For more -->
+	<!-- skills to use see /database/skills.xml                      -->
+
+	<skills_priest> 
+	        <skill name="PRIEST_SOUL_SOURCE"   hotkey="VK_Z" priority="110" inbattle="true" hpper="15" />
+	        <skill name="PRIEST_HOLY_AURA"     hotkey="VK_R" priority="100" inbattle="true" hpper="24" />
+	        <skill name="PRIEST_URGENT_HEAL"   hotkey="VK_3" priority="100" hpper="30"  />
+	        <skill name="PRIEST_REGENERATE"    hotkey="VK_4" priority="90" />
+		<skill name="PRIEST_RISING_TIDE"   hotkey="VK_5" priority="80" />
+	        <skill name="MAGE_FIREBALL"        hotkey="VK_2" priority="70" />
+	        <skill name="PRIEST_WAVE_ARMOR"    hotkey="VK_6" priority="40"  inbattle="true" />
+	        <skill name="PRIEST_SOUL_BOND"     hotkey="VK_7" priority="30" />
+	        <skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_T" priority="20" />
+	</skills_priest>   
+	<skills_warrior> </skills_warrior>
+	<skills_scout> </skills_scout>
+	<skills_rogue> </skills_rogue>
+	<skills_mage>
+	        <skill name="PRIEST_HOLY_AURA"      hotkey="VK_R" priority="110" hpper="30" inbattle="true" />
+	        <skill name="PRIEST_URGENT_HEAL"    hotkey="VK_3" priority="100" hpper="30"  />
+	        <skill name="MAGE_FLAME"            hotkey="VK_5" priority="90" />
+	        <skill name="PRIEST_REGENERATE"     hotkey="VK_4" priority="70" />
+	        <skill name="MAGE_ESSENCE_OF_MAGIC" hotkey="VK_Z" priority="60" />        
+	        <skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_T" priority="50" />        
+	</skills_mage>     
+	<skills_knight> </skills_knight>
+	<skills_runedancer> </skills_runedancer>
+	<skills_druid> </skills_druid>
 
 	<onDeath>
 		-- Additional Lua code to execute on death
-		pauseOnDeath(); -- Stop the script
+		-- pauseOnDeath(); -- Stop the script
 	</onDeath>
 
 	<onLeaveCombat>

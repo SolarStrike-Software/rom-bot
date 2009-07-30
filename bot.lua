@@ -160,6 +160,10 @@ function main()
 		cprintf(cli.green, language[1], __RPL:getFileName());
 	end
 	
+	-- special option for use waypoint file in a reverse order
+	if( settings.profile.options.WAYPOINTS_REVERSE == true ) then 
+		__WPL:reverse();
+	end;
 	
 	-- look for the closest waypoint / return path point to start
 	if( __RPL ) then	-- return path points available ?
@@ -226,22 +230,29 @@ function main()
 					yrest(60000); -- wait 1 minute before going about your path.
 				end;
 				player:update();
+
+				if( not player.Alive ) then
+					cprintf(cli.yellow, "You are still death. There is a problem with automatic reanimation. Did you set your ingame makro \'/script AcceptResurrect();\' to the key \'%s\'?\n", getKeyName(settings.profile.hotkeys.RES_MACRO.key));
+					pauseOnDeath();
+				end;
+
 			end
 
 			-- print out the reasons for not automatic returning
 			if( not settings.profile.hotkeys.RES_MACRO ) then
 				cprintf(cli.yellow, "You don't a RES_MACRO defined in your profile! Hence no automatic returning.\n");
 			end
-			if(player.Returning) then
-				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
-			end
+--			if(player.Returning) then
+--				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
+--			end
 			if(__RPL == nil) then
 				cprintf(cli.yellow, "You don't have a defined return path in your profile. Hence no automatic returning.1\n");
 			end
 
 			-- Must have a resurrect macro and waypoints set to be able to use
 			-- a return path!
-			if( settings.profile.hotkeys.RES_MACRO and player.Returning == false and
+			if( settings.profile.hotkeys.RES_MACRO and
+--			if( settings.profile.hotkeys.RES_MACRO and player.Returning == false and
 			__RPL ~= nil ) then
 				player.Returning = true;
 				__RPL:setWaypointIndex(1); -- Start from the beginning
@@ -274,12 +285,20 @@ function main()
 
 		-- if aggro then wait for target from client
 		-- we come back to that coding place if we stop moving because of aggro
-		if( player.Battling ) then
-			cprintf(cli.green, language[35]);
-		end;
 		local aggroWaitStart = os.time();
+		local msg_print = false;
 		while(player.Battling) do
+			-- wait a second with the aggro message to avoid wrong msg because of slow battle flag from the client
+			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
+				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
+				msg_print = true;
+			end;
 			if( player:haveTarget() ) then
+				if( msg_print == false ) then
+					cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
+					msg_print = true;
+				end;
+
 				break;
 			end;
 
