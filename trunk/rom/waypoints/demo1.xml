@@ -1,0 +1,25 @@
+<waypoints>
+	<!-- # 1 --><waypoint x="-3689" z="-7952"></waypoint>
+	<!-- # 2 --><waypoint x="-3574" z="-8057"></waypoint>
+	<!-- # 3 --><waypoint x="-3478" z="-8003"></waypoint>
+	<!-- # 4 --><waypoint x="-3345" z="-7817">player:restrnd(20, 2, 10);</waypoint>
+	<!-- # 5 --><waypoint x="-3179" z="-7874"></waypoint>
+	<!-- # 6 --><waypoint x="-2964" z="-7996"></waypoint>
+	<!-- # 7 --><waypoint x="-2754" z="-8183"></waypoint>
+	<!-- # 8 --><waypoint x="-2640" z="-7949">player:harvest();</waypoint>
+	<!-- # 9 --><waypoint x="-2816" z="-7990"></waypoint>
+	<!-- #10 --><waypoint x="-2940" z="-7957"></waypoint>
+	<!-- #11 --><waypoint x="-3080" z="-7816"></waypoint>
+	<!-- #12 --><waypoint x="-3207" z="-7829"></waypoint>
+	<!-- #13 --><waypoint x="-3357" z="-7761"></waypoint>
+	<!-- #14 --><waypoint x="-3410" z="-7627"></waypoint>
+	<!-- #15 --><waypoint x="-3556" z="-7525"></waypoint>
+	<!-- #16 --><waypoint x="-3670" z="-7448">player:harvest();</waypoint>
+	<!-- #17 --><waypoint x="-3750" z="-7594"></waypoint>
+	<!-- #18 --><waypoint x="-3919" z="-7663"></waypoint>
+	<!-- #19 --><waypoint x="-3861" z="-7817">
+	if( player.Level > 2 ) then
+		load_paths("demo2");
+  	end
+	</waypoint>
+</waypoints>

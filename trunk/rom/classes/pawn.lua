@@ -66,14 +66,16 @@ CPawn = class(
 		self.Concentration = 0;
 		self.MaxConcentration = 0;
 		self.PotionLastUseTime = 0;
-		self.Returning = false; -- Whether following the return path, or regular waypoints
+		self.Returning = false;		-- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
-		self.Unstick_counter = 0; -- counts unstick tries, resets if waypoint reached
+		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
 		self.Success_waypoints = 0; -- count consecutively successfull reached waypoints 
-		self.Cast_to_target = 0; -- count casts to our enemy target
+		self.Cast_to_target = 0;	-- count casts to our enemy target
 		self.LastAggroTimout = 0;	-- remeber last time we wait in vain for an aggro mob
-		self.Sleeping = false;	-- sleep mode with fight back if attacked
-		self.Death_counter = 0;	-- counts deaths / automatic reanimation
+		self.Sleeping = false;		-- sleep mode with fight back if attacked
+		self.Sleeping_time = 0;		-- counts the sleeping time
+		self.Fights = 0;			-- counts the fights
+		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end

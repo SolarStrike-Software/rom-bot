@@ -22,7 +22,7 @@ language = {
 	[24] = "Too close. Backing up.\n",
 	[25] = "Moving in | Suggested range: %d | Distance: %d\n",
 	[26] = "Taking too long to turn... breaking\n",
-	[27] = "Target dead/lost\n",
+	[27] = "Fight finished. Target dead/lost\n",
 	[28] = "Stopping waypoint: Target acquired.\n",
 	[29] = "Distance break.\n",
 	[30] = "Target not attackable: %s\n",
@@ -33,7 +33,7 @@ language = {
 	[35] = "Waiting on aggressive enemies.\n",
 	[36] = "Aggro during first strike/cast, abort that cast/target: %s\n",
 	[37] = "Select new target %s in distance %d\n",
-	[38] = "Resting up to %s sec for full mana and full HP.\n",
+	[38] = "Resting up to %s to fill up mana and HP.\n",
 	[39] = "Stop resting because of aggro.\n",	
 
 
@@ -45,5 +45,7 @@ language = {
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	
-	[70] = "Resting finished after %s seconds.\n",	
+	[70] = "Resting finished after %s seconds.\n",
+	[71] = "Resting for %s seconds.\n",
+	
 };
