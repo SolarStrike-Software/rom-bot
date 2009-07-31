@@ -33,8 +33,9 @@ settings_default = {
 			LOOT_TIME = 2000,
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
+			LOOT_PAUSE_AFTER = 10,	-- probability for short pause after loot to look more human
 			POTION_COOLDOWN = 15,
-			MAX_FIGHT_TIME = 30,
+			MAX_FIGHT_TIME = 15,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
 			LOGOUT_SHUTDOWN = false,
@@ -47,6 +48,11 @@ settings_default = {
 			MAX_DEATHS = 10,
 			MAX_UNSTICK_TRIALS = 10,
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
+			HARVEST_SCAN_WIDTH = 10,	-- steps horizontal
+			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
+			HARVEST_SCAN_STEPSIZE = 35,	-- wide of every step
+			HARVEST_SCAN_TOPDOWN = true,	-- true = top->down  false = botton->up
+			HARVEST_SCAN_YREST = 10,	-- scanspeed		
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {

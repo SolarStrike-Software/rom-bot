@@ -24,7 +24,7 @@ language = {
 	[24] = "Zu nah. Nehme Abstand.\n",
 	[25] = "Bewegung zu | Vorgeschlagene Entfernung: %d | Distanz: %d\n",
 	[26] = "Drehung dauert zu lange... breche ab\n",
-	[27] = "Ziel tot/verloren\n",
+	[27] = "Kampf beendet. Ziel tot/verloren\n",
 	[28] = "Stoppe Wegpunkt: Ziel erworben.\n",
 	[29] = "Distanzabbruch.\n",
 	[30] = "Ziel nicht angreifbar: %s\n",
@@ -47,5 +47,6 @@ language = {
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berprüfen Sie Ihr Profil!\n",
 	
-	[70] = "Pausieren nach %s Sekunden beendet.\n",		
+	[70] = "Pausieren nach %s Sekunden beendet.\n",	
+	[71] = "Pausiere f\129r %s Sekunden.\n",	
 };

@@ -23,12 +23,11 @@ function CPlayer:harvest()
 		local halfHeight = wh/2;
 
 		-- Scan rect variables
-		local scanWidth = 10; -- Width, in 'steps', of the area to scan
-		local scanHeight = 8; -- Height, in 'steps', of area to scan
+		local scanWidth = settings.profile.options.HARVEST_SCAN_WIDTH; -- Width, in 'steps', of the area to scan
+		local scanHeight = settings.profile.options.HARVEST_SCAN_HEIGHT; -- Height, in 'steps', of area to scan
 		local scanXMultiplier = 1.0;
 		local scanYMultiplier = 1.1;
-		local scanStepSize = 35; -- Distance, in pixels, between 'steps'
-
+		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
 
 		local mx, my; -- Mouse x/y temp values
 
@@ -36,16 +35,28 @@ function CPlayer:harvest()
 		wy  + (halfHeight*scanYMultiplier - (scanHeight/2*scanStepSize)));
 		yrest(100);
 
+		local scanstart, scanende, scanstep;
+		-- define scan direction top/down  or   bottom/up
+		if( settings.profile.options.HARVEST_SCAN_TOPDOWN == true ) then
+			scanstart = 0;
+			scanende = scanHeight-1;
+			scanstep = 1;
+		else
+			scanstart = scanHeight;
+			scanende = 0;
+			scanstep = -1;
+		end;
+
 		-- Scan nearby area for a node
 		keyboardHold(key.VK_SHIFT);	-- press shift so you can scan trough players
-		for y = 0,scanHeight-1 do
+		for y = scanstart, scanende, scanstep do
 			my = math.ceil(halfHeight * scanYMultiplier - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
 
 			for x = 0,scanWidth-1 do
 				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
 
 				mouseSet(wx + mx, wy + my);
-				yrest(10);
+				yrest(settings.profile.options.HARVEST_SCAN_YREST);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
 
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
@@ -505,8 +516,8 @@ function CPlayer:fight()
 		self:clearTarget();
 	end;
 
-
-	cprintf(cli.green, language[27]);
+	self.Fights = self.Fights + 1;		-- count our fights
+	cprintf(cli.green, language[27]);	-- Fight finished. Target dead/lost
 	self.Fighting = false;
 end
 
@@ -537,7 +548,12 @@ function CPlayer:loot()
 		keyboardPress(settings.profile.hotkeys.ATTACK.key);
 		yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 
-		-- now take a 'step' backward (closes loot bag if full inventory)
+		-- rnd pause from 3-6 sec after loot to look more human
+		if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
+			self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,3,6);
+		end;
+
+		-- now take a 'step' forward (closes loot bag if full inventory)
 		keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
 
 		-- Maybe take a step forward to pick up a buff.
@@ -1137,7 +1153,11 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	
 	local restStart = os.time();		-- set start timer
 
-	cprintf(cli.green, language[38], ( hf_resttime ) );		-- resting x sec for Mana and HP
+	if( _resttype == "full") then
+		cprintf(cli.green, language[38], ( hf_resttime ) );		-- Resting up to %s to fill up mana and HP
+	else
+		cprintf(cli.green, language[71], ( hf_resttime ) );		-- Resting for %s seconds.
+	end;
 
 	while ( true ) do
 
@@ -1200,11 +1220,13 @@ end
 function CPlayer:sleep()
 -- the bot will sleep but still fight back attackers
 
+	local sleep_start = os.time();		-- calculate the sleep time
 	self.Sleeping = true;	-- we are sleeping
 
 --	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up or %s to really stop the bot.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key), getKeyName(settings.hotkeys.STOP_BOT.key) );  
 	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );  
 
+	local hf_key = "";
 	while(true) do
 
 		local hf_key_pressed = false;
@@ -1239,7 +1261,7 @@ function CPlayer:sleep()
 
 				cprintf(cli.yellow, "Awake from sleep after pressing %s at %s\n", getKeyName(settings.hotkeys.START_BOT.key),  os.date() );  
 				self.Sleeping = false;	-- we are awake
-				return;
+				break;
 			end;
 
 			hf_key = " ";	-- clear last pressed key
@@ -1250,10 +1272,14 @@ function CPlayer:sleep()
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
 			cprintf(cli.yellow, "Awake from sleep because of aggro at %s\n", os.date() );  
-			return;
+			break;
 		end;
 
 		yrest(10);
---		cprintf(cli.yellow, "DEBUG: Sleeping %s\n", os.date() );  
-	end
+		self:logoutCheck(); 		-- check logout timer
+	end					-- end of while
+	
+	-- count the sleeping time
+	self.Sleeping_time = self.Sleeping_time + os.difftime(os.time(), sleep_start);
+	
 end
