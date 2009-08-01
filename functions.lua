@@ -240,9 +240,10 @@ function load_paths( _wp_path, _rp_path)
 	-- check suffix and remember default return path name
 	local rp_default;
 	if(_wp_path ~= nil) then
-		if( string.find(_wp_path,".",1,true) ) then	-- filetype defined
-			rp_default = string.sub(_wp_path,1,string.find(_wp_path,".",1,true)-1) .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
-		else						-- no filetype
+		local foundpos = string.find(_wp_path,".",1,true);	-- filetype defined?
+		if( foundpos ) then					-- filetype defined
+			rp_default = string.sub(_wp_path,1,foundpos-1) .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
+		else							-- no filetype
 			rp_default = _wp_path .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
 		end;
 	end;

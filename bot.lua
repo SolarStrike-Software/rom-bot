@@ -132,36 +132,28 @@ function main()
 
 
 	-- This logic prevents files from being loaded if wandering was forced
+	local wp_to_load, rp_to_load;
 	if( forcedPath and not (forcedPath == "wander") ) then
-		__WPL = CWaypointList();
-		__WPL:load(getExecutionPath() .. "/waypoints/" .. forcedPath .. ".xml");
+		wp_to_load = forcedPath;
 	else
 		if( settings.profile.options.WAYPOINTS ) then
-			__WPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.WAYPOINTS);
+			wp_to_load = settings.profile.options.WAYPOINTS;
 		end
 	end
 
 	if( forcedRetPath ) then
-		__RPL = CWaypointList();
-		__RPL:load(getExecutionPath() .. "/waypoints/" .. forcedRetPath .. ".xml");
+		rp_to_load = forcedRetPath;
 	else
 		if( settings.profile.options.RETURNPATH ) then
-			__RPL = CWaypointList();
-			__RPL:load(getExecutionPath() .. "/waypoints/" .. settings.profile.options.RETURNPATH);
+			rp_to_load = settings.profile.options.RETURNPATH;
 		end
 	end
 
-	-- Output filename only if mode isnt set to wandering
-	if not( __WPL:getMode() == "wander" )	then
-		cprintf(cli.green, language[0], __WPL:getFileName());
-	end
-
-	if( __RPL and __RPL:getFileName() ) then
-		cprintf(cli.green, language[1], __RPL:getFileName());
-	end
+	load_paths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 	
-	-- special option for use waypoint file in a reverse order
-	if( settings.profile.options.WAYPOINTS_REVERSE == true ) then 
+	-- special option for use waypoint file from profile in a reverse order / not if forced path
+	if( settings.profile.options.WAYPOINTS_REVERSE == true  and
+	    not forcedPath  ) then 
 		__WPL:reverse();
 	end;
 	
@@ -182,9 +174,10 @@ function main()
 		else
 			player.Returning = false;	-- use normale waypoint path
 		end;
-	else
-		-- no return path available, so we select the closest normal wayoint
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+--	else
+--		-- no return path available, so we select the closest normal wayoint
+--		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+-- now automaticly in load_path()
 	end;
 	
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
