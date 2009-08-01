@@ -60,7 +60,7 @@ CSkill = class(
 );
 
 
-function CSkill:canUse(_targettype)
+function CSkill:canUse(_only_friendly)
 	if( hotkey == 0 ) then return false; end; --hotkey must be set!
 
 	-- Still cooling down...
@@ -68,9 +68,11 @@ function CSkill:canUse(_targettype)
 		return false;
 	end
 
-	-- only special target types?
-	if( _targettype ) then
-		if( _targettype ~= self.Target ) then
+	-- only friendly skill types?
+	if( _only_friendly ) then
+		if( self.Type ~= STYPE_HEAL  and
+		    self.Type ~= STYPE_BUFF  and
+		    self.Type ~= STYPE_HOT ) then
 			return false;
 		end;
 	end

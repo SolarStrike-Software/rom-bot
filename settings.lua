@@ -52,7 +52,8 @@ settings_default = {
 			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
 			HARVEST_SCAN_STEPSIZE = 35,	-- wide of every step
 			HARVEST_SCAN_TOPDOWN = true,	-- true = top->down  false = botton->up
-			HARVEST_SCAN_YREST = 10,	-- scanspeed		
+			HARVEST_SCAN_YREST = 10,	-- scanspeed
+			TEST_FIX_NOSTOP = false,	-- test fix in :moveto no hold key
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {

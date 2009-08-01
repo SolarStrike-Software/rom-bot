@@ -7,6 +7,9 @@ WF_DIST = 2;   -- Broke because our distance somehow increased. It happens.
 WF_STUCK = 3;  -- Failed waypoint because we are stuck on something.
 WF_COMBAT = 4; -- stopped waypoint because we are in combat
 
+ONLY_FRIENDLY = true;	-- only cast friendly spells HEAL / HOT / BUFF
+JUMP_FALSE = false		-- dont jump to break cast
+JUMP_TRUE = true		-- jump to break cast
 
 CPlayer = class(CPawn);
 
@@ -173,9 +176,9 @@ end
 
 -- Check if you can use any skills, and use them
 -- if they are needed.
-function CPlayer:checkSkills(_targettype)
+function CPlayer:checkSkills(_only_friendly)
 	for i,v in pairs(settings.profile.skills) do
-		if( v:canUse(_targettype) ) then
+		if( v:canUse(_only_friendly) ) then
 			if( v.CastTime > 0 ) then
 				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 				yrest(200); -- Wait to stop only if not an instant cast spell
@@ -189,7 +192,9 @@ function CPlayer:checkSkills(_targettype)
 			end
 
 			-- break cast if aggro before casting
-			if( self:check_aggro_before_cast(false) ) then	-- without jump
+			if( self:check_aggro_before_cast(JUMP_FALSE) and
+			   ( v.Type == STYPE_DAMAGE or
+			     v.Type == STYPE_DOT )  ) then	-- without jump
 				return;
 			end;
 
@@ -203,7 +208,9 @@ function CPlayer:checkSkills(_targettype)
 				local startTime = os.time();
 				while( not self.Casting ) do
 					-- break cast with jump if aggro before casting finished
-					if( self:check_aggro_before_cast(true) ) then	-- with jump
+					if( self:check_aggro_before_cast(JUMP_TRUE) and
+					   ( v.Type == STYPE_DAMAGE or
+					     v.Type == STYPE_DOT ) ) then	-- with jump
 						return;
 					end;
 					yrest(50);
@@ -216,7 +223,9 @@ function CPlayer:checkSkills(_targettype)
 
 				while(self.Casting) do
 					-- break cast with jump if aggro before casting finished
-					if( self:check_aggro_before_cast(true) ) then	--  with jump
+					if( self:check_aggro_before_cast(JUMP_TRUE) and
+					   ( v.Type == STYPE_DAMAGE or
+					     v.Type == STYPE_DOT ) ) then	--  with jump
 						return;
 					end;
 					-- Waiting for casting to finish...
@@ -579,8 +588,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		ignoreCycleTargets = false;
 	end;
 
-	if( waypoint.Type == WPT_TRAVEL ) then
-		ignoreCycleTargets = true;
+	if( waypoint.Type == WPT_TRAVEL or
+	    waypoint.Type == WPT_RUN ) then
+		ignoreCycleTargets = true;	-- don't target mobs
 	end;
 
 	-- Make sure we don't have a garbage (dead) target
@@ -654,7 +664,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	local lastDistImprove = os.time();
-	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+if( not settings.profile.options.TEST_FIX_NOSTOP ) then		-- just testing the fix
+	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );	-- no more stops while
+end								-- moving
 	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
@@ -666,7 +678,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
 	 	-- only if not in the fight stuff coding (means self.Fighting == false )
-	 	if( self.Battling and ( self.Fighting == false )  and
+	 	if( self.Battling and 				-- we have aggro
+	 	    self.Fighting == false  and		-- we are not coming from the fight routines (bec. as melee we should move in fight)
+	 	    waypoint.Type ~= WPT_RUN  and	-- only stop if not waypoint type RUN
 	 	    os.difftime(os.time(), player.LastAggroTimout ) > 10 ) then		-- dont stop 10sec after last aggro wait timeout
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
@@ -688,7 +702,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 
 		self:checkPotions();
-		self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
+		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 		-- We're still making progress
 		if( dist < lastDist ) then
@@ -1041,8 +1055,6 @@ function CPlayer:check_aggro_before_cast(_jump)
 
 	self:update();
 	if( self.Battling == false )  then		-- no aggro
---	if( self.Battling == false  or			-- no aggro
---	    self.Cast_to_target ~= 0 ) then		-- not first cast to target
 		return false;
 	end;
 			
@@ -1191,7 +1203,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 					return;
 				end;
 				self:checkPotions();   
-				self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
+				self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 				yrest(100);
 			end;
 
@@ -1200,7 +1212,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		end;
 
 		self:checkPotions();   
-		self:checkSkills( STARGET_SELF ); 		-- only cast friendly spells to ourselfe
+		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 		yrest(100);
 
