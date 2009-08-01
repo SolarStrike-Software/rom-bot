@@ -169,12 +169,12 @@ function main()
 	if( __RPL ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
-		local wp = __WPL:getNextWaypoint();
-		local dist_to_wp = distance(player.X, player.Z, wp.X, wp.Z)
+		local hf_wp = __WPL:getNextWaypoint();
+		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 		
 		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
-		local wp = __RPL:getNextWaypoint();
-		local dist_to_rp = distance(player.X, player.Z, wp.X, wp.Z)
+		local hf_wp = __RPL:getNextWaypoint();
+		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 		
 		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true;	-- then use return path first
@@ -187,7 +187,6 @@ function main()
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 	end;
 	
-
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
 		player:update();
@@ -246,7 +245,7 @@ function main()
 --				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
 --			end
 			if(__RPL == nil) then
-				cprintf(cli.yellow, "You don't have a defined return path in your profile. Hence no automatic returning.1\n");
+				cprintf(cli.yellow, "You don't have a defined return path in your profile. Hence no automatic returning.\n");
 			end
 
 			-- Must have a resurrect macro and waypoints set to be able to use
@@ -285,7 +284,8 @@ function main()
 
 		-- rest after getting new target and before starting fight
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
-		if( player:haveTarget() ) then	
+		if( player:haveTarget()  and
+		    player.Current_waypoint_type ~= WPT_RUN ) then	-- no resting if running waypoin type
 			player:rest( 50, 99, "full", 10 );			-- rest befor next fight
 		end;
 
@@ -295,6 +295,12 @@ function main()
 		local aggroWaitStart = os.time();
 		local msg_print = false;
 		while(player.Battling) do
+
+			if( player.Current_waypoint_type == WPT_RUN ) then	-- runing mode, don't wait for target
+				cprintf(cli.green, "Waypoint type RUN, we don't stop and don't fight back\n");	-- Waiting on aggressive enemies.
+				break;
+			end;
+			
 			-- wait a second with the aggro message to avoid wrong msg because of slow battle flag from the client
 			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
 				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
@@ -320,7 +326,8 @@ function main()
 		end
 
 
-		if( player:haveTarget() ) then
+		if( player:haveTarget()  and
+		    player.Current_waypoint_type ~= WPT_RUN ) then	-- only fight back if it's not a runnig waypoint
 		-- fight the mob / target
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
@@ -332,31 +339,8 @@ function main()
 			else
 				player:fight();
 			end
-
--- if I understand right, thats the wait stuff if we get another mob while in the fight function
--- would say we handle the 'wait for target' stuff outside the 'player:haveTarget ...
--- means before, because thats also the place to wait if we get aggro while in the moving function
---			player:update();
---			if( player.Battling ) then
---				cprintf(cli.green, language[35]);
---			end;
---
---			local aggroWaitStart = os.time();
---			while(player.Battling) do
---				if( player:haveTarget() ) then
---					break;
---				end;
---
---				if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
---					cprintf(cli.red, language[34]);
---					break;
---				end;
---
---				yrest(10);
---				player:update();
---			end
 		else
-		-- not target, move to wp
+		-- don't fight, move to wp
 			local wp = nil; local wpnum = nil;
 
 			if( player.Returning ) then
@@ -369,18 +353,16 @@ function main()
 				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);	-- Moving to waypoint
 			end;
 
-			local success, reason = player:moveTo(wp);
+			player.Current_waypoint_type = wp.Type;		-- remember current waypoint type
 
+			local success, reason = player:moveTo(wp);
 
 			if( player.TargetPtr ~= 0 and (not player:haveTarget()) ) then
 				player:clearTarget();
 			end
 
-			if( player.TargetPtr == 0 ) then
-				player:checkPotions();
-				player:checkSkills( STARGET_SELF );	-- only cast friendly spells to ourselfe
-			end
-		
+			player:checkPotions();
+			player:checkSkills( ONLY_FRIENDLY );	-- only cast hot spells to ourselfe
 
 			if( success ) then
 				-- if we stick directly at a wp the counter would reseted even if we are sticked

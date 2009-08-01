@@ -76,6 +76,7 @@ CPawn = class(
 		self.Sleeping_time = 0;		-- counts the sleeping time
 		self.Fights = 0;			-- counts the fights
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
+		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
 
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end

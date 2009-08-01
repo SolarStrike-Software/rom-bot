@@ -29,6 +29,8 @@ function CWaypointList:load(filename)
 			self.Type = WPT_TRAVEL;
 		elseif( type == "NORMAL" ) then
 			self.Type = WPT_NORMAL;
+		elseif( type == "RUN" ) then
+			self.Type = WPT_RUN;
 		else
 			self.Type = WPT_NORMAL;
 		end
@@ -49,6 +51,8 @@ function CWaypointList:load(filename)
 		if( type ) then
 			if( type == "TRAVEL" ) then
 				tmp.Type = WPT_TRAVEL;
+			elseif( type == "RUN" ) then
+				tmp.Type = WPT_RUN;
 			elseif( type == "NORMAL" ) then
 				tmp.Type = WPT_NORMAL;
 			else
