@@ -254,7 +254,9 @@ function main()
 --			if( settings.profile.hotkeys.RES_MACRO and player.Returning == false and
 			__RPL ~= nil ) then
 				player.Returning = true;
-				__RPL:setWaypointIndex(1); -- Start from the beginning
+--				__RPL:setWaypointIndex(1); -- Start from the beginning
+				-- use closest return path point, importent if someone use the WP file as RP file and #1 is not at the respawn point
+				__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
 
 				player.Death_counter = player.Death_counter + 1;
 				cprintf(cli.yellow, "You died %s times from at most %s deaths/automatic reanimations.\n", player.Death_counter, settings.profile.options.MAX_DEATHS);
