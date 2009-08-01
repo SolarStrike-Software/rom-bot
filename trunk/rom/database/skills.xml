@@ -101,16 +101,16 @@
 	<skill name="PRIEST_CALM_HEART" mana="30" cooldown="60" range="150" type="buff" target="self" />
 
 	<!-- Warrior skills -->
-	<skill name="WARRIOR_SLASH" rage="25" range="25" type="damage" cooldown="1" target="enemy" />
+	<skill name="WARRIOR_SLASH" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
 	<skill name="WARRIOR_ENRAGED" cooldown="40" type="buff" target="self" inbattle="false" />
 	<skill name="WARRIOR_WHIRLWIND" cooldown="30" rage="50" type="damage" target="enemy" />
 	<skill name="WARRIOR_BERSERK" rage="25" cooldown="60" type="buff" target="self" />
 	<skill name="WARRIOR_DEFENSIVE_FORMATION" rage="25" cooldown="120" type="buff" target="self" />
 	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="300" target="self" />
-	<skill name="WARRIOR_PROBING_ATTACK" rage="20" type="damage" target="enemy" />
+	<skill name="WARRIOR_PROBING_ATTACK" rage="20" range="50" cooldown="4" type="damage" target="enemy" />
 	<skill name="WARRIOR_OPEN_FLANK" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
-	<skill name="WARRIOR_TACTICAL_ATTACK" rage="15" range="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_TACTICAL_ATTACK" rage="15" range="50" cooldown="5" type="damage" target="enemy" />
 	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="WARRIOR_FEINT" range="50" cooldown="2" type="damage" target="enemy" />
 	<!-- TODO: Feint can only be used after an enemy dodges an attack -->
@@ -152,9 +152,9 @@
 
 
 	<!-- Rogue skills -->
-	<skill name="ROGUE_SHADOWSTAB" energy="30" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOWSTAB" energy="20" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="300" target="self" />
-	<skill name="ROGUE_LOW_BLOW" energy="35" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_LOW_BLOW" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
 	<skill name="ROGUE_HIDE" type="buff" target="self" inbattle="false" cooldown="30" />
@@ -247,15 +247,15 @@
 
 
 	<!-- Scout skills -->
-	<skill name="SCOUT_AUTOSHOT" consumable="1" range="180" cooldown="3.5" type="damage" target="enemy" toggleable="true" />
-	<skill name="SCOUT_SHOT" consumable="1" range="200" cooldown="4" type="damage" target="enemy" />
+	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" toggleable="true" />
+	<skill name="SCOUT_SHOT" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" />
 	<skill name="SCOUT_VAMPIRE_ARROWS" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
 	<skill name="SCOUT_JOINT_BLOW" concentration="30" range="50" type="damage" target="enemy" />
 	<skill name="SCOUT_BLOOD_ARROW" cooldown="60" type="buff" target="self" />
 	<skill name="SCOUT_THROAT_ATTACK" concentration="30" range="50" type="damage" target="enemy" />
 	<skill name="SCOUT_WRIST_ATTACK" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="300" type="buff" target="self" />
-	<skill name="SCOUT_WIND_ARROWS" concentration="8" range="225" type="damage" target="enemy" />
+	<skill name="SCOUT_WIND_ARROWS" concentration="15" range="225" type="damage" target="enemy" />
 	<skill name="SCOUT_FROST_ARROW" concentration="20" cooldown="1800" type="buff" target="self" />
 	<skill name="SCOUT_MANA_DRAIN_SHOT" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
 	<skill name="SCOUT_LASSO" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
