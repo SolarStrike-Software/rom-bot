@@ -301,7 +301,11 @@ function CPlayer:fight()
 	local target = self:getTarget();
 	self.Fighting = true;
 
-	cprintf(cli.green, language[22], target.Name);
+	-- üöä replace
+	target.Name = string.gsub(target.Name, "Ã¼", "\154");	-- replace for ü 195/188
+	target.Name = string.gsub(target.Name, "Ã¶", "\148");	-- replace for ö 195/182
+	target.Name = string.gsub(target.Name, "Ã¤", "\132");	-- replace for ä 195/164
+	cprintf(cli.green, language[22], target.Name);	-- engagin x in combat
 
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
@@ -387,7 +391,6 @@ function CPlayer:fight()
 		end
 
 		-- Move closer to the target if needed
-
 		local suggestedRange = settings.options.MELEE_DISTANCE;
 		if( suggestedRange == nil ) then suggestedRange = 45; end;
 		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
@@ -400,8 +403,10 @@ function CPlayer:fight()
 
 		if( dist > suggestedRange ) then
 
+			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
-			if( move_closer_counter > 3 ) then
+			if( move_closer_counter > 3  and
+			    settings.profile.options.COMBAT_TYPE == "ranged" ) then
 				cprintf(cli.green, "To much tries to come closer. We stop attacking that target\n");
 				self:clearTarget();
 				break;
@@ -1127,6 +1132,10 @@ function CPlayer:findTarget()
 -- all other checks are within the self:haveTarget(), so the target should be ok
 		local target = self:getTarget();
 		local dist = distance(self.X, self.Z, target.X, target.Z);
+		-- üöä replace
+		target.Name = string.gsub(target.Name, "Ã¼", "\154");	-- replace for ü 195/188
+		target.Name = string.gsub(target.Name, "Ã¶", "\148");	-- replace for ö 195/182
+		target.Name = string.gsub(target.Name, "Ã¤", "\132");	-- replace for ä 195/164
 		cprintf(cli.green, language[37], target.Name, dist);	-- Select new target %s in distance
 
 		return true;
