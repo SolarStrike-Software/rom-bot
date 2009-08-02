@@ -156,7 +156,10 @@ end
 
 function CSkill:use()
 	local estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
-	printf(language[21], self.Name);
+
+	local target = player:getTarget();
+
+	printf(language[21], self.Name, target.Name, target.HP, target.MaxHP);
 
 	if( self.hotkey == nil ) then
 		local str = sprintf("Bad skill hotkey name: %s", tostring(self.Name));

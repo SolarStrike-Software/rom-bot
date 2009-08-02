@@ -232,7 +232,7 @@ function CPlayer:checkSkills(_only_friendly)
 					yrest(10);
 					self:update();
 				end
-				printf(language[20]);
+--				printf(language[20]);		-- finished casting
 			else
 				yrest(500); -- assume 0.5 second yrest
 			end
@@ -344,6 +344,7 @@ function CPlayer:fight()
 	local target = self:getTarget();
 	local lastHitTime = os.time();
 	local lastTargetHP = target.HP;
+	local move_closer_counter = 0;		-- count move closer trys
 	self.Cast_to_target = 0;				-- reset counter cast at enemy target
 
 	while( self:haveTarget() ) do
@@ -398,6 +399,14 @@ function CPlayer:fight()
 		end
 
 		if( dist > suggestedRange ) then
+
+			move_closer_counter = move_closer_counter + 1;		-- count our move tries
+			if( move_closer_counter > 3 ) then
+				cprintf(cli.green, "To much tries to come closer. We stop attacking that target\n");
+				self:clearTarget();
+				break;
+			end
+			
 			printf(language[25], suggestedRange, dist);
 			-- move into distance
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
@@ -848,10 +857,27 @@ function CPlayer:unstick()
 	end
 
 	local straff_bonus = self.Unstick_counter * 120;
-
 	keyboardHold(straffkey);
 	yrest(500 + math.random(500) + straff_bonus);
 	keyboardRelease(straffkey);
+
+	-- try to jump over a obstacle
+	if( self.Unstick_counter > 1 ) then
+		if( self.Unstick_counter == 2 ) then
+			keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+			yrest(550);
+			keyboardPress(settings.hotkeys.JUMP.key);
+			yrest(400);
+			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+		elseif( math.random(100) < 80 ) then
+			keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+			yrest(600);
+			keyboardPress(settings.hotkeys.JUMP.key);
+			yrest(400);
+			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+		end;
+	end;
+
 end
 
 function CPlayer:haveTarget()
