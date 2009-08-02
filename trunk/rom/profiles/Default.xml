@@ -6,7 +6,7 @@
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
 
-		<option name="COMBAT_TYPE"        value="ranged" />	-- ranged / melee
+		<option name="COMBAT_TYPE"        value="" />		-- choose ranged/melee if not using class default
 		<option name="COMBAT_DISTANCE"    value="200" />
 		<option name="ANTI_KS"            value="true" />
 		<option name="WAYPOINTS"          value="demo.xml" />
