@@ -337,7 +337,7 @@ function settings.loadProfile(name)
 		    player.Class1 == CLASS_SCOUT   or
 --		    player.Class1 == CLASS_DRUID   or
 		    player.Class1 == CLASS_MAGE    ) then
-			settings.profile.options.COMBAT_TYPE  = "melee";
+			settings.profile.options.COMBAT_TYPE  = "ranged";
 		else
 			error("undefined player.Class1 in settings.lua", 0);
 		end;
