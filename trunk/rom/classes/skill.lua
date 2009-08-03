@@ -159,12 +159,6 @@ function CSkill:use()
 
 	local target = player:getTarget();
 
-	-- üöä replace
-	target.Name = string.gsub(target.Name, "Ã¼", "\154");	-- replace for ü 195/188
-	target.Name = string.gsub(target.Name, "Ã¶", "\148");	-- replace for ö 195/182
-	target.Name = string.gsub(target.Name, "Ã¤", "\132");	-- replace for ä 195/164
-	printf(language[21], string.sub(self.Name.."'                     ", 1, 20), target.Name, target.HP, target.MaxHP);
-		
 	if( self.hotkey == nil ) then
 		local str = sprintf("Bad skill hotkey name: %s", tostring(self.Name));
 		error(str);

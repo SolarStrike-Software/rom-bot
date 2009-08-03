@@ -28,8 +28,8 @@ function CPlayer:harvest()
 		-- Scan rect variables
 		local scanWidth = settings.profile.options.HARVEST_SCAN_WIDTH; -- Width, in 'steps', of the area to scan
 		local scanHeight = settings.profile.options.HARVEST_SCAN_HEIGHT; -- Height, in 'steps', of area to scan
-		local scanXMultiplier = 1.0;
-		local scanYMultiplier = 1.1;
+		local scanXMultiplier = settings.profile.options.HARVEST_SCAN_XMULTIPLIER;	-- multiplier for scan width
+		local scanYMultiplier = settings.profile.options.HARVEST_SCAN_YMULTIPLIER;	-- multiplier for scan line height
 		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
 
 		local mx, my; -- Mouse x/y temp values
@@ -202,8 +202,9 @@ function CPlayer:checkSkills(_only_friendly)
 			yrest(100);
 			self:update();
 
+			printf(language[21], string.sub(v.Name.."'                     ", 1, 20));	-- first part of 'casting ...'
+
 			-- Wait for casting to start (if it has a decent cast time)
-			
 			if( v.CastTime > 0 ) then
 				local startTime = os.time();
 				while( not self.Casting ) do
@@ -211,6 +212,7 @@ function CPlayer:checkSkills(_only_friendly)
 					if( self:check_aggro_before_cast(JUMP_TRUE) and
 					   ( v.Type == STYPE_DAMAGE or
 					     v.Type == STYPE_DOT ) ) then	-- with jump
+						printf("=>   *** aborted ***\n");	-- close print 'Casting ..."
 						return;
 					end;
 					yrest(50);
@@ -226,6 +228,7 @@ function CPlayer:checkSkills(_only_friendly)
 					if( self:check_aggro_before_cast(JUMP_TRUE) and
 					   ( v.Type == STYPE_DAMAGE or
 					     v.Type == STYPE_DOT ) ) then	--  with jump
+						printf("=>   *** aborted ***\n");	-- close print 'Casting ..."
 						return;
 					end;
 					-- Waiting for casting to finish...
@@ -247,6 +250,12 @@ function CPlayer:checkSkills(_only_friendly)
 			else
 				yrest(100);
 			end;
+
+			-- print HP of our target
+			-- we do it later, because the client needs some time to change the values
+			local target = player:getTarget();
+			printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
+	
 		end
 	end
 end
@@ -301,10 +310,6 @@ function CPlayer:fight()
 	local target = self:getTarget();
 	self.Fighting = true;
 
-	-- üöä replace
-	target.Name = string.gsub(target.Name, "Ã¼", "\154");	-- replace for ü 195/188
-	target.Name = string.gsub(target.Name, "Ã¶", "\148");	-- replace for ö 195/182
-	target.Name = string.gsub(target.Name, "Ã¤", "\132");	-- replace for ä 195/164
 	cprintf(cli.green, language[22], target.Name);	-- engagin x in combat
 
 	-- Keep tapping the attack button once every few seconds
@@ -1132,10 +1137,6 @@ function CPlayer:findTarget()
 -- all other checks are within the self:haveTarget(), so the target should be ok
 		local target = self:getTarget();
 		local dist = distance(self.X, self.Z, target.X, target.Z);
-		-- üöä replace
-		target.Name = string.gsub(target.Name, "Ã¼", "\154");	-- replace for ü 195/188
-		target.Name = string.gsub(target.Name, "Ã¶", "\148");	-- replace for ö 195/182
-		target.Name = string.gsub(target.Name, "Ã¤", "\132");	-- replace for ä 195/164
 		cprintf(cli.green, language[37], target.Name, dist);	-- Select new target %s in distance
 
 		return true;
@@ -1278,11 +1279,11 @@ function CPlayer:sleep()
 
 		local hf_key_pressed = false;
 
---		if( keyPressed(settings.hotkeys.STOP_BOT.key) ) then	-- sleep/pause key pressed
+--		if( keyPressedLocal(settings.hotkeys.STOP_BOT.key) ) then	-- sleep/pause key pressed
 --			hf_key_pressed = true;
 --			hf_key = "STOP";
 --		end;
-		if( keyPressed(settings.hotkeys.START_BOT.key) ) then	-- start key pressed
+		if( keyPressedLocal(settings.hotkeys.START_BOT.key) ) then	-- start key pressed
 			hf_key_pressed = true;
 			hf_key = "AWAKE";
 		end;
