@@ -16,7 +16,7 @@ language = {
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",	
 	
 	[20] = "Finished casting\n",
-	[21] = "Casting \'%s\   =>   %s (%d/%d)\n",
+	[21] = "Casting \'%s",
 	[22] = "Engaging enemy [%s] in combat.\n",
 	[23] = "Target HP changed\n",
 	[24] = "Too close. Backing up.\n",
