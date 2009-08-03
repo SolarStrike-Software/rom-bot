@@ -403,7 +403,11 @@ function main()
 					player:clearTarget();
 					player.Success_waypoints = 0;	-- counter for successfull waypoints in row
 					player.Unstick_counter = player.Unstick_counter + 1;	-- count our unstick tries
-					if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then player:logout(); end;	-- to many tries, logout
+
+					-- Too many tries, logout
+					if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
+						if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then player:logout(); end;
+					end
 					player:unstick();
 				end
 			end

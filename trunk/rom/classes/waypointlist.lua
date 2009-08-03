@@ -73,7 +73,11 @@ end
 
 
 function CWaypointList:getFileName()
-	return self.FileName;
+	if( self.FileName == nil ) then
+		return "<NONE>";
+	else
+		return self.FileName;
+	end
 end
 
 function CWaypointList:setMode(mode)

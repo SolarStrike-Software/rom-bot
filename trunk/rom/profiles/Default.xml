@@ -1,12 +1,12 @@
 <profile>
 	<options>
-		<!-- try the bot with a new char mage or priest         -->
-		<!-- at the pioneer village. Use demo.xml waypoint file -->
+		<!-- Try the bot with a new char mage or priest         -->
+		<!-- At the pioneer village. Use demo.xml waypoint file -->
 		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
 
-		<option name="COMBAT_TYPE"        value="" />		-- choose ranged/melee if not using class default
+		<option name="COMBAT_TYPE"        value="" />	<!-- Choose ranged/melee if not using class default -->
 		<option name="COMBAT_DISTANCE"    value="200" />
 		<option name="ANTI_KS"            value="true" />
 		<option name="WAYPOINTS"          value="demo.xml" />
@@ -23,14 +23,16 @@
 		<option name="MAX_FIGHT_TIME"     value="15" />
 		<option name="DOT_PERCENT"        value="90" />
 
-		<!-- rest if HP or Mana is below that level -->
+		<!-- Rest if HP or Mana is below that level -->
 		<option name="HP_REST" value="15" />
 		<option name="MP_REST" value="15" />
 
+		<!-- Log out settings -->
 		<option name="LOGOUT_TIME" value="0" />
 		<option name="LOGOUT_SHUTDOWN" value="false" />
+		<option name="LOGOUT_WHEN_STUCK" value="true" />
 
-		<!-- attack monsters 3 levels above or 10 below your level -->
+		<!-- Attack monsters 3 levels above or 10 below your level -->
 		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
 
@@ -63,8 +65,8 @@
 		<skill name="PRIEST_RISING_TIDE"   hotkey="VK_3" priority="80" />
 	        <skill name="MAGE_FIREBALL"        hotkey="VK_8" priority="70" />
 	        <skill name="PRIEST_WAVE_ARMOR"    hotkey="VK_5" priority="40"  inbattle="true" />
-	        --skill name="PRIEST_SOUL_BOND"     hotkey="VK_T" priority="30" />
-	        --skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_F" priority="20" />
+	        <!-- <skill name="PRIEST_SOUL_BOND"     hotkey="VK_T" priority="30" /> -->
+	        <!--skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_F" priority="20" /> -->
 	</skills_priest>   
 	<skills_warrior> 
 		<skill name="WARRIOR_SLASH"          hotkey="VK_2" priority="90" />
@@ -87,7 +89,7 @@
 	        <skill name="MAGE_FLAME"            hotkey="VK_3" priority="80" />
 	        <skill name="PRIEST_REGENERATE"     hotkey="VK_6" priority="70" />
 	        <skill name="MAGE_ESSENCE_OF_MAGIC" hotkey="VK_8" priority="60" />
-	        --skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_F" priority="50" />        
+	        <!-- <skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_F" priority="50" /> -->     
 	</skills_mage>     
 	<skills_knight>
 		<skill name="KNIGHT_HOLY_STRIKE"  hotkey="VK_3" priority="90" />

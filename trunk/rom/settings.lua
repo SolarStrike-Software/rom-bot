@@ -39,6 +39,7 @@ settings_default = {
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
 			LOGOUT_SHUTDOWN = false,
+			LOGOUT_WHEN_STUCK = true,
 			TARGET_LEVELDIF_BELOW = 99,
 			TARGET_LEVELDIF_ABOVE = 99,
 			QUICK_TURN = false,
