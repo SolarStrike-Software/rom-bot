@@ -1,3 +1,7 @@
+if( settings == nil ) then
+	include("settings.lua");
+end
+
 local charUpdatePattern = string.char(0x8B, 0x07, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0x56, 0x50, 0xE8);
 local charUpdateMask = "xxxx????xxx";
 local charUpdateOffset = 4;

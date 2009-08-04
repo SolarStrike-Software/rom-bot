@@ -1,6 +1,7 @@
 include("addresses.lua");
 include("classes/player.lua");
 include("classes/waypoint.lua");
+include("settings.lua");
 include("functions.lua");
 
 -- ********************************************************************
@@ -63,89 +64,94 @@ function saveWaypoints(list)
 end
 
 function main()
-	local wpList = {};
+	local running = true;
+	while(running) do
+		local wpList = {};
 
-	local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-	player = CPlayer(playerPtr);
-	player:update();
+		local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+		player = CPlayer(playerPtr);
+		player:update();
 
-	cprintf(cli.green, "RoM waypoint creator\n");
-	printf("Hotkeys:\n  (%s)\tInsert new waypoint (at player position)\n"
-		.. "  (%s)\tInsert new harvest waypoint (at player position)\n"	
-		.. "  (%s)\tSave waypoints and quit\n"
-		.. "  (%s)\tSave waypoints and restart\n",
-		getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), getKeyName(restartKey) );
+		cprintf(cli.green, "RoM waypoint creator\n");
+		printf("Hotkeys:\n  (%s)\tInsert new waypoint (at player position)\n"
+			.. "  (%s)\tInsert new harvest waypoint (at player position)\n"	
+			.. "  (%s)\tSave waypoints and quit\n"
+			.. "  (%s)\tSave waypoints and restart\n",
+			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), getKeyName(restartKey) );
 
-	while(true) do
+		while(true) do
 
-		hf_key_pressed = false;
+			hf_key_pressed = false;
 
-		if( keyPressed(wpKey) ) then	-- normal waypoint key pressed
-			hf_key_pressed = true;
-			hf_key = "WP";
-		end;
-		if( keyPressed(harvKey) ) then	-- harvest waypoint key pressed
-			hf_key_pressed = true;
-			hf_key = "HP";
-		end;
-		if( keyPressed(saveKey) ) then	-- save key pressed
-			hf_key_pressed = true;
-			hf_key = "SAVE";
-		end;
+			if( keyPressed(wpKey) ) then	-- normal waypoint key pressed
+				hf_key_pressed = true;
+				hf_key = "WP";
+			end;
+			if( keyPressed(harvKey) ) then	-- harvest waypoint key pressed
+				hf_key_pressed = true;
+				hf_key = "HP";
+			end;
+			if( keyPressed(saveKey) ) then	-- save key pressed
+				hf_key_pressed = true;
+				hf_key = "SAVE";
+			end;
 
-		if( keyPressed(restartKey) ) then	-- restart key pressed
-			hf_key_pressed = true;
-			hf_key = "RESTART";
-		end;
+			if( keyPressed(restartKey) ) then	-- restart key pressed
+				hf_key_pressed = true;
+				hf_key = "RESTART";
+			end;
 
-		if( hf_key_pressed == false ) then	-- key released, do the work
+			if( hf_key_pressed == false ) then	-- key released, do the work
 
-			-- SAVE Key: save waypoint file and exit
-			if( hf_key == "SAVE" ) then
-				saveWaypoints(wpList);
+				-- SAVE Key: save waypoint file and exit
+				if( hf_key == "SAVE" ) then
+					saveWaypoints(wpList);
+					hf_key = " ";	-- clear last pressed key
+					running = false;
+					break;
+					--error("   ", 0); -- Not really an error, but it will drop us back to shell.
+				end;
+
+				-- waypoint or harvest point key: create a waypoint/harvest waypoint
+				if( hf_key == "WP"  or		-- normal waypoint
+					hf_key == "HP"  ) then	-- harvet waypoint
+
+					player:update();
+
+					local tmp = {};		
+					tmp.X = player.X;		
+					tmp.Z = player.Z;		
+
+					if( hf_key == "HP" ) then 	-- is's a havest point?
+						tmp.harvPoint = true;	-- it is a harvest point
+						hf_temp = "HP";
+					else 
+						tmp.harvPoint = false; 
+						hf_temp = "WP";
+					end; 
+
+					printf("Recorded [#%2d] %s, Continue to next. Press %s to save and quit\n",
+					#wpList + 1, hf_temp,getKeyName(saveKey));
+
+					table.insert(wpList, tmp);
+
+				end;
+
+				if( hf_key == "RESTART" ) then
+					saveWaypoints(wpList);
+					hf_key = " ";	-- clear last pressed key
+					running = true; -- restart
+					break;
+				end;
+
 				hf_key = " ";	-- clear last pressed key
-				error("   ", 0); -- Not really an error, but it will drop us back to shell.
 			end;
 
-			-- waypoint or harvest point key: create a waypoint/harvest waypoint
-			if( hf_key == "WP"  or		-- normal waypoint
-			    hf_key == "HP"  ) then	-- harvet waypoint
-
-				player:update();
-
-				local tmp = {};		
-				tmp.X = player.X;		
-				tmp.Z = player.Z;		
-
-				if( hf_key == "HP" ) then 	-- is's a havest point?
-					tmp.harvPoint = true;	-- it is a harvest point
-					hf_temp = "HP";
-				else 
-					tmp.harvPoint = false; 
-					hf_temp = "WP";
-				end; 
-
-				printf("Recorded [#%2d] %s, Continue to next. Press %s to save and quit\n",
-				#wpList + 1, hf_temp,getKeyName(saveKey));
-
-				table.insert(wpList, tmp);
-
-			end;
-
-			if( hf_key == "RESTART" ) then
-				saveWaypoints(wpList);
-				hf_key = " ";	-- clear last pressed key
-				break;
-			end;
-
-			hf_key = " ";	-- clear last pressed key
-		end;
-
-		yrest(10);
-	end
-
+			yrest(10);
+		end -- End of: while(true)
+	end -- End of: while(running)
 end
 
-while (true) do
+--while (true) do
 	startMacro(main, true);
-end;
+--end;

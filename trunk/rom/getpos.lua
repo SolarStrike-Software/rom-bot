@@ -1,7 +1,7 @@
 -- A simple script to simply tell you your in-game location
+include("settings.lua");
 include("functions.lua");
 include("classes/player.lua");
-include("settings.lua");
 include("addresses.lua");
 
 settings.load();
@@ -29,4 +29,4 @@ function main()
 		printf("\rPosition: (%d, %d)\t", player.X, player.Z);
 	end
 end
-startMacro(main);
+startMacro(main, true);
