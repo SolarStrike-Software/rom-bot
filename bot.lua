@@ -12,8 +12,6 @@ include("functions.lua");
 include("settings.lua");
 
 
-DEBUG_ASSERT = false; -- Change to 'true' to debug memory reading problems.
-
 settings.load();
 setStartKey(settings.hotkeys.START_BOT.key);
 setStopKey(settings.hotkeys.STOP_BOT.key);

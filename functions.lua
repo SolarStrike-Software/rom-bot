@@ -47,9 +47,9 @@ function checkExecutableCompatible()
 	return true;
 end
 
-if(DEBUG_ASSERT == nil ) then DEBUG_ASSERT = false; end;
+if(settings.options.DEBUG_ASSERT == nil ) then settings.options.DEBUG_ASSERT = false; end;
 function debugAssert(args)
-	if( DEBUG_ASSERT ) then
+	if( settings.options.DEBUG_ASSERT ) then
 		if( not args ) then
 			error("Error in memory reading", 2);
 		else

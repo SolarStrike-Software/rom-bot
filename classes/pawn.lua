@@ -96,7 +96,7 @@ function CPawn:update()
 --		str = string.gsub(str, string.char(195, 188), "\129");	-- replace for ü
 --  	str = string.gsub(str, string.char(195, 156), "\154");	-- replace for Ü
 --		str = string.gsub(str, string.char(195, 159), "\225");	-- replace for ß
-		if(str == nil) then return; end;
+		if(str == nil) then return ""; end;
 		str = string.gsub(str, string.char(197,145), "\018");	-- replace for o
 		str = string.gsub(str, string.char(197,177), "\019");	-- replace for u 
 		str = string.gsub(str, string.char(197,179), "\022");	-- replace for u 
@@ -201,7 +201,18 @@ function CPawn:update()
 
 	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
 --	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
-	self.Name = UTF8_to_ASCII(debugAssert(memoryReadString(proc, namePtr), memerrmsg));
+
+	-- Disable memory warnings for name reading only
+	showWarnings(false);
+	tmp = debugAssert(memoryReadString(proc, namePtr));
+	showWarnings(true); -- Re-enable warnings after reading
+
+	if( tmp == nil ) then
+		self.Name = "<UNKNOWN>";
+	else
+		self.Name = UTF8_to_ASCII(tmp);
+	end
+
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
 
