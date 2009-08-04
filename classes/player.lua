@@ -620,6 +620,19 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 	end
 
+	-- no active turning if wander and radius = 0
+	-- self direction has values from 0 til Pi and -Pi til 0
+	-- angel has values from 0 til 2*Pi
+	if(__WPL:getMode()   == "wander"  and
+	   __WPL:getRadius() == 0     )   then
+	   	self:restrnd(100, 1, 4);	-- wait 3 sec
+		if( self.Direction < 0 ) then
+			angle = (math.pi * 2) - math.abs(self.Direction);
+		else
+			angle = self.Direction;
+		end;
+	end;
+
 	-- QUICK_TURN only
 	if( settings.profile.options.QUICK_TURN == true ) then
 		self:faceDirection(angle);
@@ -683,9 +696,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	local lastDistImprove = os.time();
-if( not settings.profile.options.TEST_FIX_NOSTOP ) then		-- just testing the fix
-	keyboardHold( settings.hotkeys.MOVE_FORWARD.key );	-- no more stops while
-end								-- moving
 	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;

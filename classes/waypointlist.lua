@@ -88,6 +88,9 @@ function CWaypointList:getMode()
 	return self.Mode;
 end
 
+function CWaypointList:getRadius()
+	return self.Radius;
+end
 
 function CWaypointList:advance()
 
