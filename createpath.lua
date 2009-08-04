@@ -20,13 +20,9 @@ p_harvest_command = "player:harvest();";	-- harvest command
 -- End of Change parameter changes                                    *
 -- ********************************************************************
 
-if( getVersion() < 100 ) then
-	startKey = key.VK_DELETE;
-	stopKey = key.VK_END;
-else
-	setStartKey(key.VK_DELETE);
-	setStopKey(key.VK_END);
-end
+
+setStartKey(key.VK_DELETE);
+setStopKey(key.VK_END);
 
 wpKey = key.VK_NUMPAD1;		-- insert a movement point
 harvKey = key.VK_NUMPAD2;	-- insert a harvest point	
