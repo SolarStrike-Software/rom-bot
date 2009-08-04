@@ -62,13 +62,7 @@ end
 
 
 function getWin()
-	local skey = 0;
-
-	if( getVersion() < 100 ) then
-		skey = startKey;
-	else
-		skey = getStartKey();
-	end
+	local skey = getStartKey();
 
 	if( __WIN == nil or not windowValid(__WIN) ) then
 		local winlist = findWindowList("Runes of Magic", "Radiant Arcana");

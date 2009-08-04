@@ -193,13 +193,11 @@ function main()
 			keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
 
 			-- Take a screenshot. Only works on MicroMacro 1.0 or newer
-			if( getVersion() >= 100 ) then
-				showWindow(getWin(), sw.show);
-				yrest(500);
-				local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
-				saveScreenshot(getWin(), sfn);
-				printf(language[2], sfn);
-			end
+			showWindow(getWin(), sw.show);
+			yrest(500);
+			local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
+			saveScreenshot(getWin(), sfn);
+			printf(language[2], sfn);
 
 			if( type(settings.profile.events.onDeath) == "function" ) then
 				local status,err = pcall(settings.profile.events.onDeath);
