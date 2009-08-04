@@ -96,6 +96,7 @@ function CPawn:update()
 --		str = string.gsub(str, string.char(195, 188), "\129");	-- replace for ü
 --  	str = string.gsub(str, string.char(195, 156), "\154");	-- replace for Ü
 --		str = string.gsub(str, string.char(195, 159), "\225");	-- replace for ß
+		if(str == nil) then return; end;
 		str = string.gsub(str, string.char(197,145), "\018");	-- replace for o
 		str = string.gsub(str, string.char(197,177), "\019");	-- replace for u 
 		str = string.gsub(str, string.char(197,179), "\022");	-- replace for u 
