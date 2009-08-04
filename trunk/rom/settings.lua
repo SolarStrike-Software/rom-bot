@@ -57,7 +57,6 @@ settings_default = {
 			HARVEST_SCAN_XMULTIPLIER = 1.0,		-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,		-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
-			TEST_FIX_NOSTOP = true,	-- test fix in :moveto no hold key
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
