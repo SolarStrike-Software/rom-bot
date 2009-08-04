@@ -8,8 +8,8 @@ include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
 include("classes/waypointlist_wander.lua");
 include("classes/node.lua");
-include("functions.lua");
 include("settings.lua");
+include("functions.lua");
 
 
 settings.load();
