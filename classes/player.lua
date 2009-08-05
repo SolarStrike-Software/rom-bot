@@ -371,10 +371,11 @@ function CPlayer:fight()
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf("Taking too long to damage target, breaking sequence...\n");
+			player.last_ignore_target_ptr = player.TargetPtr;	-- remember break target
+			player.self.last_ignore_target_ptr = os.time();		-- and the time we break the fight
 			self:clearTarget();
 			break;
 		end
-
 
 
 		if( target.HP ~= lastTargetHP ) then
@@ -908,6 +909,7 @@ function CPlayer:haveTarget()
 			return false;
 		end;
 
+		-- check level of target against our leveldif settings
 		if( ( target.Level - self.Level ) > settings.profile.options.TARGET_LEVELDIF_ABOVE  or
 		( self.Level - target.Level ) > settings.profile.options.TARGET_LEVELDIF_BELOW ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
@@ -920,6 +922,19 @@ function CPlayer:haveTarget()
 			end;
 		end;
 
+		-- check if we just ignored that target / ignore it for 10 sec
+		if(self.TargetPtr == player.last_ignore_target_ptr  and
+		   os.difftime(os.time(), player.self.last_ignore_target_ptr)  < 10 )then	
+			if ( self.Battling == false ) then	-- if we don't have aggro then
+				return false;			-- he is not a valid target
+			end;
+
+			if( self.Battling == true  and		-- we have aggro
+			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+				return false;         
+			end;
+		end
+
 		-- PK protect
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 			if ( self.Battling == false ) then   -- if we don't have aggro then
@@ -928,7 +943,7 @@ function CPlayer:haveTarget()
 
 			if( self.Battling == true  and         -- we have aggro
 				target.TargetPtr ~= self.Address ) then   -- but not from the PK player
-				return false;         
+				return false;
 			end;
 		end;
 
@@ -1189,6 +1204,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	
 	-- setting default values
 	if( _restmin     == nil  or  _restmin  == 0 )   then _restmin     = 10; end;
+	if( _restmax     == nil  or  _restmax  == 0 )   then _restmax     = _restmin; end;
 	if( _resttype    == nil )                       then _resttype    = "time"; end;	-- default restype is 'time"
 
 	if ( _restmax >  _restmin ) then
@@ -1340,4 +1356,153 @@ function CPlayer:sleep()
 	-- count the sleeping time
 	self.Sleeping_time = self.Sleeping_time + os.difftime(os.time(), sleep_start);
 	
+end
+
+function CPlayer:scan_for_NPC()
+	if( foregroundWindow() ~= getWin() ) then
+		return;
+	end
+
+	local function scan()
+		local mousePawn;
+		-- Screen dimension variables
+		local wx, wy, ww, wh = windowRect(getWin());
+		local halfWidth = ww/2;
+		local halfHeight = wh/2;
+
+		-- Scan rect variables
+		local scanWidth = settings.profile.options.HARVEST_SCAN_WIDTH; -- Width, in 'steps', of the area to scan
+		local scanHeight = settings.profile.options.HARVEST_SCAN_HEIGHT; -- Height, in 'steps', of area to scan
+		local scanXMultiplier = settings.profile.options.HARVEST_SCAN_XMULTIPLIER;	-- multiplier for scan width
+		local scanYMultiplier = settings.profile.options.HARVEST_SCAN_YMULTIPLIER;	-- multiplier for scan line height
+		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
+
+		local mx, my; -- Mouse x/y temp values
+
+		mouseSet(wx + (halfWidth*scanXMultiplier - (scanWidth/2*scanStepSize)),
+		wy  + (halfHeight*scanYMultiplier - (scanHeight/2*scanStepSize)));
+		yrest(100);
+
+		local scanstart, scanende, scanstep;
+		-- define scan direction top/down  or   bottom/up
+		if( settings.profile.options.HARVEST_SCAN_TOPDOWN == true ) then
+			scanstart = 0;
+			scanende = scanHeight-1;
+			scanstep = 1;
+		else
+			scanstart = scanHeight;
+			scanende = 0;
+			scanstep = -1;
+		end;
+
+		-- Scan nearby area for a node
+		keyboardHold(key.VK_SHIFT);	-- press shift so you can scan trough players
+		for y = scanstart, scanende, scanstep do
+			my = math.ceil(halfHeight * scanYMultiplier - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
+
+			for x = 0,scanWidth-1 do
+				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
+
+				mouseSet(wx + mx, wy + my);
+--				yrest(settings.profile.options.HARVEST_SCAN_YREST);
+				yrest(100);
+				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
+				-- id 110504 Waffenhersteller Dimar
+				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NPC
+					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
+					and database.nodes[mousePawn.Id] ) then
+					return mousePawn.Address, mx, my;
+				end
+			end
+		end
+		keyboardRelease(key.VK_SHIFT);
+
+
+		return 0, nil, nil;
+	end
+
+
+	detach(); -- Remove attach bindings
+	local mouseOrigX, mouseOrigY = mouseGetPos();
+	local foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+
+	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
+		-- We found something. Lets harvest it.
+
+		-- If out of distance, move and rescan
+		local mousePawn = CPawn(foundHarvestNode);
+		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
+
+		if( dist > 35 and dist < 150 ) then
+			printf("Move in\n");
+			self:moveTo( CWaypoint(mousePawn.X, mousePawn.Z), true );
+			yrest(200);
+			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+		end
+
+		local startHarvestTime = os.time();
+		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
+
+			self:update();
+
+			if( self.Battling ) then	-- we get aggro, stop harversting
+				if( self.Returning ) then	-- set wp one back to harverst wp
+					__RPL:backward();	-- again after the fight
+				else
+					__WPL:backward();
+				end;
+				break;
+			end;
+
+			if( os.difftime(os.time(), startHarvestTime) > 45 ) then
+				break;
+			end
+
+			local wx,wy = windowRect(getWin());
+			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+			yrest(50);
+			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+			yrest(50);
+
+			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
+			and database.nodes[mousePawn.Id] ~= nil ) then
+				-- Node is still here
+
+				-- Begin gathering
+				keyboardHold(key.VK_SHIFT);
+				mouseLClick();
+				yrest(100);
+				mouseLClick();
+				keyboardRelease(key.VK_SHIFT);
+
+				-- Wait for a few seconds... constantly check for aggro
+				local startWaitTime = os.time();
+				while( os.difftime(os.time(), startWaitTime) < 2 ) do
+					yrest(100);
+					self:update();
+
+					-- Make sure it didn't disapear
+					mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+					if( mousePawn.Address == 0 ) then
+						break;
+					end;
+
+					if( self.Battling ) then
+						break;
+					end
+				end
+
+				self:update();
+
+			else
+				-- Node is gone
+				break;
+			end
+		end
+	end
+
+	mouseSet(mouseOrigX, mouseOrigY);
+	attach(getWin()); -- Re-attach bindings
 end
