@@ -452,7 +452,7 @@ function CPlayer:fight()
 		if( settings.profile.options.QUICK_TURN ) then
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 			self:faceDirection(angle);
-			camera:setRotation(dir);
+			camera:setRotation(angle);
 		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
 			-- Make sure we're facing the enemy
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
@@ -638,7 +638,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	-- QUICK_TURN only
 	if( settings.profile.options.QUICK_TURN == true ) then
 		self:faceDirection(angle);
-		camera:setRotation(dir);
+		camera:setRotation(angle);
 		self:update();
 		angleDif = angleDifference(angle, self.Direction);
 	end
@@ -762,7 +762,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		-- Continue to make sure we're facing the right direction
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle);
-			camera:setRotation(dir);
+			camera:setRotation(angle);
 		end
 
 		if( angleDif > math.rad(15) ) then
@@ -780,7 +780,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			end
 		elseif( angleDif > math.rad(1) ) then
 			if( settings.profile.options.QUICK_TURN ) then
-				camera:setRotation(dir);
+				camera:setRotation(angle);
 			end
 
 			self:faceDirection(angle);
