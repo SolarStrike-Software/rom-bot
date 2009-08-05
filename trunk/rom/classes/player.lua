@@ -371,8 +371,8 @@ function CPlayer:fight()
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf("Taking too long to damage target, breaking sequence...\n");
-			player.last_ignore_target_ptr = player.TargetPtr;	-- remember break target
-			player.self.last_ignore_target_ptr = os.time();		-- and the time we break the fight
+			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
+			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
 			self:clearTarget();
 			break;
 		end
@@ -923,9 +923,10 @@ function CPlayer:haveTarget()
 		end;
 
 		-- check if we just ignored that target / ignore it for 10 sec
-		if(self.TargetPtr == player.last_ignore_target_ptr  and
-		   os.difftime(os.time(), player.self.last_ignore_target_ptr)  < 10 )then	
+		if(self.TargetPtr == player.Last_ignore_target_ptr  and
+		   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
 			if ( self.Battling == false ) then	-- if we don't have aggro then
+				cprintf(cli.green, "We ignore %s for %s seconds more\n", target.Name, 10-os.difftime(os.time(), player.Last_ignore_target_time ) );
 				return false;			-- he is not a valid target
 			end;
 
