@@ -220,7 +220,9 @@ function main()
 				player:update();
 
 				if( not player.Alive ) then
-					cprintf(cli.yellow, "You are still death. There is a problem with automatic reanimation. Did you set your ingame makro \'/script AcceptResurrect();\' to the key %s?\n", getKeyName(settings.profile.hotkeys.RES_MACRO.key));
+					cprintf(cli.yellow, "You are still dead. There is a problem with automatic resurrection." ..
+						" Did you set your ingame macro \'/script AcceptResurrect();\' tokey %s?\n",
+						getKeyName(settings.profile.hotkeys.RES_MACRO.key));
 					pauseOnDeath();
 				end;
 
@@ -248,7 +250,8 @@ function main()
 				__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
 
 				player.Death_counter = player.Death_counter + 1;
-				cprintf(cli.yellow, "You died %s times from at most %s deaths/automatic reanimations.\n", player.Death_counter, settings.profile.options.MAX_DEATHS);
+				cprintf(cli.yellow, "You have died %s times from at most %s deaths/automatic resurrections.\n",
+					player.Death_counter, settings.profile.options.MAX_DEATHS);
 				-- check maximal death if automatic mode
 				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
 					player:logout();
