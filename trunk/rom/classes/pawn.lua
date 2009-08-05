@@ -77,8 +77,6 @@ CPawn = class(
 		self.Fights = 0;			-- counts the fights
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
-		self.Last_ignore_target_ptr = 0;		-- last target to ignore
-		self.Last_ignore_target_time = 0;		-- last target to ignore		
 
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
