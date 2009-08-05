@@ -1364,7 +1364,7 @@ function CPlayer:sleep()
 	
 end
 
-function CPlayer:scan_for_NPC()
+function CPlayer:scan_for_NPC(_npcname)
 	if( foregroundWindow() ~= getWin() ) then
 		return;
 	end
@@ -1410,15 +1410,25 @@ function CPlayer:scan_for_NPC()
 				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
 
 				mouseSet(wx + mx, wy + my);
---				yrest(settings.profile.options.HARVEST_SCAN_YREST);
-				yrest(100);
+				yrest(settings.profile.options.HARVEST_SCAN_YREST);
+--				yrest(100);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
-	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
+--	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
 				-- id 110504 Waffenhersteller Dimar
+				-- id 110502 Dan (Gemischtwarenhändler
+				-- id 1000, 1001 Player
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NPC
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
-					and database.nodes[mousePawn.Id] ) then
-					return mousePawn.Address, mx, my;
+  					and mousePawn.Id > 100000 ) then
+--  					and database.nodes[mousePawn.Id] ) then
+					local target = CPawn(mousePawn.Address);
+					if( _npcname and			-- check ncp name
+					    not string.find(target.Name, _npcname ) ) then
+					    local dummy = 1;			-- do nothing
+					else
+						cprintf(cli.green, "We found NPC: %s\n", target.Name);
+						return mousePawn.Address, mx, my;
+					end;
 				end
 			end
 		end
@@ -1434,7 +1444,6 @@ function CPlayer:scan_for_NPC()
 	local foundHarvestNode, nodeMouseX, nodeMouseY = scan();
 
 	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
-		-- We found something. Lets harvest it.
 
 		-- If out of distance, move and rescan
 		local mousePawn = CPawn(foundHarvestNode);
@@ -1447,68 +1456,44 @@ function CPlayer:scan_for_NPC()
 			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
 		end
 
-		local startHarvestTime = os.time();
-		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
+		self:update();
 
-			self:update();
+		local wx,wy = windowRect(getWin());
+		--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+		mouseSet(wx + nodeMouseX, wy + nodeMouseY);
+		yrest(100);
 
-			if( self.Battling ) then	-- we get aggro, stop harversting
-				if( self.Returning ) then	-- set wp one back to harverst wp
-					__RPL:backward();	-- again after the fight
-				else
-					__WPL:backward();
-				end;
-				break;
-			end;
+		-- click NPC
+		keyboardHold(key.VK_SHIFT);
+		mouseLClick();
+		yrest(100);
+		mouseLClick();
+		keyboardRelease(key.VK_SHIFT);
 
-			if( os.difftime(os.time(), startHarvestTime) > 45 ) then
-				break;
-			end
+		self:update();
 
-			local wx,wy = windowRect(getWin());
-			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
-			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
-			yrest(50);
-			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
-			yrest(50);
+		yrest(2000);
 
-			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
-			and database.nodes[mousePawn.Id] ~= nil ) then
-				-- Node is still here
-
-				-- Begin gathering
-				keyboardHold(key.VK_SHIFT);
-				mouseLClick();
-				yrest(100);
-				mouseLClick();
-				keyboardRelease(key.VK_SHIFT);
-
-				-- Wait for a few seconds... constantly check for aggro
-				local startWaitTime = os.time();
-				while( os.difftime(os.time(), startWaitTime) < 2 ) do
-					yrest(100);
-					self:update();
-
-					-- Make sure it didn't disapear
-					mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
-					if( mousePawn.Address == 0 ) then
-						break;
-					end;
-
-					if( self.Battling ) then
-						break;
-					end
-				end
-
-				self:update();
-
-			else
-				-- Node is gone
-				break;
-			end
-		end
 	end
 
 	mouseSet(mouseOrigX, mouseOrigY);
+	attach(getWin()); -- Re-attach bindings
+end
+
+function CPlayer:mouseclickL(_x, _y)
+	if( foregroundWindow() ~= getWin() ) then
+		return;
+	end
+
+	detach(); -- Remove attach bindings
+
+	local wx,wy = windowRect(getWin());
+	cprintf(cli.green, "Mouse X %s, Mouse Y %s\n", wx, wy);
+	mouseSet(wx + _x, wy + _y);
+	yrest(100);
+
+	mouseLClick();
+	yrest(100);
+
 	attach(getWin()); -- Re-attach bindings
 end
