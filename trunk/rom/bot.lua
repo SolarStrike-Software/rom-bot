@@ -107,6 +107,9 @@ function main()
 	printf("playerAddr: 0x%X\n", player.Address);
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
+	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
+	cprintf(cli.turquoise, "RoM windows size is %sx%s\n", hf_wide, hf_high );	-- RoM windows size
+
 	-- Set window name, install timer to automatically do it once a second
 	if( forcedProfile ) then
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, forcedProfile));

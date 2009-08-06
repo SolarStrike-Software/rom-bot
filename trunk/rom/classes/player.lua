@@ -1482,16 +1482,31 @@ function CPlayer:scan_for_NPC(_npcname)
 	attach(getWin()); -- Re-attach bindings
 end
 
-function CPlayer:mouseclickL(_x, _y)
+function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
 	if( foregroundWindow() ~= getWin() ) then
 		return;
 	end
 
 	detach(); -- Remove attach bindings
 
-	local wx,wy = windowRect(getWin());
-	cprintf(cli.green, "Clicking mouseL at x %s, y %s\n", _x, _y);
-	mouseSet(wx + _x, wy + _y);
+	local wx,wy,wwide,whigh  = windowRect(getWin());
+	local hf_x, hf_y;
+	
+	-- recalulate clickpoints depending from the actual RoM windows size
+	-- only if we know the original windows size from the clickpoints
+	if(_wwide  and _whigh) then
+		hf_x = wwide * _x / _wwide;
+		hf_y = whigh * _y / _whigh;
+		cprintf(cli.green, "Clicking mouseL at %d,%d in %dx%d (recalculated from %d,%d by %dx%d)\n", 
+			hf_x, hf_y, wwide, whigh, _x, _y, _wwide, _whigh);
+	else
+		hf_x = _x;
+		hf_y = _y;
+		cprintf(cli.green, "Clicking mouseL at %d,%d in %dx%d\n", 
+			hf_x, hf_y, wwide, whigh);
+	end;
+	
+	mouseSet(wx + hf_x, wy + hf_y);
 	yrest(100);
 
 	mouseLClick();

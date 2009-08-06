@@ -72,6 +72,9 @@ function main()
 		player = CPlayer(playerPtr);
 		player:update();
 
+		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
+		cprintf(cli.turquoise, "RoM windows size is %sx%s\n", hf_wide, hf_high );	-- RoM windows size
+
 		cprintf(cli.green, "RoM waypoint creator\n");
 		printf("Hotkeys:\n  (%s)\tInsert new waypoint (at player position)\n"
 			.. "  (%s)\tInsert new harvest waypoint (at player position)\n"	
