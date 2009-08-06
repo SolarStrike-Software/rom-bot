@@ -5,10 +5,11 @@
 	player:rest(5);
 	player:scan_for_NPC("York");
 	player:rest(2);
-	<!-- The coordinates depends from your screen resolution/window -->	
-	<!-- size. You need to change them !!!                          -->	
-	player:mouseclickL(130, 200);
+	<!-- The coordinates depends from your screen resolution/window -->
+	<!-- size. We recalculate them for the actual RoM windows size  -->	
+	<!-- hence we need the original values (here 800x617)           -->		
+	player:mouseclickL(130, 200, 800, 617);
 	player:rest(2);
-	player:mouseclickL(130, 300);
+	player:mouseclickL(130, 300, 800, 617);
 	</waypoint>
 </waypoints>
