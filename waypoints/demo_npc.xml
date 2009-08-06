@@ -1,9 +1,12 @@
 <waypoints>
 	<!-- Thats a demo to interact with the NPC York Harris in Logar -->
+	<!-- For autorepairs you need the addon 'streamline'            -->	
 	<!-- # 1 --><waypoint x="-808" z="-6067">
 	player:rest(5);
 	player:scan_for_NPC("York");
 	player:rest(2);
+	<!-- The coordinates depends from your screen resolution/window -->	
+	<!-- size. You need to change them !!!                          -->	
 	player:mouseclickL(130, 200);
 	player:rest(2);
 	player:mouseclickL(130, 300);

@@ -1461,13 +1461,15 @@ function CPlayer:scan_for_NPC(_npcname)
 		local wx,wy = windowRect(getWin());
 		--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
 		mouseSet(wx + nodeMouseX, wy + nodeMouseY);
-		yrest(100);
+		yrest(3000);		-- wait for zoom in / out movement bug
 
 		-- click NPC
 		keyboardHold(key.VK_SHIFT);
-		mouseLClick();
-		yrest(100);
-		mouseLClick();
+		mouseLClick();		-- one click to target npc
+		yrest(500);		
+		mouseLClick();		-- one click to open dialog
+		yrest(500);	
+		mouseLClick();		-- one click to be really sure
 		keyboardRelease(key.VK_SHIFT);
 
 		self:update();
@@ -1488,7 +1490,7 @@ function CPlayer:mouseclickL(_x, _y)
 	detach(); -- Remove attach bindings
 
 	local wx,wy = windowRect(getWin());
-	cprintf(cli.green, "Mouse X %s, Mouse Y %s\n", wx, wy);
+	cprintf(cli.green, "Clicking mouseL at x %s, y %s\n", _x, _y);
 	mouseSet(wx + _x, wy + _y);
 	yrest(100);
 
