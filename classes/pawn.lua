@@ -78,7 +78,13 @@ CPawn = class(
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
 		self.Last_ignore_target_ptr = 0;		-- last target to ignore
-		self.Last_ignore_target_time = 0;		-- last target to ignore		
+		self.Last_ignore_target_time = 0;		-- last target to ignore
+		self.free_counter1				-- free counter for user use
+		self.free_counter2				-- free counter for user use
+		self.free_counter3				-- free counter for user use		
+		self.free_flag1				-- free flag for user use
+		self.free_flag2				-- free flag for user use
+		self.free_flag3				-- free flag for user use		
 
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
