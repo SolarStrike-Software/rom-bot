@@ -1411,7 +1411,6 @@ function CPlayer:scan_for_NPC(_npcname)
 
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST);
---				yrest(100);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
 --	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
 				-- id 110504 Waffenhersteller Dimar
@@ -1420,7 +1419,6 @@ function CPlayer:scan_for_NPC(_npcname)
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NPC
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
   					and mousePawn.Id > 100000 ) then
---  					and database.nodes[mousePawn.Id] ) then
 					local target = CPawn(mousePawn.Address);
 					if( _npcname and			-- check ncp name
 					    not string.find(target.Name, _npcname ) ) then

@@ -110,16 +110,101 @@ function main()
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 	cprintf(cli.turquoise, "RoM windows size is %sx%s\n", hf_wide, hf_high );	-- RoM windows size
 
-	-- Set window name, install timer to automatically do it once a second
-	if( forcedProfile ) then
-		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, forcedProfile));
-		settings.loadProfile(forcedProfile);
-		registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, forcedProfile);
-	else
-		settings.loadProfile(player.Name);
-		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, player.Name));
-		registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, player.Name);
+	
+	-- local functions to convert string (e.g. player name) from UTF-8 to ASCII
+	local function convert_utf8_ascii_character( _str, _ascii )
+		local found;
+		local tmp = database.utf8_ascii[_ascii];
+		_str, found = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		return _str, found;
 	end
+	
+	local function convert_utf8_ascii( _str )
+		local found, found_all;
+		found_all = 0;
+		for i,v in pairs(database.utf8_ascii) do
+			_str, found = convert_utf8_ascii_character( _str, v.ascii  );	-- replace special characters
+			found_all = found_all + found;			-- count replacements
+		end
+	
+		if( found_all > 0) then
+			return _str, true;
+		else
+			return _str, false;
+		end
+	end
+
+	-- local functions to replace special ASCII characters (e.g. in player name) 
+	local function replace_special_ascii_character( _str, _ascii )
+		local found;
+		local tmp = database.utf8_ascii[_ascii];
+		_str, found = string.gsub(_str, string.char(tmp.ascii), tmp.dos_replace );
+		return _str, found;
+	end
+
+	local function replace_special_ascii( _str )
+		local found, found_all;
+		found_all = 0;
+		for i,v in pairs(database.utf8_ascii) do
+			_str, found = replace_special_ascii_character( _str, v.ascii  );	-- replace special characters
+			found_all = found_all + found;			-- count replacements
+		end
+	
+		if( found_all > 0) then
+			return _str, true;
+		else
+			return _str, false;
+		end
+	end
+
+	local load_profile_name;	-- name of profile to load
+	if( forcedProfile ) then
+		load_profile_name = forcedProfile;
+	else
+		load_profile_name = player.Name;
+	end
+
+	-- convert player name from UTF-8 to ASCII
+	player.Name, hf_convert = convert_utf8_ascii(player.Name);
+	
+	if( hf_convert 	and
+	    not forcedProfile )  then
+
+		-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
+	    	local new_profile_name;
+		new_profile_name = replace_special_ascii(player.Name);	-- replace characters
+
+		-- check if profile with replaced characters allready there
+		local file = io.open(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml" , "r");
+		if( file ) then	-- file exits
+			file:close();
+			load_profile_name = new_profile_name;
+		else
+			cprintf(cli.yellow,"Due to technical reasons, we can't use the character name \'%s\' as "..
+			        "a profile name. Please use profile name \'%s.xml\' instead or start "..
+			        "the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\n", 
+			        player.Name, new_profile_name);
+			error("Bot finished due of errors above.\n", 0);
+		end;
+	end;
+
+	-- check if profile exist
+	local file = io.open(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" , "r");
+	if( not file ) then	
+		cprintf(cli.yellow,"We can't find your profile \'%s.xml'\. "..
+		        "Please create a valid profile within the folder \'rom\\profiles\' "..
+		        "or start the bot with a forced profile: \'rom\\bot.lua "..
+		        "profile:xyz\'\n", load_profile_name );
+		        error("Bot finished due of errors above.\n", 0);
+	else
+		file:close();
+	end
+
+
+	-- Set window name, install timer to automatically do it once a second
+	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, load_profile_name));
+	settings.loadProfile(load_profile_name);
+	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 
 	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
 		__WPL = CWaypointListWander();
@@ -408,7 +493,9 @@ function main()
 
 					-- Too many tries, logout
 					if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
-						if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then player:logout(); end;
+						if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
+							player:logout(); 
+						end;
 					end
 					player:unstick();
 				end
