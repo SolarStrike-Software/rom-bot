@@ -82,9 +82,9 @@ CPawn = class(
 		self.free_counter1 = 0;				-- free counter for user use
 		self.free_counter2 = 0;				-- free counter for user use
 		self.free_counter3 = 0;				-- free counter for user use		
-		self.free_flag1 = 0;				-- free flag for user use
-		self.free_flag2 = 0;				-- free flag for user use
-		self.free_flag3 = 0;				-- free flag for user use		
+		self.free_flag1 = false;			-- free flag for user use
+		self.free_flag2 = false;			-- free flag for user use
+		self.free_flag3 = false;			-- free flag for user use		
 
 		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
