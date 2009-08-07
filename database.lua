@@ -1,6 +1,7 @@
 database =  {
 	skills = {},
-	nodes = {}
+	nodes = {},
+	utf8_ascii = {}	
 };
 
 function database.load()
@@ -126,4 +127,27 @@ function database.load()
 
 		database.nodes[id] = tmp;
 	end
+
+	-- UTF-8 -> ASCII translation
+	root = xml.open(getExecutionPath() .. "/database/utf8_ascii.xml");
+	elements = root:getElements();
+
+	for i,v in pairs(elements) do
+		local utf8_1, utf8_2, ascii, dos_replace;
+		local tmp = CNode();
+
+		utf8_1 = v:getAttribute("utf8_1");
+		utf8_2 = v:getAttribute("utf8_2");
+		ascii = v:getAttribute("ascii");
+		dos_replace = v:getAttribute("dos_replace");
+
+		tmp.Name = name;
+		tmp.utf8_1 = utf8_1;
+		tmp.utf8_2 = utf8_2;
+		tmp.ascii = ascii;
+		tmp.dos_replace = dos_replace;		
+
+		database.utf8_ascii[ascii] = tmp;
+	end
+
 end

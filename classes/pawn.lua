@@ -96,105 +96,24 @@ function CPawn:update()
 	local memerrmsg = "Failed to read memory";
 	local tmp;
 
-	local function UTF8_to_ASCII(str)
---		str = string.gsub(str, string.char(195, 164), "\132");	-- replace for ä
---		str = string.gsub(str, string.char(195, 132), "\142");	-- replace for Ä
---		str = string.gsub(str, string.char(195, 182), "\148");	-- replace for ö
---		str = string.gsub(str, string.char(195, 150), "\153");	-- replace for Ö
---		str = string.gsub(str, string.char(195, 188), "\129");	-- replace for ü
---  	str = string.gsub(str, string.char(195, 156), "\154");	-- replace for Ü
---		str = string.gsub(str, string.char(195, 159), "\225");	-- replace for ß
-		if(str == nil) then return ""; end;
-		str = string.gsub(str, string.char(197,145), "\018");	-- replace for o
-		str = string.gsub(str, string.char(197,177), "\019");	-- replace for u 
-		str = string.gsub(str, string.char(197,179), "\022");	-- replace for u 
-		str = string.gsub(str, string.char(196,159), "\023");	-- replace for g 
-		str = string.gsub(str, string.char(196,155), "\127");	-- replace for e 
-		str = string.gsub(str, string.char(195,135), "\128");	-- replace for Ç 
-		str = string.gsub(str, string.char(195,188), "\129");	-- replace for ü 
-		str = string.gsub(str, string.char(195,169), "\130");	-- replace for é 
-		str = string.gsub(str, string.char(195,162), "\131");	-- replace for â 
-		str = string.gsub(str, string.char(195,164), "\132");	-- replace for ä 
-		str = string.gsub(str, string.char(195,160), "\133");	-- replace for à 
-		str = string.gsub(str, string.char(195,165), "\134");	-- replace for å 
-		str = string.gsub(str, string.char(195,167), "\135");	-- replace for ç 
-		str = string.gsub(str, string.char(195,170), "\136");	-- replace for ê 
-		str = string.gsub(str, string.char(195,171), "\137");	-- replace for ë 
-		str = string.gsub(str, string.char(195,168), "\138");	-- replace for è 
-		str = string.gsub(str, string.char(195,175), "\139");	-- replace for ï 
-		str = string.gsub(str, string.char(195,174), "\140");	-- replace for î 
-		str = string.gsub(str, string.char(195,172), "\141");	-- replace for ì 
-		str = string.gsub(str, string.char(195,132), "\142");	-- replace for Ä 
-		str = string.gsub(str, string.char(195,133), "\143");	-- replace for Å 
-		str = string.gsub(str, string.char(195,137), "\144");	-- replace for É 
-		str = string.gsub(str, string.char(195,166), "\145");	-- replace for æ 
-		str = string.gsub(str, string.char(195,134), "\146");	-- replace for Æ 
-		str = string.gsub(str, string.char(195,180), "\147");	-- replace for ô 
-		str = string.gsub(str, string.char(195,182), "\148");	-- replace for ö 
-		str = string.gsub(str, string.char(195,178), "\149");	-- replace for ò 
-		str = string.gsub(str, string.char(195,187), "\150");	-- replace for û 
-		str = string.gsub(str, string.char(195,185), "\151");	-- replace for ù 
-		str = string.gsub(str, string.char(195,191), "\152");	-- replace for ÿ 
-		str = string.gsub(str, string.char(195,150), "\153");	-- replace for Ö 
-		str = string.gsub(str, string.char(195,156), "\154");	-- replace for Ü 
-		str = string.gsub(str, string.char(197,165), "\155");	-- replace for t 
-		str = string.gsub(str, string.char(194,163), "\156");	-- replace for £ 
-		str = string.gsub(str, string.char(197,159), "\157");	-- replace for s 
-		str = string.gsub(str, string.char(197,175), "\158");	-- replace for u 
-		str = string.gsub(str, string.char(197,174), "\159");	-- replace for U 
-		str = string.gsub(str, string.char(195,161), "\160");	-- replace for á 
-		str = string.gsub(str, string.char(195,173), "\161");	-- replace for í 
-		str = string.gsub(str, string.char(195,179), "\162");	-- replace for ó 
-		str = string.gsub(str, string.char(195,186), "\163");	-- replace for ú 
-		str = string.gsub(str, string.char(195,177), "\164");	-- replace for ñ 
-		str = string.gsub(str, string.char(195,145), "\165");	-- replace for Ñ 
-		str = string.gsub(str, string.char(196,140), "\166");	-- replace for C 
-		str = string.gsub(str, string.char(196,141), "\167");	-- replace for c 
-		str = string.gsub(str, string.char(197,153), "\168");	-- replace for r 
-		str = string.gsub(str, string.char(197,152), "\169");	-- replace for R 
-		str = string.gsub(str, string.char(194,172), "\170");	-- replace for ¬ 
-		str = string.gsub(str, string.char(197,160), "\171");	-- replace for Š 
-		str = string.gsub(str, string.char(197,161), "\172");	-- replace for š 
-		str = string.gsub(str, string.char(195,189), "\173");	-- replace for ý 
-		str = string.gsub(str, string.char(197,189), "\174");	-- replace for Ž 
-		str = string.gsub(str, string.char(197,190), "\175");	-- replace for ž 
-		str = string.gsub(str, string.char(196,177), "\176");	-- replace for i 
-		str = string.gsub(str, string.char(195,158), "\177");	-- replace for Þ 
-		str = string.gsub(str, string.char(195,190), "\178");	-- replace for þ 
-		str = string.gsub(str, string.char(194,169), "\214");	-- replace for © 
-		str = string.gsub(str, string.char(195,152), "\215");	-- replace for Ø 
-		str = string.gsub(str, string.char(194,164), "\216");	-- replace for ¤ 
-		str = string.gsub(str, string.char(206,177), "\224");	-- replace for a 
-		str = string.gsub(str, string.char(195,159), "\225");	-- replace for ß 
-		str = string.gsub(str, string.char(206,147), "\226");	-- replace for G 
-		str = string.gsub(str, string.char(207,128), "\227");	-- replace for p 
-		str = string.gsub(str, string.char(196,131), "\228");	-- replace for a 
-		str = string.gsub(str, string.char(207,131), "\229");	-- replace for s 
-		str = string.gsub(str, string.char(194,181), "\230");	-- replace for µ 
-		str = string.gsub(str, string.char(206,179), "\231");	-- replace for ? 
-		str = string.gsub(str, string.char(204,131), "\232");	-- replace for ~ 
-		str = string.gsub(str, string.char(196,176), "\233");	-- replace for I 
-		str = string.gsub(str, string.char(197,163), "\234");	-- replace for t 
-		str = string.gsub(str, string.char(206,180), "\235");	-- replace for d 
-		str = string.gsub(str, string.char(195,184), "\237");	-- replace for ø 
-		str = string.gsub(str, string.char(196,133), "\238");	-- replace for a 
-		str = string.gsub(str, string.char(196,153), "\239");	-- replace for e 
-		str = string.gsub(str, string.char(196,134), "\240");	-- replace for C 
-		str = string.gsub(str, string.char(196,135), "\241");	-- replace for c 
-		str = string.gsub(str, string.char(197,129), "\242");	-- replace for L 
-		str = string.gsub(str, string.char(197,130), "\243");	-- replace for l 
-		str = string.gsub(str, string.char(197,131), "\244");	-- replace for N 
-		str = string.gsub(str, string.char(197,132), "\245");	-- replace for n 
-		str = string.gsub(str, string.char(195,147), "\246");	-- replace for Ó 
-		str = string.gsub(str, string.char(197,154), "\247");	-- replace for S 
-		str = string.gsub(str, string.char(194,176), "\248");	-- replace for ° 
-		str = string.gsub(str, string.char(197,155), "\249");	-- replace for s 
-		str = string.gsub(str, string.char(194,183), "\250");	-- replace for · 
-		str = string.gsub(str, string.char(197,185), "\251");	-- replace for Z 
-		str = string.gsub(str, string.char(197,186), "\252");	-- replace for z 
-		str = string.gsub(str, string.char(197,187), "\253");	-- replace for Z 
-		str = string.gsub(str, string.char(197,188), "\254");	-- replace for z 
-		return str;
+	local function replace_UTF8( _str, _ascii )
+		local tmp = database.utf8_ascii[_ascii];
+		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(_ascii) );
+		return _str
+	end
+
+	-- we only replace umlaute, hence only that are importent for mob names
+	-- player names are at the moment not importent for the MM protocol
+	-- player names will be handled while loading the profile
+	local function UTF8_to_ASCII(_str)
+		_str = replace_UTF8(_str, 132);		-- ä
+		_str = replace_UTF8(_str, 142);		-- Ä
+		_str = replace_UTF8(_str, 148);		-- ö
+		_str = replace_UTF8(_str, 153);		-- Ö
+		_str = replace_UTF8(_str, 129);		-- ü
+		_str = replace_UTF8(_str, 154);		-- Ü
+		_str = replace_UTF8(_str, 225);		-- ß
+		return _str;
 	end
 
 	tmp = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg);
@@ -215,14 +134,19 @@ function CPawn:update()
 	tmp = debugAssert(memoryReadString(proc, namePtr));
 	showWarnings(true); -- Re-enable warnings after reading
 
-	if( tmp == nil ) then
-		self.Name = "<UNKNOWN>";
-	else
-		self.Name = UTF8_to_ASCII(tmp);
-	end
-
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
+
+	-- UTF8 -> ASCII translation not for player names
+	if(self.Type == PT_PLAYER ) then
+		self.Name = tmp;
+	else
+		if( tmp == nil ) then
+			self.Name = "<UNKNOWN>";
+		else
+			self.Name = UTF8_to_ASCII(tmp);
+		end
+	end
 
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
 	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + charLevel2_offset), memerrmsg);
