@@ -13,7 +13,7 @@ JUMP_TRUE = true		-- jump to break cast
 
 CPlayer = class(CPawn);
 
-function CPlayer:harvest()
+function CPlayer:harvest( _second_try )
 	if( foregroundWindow() ~= getWin() ) then
 		return;
 	end
@@ -79,10 +79,13 @@ function CPlayer:harvest()
 	detach(); -- Remove attach bindings
 	local mouseOrigX, mouseOrigY = mouseGetPos();
 	local foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+	local hf_found = false;
+	local startHarvestTime = os.time();
 
 	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
 		-- We found something. Lets harvest it.
-
+		hf_found = true;
+		
 		-- If out of distance, move and rescan
 		local mousePawn = CPawn(foundHarvestNode);
 		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
@@ -94,7 +97,6 @@ function CPlayer:harvest()
 			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
 		end
 
-		local startHarvestTime = os.time();
 		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
 
 			self:update();
@@ -158,6 +160,17 @@ function CPlayer:harvest()
 
 	mouseSet(mouseOrigX, mouseOrigY);
 	attach(getWin()); -- Re-attach bindings
+	
+	-- sometimes harvesting breaks at begin after found, because camera is still
+	-- moving, in that case, wait a little and harvest again
+	if( hf_found == true   and
+	    not _second_try    and 			-- only one extra harverst try
+	    os.difftime(os.time(), startHarvestTime) < 5 ) then
+	    	yrest(2000);
+		cprintf(cli.green, "Unexpected interruption at harvesting begin. We will try it again.\n");
+		player:harvest( true );
+	end
+
 end
 
 
