@@ -54,8 +54,8 @@ settings_default = {
 			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
 			HARVEST_SCAN_STEPSIZE = 35,	-- wide of every step
 			HARVEST_SCAN_TOPDOWN = true,	-- true = top->down  false = botton->up
-			HARVEST_SCAN_XMULTIPLIER = 1.0,		-- multiplier for scan width
-			HARVEST_SCAN_YMULTIPLIER = 1.1,		-- multiplier for scan line height
+			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
+			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
 			
 		}, hotkeys = {}, skills = {}, friends = {},
@@ -68,6 +68,26 @@ settings_default = {
 };
 
 settings = settings_default;
+
+
+-- check if keys are empty or double assigned
+check_keys = { };
+function check_double_key_settings( _name, _key)
+
+	for i,v in pairs(check_keys) do
+		if( v.key == _key ) then
+			cprintf(cli.yellow, "Error: You assigned the key \'%s\' double: for \'%s\' and for \'%s\'.\n",
+			        v.key, v.name, _name);
+			error("Please check your settings!", 0);
+		end
+	end;
+	
+	local tmp = {};
+	tmp.name = _name;
+	tmp.key  = _key;
+	table.insert(check_keys, tmp);	
+
+end
 
 function settings.load()
 	local filename = getExecutionPath() .. "/settings.xml";
@@ -83,8 +103,10 @@ function settings.load()
 			settings.hotkeys[ v:getAttribute("description") ].key = key[v:getAttribute("key")];
 			settings.hotkeys[ v:getAttribute("description") ].modifier = key[v:getAttribute("modifier")];
 
+			check_double_key_settings( v:getAttribute("description"), v:getAttribute("key") );
 			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf("settings.xml error: %s does not name a valid hotkey!", v:getAttribute("key"));
+--				local err = sprintf("settings.xml error: %s does not name a valid hotkey!", v:getAttribute("key"));
+				local err = sprintf("settings.xml error: %s does not have a valid hotkey!", v:getAttribute("description"));
 				error(err, 0);
 			end
 		end
@@ -149,6 +171,7 @@ function settings.loadProfile(name)
 			settings.profile.hotkeys[v:getAttribute("name")].key = key[v:getAttribute("key")];
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
 
+			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key") );
 			if( key[v:getAttribute("key")] == nil ) then
 				local err = sprintf("Profile error: Please set a valid key for hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), name );
 				error(err, 0);
@@ -208,6 +231,8 @@ function settings.loadProfile(name)
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
 
+			check_double_key_settings( v:getAttribute("name"), v:getAttribute("hotkey") );
+printf("%s %s\n", v:getAttribute("name"), v:getAttribute("hotkey") );
 			-- Over-ride attributes
 			local priority, maxhpper, inbattle
 			priority = v:getAttribute("priority");
