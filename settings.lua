@@ -123,6 +123,70 @@ function settings.load()
 		end
 	end
 
+	-- load RoM keyboard bindings.txt file
+	local function load_RoM_bindings_txt()
+		
+		local filename, file;
+		
+		-- german installation
+		filename = os.getenv("USERPROFILE").."\\Eigene Dateien"..
+		   "\\Runes of Magic\\bindings.txt";
+--		filename = "F:\\Privat\\Runes of Magic\\bindings.txt";
+		file = io.open( filename,"r");
+
+		-- english installation
+		if( not file ) then
+			filename = os.getenv("USERPROFILE").."\\My Documents"..
+			   "\\Runes of Magic\\bindings.txt";
+			file = io.open( filename,"r");
+		end;
+
+		-- no bindings.txt file found / no checks possible
+		if( not file ) then
+			return
+		end;
+
+		-- Load bindings.txt into own table structure
+		bindings = { name = { } };
+		-- read the lines in table 'lines'
+		for line in file:lines() do
+			for name, key1, key2 in string.gfind(line, "(%w*)%s([%w+]*)%s*([%w+]*)") do
+				bindings[name] = {};
+				bindings[name].key1 = key1;
+				bindings[name].key2 = key2;
+
+			end
+		end
+	end
+
+	-- check ingame settings
+	-- only if we can find the bindings.txt file
+	local function check_ingame_settings( _name, _ingame_key)
+		
+		if( not bindings ) then		-- no bindings.txt file loaded
+			return
+		end;
+		
+		if( settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
+		    settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
+			cprintf(cli.yellow, "Your bot settings for hotkey \'%s\' in settings.xml "..
+			   "don't match your RoM ingame keyboard settings.\n",
+			        _name);
+			error("Please check your settings!", 0);
+		end
+    	end
+
+
+	function checkHotkeys(_name, _ingame_key)
+		if( not settings.hotkeys[_name] ) then
+			error("ERROR: Global hotkey not set: " .. _name, 0);
+		end
+		
+		-- check if settings.lua hotkeys match the RoM ingame settings
+		check_ingame_settings( _name, _ingame_key);
+	end
+
+
 	for i,v in pairs(elements) do
 		local name = v:getName();
 
@@ -133,21 +197,20 @@ function settings.load()
 		end
 	end
 
-	function checkHotkeys(name)
-		if( not settings.hotkeys[name] ) then
-			error("ERROR: Global hotkey not set: " .. name, 0);
-		end
-	end
 
+	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
+	
 	-- Check to make sure everything important is set
-	checkHotkeys("MOVE_FORWARD");
-	checkHotkeys("MOVE_BACKWARD");
-	checkHotkeys("ROTATE_LEFT");
-	checkHotkeys("ROTATE_RIGHT");
-	checkHotkeys("STRAFF_LEFT");
-	checkHotkeys("STRAFF_RIGHT");
-	checkHotkeys("JUMP");
-	checkHotkeys("TARGET");
+	--           bot hotkey name   RoM ingame key name         
+	checkHotkeys("MOVE_FORWARD",  "MOVEFORWARD");
+	checkHotkeys("MOVE_BACKWARD", "MOVEBACKWARD");
+	checkHotkeys("ROTATE_LEFT",   "TURNLEFT");
+	checkHotkeys("ROTATE_RIGHT",  "TURNRIGHT");
+	checkHotkeys("STRAFF_LEFT",   "STRAFELEFT");
+	checkHotkeys("STRAFF_RIGHT",  "STRAFERIGHT");
+	checkHotkeys("JUMP",          "JUMP");
+	checkHotkeys("TARGET",        "TARGETNEARESTENEMY");
+	
 end
 
 
