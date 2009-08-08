@@ -484,8 +484,10 @@ function main()
 				end
 
 				if( reason == WF_STUCK or distBreakCount > 3 ) then
+
 					-- Get ourselves unstuck, then!
-					cprintf(cli.red, language[9]);
+					cprintf(cli.red, language[9], player.X, player.Z, 
+					  player.Unstick_counter+1, settings.profile.options.MAX_UNSTICK_TRIALS);
 					distBreakCount = 0;
 					player:clearTarget();
 					player.Success_waypoints = 0;	-- counter for successfull waypoints in row
@@ -493,7 +495,8 @@ function main()
 
 					-- Too many tries, logout
 					if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
-						if( player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
+						if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
+						    player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
 							player:logout(); 
 						end;
 					end

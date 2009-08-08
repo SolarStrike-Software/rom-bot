@@ -842,6 +842,7 @@ end
 -- Attempt to unstick the player
 function CPlayer:unstick()
 
+
 -- after 2x unsuccesfull unsticks try to reach last waypoint
 	if( self.Unstick_counter == 3 ) then
 		if( self.Returning ) then
@@ -875,9 +876,9 @@ function CPlayer:unstick()
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 		self:update();
 		if( player.Returning ) then
-			__RPL:setWaypointIndex(__RPL:getNearestWaypoint(player.X, player.Z));
+			__RPL:setWaypointIndex(__RPL:getNearestWaypoint(self.X, self.Z));
 		else
-			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(self.X, self.Z));
 		end;
 		return;
 	end;
@@ -1400,7 +1401,7 @@ function CPlayer:scan_for_NPC(_npcname)
 
 		mouseSet(wx + (halfWidth*scanXMultiplier - (scanWidth/2*scanStepSize)),
 		wy  + (halfHeight*scanYMultiplier - (scanHeight/2*scanStepSize)));
-		yrest(100);
+		yrest(200);
 
 		local scanstart, scanende, scanstep;
 		-- define scan direction top/down  or   bottom/up
@@ -1423,7 +1424,7 @@ function CPlayer:scan_for_NPC(_npcname)
 				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
 
 				mouseSet(wx + mx, wy + my);
-				yrest(settings.profile.options.HARVEST_SCAN_YREST);
+				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
 --	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
 				-- id 110504 Waffenhersteller Dimar
