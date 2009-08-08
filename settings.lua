@@ -151,11 +151,11 @@ function settings.load()
 end
 
 
-function settings.loadProfile(name)
+function settings.loadProfile(_name)
 	-- Delete old profile settings (if they even exist), restore defaults
 	settings.profile = settings_default.profile;
 
-	local filename = getExecutionPath() .. "/profiles/" .. name .. ".xml";
+	local filename = getExecutionPath() .. "/profiles/" .. _name .. ".xml";
 	local root = xml.open(filename);
 	local elements = root:getElements();
 
@@ -242,6 +242,33 @@ function settings.loadProfile(name)
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			inbattle = v:getAttribute("inbattle");
+
+			-- check if 'wrong' options are set
+			if( v:getAttribute("mana")      or
+			    v:getAttribute("manainc")   or
+			    v:getAttribute("rage")      or
+			    v:getAttribute("energy")    or
+			    v:getAttribute("concentration")      or
+			    v:getAttribute("range")     or
+			    v:getAttribute("cooldown")  or
+			    v:getAttribute("minrange")  or
+			    v:getAttribute("type")      or
+			    v:getAttribute("target")    or
+			    v:getAttribute("casttime") ) then
+			    	cprintf(cli.yellow, "The options \'mana\', \'manainc\', \'rage\', "..
+			    	   "\'energy\', \'concentration\', \'range\', "..
+			    	   "\'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' "..
+			    	   "are no valid options for your skill \'%s\' in your profile \'%s.xml\'. "..
+			    	   "Please delete them and restart!\n", name, _name);
+			    	   error("Bot finished due of errors above.\n", 0);
+			end;
+			if( v:getAttribute("modifier") ) then
+			    	cprintf(cli.yellow, "The options \'modifier\' "..
+			    	  "for your skill \'%s\' in your profile \'%s.xml\' "..
+			    	  "is not supported at the moment. "..
+			    	  "Please delete it and restart!\n", name, _name);
+				error("Bot finished due of errors above.\n", 0);
+			end;
 
 			if( inbattle ~= nil ) then
 				if( inbattle == "true" ) then

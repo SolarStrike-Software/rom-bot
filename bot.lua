@@ -83,8 +83,6 @@ function main()
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
-
-
 	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 	printf("Attempt to read playerAddress\n");
 
@@ -157,7 +155,7 @@ function main()
 		end
 	end
 
-	local load_profile_name;	-- name of profile to load
+	local load_profile_name, new_profile_name;	-- name of profile to load
 	if( forcedProfile ) then
 		load_profile_name = forcedProfile;
 	else
@@ -165,14 +163,12 @@ function main()
 	end
 
 	-- convert player name from UTF-8 to ASCII
-	player.Name, hf_convert = convert_utf8_ascii(player.Name);
-	
-	if( hf_convert 	and
-	    not forcedProfile )  then
+	load_profile_name = convert_utf8_ascii(load_profile_name);
 
-		-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
-	    	local new_profile_name;
-		new_profile_name = replace_special_ascii(player.Name);	-- replace characters
+	-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
+	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
+
+	if( hf_convert 	) then		-- we replace some special characters
 
 		-- check if profile with replaced characters allready there
 		local file = io.open(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml" , "r");
@@ -180,26 +176,26 @@ function main()
 			file:close();
 			load_profile_name = new_profile_name;
 		else
-			cprintf(cli.yellow,"Due to technical reasons, we can't use the character name \'%s\' as "..
+			cprintf(cli.yellow,"Due to technical reasons, we can't use the character/profile name \'%s\' as "..
 			        "a profile name. Please use profile name \'%s.xml\' instead or start "..
 			        "the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\n", 
-			        player.Name, new_profile_name);
+			        load_profile_name, new_profile_name);
 			error("Bot finished due of errors above.\n", 0);
 		end;
+	else				
+
+		-- check if profile exist
+		local file = io.open(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" , "r");
+		if( not file ) then	
+			cprintf(cli.yellow,"We can't find your profile \'%s.xml'\. "..
+			        "Please create a valid profile within the folder \'rom\\profiles\' "..
+			        "or start the bot with a forced profile: \'rom\\bot.lua "..
+			        "profile:xyz\'\n", load_profile_name );
+			        error("Bot finished due of errors above.\n", 0);
+		else
+			file:close();
+		end
 	end;
-
-	-- check if profile exist
-	local file = io.open(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" , "r");
-	if( not file ) then	
-		cprintf(cli.yellow,"We can't find your profile \'%s.xml'\. "..
-		        "Please create a valid profile within the folder \'rom\\profiles\' "..
-		        "or start the bot with a forced profile: \'rom\\bot.lua "..
-		        "profile:xyz\'\n", load_profile_name );
-		        error("Bot finished due of errors above.\n", 0);
-	else
-		file:close();
-	end
-
 
 	-- Set window name, install timer to automatically do it once a second
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, load_profile_name));
