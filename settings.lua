@@ -57,6 +57,7 @@ settings_default = {
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
+			USE_SLEEP_AFTER_RESUME = false, -- enable to use sleep after pause
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
@@ -128,15 +129,22 @@ function settings.load()
 		
 		local filename, file;
 		
-		-- german installation
+		-- german windows installation
 		filename = os.getenv("USERPROFILE").."\\Eigene Dateien"..
 		   "\\Runes of Magic\\bindings.txt";
 --		filename = "F:\\Privat\\Runes of Magic\\bindings.txt";
 		file = io.open( filename,"r");
 
-		-- english installation
+		-- english windows installation
 		if( not file ) then
 			filename = os.getenv("USERPROFILE").."\\My Documents"..
+			   "\\Runes of Magic\\bindings.txt";
+			file = io.open( filename,"r");
+		end;
+
+		-- finish windows installation
+		if( not file ) then
+			filename = os.getenv("USERPROFILE").."\\Omat tiedostot"..
 			   "\\Runes of Magic\\bindings.txt";
 			file = io.open( filename,"r");
 		end;
