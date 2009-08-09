@@ -13,6 +13,7 @@ CWaypointList = class(
 		self.Mode = "waypoints";
 
 		self.Type = 0; -- UNSET
+		self.ForcedType = 0; 	-- Wp type to overwrite current type, can be used by users in WP coding
 	end
 );
 
@@ -40,6 +41,7 @@ function CWaypointList:load(filename)
 
 	self.FileName = getFileName(filename);
 	self.Waypoints = {}; -- Delete current waypoints.
+	self.ForcedType = 0;	-- delete forced waypoint type
 
 	for i,v in pairs(elements) do
 		local x,z = v:getAttribute("x"), v:getAttribute("z");
@@ -82,6 +84,22 @@ end
 
 function CWaypointList:setMode(mode)
 	self.Mode = mode;
+end
+
+function CWaypointList:setForcedWaypointType(_type)
+	
+	if( _type == "NORMAL") then
+		self.ForcedType = WPT_NORMAL;
+	elseif( _type == "TRAVEL") then
+		self.ForcedType = WPT_TRAVEL;
+	elseif( _type == "RUN") then
+		self.ForcedType = WPT_RUN;
+	else
+		cprintf(cli.yellow, "You try to force an unknown waypoint type %s. Please check.\n", _type);
+		error("Bot finished due to error above.", 0);
+	end
+	
+	cprintf(cli.green, "Forced waypoint type \'%s\' set by user.\n", _type );
 end
 
 function CWaypointList:getMode()
@@ -131,6 +149,12 @@ function CWaypointList:getNextWaypoint()
 --	if( self.Type ~= 0 ) then
 --		tmp.Type = self.Type;
 --	end
+
+	-- check if forced type is set, that could be done by users
+	-- within lua coding in the waypoint tags
+	if(self.ForcedType ~= 0 ) then
+		tmp.Type = self.ForcedType;
+	end
 
 	if( settings.profile.options.WAYPOINT_DEVIATION < 2 ) then
 		return tmp;

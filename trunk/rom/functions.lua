@@ -196,6 +196,13 @@ function resumeCallback()
 			printf("Bot start time reset\n");
 		end
 	end
+
+	-- check if using sleep function
+	if( settings.profile.options.USE_SLEEP_AFTER_RESUME == true ) then
+		cprintf(cli.yellow, "We will go to sleep after fight finished / as soon as possible.\n");	-- Logout at %time%
+		player.Sleeping = true;		-- activate sleep
+	end
+	
 end
 atResume(resumeCallback);
 
