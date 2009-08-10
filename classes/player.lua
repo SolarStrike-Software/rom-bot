@@ -929,7 +929,7 @@ function CPlayer:haveTarget()
 		end;
 
 		-- check level of target against our leveldif settings
-		if( ( target.Level - self.Level ) > settings.profile.options.TARGET_LEVELDIF_ABOVE  or
+		if( ( target.Level - self.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
 		( self.Level - target.Level ) > settings.profile.options.TARGET_LEVELDIF_BELOW ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 				return false;			-- he is not a valid target
