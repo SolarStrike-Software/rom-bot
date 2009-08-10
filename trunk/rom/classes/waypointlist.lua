@@ -88,14 +88,20 @@ end
 
 function CWaypointList:setForcedWaypointType(_type)
 	
-	if( _type == "NORMAL") then
+	if( _type == nil  or  _type == ""  or  _type == 0 ) then
+		self.ForcedType = 0;
+		cprintf(cli.green, "Forced waypoint type cleared.\n" );
+		return;
+	end;
+	
+	if( _type == "NORMAL"  or  _type == WPT_NORMAL ) then
 		self.ForcedType = WPT_NORMAL;
-	elseif( _type == "TRAVEL") then
+	elseif( _type == "TRAVEL"  or  _type == WPT_TRAVEL) then
 		self.ForcedType = WPT_TRAVEL;
-	elseif( _type == "RUN") then
+	elseif( _type == "RUN"  or  _type == WPT_RUN) then
 		self.ForcedType = WPT_RUN;
 	else
-		cprintf(cli.yellow, "You try to force an unknown waypoint type %s. Please check.\n", _type);
+		cprintf(cli.yellow, "You try to force an unknown waypoint type \'%s\'. Please check.\n", _type);
 		error("Bot finished due to error above.", 0);
 	end
 	
