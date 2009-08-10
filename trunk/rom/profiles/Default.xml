@@ -5,6 +5,7 @@
 		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
+		<option name="POTION_COOLDOWN"    value="15" />
 
 		<option name="COMBAT_TYPE"        value="" />	<!-- Choose ranged/melee if not using class default -->
 		<option name="COMBAT_DISTANCE"    value="200" />
@@ -15,11 +16,10 @@
 		<option name="WANDER_RADIUS"      value="500" />
 		<option name="WAYPOINT_DEVIATION" value="0" />
 		<option name="LOOT"               value="true" />
-		<option name="LOOT_TIME"          value="2000" />
 		<option name="LOOT_IN_COMBAT"     value="true" />
 		<option name="LOOT_DISTANCE"      value="100" />
 		<option name="LOOT_PAUSE_AFTER"   value="10" />
-		<option name="POTION_COOLDOWN"    value="15" />
+		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 		<option name="MAX_FIGHT_TIME"     value="15" />
 		<option name="DOT_PERCENT"        value="90" />
 
@@ -65,7 +65,7 @@
 		<skill name="PRIEST_RISING_TIDE"   hotkey="VK_3" priority="80" />
 	        <skill name="MAGE_FIREBALL"        hotkey="VK_8" priority="70" />
 	        <skill name="PRIEST_WAVE_ARMOR"    hotkey="VK_5" priority="40"  inbattle="true" />
-	        <!-- <skill name="PRIEST_SOUL_BOND"     hotkey="VK_T" priority="30" /> -->
+	        <!--skill name="PRIEST_SOUL_BOND"     hotkey="VK_T" priority="30" /> -->
 	        <!--skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_F" priority="20" /> -->
 	</skills_priest>   
 	<skills_warrior> 
@@ -89,7 +89,7 @@
 	        <skill name="MAGE_FLAME"            hotkey="VK_3" priority="80" />
 	        <skill name="PRIEST_REGENERATE"     hotkey="VK_6" priority="70" />
 	        <skill name="MAGE_ESSENCE_OF_MAGIC" hotkey="VK_8" priority="60" />
-	        <!-- <skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_F" priority="50" /> -->     
+	        <!--skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_F" priority="50" /> -->     
 	</skills_mage>     
 	<skills_knight>
 		<skill name="KNIGHT_HOLY_STRIKE"  hotkey="VK_3" priority="90" />
