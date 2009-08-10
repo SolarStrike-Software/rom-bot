@@ -106,7 +106,7 @@ function main()
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
-	cprintf(cli.turquoise, "RoM windows size is %sx%s\n", hf_wide, hf_high );	-- RoM windows size
+	cprintf(cli.turquoise, "RoM windows size is %dx%d, upper left corner at %d,%d\n", hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
 	
 	-- local functions to convert string (e.g. player name) from UTF-8 to ASCII
@@ -168,7 +168,7 @@ function main()
 	-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
 	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
 
-	if( hf_convert 	) then		-- we replace some special characters
+	if( hf_convert ) then		-- we replace some special characters
 
 		-- check if profile with replaced characters allready there
 		local file = io.open(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml" , "r");
@@ -256,10 +256,6 @@ function main()
 		else
 			player.Returning = false;	-- use normale waypoint path
 		end;
---	else
---		-- no return path available, so we select the closest normal wayoint
---		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
--- now automaticly in load_path()
 	end;
 	
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
@@ -275,6 +271,7 @@ function main()
 			keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
 			keyboardRelease(settings.hotkeys.STRAFF_LEFT.key);
 			keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
+			player.Death_counter = player.Death_counter + 1;
 
 			-- Take a screenshot. Only works on MicroMacro 1.0 or newer
 			showWindow(getWin(), sw.show);
@@ -291,58 +288,120 @@ function main()
 				end
 			end
 
+			-- msg how to activate automatic resurrection
+			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
+				cprintf(cli.yellow, "If you want to use automatic resurrection" ..
+				   "then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' "..
+				   "within your profile.\n");
+			end;
 
-			if( settings.profile.hotkeys.RES_MACRO ) then
-				cprintf(cli.red, language[3]);
-				keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
-				yrest(5000);
+			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
+				cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
+				
+				-- try mouseclick to reanimate
+--				player:restrnd(100, 10, 15);			-- wait between 10-15 sec
+				cprintf(cli.green, "We will try to resurrect in 10 seconds.\n");  
+				yrest(10000);
+				
+				-- try resurrect at the place, click button far right
+				if ( foregroundWindow() == getWin() ) then
+					cprintf(cli.green, "Try to resurrect at the place of death ...\n");  
+					player:mouseclickL(1276, 272, 1920, 1180);	-- mouseclick to resurrec
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+					player:update();
+				end
 
-				if( player.Level > 9 ) then
-					cprintf(cli.red, language[4]);
-					yrest(60000); -- wait 1 minute before going about your path.
+				-- if still death, click button more left, normal resurrec at spawnpoint
+				if ( not player.Alive  and
+				     foregroundWindow() == getWin() ) then
+					cprintf(cli.green, "Try to resurrect at the spawnpoint ...\n");  
+					player:mouseclickL(875, 272, 1920, 1180);	-- mouseclick to resurrec
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+					player:update();
 				end;
-				player:update();
+
+				
+				-- if still death, try macro if one defined
+				if ( not player.Alive  and 
+				     settings.profile.hotkeys.RES_MACRO.key ) then
+					cprintf(cli.green, "Try to use the ingame resurrect macro ...\n");  
+					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+					player:update();
+				end;
 
 				if( not player.Alive ) then
 					cprintf(cli.yellow, "You are still dead. There is a problem with automatic resurrection." ..
-						" Did you set your ingame macro \'/script AcceptResurrect();\' tokey %s?\n",
+						" Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
 						getKeyName(settings.profile.hotkeys.RES_MACRO.key));
-					pauseOnDeath();
+--					pauseOnDeath();
+				end;
+
+				-- death counter message
+				cprintf(cli.green, "You have died %s times from at most %s "..
+				   "deaths/automatic resurrections.\n",
+				   player.Death_counter, settings.profile.options.MAX_DEATHS);
+				
+				-- check maximal death if automatic mode
+				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
+					player:logout();
+				end
+
+				if( player.Level > 9  and 
+				    player.Alive      ) then
+					cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
+					player:rest(60); -- wait 1 minute before going about your path.
 				end;
 
 			end
 
 			-- print out the reasons for not automatic returning
-			if( not settings.profile.hotkeys.RES_MACRO ) then
-				cprintf(cli.yellow, "You don't have a RES_MACRO defined in your profile! Hence no automatic returning.\n");
-			end
---			if(player.Returning) then
---				cprintf(cli.yellow, "You are allready on the return path. Seems you died while returning. Hence no automatic returning.\n");
+--			if( not settings.profile.hotkeys.RES_MACRO ) then
+--				cprintf(cli.yellow, "You don't have a RES_MACRO defined in your profile! "..
+--				"Hence no automatic returning.\n");
 --			end
-			if(__RPL == nil) then
-				cprintf(cli.yellow, "You don't have a defined return path in your profile. Hence no automatic returning.\n");
-			end
+--			if(__RPL == nil) then
+--				cprintf(cli.yellow, "You don't have a defined return path in your profile. "..
+--				"Hence no automatic returning.\n");
+--			end
 
-			-- Must have a resurrect macro and waypoints set to be able to use
-			-- a return path!
-			if( settings.profile.hotkeys.RES_MACRO and
---			if( settings.profile.hotkeys.RES_MACRO and player.Returning == false and
-			__RPL ~= nil ) then
-				player.Returning = true;
---				__RPL:setWaypointIndex(1); -- Start from the beginning
-				-- use closest return path point, importent if someone use the WP file as RP file and #1 is not at the respawn point
+			-- use/compare return path if defined, if not use normal one and give a warning
+			-- wen need to search the closest, hence we also accept resurrection at the death place
+			player.Returning = nil;
+			if( __RPL ) then
+				-- compare closest waypoint with closest returnpath point
+				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+				local hf_wp = __WPL:getNextWaypoint();
+				local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+
 				__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
+				local hf_wp = __RPL:getNextWaypoint();
+				local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 
-				player.Death_counter = player.Death_counter + 1;
-				cprintf(cli.yellow, "You have died %s times from at most %s deaths/automatic resurrections.\n",
-					player.Death_counter, settings.profile.options.MAX_DEATHS);
-				-- check maximal death if automatic mode
-				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
-					player:logout();
-				end
+				if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
+					player.Returning = true;	-- then use return path first
+					cprintf(cli.yellow, language[12]);	-- Starting with return path
+				end;
 			else
-				pauseOnDeath();
+				cprintf(cli.yellow, "You don't have a defined return path!!! We use the "..
+				"normal waypoint file \'%s\' instead. Please check that.\n", __WPL:getFileName() );
+			end;
+			
+			-- not using returnpath, so we use the normal waypoint path
+			if( player.Returning == nil) then
+				player.Returning = false;
+				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+				cprintf(cli.green, "Using normal waypoint file \'%s\' after resurrection.\n", 
+				   __WPL:getFileName() );
 			end
+
+			player:update();
+			-- pause if still death
+			if( not player.Alive ) then
+--				cprintf(cli.yellow, "Sorry. You are (still) dead ... \n" );
+				pauseOnDeath();
+			end;
+			
 		end
 
 		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
