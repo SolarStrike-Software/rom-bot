@@ -126,16 +126,19 @@ function CPawn:update()
 	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + charMP2_offset), memerrmsg);
 	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + charMaxMP2_offset), memerrmsg);
 
-	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
---	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
+	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
+	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
-	tmp = debugAssert(memoryReadString(proc, namePtr));
+	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
+--	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
+	if( namePtr == nil ) then
+		tmp = nil;
+	else
+		tmp = debugAssert(memoryReadString(proc, namePtr));
+	end
 	showWarnings(true); -- Re-enable warnings after reading
-
-	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
-	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
 
 	-- UTF8 -> ASCII translation not for player names
 	if(self.Type == PT_PLAYER ) then
