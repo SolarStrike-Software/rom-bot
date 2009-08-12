@@ -91,7 +91,7 @@ function CPlayer:harvest( _second_try )
 		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
 
 		if( dist > 35 and dist < 150 ) then
-			printf("Move in\n");
+			printf(language[80]);		-- Move in
 			self:moveTo( CWaypoint(mousePawn.X, mousePawn.Z), true );
 			yrest(200);
 			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
@@ -167,7 +167,7 @@ function CPlayer:harvest( _second_try )
 	    not _second_try    and 			-- only one extra harverst try
 	    os.difftime(os.time(), startHarvestTime) < 5 ) then
 	    	yrest(2000);
-		cprintf(cli.green, "Unexpected interruption at harvesting begin. We will try it again.\n");
+		cprintf(cli.green, language[81]);		-- Unexpected interruption at harvesting begin
 		player:harvest( true );
 	end
 
@@ -215,7 +215,7 @@ function CPlayer:checkSkills(_only_friendly)
 			yrest(100);
 			self:update();
 
-			printf(language[21], string.sub(v.Name.."'                     ", 1, 20));	-- first part of 'casting ...'
+			printf(language[21], getKeyName(v.hotkey), string.sub(v.Name.."                      ", 1, 20));	-- first part of 'casting ...'
 
 			-- Wait for casting to start (if it has a decent cast time)
 			if( v.CastTime > 0 ) then
@@ -225,7 +225,7 @@ function CPlayer:checkSkills(_only_friendly)
 					if( self:check_aggro_before_cast(JUMP_TRUE) and
 					   ( v.Type == STYPE_DAMAGE or
 					     v.Type == STYPE_DOT ) ) then	-- with jump
-						printf("=>   *** aborted ***\n");	-- close print 'Casting ..."
+						printf(language[82]);	-- close print 'Casting ..." / aborted
 						return;
 					end;
 					yrest(50);
@@ -241,7 +241,7 @@ function CPlayer:checkSkills(_only_friendly)
 					if( self:check_aggro_before_cast(JUMP_TRUE) and
 					   ( v.Type == STYPE_DAMAGE or
 					     v.Type == STYPE_DOT ) ) then	--  with jump
-						printf("=>   *** aborted ***\n");	-- close print 'Casting ..."
+						printf(language[82]);	-- close print 'Casting ..."
 						return;
 					end;
 					-- Waiting for casting to finish...
@@ -268,6 +268,16 @@ function CPlayer:checkSkills(_only_friendly)
 			-- we do it later, because the client needs some time to change the values
 			local target = player:getTarget();
 			printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
+
+			-- the check was only done after every complete skill round
+			-- hence the message is not really needed anymore
+			-- we move the check INTO the skill round to be more accurate
+			-- by the max_fight_time option could be reduced
+			if( target.HP ~= lastTargetHP ) then
+				lastHitTime = os.time();
+				lastTargetHP = target.HP;
+--				printf(language[23]);		-- target HP changed
+			end
 	
 		end
 	end
@@ -276,7 +286,7 @@ end
 -- Check if you need to use any potions, and use them.
 function CPlayer:checkPotions()
 	-- Still cooling down, don't use.
-	if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN ) then
+	if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
 		return;
 	end
 
@@ -289,7 +299,7 @@ function CPlayer:checkPotions()
 		if( modifier ) then keyboardRelease(modifier); end
 
 		self.PotionLastUseTime = os.time();
-		cprintf(cli.green, language[10]);
+		cprintf(cli.green, language[10], getKeyName(settings.profile.hotkeys.HP_POTION.key) );		-- Using HP potion
 
 		if( self.Fighting ) then
 			yrest(1000);
@@ -305,7 +315,7 @@ function CPlayer:checkPotions()
 			if( modifier ) then keyboardRelease(modifier); end
 
 			self.PotionLastUseTime = os.time();
-			cprintf(cli.green, language[11]);
+			cprintf(cli.green, language[11], getKeyName(settings.profile.hotkeys.MP_POTION.key));
 
 			if( self.Fighting ) then
 				yrest(1000);
@@ -383,18 +393,11 @@ function CPlayer:fight()
 
 		-- Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
-			printf("Taking too long to damage target, breaking sequence...\n");
+			printf(language[83]);			-- Taking too long to damage target
 			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
 			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
 			self:clearTarget();
 			break;
-		end
-
-
-		if( target.HP ~= lastTargetHP ) then
-			lastHitTime = os.time();
-			lastTargetHP = target.HP;
-			printf(language[23]);
 		end
 
 		local dist = distance(self.X, self.Z, target.X, target.Z);
@@ -426,7 +429,7 @@ function CPlayer:fight()
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
 			if( move_closer_counter > 3  and
 			    settings.profile.options.COMBAT_TYPE == "ranged" ) then
-				cprintf(cli.green, "To much tries to come closer. We stop attacking that target\n");
+				cprintf(cli.green, language[84]);	-- To much tries to come closer
 				self:clearTarget();
 				break;
 			end
@@ -527,7 +530,7 @@ function CPlayer:fight()
 	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
 		local status,err = pcall(settings.profile.events.onLeaveCombat);
 		if( status == false ) then
-			local msg = sprintf("onLeaveCombat error: %s", err);
+			local msg = sprintf(language[85], err);
 			error(msg);
 		end
 	end
@@ -701,7 +704,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
 		if( self:findTarget() ) then			-- find a new target
 --			cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
-			cprintf(cli.turquoise, "Stopping waypoint: Target acquired before moving.\n");	-- stopping waypoint::target acquired
+			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
 			success = false;
 			failreason = WF_TARGET;
 			return success, failreason;
@@ -746,9 +749,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			end;
 		end
 
-		self:checkPotions();
-		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
-
 		-- We're still making progress
 		if( dist < lastDist ) then
 			lastDistImprove = os.time();
@@ -767,6 +767,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			failreason = WF_STUCK;
 			break;
 		end
+
+		-- after lastDistImprove time check to avoid wrong messages
+		self:checkPotions();
+		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
@@ -945,7 +949,8 @@ function CPlayer:haveTarget()
 		if(self.TargetPtr == player.Last_ignore_target_ptr  and
 		   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
 			if ( self.Battling == false ) then	-- if we don't have aggro then
-				cprintf(cli.green, "We ignore %s for %s seconds more\n", target.Name, 10-os.difftime(os.time(), player.Last_ignore_target_time ) );
+				cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
+				   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
 				return false;			-- he is not a valid target
 			end;
 
@@ -1113,7 +1118,7 @@ function CPlayer:logout(fc_shutdown)
 		while(true) do
 			-- Wait for process to close...
 			if( findProcessByWindow(__WIN) ~= PID ) then
-				printf("Process successfully closed\n");
+				printf(language[88]);
 				break;
 			end;
 			yrest(100);
@@ -1317,8 +1322,7 @@ function CPlayer:sleep()
 	local sleep_start = os.time();		-- calculate the sleep time
 	self.Sleeping = true;	-- we are sleeping
 
---	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up or %s to really stop the bot.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key), getKeyName(settings.hotkeys.STOP_BOT.key) );  
-	cprintf(cli.yellow, "Go to sleep at %s. Press %s to wake up.\n", os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );  
+	cprintf(cli.yellow, language[89], os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );  
 
 	local hf_key = "";
 	while(true) do
@@ -1353,7 +1357,7 @@ function CPlayer:sleep()
 			if( hf_key == "AWAKE" ) then
 				hf_key = " ";	-- clear last pressed key
 
-				cprintf(cli.yellow, "Awake from sleep after pressing %s at %s\n", getKeyName(settings.hotkeys.START_BOT.key),  os.date() );  
+				cprintf(cli.yellow, language[90], getKeyName(settings.hotkeys.START_BOT.key),  os.date() );  
 				self.Sleeping = false;	-- we are awake
 				break;
 			end;
@@ -1365,7 +1369,7 @@ function CPlayer:sleep()
 		-- wake up if aggro, but we don't clear the sleeping flag
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
-			cprintf(cli.yellow, "Awake from sleep because of aggro at %s\n", os.date() );  
+			cprintf(cli.yellow, language[91], os.date() );  -- Awake from sleep because of aggro 
 			break;
 		end;
 
@@ -1426,7 +1430,6 @@ function CPlayer:scan_for_NPC(_npcname)
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
---	printf("mousePawn.Adress; %s, mousePawn.Type %s id %s\n", mousePawn.Address, mousePawn.Type, mousePawn.Id);
 				-- id 110504 Waffenhersteller Dimar
 				-- id 110502 Dan (Gemischtwarenhändler
 				-- id 1000, 1001 Player
@@ -1462,7 +1465,7 @@ function CPlayer:scan_for_NPC(_npcname)
 		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
 
 		if( dist > 35 and dist < 150 ) then
-			printf("Move in\n");
+			printf(language[80]);	-- Move in
 			self:moveTo( CWaypoint(mousePawn.X, mousePawn.Z), true );
 			yrest(200);
 			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
@@ -1509,12 +1512,12 @@ function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
 	if(_wwide  and _whigh) then
 		hf_x = wwide * _x / _wwide;
 		hf_y = whigh * _y / _whigh;
-		cprintf(cli.green, "Clicking mouseL at %d,%d in %dx%d (recalculated from %d,%d by %dx%d)\n", 
+		cprintf(cli.green, language[92], -- Mouseclick Left at %d,%d in %dx%d (recalculated 
 			hf_x, hf_y, wwide, whigh, _x, _y, _wwide, _whigh);
 	else
 		hf_x = _x;
 		hf_y = _y;
-		cprintf(cli.green, "Clicking mouseL at %d,%d in %dx%d\n", 
+		cprintf(cli.green, language[93],	 -- Clicking mouseL at %d,%d in %dx%d\n
 			hf_x, hf_y, wwide, whigh);
 	end;
 	

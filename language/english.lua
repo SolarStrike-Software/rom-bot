@@ -9,14 +9,14 @@ language = {
 	[7] = "Completed return path. Resuming normal waypoints.\n",
 	[8] = "Waypoint movement failed!\n",
 	[9] = "Unsticking player... at position %d,%d. Trial %d from maximal %d trials\n",
-	[10] = "Using HP potion.\n",
-	[11] = "Using MP potion.\n",
+	[10] = "Press %s: Using HP potion.\n",
+	[11] = "Press %s: Using MP potion.\n",
 	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
 	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",	
 	
 	[20] = "Finished casting\n",
-	[21] = "Casting \'%s",
+	[21] = "Use %s: Casting %s",
 	[22] = "Engaging enemy [%s] in combat.\n",
 	[23] = "Target HP changed\n",
 	[24] = "Too close. Backing up.\n",
@@ -47,5 +47,20 @@ language = {
 	
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
+	
+	[80] = "Move in\n",
+	[81] = "Unexpected interruption at harvesting begin. We will try it again.\n",
+	[82] = "=>   * aborted *\n",
+	[83] = "Taking too long to damage target, breaking sequence...\n",
+	[84] = "To much tries to come closer. We stop attacking that target\n",
+	[85] = "Error in your profile: onLeaveCombat error: %s",
+	[86] = "Stopping waypoint: Target acquired before moving.\n",
+	[87] = "We ignore %s for %s seconds.\n",
+	[88] = "Runes of Magic process successfully closed.\n",
+	[89] = "Go to sleep at %s. Press %s to wake up.\n",
+	[90] = "Awake from sleep after pressing %s at %s.\n",
+	[91] = "Awake from sleep because of aggro at %s.\n",
+	[92] = "Mouseclick Left at %d,%d in %dx%d (recalculated from %d,%d by %dx%d)\n",
+	[93] = "Mouseclick Left at %d,%d in %dx%d\n",
 	
 };

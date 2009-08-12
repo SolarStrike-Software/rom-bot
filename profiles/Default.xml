@@ -7,41 +7,48 @@
 		<option name="HP_LOW_POTION" value="40" />
 		<option name="POTION_COOLDOWN"    value="15" />
 
+		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        value="" />	<!-- Choose ranged/melee if not using class default -->
 		<option name="COMBAT_DISTANCE"    value="200" />
+		<option name="MAX_FIGHT_TIME"     value="15" />	<!-- Max time without damage before break -->
+		<option name="DOT_PERCENT"        value="90" />
 		<option name="ANTI_KS"            value="true" />
-		<option name="WAYPOINTS"          value="demo.xml" />
-		<option name="RETURNPATH"         value="demo_return.xml" />
-		<option name="PATH_TYPE"          value="waypoints" />
-		<option name="WANDER_RADIUS"      value="500" />
-		<option name="WAYPOINT_DEVIATION" value="0" />
+
+		<!-- Waypoint and movement settings -->
+		<option name="WAYPOINTS"		value="demo.xml" />
+		<option name="RETURNPATH"		value="demo_return.xml" />
+		<option name="PATH_TYPE"		value="waypoints" />	<!-- waypoints | wander -->
+		<option name="WANDER_RADIUS"		value="500" />
+		<option name="WAYPOINT_DEVIATION"	value="0" />
+		<option name="QUICK_TURN" 		value="false" />
+
+		<!-- Attack monsters 3 levels above or 10 below your level -->
+		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
+		<option name="TARGET_LEVELDIF_BELOW" value="10" />
+		
+		<!-- Loot settings -->
 		<option name="LOOT"               value="true" />
 		<option name="LOOT_IN_COMBAT"     value="true" />
 		<option name="LOOT_DISTANCE"      value="100" />
 		<option name="LOOT_PAUSE_AFTER"   value="10" />
-		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
-		<option name="MAX_FIGHT_TIME"     value="15" />
-		<option name="DOT_PERCENT"        value="90" />
 
 		<!-- Rest if HP or Mana is below that level -->
 		<option name="HP_REST" value="15" />
 		<option name="MP_REST" value="15" />
 
-		<!-- Log out settings -->
+		<!-- Log out and resurrect settings -->
 		<option name="LOGOUT_TIME" value="0" />
 		<option name="LOGOUT_SHUTDOWN" value="false" />
 		<option name="LOGOUT_WHEN_STUCK" value="true" />
-
-		<!-- Attack monsters 3 levels above or 10 below your level -->
-		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
-		<option name="TARGET_LEVELDIF_BELOW" value="10" />
-
-		<option name="QUICK_TURN" value="false" />
+		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 	</options>
 
 	<friends>
+		<!-- names of friends we help fighting or enemys we don't want to attack -->
 		<friend name="MyOtherCharacter1" />
 		<friend name="MyOtherCharacter2" />
+		<friend name="Elite_Mob_Name1" />
+		<friend name="Elite_Mob_Name2" />
 	</friends>
 
 	<hotkeys>
