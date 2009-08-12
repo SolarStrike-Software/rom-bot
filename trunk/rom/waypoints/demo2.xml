@@ -16,5 +16,5 @@
 	<!-- #15 --><waypoint x="-2600" z="-9067"></waypoint>
 	<!-- #16 --><waypoint x="-2397" z="-9260"></waypoint>
 	<!-- #17 --><waypoint x="-2360" z="-9456"></waypoint>
-	<!-- #18 --><waypoint x="-2248" z="-9620">load_paths("demo1");</waypoint>
+	<!-- #18 --><waypoint x="-2248" z="-9620">load_paths("demo3");</waypoint>
 </waypoints>

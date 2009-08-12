@@ -19,10 +19,11 @@ settings_default = {
 	},
 	profile = {
 		options = {
+			-- common options
 			HP_LOW = 85,
 			MP_LOW_POTION = 50,
 			HP_LOW_POTION = 40,
-			COMBAT_TYPE = "melee",
+			COMBAT_TYPE = "melee",	
 			COMBAT_DISTANCE = 200,
 			ANTI_KS = true,
 			WAYPOINTS = "myWaypoints.xml",
@@ -36,7 +37,7 @@ settings_default = {
 			LOOT_DISTANCE = nil,
 			LOOT_PAUSE_AFTER = 10,	-- probability for short pause after loot to look more human
 			POTION_COOLDOWN = 15,
-			MAX_FIGHT_TIME = 15,
+			MAX_FIGHT_TIME = 12,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
 			LOGOUT_SHUTDOWN = false,
@@ -47,10 +48,13 @@ settings_default = {
 			QUICK_TURN = false,
 			MP_REST = 15,
 			HP_REST = 15,
-			WAYPOINTS_REVERSE = false,
-			MAX_DEATHS = 10,
-			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic reanimat after death true | false,
-			WAIT_TIME_AFTER_RES = 8000,	-- time to wait after resurrection, more on slow PCs
+			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true | false,
+
+			
+			-- expert options
+			WAYPOINTS_REVERSE = false,	-- use the waypoint file in reverse order
+			MAX_DEATHS = 10,		-- maximal death if automatic resurrect befor logout
+			WAIT_TIME_AFTER_RES = 8000,	-- time to wait after resurrection, needs more on slow PCs
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
 			HARVEST_SCAN_WIDTH = 10,	-- steps horizontal
 			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
@@ -59,7 +63,7 @@ settings_default = {
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
-			USE_SLEEP_AFTER_RESUME = false, -- enable to use sleep after pause
+			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode afer pressing pause key
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
@@ -340,6 +344,13 @@ function settings.loadProfile(_name)
 			    	  "for your skill \'%s\' in your profile \'%s.xml\' "..
 			    	  "is not supported at the moment. "..
 			    	  "Please delete it and restart!\n", name, _name);
+				error("Bot finished due of errors above.\n", 0);
+			end;
+
+			if( name == nil) then
+			    	cprintf(cli.yellow, "You defined an \'empty\' skill name in "..
+			    	  "your profile \'%s.xml\'. Please delete or correct "..
+			    	  "that line!\n", _name);
 				error("Bot finished due of errors above.\n", 0);
 			end;
 

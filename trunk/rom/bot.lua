@@ -295,6 +295,7 @@ function main()
 				   "within your profile.\n");
 			end;
 
+			local hf_res_from_priest; 		-- for check if priest resurrect
 			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
 				cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 				
@@ -307,26 +308,29 @@ function main()
 				if ( foregroundWindow() == getWin() ) then
 					cprintf(cli.green, "Try to resurrect at the place of death ...\n");  
 					player:mouseclickL(1276, 272, 1920, 1180);	-- mouseclick to resurrec
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+					yrest(3000);		-- wait time after resurrec ( no load screen)
 					player:update();
 				end
 
-				-- if still death, click button more left, normal resurrec at spawnpoint
+				if( player.Alive ) then			-- if allready alive it must be from the priest/buff
+					hf_res_from_priest = true;
+				end;
+				
+				-- if still death, click button more left, normal resurrect at spawnpoint
 				if ( not player.Alive  and
 				     foregroundWindow() == getWin() ) then
 					cprintf(cli.green, "Try to resurrect at the spawnpoint ...\n");  
 					player:mouseclickL(875, 272, 1920, 1180);	-- mouseclick to resurrec
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+						yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec (loading screen), needs more time on slow PC's
 					player:update();
 				end;
-
-				
+			
 				-- if still death, try macro if one defined
 				if ( not player.Alive  and 
 				     settings.profile.hotkeys.RES_MACRO.key ) then
 					cprintf(cli.green, "Try to use the ingame resurrect macro ...\n");  
 					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec, needs more time on slow PC's
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec (loading screen), needs more time on slow PC's
 					player:update();
 				end;
 
@@ -334,7 +338,6 @@ function main()
 					cprintf(cli.yellow, "You are still dead. There is a problem with automatic resurrection." ..
 						" Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
 						getKeyName(settings.profile.hotkeys.RES_MACRO.key));
---					pauseOnDeath();
 				end;
 
 				-- death counter message
@@ -348,7 +351,8 @@ function main()
 				end
 
 				if( player.Level > 9  and 
-				    player.Alive      ) then
+				    player.Alive      and
+				    hf_res_from_priest ~= true ) then	-- no wait if resurrect at the place of death / priest / buff
 					cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
 					player:rest(60); -- wait 1 minute before going about your path.
 				end;
@@ -452,9 +456,9 @@ function main()
 				break;
 			end;
 
-			if( os.difftime(os.time(), aggroWaitStart) > 3 ) then
-				cprintf(cli.red, language[34]);
-				player.LastAggroTimout = os.time();	-- remeber aggro timeout
+			if( os.difftime(os.time(), aggroWaitStart) > 4 ) then
+				cprintf(cli.red, language[34]);		-- Aggro wait time out
+				player.LastAggroTimout = os.time();	-- remember aggro timeout
 				break;
 			end;
 
@@ -541,8 +545,6 @@ function main()
 				if( reason == WF_STUCK or distBreakCount > 3 ) then
 
 					-- Get ourselves unstuck, then!
-					cprintf(cli.red, language[9], player.X, player.Z, 
-					  player.Unstick_counter+1, settings.profile.options.MAX_UNSTICK_TRIALS);
 					distBreakCount = 0;
 					player:clearTarget();
 					player.Success_waypoints = 0;	-- counter for successfull waypoints in row
@@ -554,6 +556,11 @@ function main()
 						    player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
 							player:logout(); 
 						end;
+						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position
+						   player.Unstick_counter, settings.profile.options.MAX_UNSTICK_TRIALS);
+					else
+						cprintf(cli.red, "Unsticking player... at position %d,%d. Trial %d.\n", 	-- unsticking player... at position
+						   player.X, player.Z, player.Unstick_counter);
 					end
 					player:unstick();
 				end
