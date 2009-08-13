@@ -406,7 +406,7 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	local hf_temp = name;	-- remember profile name shortly
+	local hf_temp = _name;	-- remember profile name shortly
 
 	for i,v in pairs(elements) do
 		local name = v:getName();
@@ -458,7 +458,8 @@ function settings.loadProfile(_name)
 			     string.lower(name) ~= "skills_knight"      and
 			     string.lower(name) ~= "skills_runedancer"  and
 			     string.lower(name) ~= "skills_druid" )     then
-				cprintf(cli.yellow, language[60], string.lower(name), hf_temp);
+				cprintf(cli.yellow, tostring(language[60]), string.lower(tostring(name)),
+					tostring(hf_temp));
 			end;
 		end
 	end

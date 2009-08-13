@@ -68,7 +68,7 @@ end
 function getWin()
 	local skey = getStartKey();
 
-	if( __WIN == nil or not windowValid(__WIN) ) then
+	if( __WIN == nil ) then
 		local winlist = findWindowList("Runes of Magic", "Radiant Arcana");
 
 		if( #winlist == 0 ) then
@@ -90,6 +90,10 @@ function getWin()
 			__WIN = foregroundWindow();
 		else
 			__WIN = winlist[1];
+		end
+	else
+		if( not windowValid(__WIN) ) then
+			error(language[52], 0);
 		end
 	end
 

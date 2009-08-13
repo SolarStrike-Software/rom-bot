@@ -44,6 +44,7 @@ language = {
 
 	[50] = "%s  Automatisches Ausloggen\n",
 	[51] = "Herunterfahren des Systems.\n",
+	[52] = "Fenster verloren (Client zum Absturz oder geschlossen?). Du müssen neu starten das Skript.",
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berprüfen Sie Ihr Profil!\n",
 	
