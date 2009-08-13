@@ -135,37 +135,27 @@ function settings.load()
 		
 		local filename, file;
 		
-		-- german windows installation
-		filename = os.getenv("USERPROFILE").."\\Eigene Dateien"..
-		   "\\Runes of Magic\\bindings.txt";
---		filename = "F:\\Privat\\Runes of Magic\\bindings.txt";
-		file = io.open( filename,"r");
+		local userprofilePath = os.getenv("USERPROFILE");
+		local documentPaths = {
+			userprofilePath .. "\\My Documents\\", -- English
+			userprofilePath .. "\\Eigene Dataein\\", -- German
+			userprofilePath .. "\\Documents\\", -- French
+			userprofilePath .. "\\Omat tiedostot\\", -- Finish
+		};
 
-		-- english windows installation
-		if( not file ) then
-			filename = os.getenv("USERPROFILE").."\\My Documents"..
-			   "\\Runes of Magic\\bindings.txt";
-			file = io.open( filename,"r");
-		end;
+		-- Select the first path that exists
+		for i,v in pairs(documentPaths) do
+			local filename = v .. "Runes of Magic\\bindings.txt"
+			if( fileExists(filename) ) then
+				file = io.open(filename, "r");
+			end
+		end
 
-		-- french windows installation
-		if( not file ) then
-			filename = os.getenv("USERPROFILE").."\\Documents"..
-			   "\\Runes of Magic\\bindings.txt";
-			file = io.open( filename,"r");
-		end;
+		-- If we wern't able to locate a document path, return.
+		if( file == nil ) then
+			return;
+		end
 
-		-- finish windows installation
-		if( not file ) then
-			filename = os.getenv("USERPROFILE").."\\Omat tiedostot"..
-			   "\\Runes of Magic\\bindings.txt";
-			file = io.open( filename,"r");
-		end;
-
-		-- no bindings.txt file found / no checks possible
-		if( not file ) then
-			return
-		end;
 
 		-- Load bindings.txt into own table structure
 		bindings = { name = { } };
@@ -176,8 +166,41 @@ function settings.load()
 				bindings[name].key1 = key1;
 				bindings[name].key2 = key2;
 
+				--settings.hotkeys[name].key = 
 			end
 		end
+
+		local function bindHotkey(bindingName)
+			local links = { -- Links forward binding names to hotkey names
+				MOVEFORWARD = "MOVE_FORWARD",
+				MOVEBACKWARD = "MOVE_BACKWARD",
+				TURNLEFT = "ROTATE_LEFT",
+				TURNRIGHT = "ROTATE_RIGHT",
+				STRAFELEFT = "STRAFF_LEFT",
+				STRAFERIGHT = "STRAFF_RIGHT",
+				TARGETNEARESTENEMY = "TARGET",
+			};
+
+			local hotkeyName = bindingName;
+			if(links[bindingName] ~= nil) then
+				hotkeyName = links[bindingName];
+			end;
+
+			if( bindings[bindingName]) then
+				if( bindings[bindingName].key1 ) then
+					settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
+				end
+			end
+		end
+
+		bindHotkey("MOVEFORWARD");
+		bindHotkey("MOVEBACKWARD");
+		bindHotkey("TURNLEFT");
+		bindHotkey("TURNRIGHT");
+		bindHotkey("STRAFELEFT");
+		bindHotkey("STRAFERIGHT");
+		bindHotkey("JUMP");
+		bindHotkey("TARGETNEARESTENEMY");
 	end
 
 	-- check ingame settings
@@ -195,7 +218,7 @@ function settings.load()
 			        _name);
 			error("Please check your settings!", 0);
 		end
-    	end
+    end
 
 
 	function checkHotkeys(_name, _ingame_key)
@@ -204,7 +227,7 @@ function settings.load()
 		end
 		
 		-- check if settings.lua hotkeys match the RoM ingame settings
-		check_ingame_settings( _name, _ingame_key);
+		-- check_ingame_settings( _name, _ingame_key);
 	end
 
 
