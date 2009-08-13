@@ -42,6 +42,7 @@ language = {
 
 	[50] = "%s  Auto-logging out.\n",
 	[51] = "Shutting system down.\n",
+	[52] = "Window lost (Client crashed or closed?). You must re-start the script.",
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	
