@@ -148,6 +148,13 @@ function settings.load()
 			file = io.open( filename,"r");
 		end;
 
+		-- french windows installation
+		if( not file ) then
+			filename = os.getenv("USERPROFILE").."\\Documents"..
+			   "\\Runes of Magic\\bindings.txt";
+			file = io.open( filename,"r");
+		end;
+
 		-- finish windows installation
 		if( not file ) then
 			filename = os.getenv("USERPROFILE").."\\Omat tiedostot"..

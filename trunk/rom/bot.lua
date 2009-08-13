@@ -300,7 +300,6 @@ function main()
 				cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 				
 				-- try mouseclick to reanimate
---				player:restrnd(100, 10, 15);			-- wait between 10-15 sec
 				cprintf(cli.green, "We will try to resurrect in 10 seconds.\n");  
 				yrest(10000);
 				
@@ -312,7 +311,7 @@ function main()
 					player:update();
 				end
 
-				if( player.Alive ) then			-- if allready alive it must be from the priest/buff
+				if( player.Alive ) then		-- if allready alive it must be from the priest/buff
 					hf_res_from_priest = true;
 				end;
 				
@@ -321,23 +320,26 @@ function main()
 				     foregroundWindow() == getWin() ) then
 					cprintf(cli.green, "Try to resurrect at the spawnpoint ...\n");  
 					player:mouseclickL(875, 272, 1920, 1180);	-- mouseclick to resurrec
-						yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec (loading screen), needs more time on slow PC's
+					-- wait time after resurrec (loading screen), needs more time on slow PC's
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 					player:update();
 				end;
-			
+
 				-- if still death, try macro if one defined
 				if ( not player.Alive  and 
 				     settings.profile.hotkeys.RES_MACRO.key ) then
 					cprintf(cli.green, "Try to use the ingame resurrect macro ...\n");  
 					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	-- wait time after resurrec (loading screen), needs more time on slow PC's
+					-- wait time after resurrec (loading screen), needs more time on slow PC's
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 					player:update();
 				end;
 
 				if( not player.Alive ) then
-					cprintf(cli.yellow, "You are still dead. There is a problem with automatic resurrection." ..
-						" Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
-						getKeyName(settings.profile.hotkeys.RES_MACRO.key));
+					cprintf(cli.yellow, "You are still dead. There "..
+					  "is a problem with automatic resurrection." ..
+					  " Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
+					  getKeyName(settings.profile.hotkeys.RES_MACRO.key));
 				end;
 
 				-- death counter message
@@ -427,7 +429,7 @@ function main()
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
 		if( player:haveTarget()  and
 		    player.Current_waypoint_type ~= WPT_RUN ) then	-- no resting if running waypoin type
-			player:rest( 50, 99, "full", 10 );			-- rest befor next fight
+			player:rest( 50, 99, "full", 10 );		-- rest befor next fight
 		end;
 
 
@@ -438,11 +440,13 @@ function main()
 		while(player.Battling) do
 
 			if( player.Current_waypoint_type == WPT_RUN ) then	-- runing mode, don't wait for target
-				cprintf(cli.green, "Waypoint type RUN, we don't stop and don't fight back\n");	-- Waiting on aggressive enemies.
+				cprintf(cli.green, "Waypoint type RUN, we don't stop "..
+				  "and don't fight back\n");	-- Waiting on aggressive enemies.
 				break;
 			end;
 			
-			-- wait a second with the aggro message to avoid wrong msg because of slow battle flag from the client
+			-- wait a second with the aggro message to avoid wrong msg 
+			-- ecause of slow battle flag from the client
 			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
 				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
 				msg_print = true;
@@ -472,7 +476,9 @@ function main()
 		-- fight the mob / target
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
-				if( target:haveTarget() and target:getTarget().Address ~= player.Address and (not player:isFriend(CPawn(target.TargetPtr))) ) then
+				if( target:haveTarget() and 
+				  target:getTarget().Address ~= player.Address and 
+				  (not player:isFriend(CPawn(target.TargetPtr))) ) then
 					cprintf(cli.red, language[5], target.Name);
 				else
 					player:fight();

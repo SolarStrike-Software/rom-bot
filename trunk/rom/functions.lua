@@ -287,4 +287,14 @@ function load_paths( _wp_path, _rp_path)
 		end;
 	end;
 
+	-- check if on returnpath
+	if( player.Returning == true  and
+	    _rp_path ) then
+		cprintf(cli.green, "We are coming from a return_path. So we will going on using the returnpath %s.\n", __RPL:getFileName());
+	else
+		player.Returning = false;
+		cprintf(cli.green, "We use the normal waypoint path %s now.\n", __WPL:getFileName() );
+	end
+
+
 end
