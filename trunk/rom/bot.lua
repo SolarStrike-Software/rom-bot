@@ -290,7 +290,7 @@ function main()
 
 			-- msg how to activate automatic resurrection
 			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
-				cprintf(cli.yellow, "If you want to use automatic resurrection" ..
+				cprintf(cli.yellow, "If you want to use automatic resurrection " ..
 				   "then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' "..
 				   "within your profile.\n");
 			end;

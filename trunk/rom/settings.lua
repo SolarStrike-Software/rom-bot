@@ -201,6 +201,7 @@ function settings.load()
 		bindHotkey("STRAFERIGHT");
 		bindHotkey("JUMP");
 		bindHotkey("TARGETNEARESTENEMY");
+		bindHotkey("TARGETNEARESTFRIEND");
 	end
 
 	-- check ingame settings
@@ -245,15 +246,16 @@ function settings.load()
 	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
 	
 	-- Check to make sure everything important is set
-	--           bot hotkey name   RoM ingame key name         
-	checkHotkeys("MOVE_FORWARD",  "MOVEFORWARD");
-	checkHotkeys("MOVE_BACKWARD", "MOVEBACKWARD");
-	checkHotkeys("ROTATE_LEFT",   "TURNLEFT");
-	checkHotkeys("ROTATE_RIGHT",  "TURNRIGHT");
-	checkHotkeys("STRAFF_LEFT",   "STRAFELEFT");
-	checkHotkeys("STRAFF_RIGHT",  "STRAFERIGHT");
-	checkHotkeys("JUMP",          "JUMP");
-	checkHotkeys("TARGET",        "TARGETNEARESTENEMY");
+	--           bot hotkey name    RoM ingame key name         
+	checkHotkeys("MOVE_FORWARD",   "MOVEFORWARD");
+	checkHotkeys("MOVE_BACKWARD",  "MOVEBACKWARD");
+	checkHotkeys("ROTATE_LEFT",    "TURNLEFT");
+	checkHotkeys("ROTATE_RIGHT",   "TURNRIGHT");
+	checkHotkeys("STRAFF_LEFT",    "STRAFELEFT");
+	checkHotkeys("STRAFF_RIGHT",   "STRAFERIGHT");
+	checkHotkeys("JUMP",           "JUMP");
+	checkHotkeys("TARGET",         "TARGETNEARESTENEMY");
+	checkHotkeys("TARGET_FRIEND",  "TARGETNEARESTFRIEND");
 	
 end
 
