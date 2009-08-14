@@ -10,6 +10,7 @@
 		<hotkey description="JUMP" key="VK_SPACE" modifier="" />
 
 		<hotkey description="TARGET" key="VK_TAB" modifier="" />
+		<hotkey description="TARGET_FRIEND" key="VK_J" modifier="" />
 	</hotkeys>
 
 	<options>

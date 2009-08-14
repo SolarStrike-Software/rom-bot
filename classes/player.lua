@@ -1529,3 +1529,60 @@ function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
 
 	attach(getWin()); -- Re-attach bindings
 end
+
+function CPlayer:target_NPC(_npcname)
+
+	if( not _npcname ) then
+		cprintf(cli.yellow, "target_NPC(): Please give a NPC name for using that function.\n");
+		return
+	end
+
+	cprintf(cli.green, "We try to find NPC %s: ", _npcname);
+
+	local hf_temp;
+	for i = 1, 10 do
+
+		if(settings.hotkeys.TARGET_FRIEND.modifier) then
+			keyboardHold(settings.hotkeys.TARGET_FRIEND.modifier);
+		end
+		keyboardPress(settings.hotkeys.TARGET_FRIEND.key);
+		if(settings.hotkeys.TARGET_FRIEND.modifier) then
+			keyboardRelease(settings.hotkeys.TARGET_FRIEND.modifier);
+		end
+
+		player:update();
+
+		if(player.TargetPtr ~= 0) then
+			hf_temp = true;					-- we found something
+			local target = self:getTarget();		-- read target informations
+			cprintf(cli.green, "%s, ", target.Name);	-- print name
+		
+			if( string.find(string.lower(target.Name), string.lower(_npcname) ) ) then
+
+				cprintf(cli.green, "\nWe successfully target NPC %s and try "..
+				  "to open dialog window.\n", _npcname);
+				if( settings.profile.hotkeys.ATTACK.modifier ) then
+					keyboardHold(settings.hotkeys.ATTACK.modifier);
+				end
+				keyboardPress(settings.profile.hotkeys.ATTACK.key);
+				if( settings.profile.hotkeys.ATTACK.modifier ) then
+					keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+				end
+
+				return true;
+			end
+		end;
+
+		yrest(500);
+	end
+
+	cprintf(cli.green, "Sorry, we can't find NPC %s.\n", _npcname);
+	if( not hf_temp) then
+		cprintf(cli.yellow, "We didn't found any NPC! Have you set "..
+		  "your ingame target friendly key to %s?\n", 
+		  getKeyName(settings.hotkeys.TARGET_FRIEND.key) );	
+	end
+	
+	return false;
+
+end

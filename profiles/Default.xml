@@ -30,14 +30,14 @@
 		<option name="LOOT"               value="true" />
 		<option name="LOOT_IN_COMBAT"     value="true" />
 		<option name="LOOT_DISTANCE"      value="100" />
-		<option name="LOOT_PAUSE_AFTER"   value="10" />
+		<option name="LOOT_PAUSE_AFTER"   value="10" />		<!-- probability in % for a short rest -->
 
 		<!-- Rest if HP or Mana is below that level -->
 		<option name="HP_REST" value="15" />
 		<option name="MP_REST" value="15" />
 
 		<!-- Log out and resurrect settings -->
-		<option name="LOGOUT_TIME" value="0" />
+		<option name="LOGOUT_TIME" value="0" />			<!-- in minutes, 0 = timer disabled -->
 		<option name="LOGOUT_SHUTDOWN" value="false" />
 		<option name="LOGOUT_WHEN_STUCK" value="true" />
 		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
