@@ -1537,6 +1537,15 @@ function CPlayer:target_NPC(_npcname)
 		return
 	end
 
+	if(settings.hotkeys.TARGET_FRIEND.modifier) then
+		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
+		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
+		   "Please change your hotkey %s-%s for hotkey TARGET_FRIEND.\n", 
+		   getKeyName(settings.hotkeys.TARGET_FRIEND.modifier), 
+		   getKeyName(settings.hotkeys.TARGET_FRIEND.key) );
+		return
+	end
+
 	cprintf(cli.green, "We try to find NPC %s: ", _npcname);
 
 	local hf_temp;

@@ -80,12 +80,13 @@ settings = settings_default;
 
 -- check if keys are double assigned or empty
 check_keys = { };
-function check_double_key_settings( _name, _key)
+function check_double_key_settings( _name, _key, _modifier )
 
 	for i,v in pairs(check_keys) do
-		if( v.key == _key ) then
-			cprintf(cli.yellow, "Error: You assigned the key \'%s\' double: for \'%s\' and for \'%s\'.\n",
-			        v.key, v.name, _name);
+		if( v.key      == _key  and
+		    v.modifier == _modifier ) then
+			cprintf(cli.yellow, "Error: You assigned the key \'%s %s\' double: for \'%s\' and for \'%s\'.\n",
+			        getKeyName(v.modifier), getKeyName(v.key), v.name, _name);
 			error("Please check your settings!", 0);
 		if( _key == nil) then
 			cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
@@ -95,9 +96,25 @@ function check_double_key_settings( _name, _key)
 		end
 	end;
 	
+	-- check the using of modifiers
+	if( _modifier ~= nil) then
+		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
+		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
+		   "Please change your hotkey %s-%s for \'%s\'\n", getKeyName(_modifier), getKeyName(_key), _name);
+		   
+		   -- only a warning for TARGET_FRIEND / else an error
+		   if(_name == "TARGET_FRIEND") then
+		   	cprintf(cli.yellow, "You can't use the player:target_NPC() function until changed!\n");
+		   else
+		   	error("Please check your settings!", 0);
+		   end
+	end
+
+	
 	local tmp = {};
 	tmp.name = _name;
 	tmp.key  = _key;
+	tmp.modifier  = _modifier;	
 	table.insert(check_keys, tmp);	
 
 end
@@ -120,7 +137,7 @@ function settings.load()
 				local err = sprintf("settings.xml error: %s does not have a valid hotkey!", v:getAttribute("description"));
 				error(err, 0);
 			end
-			check_double_key_settings( v:getAttribute("description"), v:getAttribute("key") );
+			check_double_key_settings( v:getAttribute("description"), v:getAttribute("key"), v:getAttribute("modifier") );
 		end
 	end
 
@@ -139,11 +156,17 @@ function settings.load()
 		local userprofilePath = os.getenv("USERPROFILE");
 		local documentPaths = {
 			userprofilePath .. "\\My Documents\\", -- English
-			userprofilePath .. "\\Eigene Dataein\\", -- German
-			userprofilePath .. "\\Documents\\", -- French
+			userprofilePath .. "\\Eigene Dateien\\", -- German
+			userprofilePath .. "\\Mes Documents\\", -- French
 			userprofilePath .. "\\Omat tiedostot\\", -- Finish
 			userprofilePath .. "\\Belgelerim\\", -- Turkish
 			userprofilePath .. "\\Mina Dokument\\", -- Swedish
+			userprofilePath .. "\\Dokumenter\\", -- Danish
+			userprofilePath .. "\\Documenti\\", -- Italian
+			userprofilePath .. "\\Mijn documenten\\", -- Dutch
+			userprofilePath .. "\\Moje dokumenty\\", -- Polish
+			userprofilePath .. "\\Mis documentos\\", -- Spanish
+--			"F:\\privat\\",
 		};
 
 		-- Select the first path that exists
@@ -151,6 +174,8 @@ function settings.load()
 			local filename = v .. "Runes of Magic\\bindings.txt"
 			if( fileExists(filename) ) then
 				file = io.open(filename, "r");
+				cprintf(cli.green, "We read the hotkey settings from your "..
+				   "bindings.txt file %s instead of using the settings.lua file.\n", filename)
 			end
 		end
 
@@ -206,6 +231,9 @@ function settings.load()
 					else
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
 					end
+					
+					check_double_key_settings( hotkeyName, settings.hotkeys[hotkeyName].key, 
+					  settings.hotkeys[hotkeyName].modifier );
 				end
 			end
 		end
@@ -236,7 +264,7 @@ function settings.load()
 			        _name);
 			error("Please check your settings!", 0);
 		end
-    end
+	end
 
 
 	function checkHotkeys(_name, _ingame_key)
@@ -302,10 +330,11 @@ function settings.loadProfile(_name)
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
 
 			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf("Profile error: Please set a valid key for hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), name );
+				local err = sprintf("Profile error: Please set a valid key for "..
+				  "hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), name );
 				error(err, 0);
 			end
-			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key") );
+			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key"), v:getAttribute("modifier") );
 		end
 	end
 
