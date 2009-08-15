@@ -8,6 +8,7 @@ settings_default = {
 		STRAFF_RIGHT = {key = _G.key.VK_E, modifier = nil},
 		JUMP = {key = _G.key.VK_SPACE, modifier = nil},
 		TARGET = {key = _G.key.VK_TAB, modifier = nil},
+		TARGET_FRIEND = {key = _G.key.J, modifier = nil},
 		START_BOT = {key = _G.key.VK_DELETE, modifier = nil},
 		STOP_BOT = {key = _G.key.VK_END, modifier = nil}
 	},
@@ -141,6 +142,8 @@ function settings.load()
 			userprofilePath .. "\\Eigene Dataein\\", -- German
 			userprofilePath .. "\\Documents\\", -- French
 			userprofilePath .. "\\Omat tiedostot\\", -- Finish
+			userprofilePath .. "\\Belgelerim\\", -- Turkish
+			userprofilePath .. "\\Mina Dokument\\", -- Swedish
 		};
 
 		-- Select the first path that exists
@@ -187,9 +190,22 @@ function settings.load()
 				hotkeyName = links[bindingName];
 			end;
 
-			if( bindings[bindingName]) then
-				if( bindings[bindingName].key1 ) then
-					settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
+
+			if( bindings[bindingName] ~= nil ) then
+				if( bindings[bindingName].key1 ~= nil ) then
+					-- Fix key names
+					bindings[bindingName].key1 = string.gsub(bindings[bindingName].key1, "CTRL", "CONTROL");
+
+					if( string.find(bindings[bindingName].key1, '+') ) then
+						local parts = explode(bindings[bindingName].key1, '+');
+						-- parts[1] = modifier
+						-- parts[2] = key
+
+						settings.hotkeys[hotkeyName].key = key["VK_" .. parts[2]];
+						settings.hotkeys[hotkeyName].modifier = key["VK_" .. parts[1]];
+					else
+						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
+					end
 				end
 			end
 		end
