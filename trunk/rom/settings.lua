@@ -179,6 +179,7 @@ function settings.load()
 				STRAFELEFT = "STRAFF_LEFT",
 				STRAFERIGHT = "STRAFF_RIGHT",
 				TARGETNEARESTENEMY = "TARGET",
+				TARGETNEARESTFRIEND = "TARGET_FRIEND",	
 			};
 
 			local hotkeyName = bindingName;
