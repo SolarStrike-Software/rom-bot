@@ -20,7 +20,7 @@ CWaypointList = class(
 function CWaypointList:load(filename)
 	local root = xml.open(filename);
 	if( not root ) then
-		error("Failed to load waypoints from \'%s\'", filename);
+		error(sprintf("Failed to load waypoints from \'%s\'", filename), 0);
 	end
 	local elements = root:getElements();
 	local type = root:getAttribute("type");
