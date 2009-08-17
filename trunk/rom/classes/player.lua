@@ -274,7 +274,7 @@ function CPlayer:checkSkills(_only_friendly)
 			-- we move the check INTO the skill round to be more accurate
 			-- by the max_fight_time option could be reduced
 			if( target.HP ~= lastTargetHP ) then
-				lastHitTime = os.time();
+				self.lastHitTime = os.time();
 				lastTargetHP = target.HP;
 --				printf(language[23]);		-- target HP changed
 			end
@@ -374,8 +374,8 @@ function CPlayer:fight()
 	end
 
 	local target = self:getTarget();
-	local lastHitTime = os.time();
-	local lastTargetHP = target.HP;
+	self.lastHitTime = os.time();
+	lastTargetHP = target.HP;
 	local move_closer_counter = 0;		-- count move closer trys
 	self.Cast_to_target = 0;				-- reset counter cast at enemy target
 
@@ -392,7 +392,7 @@ function CPlayer:fight()
 		target = self:getTarget();
 
 		-- Exceeded max fight time (without hurting enemy) so break fighting
-		if( os.difftime(os.time(), lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
+		if( os.difftime(os.time(), self.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf(language[83]);			-- Taking too long to damage target
 			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
 			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
