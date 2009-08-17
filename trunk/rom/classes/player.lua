@@ -290,7 +290,6 @@ function CPlayer:checkPotions()
 		return;
 	end
 
-
 	-- If we need to use a health potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
 		local modifier = settings.profile.hotkeys.HP_POTION.modifier
@@ -375,7 +374,7 @@ function CPlayer:fight()
 
 	local target = self:getTarget();
 	self.lastHitTime = os.time();
-	lastTargetHP = target.HP;
+	local lastTargetHP = target.HP;
 	local move_closer_counter = 0;		-- count move closer trys
 	self.Cast_to_target = 0;				-- reset counter cast at enemy target
 
@@ -575,6 +574,8 @@ function CPlayer:loot()
 	end
 
 	local dist = distance(self.X, self.Z, target.X, target.Z);
+	local hf_x = self.X
+	local hf_z = self.Z;
 	local lootdist = 100;
 
 	-- Set to combat distance; update later if loot distance is set
@@ -587,29 +588,40 @@ function CPlayer:loot()
 	end
 
 
-	if( dist < lootdist ) then -- only loot when close by
-		cprintf(cli.green, language[31]);
-		-- "attack" is also the hotkey to loot, strangely.
+	if( dist > lootdist ) then 	-- only loot when close by
+		cprintf(cli.green, language[32]);	-- Target too far away; not looting.
+		return false
+	end
+
+	cprintf(cli.green, language[31], dist);	-- looting target.
+	-- "attack" is also the hotkey to loot, strangely.
+	yrest(500);
+	keyboardPress(settings.profile.hotkeys.ATTACK.key);
+	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+
+	-- check for loot problems to give a noob mesassage
+	self:update();
+	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
+	    self.Z == hf_z  and
+	    dist > 25 )  then
+		cprintf(cli.yellow, "We didn't move to the loot!? Please be sure you "..
+		"set ingame the standard attack to hotkey %s.\n", 
+		getKeyName(settings.profile.hotkeys.ATTACK.key) );	
+	end;
+
+	-- rnd pause from 3-6 sec after loot to look more human
+	if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
+		self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,3,6);
+	end;
+
+	-- now take a 'step' forward (closes loot bag if full inventory)
+	keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
+
+	-- Maybe take a step forward to pick up a buff.
+	if( math.random(100) > 80 ) then
+		keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
 		yrest(500);
-		keyboardPress(settings.profile.hotkeys.ATTACK.key);
-		yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-
-		-- rnd pause from 3-6 sec after loot to look more human
-		if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
-			self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,3,6);
-		end;
-
-		-- now take a 'step' forward (closes loot bag if full inventory)
-		keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
-
-		-- Maybe take a step forward to pick up a buff.
-		if( math.random(100) > 80 ) then
-			keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
-			yrest(500);
-			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-		end
-	else
-		cprintf(cli.green, language[32]);
+		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	end
 
 end
