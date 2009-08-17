@@ -167,7 +167,8 @@
 	<skill name="ROGUE_NUMBING_DAGGER" consumable="1" range="150" casttime="1" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
 	<skill name="ROGUE_POISON" consumable="1" cooldown="600" casttime="1" type="buff" target="self" />
-	<skill name="ROGUE_PREMEDITATION" energy="20" type="buff" target="self" inbattle="false" />
+	<skill name="ROGUE_PREMEDITATION" energy="20" type="buff" target="enemy" inbattle="false" />
+	<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
 	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
 	<skill name="ROGUE_VANISH" cooldown="600" type="buff" target="self" />
