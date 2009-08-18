@@ -31,6 +31,10 @@ CSkill = class(
 		self.MaxHpPer = 100; -- Must have less than this % HP to cast
 		self.Toggleable = false;
 		self.Toggled = false;
+		
+		self.pullonly = false;	-- use only in pull phase (only for melees with ranged pull attacks)
+		self.maxuse = 0;	-- use that skill only x-times per fight
+		self.used = 0;		-- how often we used that skill in current fight
 
 		self.hotkey = 0;
 		self.modifier = 0;
@@ -55,6 +59,8 @@ CSkill = class(
 			self.MaxHpPer = copyfrom.MaxHpPer;
 			self.Toggleable = copyfrom.Toggleable;
 			self.priority = copyfrom.priority;
+			self.pullonly = copyfrom.pullonly;
+			self.maxuse = copyfrom.maxuse;
 		end
 	end
 );
@@ -96,6 +102,18 @@ function CSkill:canUse(_only_friendly)
 	if( not player.Battling and self.InBattle == true ) then
 		return false;
 	end   
+
+	-- check pullonly skills
+	if( self.pullonly == true and
+	    not player.ranged_pull ) then
+		return false
+	end
+	
+	-- skill with maximum use per fight
+	if( self.maxuse > 0 and
+	    self.used >= self.maxuse ) then
+		return false
+	end
 
 	-- Needs an enemy target
 	if( self.Target == STARGET_ENEMY ) then
@@ -164,6 +182,7 @@ function CSkill:use()
 		error(str);
 	end
 
+	self.used = self.used + 1;	-- count use of skill per fight
 	self.LastCastTime = os.time() + self.CastTime;
 	if( self.modifier ) then
 		keyboardHold(self.modifier);

@@ -18,7 +18,7 @@ language = {
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
 
 	[20] = "Aus\129bung abgeschlossen\n",
-	[21] = "Dr\129cke %s: aus\154ben %s",
+	[21] = "Dr\129cke %s: aus\129ben %s",
 	[22] = "Gegner [%s] in einen Kampf verwickeln.\n",
 	[23] = "Gegnerische HP ver\132ndert\n",
 	[24] = "Zu nah. Nehme Abstand.\n",
