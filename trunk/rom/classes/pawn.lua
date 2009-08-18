@@ -81,6 +81,7 @@ CPawn = class(
 		self.Last_ignore_target_ptr = 0;		-- last target to ignore
 		self.Last_ignore_target_time = 0;		-- last target to ignore
 		self.lastHitTime = 0;				-- last time the HP of the target changed
+		self.ranged_pull = false;			-- ranged pull phase active
 		self.free_field1 = nil;				-- free field for user use
 		self.free_field2 = nil;				-- free field for user use
 		self.free_field3 = nil;				-- free field for user use

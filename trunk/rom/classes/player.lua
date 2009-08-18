@@ -178,11 +178,14 @@ function CPlayer:initialize()
 	memoryWriteInt(getProc(), self.Address + castbar_offset, 0);
 end
 
--- Resets "toggled" skills to off
+-- Resets "toggled" skills to off & used counter to 0
 function CPlayer:resetSkills()
 	for i,v in pairs(settings.profile.skills) do
 		if( v.Toggled ) then
 			v.Toggled = false;
+		end
+		if( v.used ) then
+			v.used = 0;
 		end
 	end
 end
@@ -364,19 +367,30 @@ function CPlayer:fight()
 	-- Prep for battle, if needed.
 	--self:checkSkills();
 
+	local target = self:getTarget();
+	self.lastHitTime = os.time();
+	local lastTargetHP = target.HP;
+	local move_closer_counter = 0;		-- count move closer trys
+	self.Cast_to_target = 0;		-- reset counter cast at enemy target
+	self.ranged_pull = false;		-- flag for timed ranged pull for melees
+	local hf_start_dist = 0;		-- distance to mob where we start the fight
+	
+	-- check if timed ranged pull for melee
+	if(settings.profile.options.COMBAT_TYPE == "melee"  and
+	   settings.profile.options.COMBAT_RANGED_PULL == true and
+	   self.Battling ~= true ) then
+		self.ranged_pull = true;
+		cprintf(cli.green, "We begin fight with ranged pulling.\n");	-- we start with ranged pulling
+	end
 
-	if( settings.profile.options.COMBAT_TYPE == "melee" ) then
+	-- normal melee attack only if ranged pull isn't used
+	if( settings.profile.options.COMBAT_TYPE == "melee" and
+	    self.ranged_pull ~= true ) then
 		registerTimer("timedAttack", secondsToTimer(2), timedAttack);
 
 		-- start melee attack (even if out of range)
 		timedAttack();
 	end
-
-	local target = self:getTarget();
-	self.lastHitTime = os.time();
-	local lastTargetHP = target.HP;
-	local move_closer_counter = 0;		-- count move closer trys
-	self.Cast_to_target = 0;				-- reset counter cast at enemy target
 
 	while( self:haveTarget() ) do
 		-- If we die, break
@@ -400,6 +414,26 @@ function CPlayer:fight()
 		end
 
 		local dist = distance(self.X, self.Z, target.X, target.Z);
+		if( hf_start_dist == 0 ) then		-- remember distance we start the fight
+			hf_start_dist = dist;
+		end
+
+		-- check if pulling phase should be finished
+		if( self.ranged_pull == true ) then
+			if( dist <= settings.options.MELEE_DISTANCE ) then
+				cprintf(cli.green, "Ranged pulling finished, mob in melee distance.\n");
+				self.ranged_pull = false;
+			elseif( os.difftime(os.time(), self.aggro_start_time) > 3 and  
+			  self.aggro_start_time ~= 0 ) then
+				cprintf(cli.green, "Ranged pulling after 3 sec wait finished.\n");
+				self.ranged_pull = false;
+			elseif( dist >=  hf_start_dist-45 and	-- mob not really coming closer
+			  os.difftime(os.time(), self.aggro_start_time) > 1  and
+			  self.aggro_start_time ~= 0 ) then
+				cprintf(cli.green, "Ranged pulling finished. Mob not really moving.\n");			      
+				self.ranged_pull = false;
+			end;
+		end
 
 		-- We're a bit TOO close...
 		if( dist < 5.0 ) then
@@ -414,7 +448,8 @@ function CPlayer:fight()
 		-- Move closer to the target if needed
 		local suggestedRange = settings.options.MELEE_DISTANCE;
 		if( suggestedRange == nil ) then suggestedRange = 45; end;
-		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+		if( settings.profile.options.COMBAT_TYPE == "ranged" or
+		  self.ranged_pull == true ) then
 			if( settings.profile.options.COMBAT_DISTANCE ~= nil ) then
 				suggestedRange = settings.profile.options.COMBAT_DISTANCE;
 			else
@@ -427,7 +462,8 @@ function CPlayer:fight()
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
 			if( move_closer_counter > 3  and
-			    settings.profile.options.COMBAT_TYPE == "ranged" ) then
+			  (settings.profile.options.COMBAT_TYPE == "ranged" or
+			  self.ranged_pull == true) ) then
 				cprintf(cli.green, language[84]);	-- To much tries to come closer
 				self:clearTarget();
 				break;
@@ -439,8 +475,8 @@ function CPlayer:fight()
 			local posX, posZ;
 			local success, reason;
 
-
-			if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+			if( settings.profile.options.COMBAT_TYPE == "ranged" or
+			  self.ranged_pull == true ) then		-- melees with timed ranged pull
 				-- Move closer in increments
 				local movedist = dist/10; if( dist < 50 ) then movedist = dist - 5; end;
 				if( dist > 50 and movedist < 50 ) then movedist = 50 end;
@@ -448,9 +484,9 @@ function CPlayer:fight()
 				posX = self.X + math.cos(angle) * (movedist);
 				posZ = self.Z + math.sin(angle) * (movedist);
 				success, reason = player:moveTo(CWaypoint(posX, posZ), true);
-			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
+			else 	-- normal melee
+--			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				success, reason = player:moveTo(target, true);
-
 				-- Start melee attacking
 				if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 					timedAttack();
@@ -1051,6 +1087,15 @@ function CPlayer:update()
 	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), language[41]) ~= 0);
 
 	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]) == 1;
+	
+	-- remember aggro start time, used for timed ranged pull
+	if( self.Battling == true ) then
+		if(self.aggro_start_time == 0) then
+			self.aggro_start_time = os.time();
+		end
+	else
+		self.aggro_start_time = 0;
+	end
 
 	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirXUVec_offset), language[41]);
 	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirYUVec_offset), language[41]);

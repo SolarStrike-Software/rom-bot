@@ -24,7 +24,8 @@ settings_default = {
 			HP_LOW = 85,
 			MP_LOW_POTION = 50,
 			HP_LOW_POTION = 40,
-			COMBAT_TYPE = "melee",	
+			COMBAT_TYPE = "melee",
+			COMBAT_RANGED_PULL = "true",	-- only for melee classes 
 			COMBAT_DISTANCE = 200,
 			ANTI_KS = true,
 			WAYPOINTS = "myWaypoints.xml",
@@ -393,10 +394,12 @@ function settings.loadProfile(_name)
 			check_double_key_settings( v:getAttribute("name"), v:getAttribute("hotkey") );
 
 			-- Over-ride attributes
-			local priority, maxhpper, inbattle
+			local priority, maxhpper, inbattle, pullonly, maxuse
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			inbattle = v:getAttribute("inbattle");
+			pullonly = v:getAttribute("pullonly");
+			maxuse = tonumber(v:getAttribute("maxuse"));
 
 			-- check if 'wrong' options are set
 			if( v:getAttribute("mana")      or
@@ -433,11 +436,29 @@ function settings.loadProfile(_name)
 			end;
 
 			if( inbattle ~= nil ) then
-				if( inbattle == "true" ) then
+				if( inbattle == "true" or 
+				    inbattle == true ) then
 					inbattle = true;
-				end;
-				if( inbattle == "false" ) then
+				elseif( inbattle == "false"  or
+					inbattle == false ) then
 					inbattle = false;
+				else
+						cprintf(cli.yellow, "You defined an wrong option inbattle=\'%s\' at skill %s in "..
+						  "your profile \'%s.xml\'. Please delete or correct "..
+						  "that line!\n", inbattle, name, _name);
+					error("Bot finished due of errors above.\n", 0);
+				end;
+			end
+
+			if( pullonly ~= nil ) then
+				if( pullonly == "true" or
+					pullonly == true ) then
+					pullonly = true;
+				else
+						cprintf(cli.yellow, "You defined an wrong option pullonly=\'%s\' at skill %s in "..
+						  "your profile \'%s.xml\'. Only \'true\' is possible. Please delete or correct "..
+						  "that line!\n", pullonly, name, _name);
+					error("Bot finished due of errors above.\n", 0);
 				end;
 			end
 
@@ -460,6 +481,8 @@ function settings.loadProfile(_name)
 			if( priority ) then tmp.priority = priority; end
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
 			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
+			if( pullonly == true ) then tmp.pullonly = pullonly; end;
+			if( maxuse ) then tmp.maxuse = maxuse; end;
 
 			table.insert(settings.profile.skills, tmp);
 		end
