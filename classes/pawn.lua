@@ -139,7 +139,7 @@ function CPawn:update()
 	showWarnings(false);
 	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
 --	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
-	if( namePtr == nil ) then
+	if( namePtr == nil or namePtr == 0 ) then
 		tmp = nil;
 	else
 		tmp = debugAssert(memoryReadString(proc, namePtr));
@@ -147,14 +147,12 @@ function CPawn:update()
 	showWarnings(true); -- Re-enable warnings after reading
 
 	-- UTF8 -> ASCII translation not for player names
-	if(self.Type == PT_PLAYER ) then
+	if( tmp == nil ) then
+		self.Name = "<UNKNOW>";
+	elseif(self.Type == PT_PLAYER ) then
 		self.Name = tmp;
 	else
-		if( tmp == nil ) then
-			self.Name = "<UNKNOWN>";
-		else
-			self.Name = UTF8_to_ASCII(tmp);
-		end
+		self.Name = UTF8_to_ASCII(tmp);
 	end
 
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
