@@ -82,6 +82,7 @@ settings = settings_default;
 -- check if keys are double assigned or empty
 check_keys = { };
 function check_double_key_settings( _name, _key, _modifier )
+	--if( _modifier == "" ) then _modifier = nil; end;
 
 	for i,v in pairs(check_keys) do
 		if( v.key      == _key  and
@@ -103,9 +104,13 @@ function check_double_key_settings( _name, _key, _modifier )
 	
 	-- check the using of modifiers
 	if( _modifier ~= nil) then
+		local modname, keyname;
+		if( _modifier ) then modname = getKeyName(_modifier); end;
+		if( _key ) then keyname = getKeyName(_key); end;
+
 		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
 		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
-		   "Please change your hotkey %s-%s for \'%s\'\n", getKeyName(_modifier), getKeyName(_key), _name);
+		   "Please change your hotkey %s-%s for \'%s\'\n", tostring(modname), tostring(keyname), _name);
 		   
 		   -- only a warning for TARGET_FRIEND / else an error
 		   if(_name == "TARGET_FRIEND") then
@@ -142,6 +147,7 @@ function settings.load()
 				local err = sprintf("settings.xml error: %s does not have a valid hotkey!", v:getAttribute("description"));
 				error(err, 0);
 			end
+
 			check_double_key_settings( v:getAttribute("description"), v:getAttribute("key"), v:getAttribute("modifier") );
 		end
 	end
