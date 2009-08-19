@@ -224,9 +224,10 @@ end
 local LAST_PLAYER_X = 0;
 local LAST_PLAYER_Z = 0;
 function timedSetWindowName(profile)
+	local displayname = string.sub(profile, 1, 4) .. "****";
 	if( (player.X ~= LAST_PLAYER_X) or (player.Z ~= LAST_PLAYER_Z) ) then
 		setWindowName(getHwnd(), sprintf("RoM Bot %s [%s] (%d,%d)",
-		BOT_VERSION, profile, player.X, player.Z));
+		BOT_VERSION, displayname, player.X, player.Z));
 
 		LAST_PLAYER_X = player.X;
 		LAST_PLAYER_Z = player.Z;
