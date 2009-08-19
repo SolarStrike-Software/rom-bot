@@ -86,9 +86,13 @@ function check_double_key_settings( _name, _key, _modifier )
 	for i,v in pairs(check_keys) do
 		if( v.key      == _key  and
 		    v.modifier == _modifier ) then
-			cprintf(cli.yellow, "Error: You assigned the key \'%s %s\' double: for \'%s\' and for \'%s\'.\n",
-			        getKeyName(v.modifier), getKeyName(v.key), v.name, _name);
-			error("Please check your settings!", 0);
+				local modname, keyname;
+				if( v.modifier ) then modname = getKeyName(v.modifier); end;
+				if( v.key ) then keyname = getKeyName(v.modifier); end;
+
+				local errstr = sprintf("Error: You assigned the key \'%s %s\' double: for \'%s\' and for \'%s\'.\n",
+					tostring(modname), tostring(keyname), v.name, _name) .. "Please check your settings!";
+				error(errstr, 0);
 		if( _key == nil) then
 			cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
 			error("Please check your settings!", 0);
