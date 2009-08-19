@@ -198,7 +198,8 @@ function main()
 	end;
 
 	-- Set window name, install timer to automatically do it once a second
-	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, load_profile_name));
+	local displayname = string.sub(load_profile_name, 1, 4) .. "****";
+	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 
