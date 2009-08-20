@@ -111,9 +111,9 @@
 	</skills_druid>
 
 	<onLoad>
-		-- Additional Lua code to execute loading profile
-		-- and befor bot starts.You can overwrite profile settings here
-		-- e.g. settings.profile.options.HP_LOW = 80;
+		-- Additional Lua code to execute after loading the profile
+		-- and before the bot starts. e.g. You could overwrite profile settings here
+		-- like: settings.profile.options.HP_LOW = 80;
 	</onLoad>
 
 	<onDeath>
