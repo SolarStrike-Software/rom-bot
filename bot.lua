@@ -203,12 +203,12 @@ function main()
 	settings.loadProfile(load_profile_name);
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 
-	-- onBotStart event
+	-- onLoad event
 	-- possibility for users to overwrite profile settings
-		if( type(settings.profile.events.onBotStart) == "function" ) then
-			local status,err = pcall(settings.profile.events.onBotStart);
+		if( type(settings.profile.events.onLoad) == "function" ) then
+			local status,err = pcall(settings.profile.events.onLoad);
 			if( status == false ) then
-				local msg = sprintf("onBotStart error: %s", err);
+				local msg = sprintf("onLoad error: %s", err);
 				error(msg);
 			end
 		end
