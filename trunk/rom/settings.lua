@@ -83,35 +83,48 @@ settings = settings_default;
 -- check if keys are double assigned or empty
 check_keys = { };
 function check_double_key_settings( _name, _key, _modifier )
-	--if( _modifier == "" ) then _modifier = nil; end;
+
+	if( _key == nil) then
+		cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
+		error("Please check your settings!", 0);
+	end
+
+	-- check if all keys are valid VK
+	if( _modifier ~= nil and key[_modifier]  == nil ) then
+		cprintf(cli.yellow, "Error: The modifier \'%s\' for \'%s\' is not a "..
+		"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n", _modifier, _name);
+		error("Please check your settings!", 0);
+	end;
 
 	for i,v in pairs(check_keys) do
 		if( v.key      == _key  and
 		    v.modifier == _modifier ) then
-				local modname, keyname;
-				if( v.modifier ) then modname = getKeyName(v.modifier); end;
-				if( v.key ) then keyname = getKeyName(v.key); end;
+			local modname;
 
-				local errstr = sprintf("Error: You assigned the key \'%s %s\' double: for \'%s\' and for \'%s\'.\n",
-					tostring(modname), tostring(keyname), v.name, _name) .. "Please check your settings!";
-				error(errstr, 0);
-		if( _key == nil) then
-			cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
-			error("Please check your settings!", 0);
-		end
+			if( v.modifier ) then 
+				modname = getKeyName(key[v.modifier]).."+";
+			else
+				modname = "";
+			end;
 
+			local errstr = sprintf("Error: You assigned the key \'%s%s\' "..
+			  "double: for \'%s\' and for \'%s\'.\n",
+				modname, 
+				getKeyName(key[v.key]), 
+				v.name, _name) .. 
+				"Please check your settings!";
+			error(errstr, 0);
 		end
 	end;
-	
 	-- check the using of modifiers
 	if( _modifier ~= nil) then
-		local modname, keyname;
-		if( _modifier ) then modname = getKeyName(_modifier); end;
-		if( _key ) then keyname = getKeyName(_key); end;
 
 		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
 		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
-		   "Please change your hotkey %s-%s for \'%s\'\n", tostring(modname), tostring(keyname), _name);
+		   "Please change your hotkey %s-%s for \'%s\'\n", 
+		   getKeyName(key[_modifier]), 
+		   getKeyName(key[_key]), 
+		   _name);
 		   
 		   -- only a warning for TARGET_FRIEND / else an error
 		   if(_name == "TARGET_FRIEND") then
@@ -343,7 +356,7 @@ function settings.loadProfile(_name)
 
 			if( key[v:getAttribute("key")] == nil ) then
 				local err = sprintf("Profile error: Please set a valid key for "..
-				  "hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), name );
+				  "hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), _name );
 				error(err, 0);
 			end
 			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key"), v:getAttribute("modifier") );
