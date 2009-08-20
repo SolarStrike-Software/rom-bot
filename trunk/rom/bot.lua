@@ -203,6 +203,16 @@ function main()
 	settings.loadProfile(load_profile_name);
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 
+	-- onBotStart event
+	-- possibility for users to overwrite profile settings
+		if( type(settings.profile.events.onBotStart) == "function" ) then
+			local status,err = pcall(settings.profile.events.onBotStart);
+			if( status == false ) then
+				local msg = sprintf("onBotStart error: %s", err);
+				error(msg);
+			end
+		end
+
 	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
 		__WPL = CWaypointListWander();
 		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);

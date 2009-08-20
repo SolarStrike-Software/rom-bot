@@ -70,6 +70,7 @@ settings_default = {
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
 			onDeath = function () pauseOnDeath(); end,
+			onBotStart = nil,
 			onLeaveCombat = nil,
 			onSkillCast = nil,
 		}
@@ -349,6 +350,17 @@ function settings.loadProfile(_name)
 		end
 	end
 
+	local loadOnBotStartEvent = function(node)
+		local luaCode = tostring(node:getValue());
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onBotStart = loadstring(luaCode);
+			if( type(settings.profile.events.onBotStart) ~= "function" ) then
+				settings.profile.events.onBotStart = nil;
+			end;
+		end
+	end
+
 	local loadOnDeathEvent = function(node)
 		local luaCode = tostring(node:getValue());
 
@@ -523,6 +535,8 @@ function settings.loadProfile(_name)
 			loadSkills(v);
 		elseif( string.lower(name) == "friends" ) then
 			loadFriends(v);
+		elseif( string.lower(name) == "onbotstart" ) then
+			loadOnBotStartEvent(v);
 		elseif( string.lower(name) == "ondeath" ) then
 			loadOnDeathEvent(v);
 		elseif( string.lower(name) == "onleavecombat" ) then
