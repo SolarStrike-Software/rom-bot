@@ -90,7 +90,7 @@ function check_double_key_settings( _name, _key, _modifier )
 		    v.modifier == _modifier ) then
 				local modname, keyname;
 				if( v.modifier ) then modname = getKeyName(v.modifier); end;
-				if( v.key ) then keyname = getKeyName(v.modifier); end;
+				if( v.key ) then keyname = getKeyName(v.key); end;
 
 				local errstr = sprintf("Error: You assigned the key \'%s %s\' double: for \'%s\' and for \'%s\'.\n",
 					tostring(modname), tostring(keyname), v.name, _name) .. "Please check your settings!";
