@@ -8,7 +8,7 @@
 		<option name="POTION_COOLDOWN"    value="15" />
 
 		<!-- Combat options -->
-		<option name="COMBAT_TYPE"        value="" />	<!-- Choose ranged/melee if not using class default -->
+		<option name="COMBAT_TYPE"        value="" />	<!-- leave empty or choose ranged/melee if not using class default -->
 		<option name="COMBAT_RANGED_PULL" value="true" /> <!-- only important for melees -->
 		<option name="COMBAT_DISTANCE"    value="200" />
 		<option name="MAX_FIGHT_TIME"     value="15" />	<!-- Max time without damage before break -->

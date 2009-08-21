@@ -28,7 +28,7 @@ settings_default = {
 			COMBAT_RANGED_PULL = "true",	-- only for melee classes 
 			COMBAT_DISTANCE = 200,
 			ANTI_KS = true,
-			WAYPOINTS = "myWaypoints.xml",
+			WAYPOINTS = "demo.xml",
 			RETURNPATH = nil,
 			PATH_TYPE = "waypoints",
 			WANDER_RADIUS = 500,
@@ -231,6 +231,7 @@ function settings.load()
 				TURNRIGHT = "ROTATE_RIGHT",
 				STRAFELEFT = "STRAFF_LEFT",
 				STRAFERIGHT = "STRAFF_RIGHT",
+				JUMP = "JUMP",
 				TARGETNEARESTENEMY = "TARGET",
 				TARGETNEARESTFRIEND = "TARGET_FRIEND",	
 			};
@@ -267,6 +268,10 @@ function settings.load()
 					end
 
 					check_double_key_settings(hotkeyName, keyname, modname );
+				else
+					local err = sprintf("Error: There is no ingame hotkey for \'%s\'. "..
+					  "Please set ingame a valid key.", bindingName);
+					error(err, 0);
 				end
 			end
 		end
