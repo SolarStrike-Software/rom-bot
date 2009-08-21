@@ -83,6 +83,7 @@ settings = settings_default;
 -- check if keys are double assigned or empty
 check_keys = { };
 function check_double_key_settings( _name, _key, _modifier )
+	local keyname, modname;
 
 	if( _key == nil) then
 		cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
@@ -90,15 +91,17 @@ function check_double_key_settings( _name, _key, _modifier )
 	end
 
 	-- check if all keys are valid VK
-	if( _modifier ~= nil and key[_modifier]  == nil ) then
-		cprintf(cli.yellow, "Error: The modifier \'%s\' for \'%s\' is not a "..
-		"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n", _modifier, _name);
-		error("Please check your settings!", 0);
+	if( _modifier  ) then
+		if( key[_modifier]  == nil ) then
+			cprintf(cli.yellow, "Error: The modifier \'%s\' for \'%s\' is not a "..
+			"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n", _modifier, _name);
+			error("Please check your settings!", 0);
+		end
 	end;
 
 	for i,v in pairs(check_keys) do
-		if( v.key      == _key  and
-		    v.modifier == _modifier ) then
+		if( (_key ~= nil and v.key == _key)  and
+		    (_modifier ~= nil and v.modifier == _modifier) ) then
 			local modname;
 
 			if( v.modifier ) then 
@@ -116,15 +119,13 @@ function check_double_key_settings( _name, _key, _modifier )
 			error(errstr, 0);
 		end
 	end;
+
 	-- check the using of modifiers
 	if( _modifier ~= nil) then
-
-		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
-		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
+		cprintf(cli.yellow, "Due to technical reasons, we don't support " ..
+		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
 		   "Please change your hotkey %s-%s for \'%s\'\n", 
-		   getKeyName(key[_modifier]), 
-		   getKeyName(key[_key]), 
-		   _name);
+		   _modifier, _key, _name);
 		   
 		   -- only a warning for TARGET_FRIEND / else an error
 		   if(_name == "TARGET_FRIEND") then
@@ -140,7 +141,6 @@ function check_double_key_settings( _name, _key, _modifier )
 	tmp.key  = _key;
 	tmp.modifier  = _modifier;	
 	table.insert(check_keys, tmp);	
-
 end
 
 function settings.load()
@@ -257,8 +257,16 @@ function settings.load()
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
 					end
 					
-					check_double_key_settings( hotkeyName, settings.hotkeys[hotkeyName].key, 
-					  settings.hotkeys[hotkeyName].modifier );
+					local keyname, modname;
+					if( settings.hotkeys[hotkeyName].key ) then
+						keyname = "VK_" .. string.gsub(getKeyName(settings.hotkeys[hotkeyName].key), "Ctrl", "CONTROL");
+					end
+
+					if( settings.hotkeys[hotkeyName].modifier ) then
+						modname = "VK_" .. string.gsub(getKeyName(settings.hotkeys[hotkeyName].modifier), "Ctrl", "CONTROL");
+					end
+
+					check_double_key_settings(hotkeyName, keyname, modname );
 				end
 			end
 		end
@@ -359,6 +367,7 @@ function settings.loadProfile(_name)
 				  "hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), _name );
 				error(err, 0);
 			end
+
 			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key"), v:getAttribute("modifier") );
 		end
 	end
