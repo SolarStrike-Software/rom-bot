@@ -15,6 +15,8 @@ CPlayer = class(CPawn);
 
 function CPlayer:harvest( _second_try )
 	if( foregroundWindow() ~= getWin() ) then
+		cprintf(cli.yellow, "The RoM window have to be in the foreground "..
+		"to be able to use the harvesting function. We can't harvest now!\n");
 		return;
 	end
 
@@ -598,7 +600,7 @@ function CPlayer:fight()
 	end;
 
 	self.Fights = self.Fights + 1;		-- count our fights
-	cprintf(cli.green, language[27], self.Fights, os.difftime(os.time(), self.BotStartTime)/60);	-- Fight finished. Target dead/lost
+	cprintf(cli.green, language[27], self.Fights, os.difftime(os.time(), self.BotStartTime_nr)/60);	-- Fight finished. Target dead/lost
 	self.Fighting = false;
 end
 
