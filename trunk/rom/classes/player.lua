@@ -598,7 +598,7 @@ function CPlayer:fight()
 	end;
 
 	self.Fights = self.Fights + 1;		-- count our fights
-	cprintf(cli.green, language[27]);	-- Fight finished. Target dead/lost
+	cprintf(cli.green, language[27], self.Fights, os.difftime(os.time(), self.BotStartTime)/60);	-- Fight finished. Target dead/lost
 	self.Fighting = false;
 end
 
