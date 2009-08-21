@@ -79,11 +79,9 @@ settings_default = {
 
 settings = settings_default;
 
-
--- check if keys are double assigned or empty
-check_keys = { };
-function check_double_key_settings( _name, _key, _modifier )
-	local keyname, modname;
+check_keys = { name = { } };
+function check_key_settings( _name, _key, _modifier)
+-- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
 	if( _key == nil) then
 		local msg = sprintf("Error: The key for \'%s\' is empty!\nPlease check your settings!", _name);
@@ -91,7 +89,15 @@ function check_double_key_settings( _name, _key, _modifier )
 	end
 
 	-- check if all keys are valid VK
-	if( _modifier  ) then
+	if( _key ) then
+		if( key[_key]  == nil ) then
+			local msg = sprintf("Error: The hotkey \'%s\' for \'%s\' is not a "..
+			"valid key!\nPlease check your settings!", _key, _name);
+			error(msg, 0);
+		end
+	end;
+
+	if( _modifier ) then
 		if( key[_modifier]  == nil ) then
 			local msg = sprintf("Error: The modifier \'%s\' for \'%s\' is not a "..
 			"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\nPlease check your settings!", _modifier, _name);
@@ -99,13 +105,38 @@ function check_double_key_settings( _name, _key, _modifier )
 		end
 	end;
 
+	-- now we check for double key settings
+	-- we translate the strings "VK..." to the VK numbers
+	_key = key[_key];
+	_modifier = key[_modifier];
+
+	-- check the using of modifiers
+	-- they are not usable at the moment
+	if( _modifier ~= nil) then
+		local msg = sprintf("Due to technical reasons, we don't support " ..
+			"modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
+			"Please change your hotkey %s-%s for \'%s\'\n", 
+			getKeyName(_modifier), getKeyName(_key), _name);
+
+		-- only a warning for TARGET_FRIEND / else an error
+		if(_name == "TARGET_FRIEND") then
+			cprintf(cli.yellow, msg ..
+			"You can't use the player:target_NPC() function until changed!\n");
+		else
+			error(msg .. "Please check your settings!", 0);
+		end
+	end
+
+
+	-- check for double key settings
 	for i,v in pairs(check_keys) do
-		if( (_key ~= nil and v.key == _key)  and
-		    (_modifier ~= nil and v.modifier == _modifier) ) then
+		if( v.name ~= _name and	-- because we load same keys from settings.lua and bindings.txt
+		    v.key == _key  and
+		    v.modifier == _modifier ) then
 			local modname;
 
 			if( v.modifier ) then 
-				modname = getKeyName(key[v.modifier]).."+";
+				modname = getKeyName(v.modifier).."+";
 			else
 				modname = "";
 			end;
@@ -113,35 +144,18 @@ function check_double_key_settings( _name, _key, _modifier )
 			local errstr = sprintf("Error: You assigned the key \'%s%s\' "..
 			  "double: for \'%s\' and for \'%s\'.\n",
 				modname, 
-				getKeyName(key[v.key]), 
+				getKeyName(v.key), 
 				v.name, _name) .. 
 				"Please check your settings!";
 			error(errstr, 0);
 		end
 	end;
 
-	-- check the using of modifiers
-	if( _modifier ~= nil) then
-		local msg = sprintf("Due to technical reasons, we don't support " ..
-			"modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
-			"Please change your hotkey %s-%s for \'%s\'\n", 
-			_modifier, _key, _name);
-		   
-			-- only a warning for TARGET_FRIEND / else an error
-			if(_name == "TARGET_FRIEND") then
-				cprintf(cli.yellow, msg ..
-				"You can't use the player:target_NPC() function until changed!\n");
-		   else
-				error(msg .. "Please check your settings!", 0);
-		   end
-	end
+	check_keys[_name] = {};
+	check_keys[_name].name = _name;
+	check_keys[_name].key = _key;
+	check_keys[_name].modifier = _modifier;
 
-	
-	local tmp = {};
-	tmp.name = _name;
-	tmp.key  = _key;
-	tmp.modifier  = _modifier;	
-	table.insert(check_keys, tmp);	
 end
 
 function settings.load()
@@ -163,7 +177,9 @@ function settings.load()
 				error(err, 0);
 			end
 
-			check_double_key_settings( v:getAttribute("description"), v:getAttribute("key"), v:getAttribute("modifier") );
+			check_key_settings( v:getAttribute("description"),
+			  v:getAttribute("key"), 
+			  v:getAttribute("modifier") );
 		end
 	end
 
@@ -192,7 +208,7 @@ function settings.load()
 			userprofilePath .. "\\Mijn documenten\\", -- Dutch
 			userprofilePath .. "\\Moje dokumenty\\", -- Polish
 			userprofilePath .. "\\Mis documentos\\", -- Spanish
---			"F:\\privat\\",
+			"F:\\privat\\",
 		};
 
 		-- Select the first path that exists
@@ -255,20 +271,12 @@ function settings.load()
 
 						settings.hotkeys[hotkeyName].key = key["VK_" .. parts[2]];
 						settings.hotkeys[hotkeyName].modifier = key["VK_" .. parts[1]];
+						check_key_settings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] );
 					else
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
+						check_key_settings( hotkeyName, "VK_" .. bindings[bindingName].key1 );
 					end
 					
-					local keyname, modname;
-					if( settings.hotkeys[hotkeyName].key ) then
-						keyname = "VK_" .. string.gsub(getKeyName(settings.hotkeys[hotkeyName].key), "Ctrl", "CONTROL");
-					end
-
-					if( settings.hotkeys[hotkeyName].modifier ) then
-						modname = "VK_" .. string.gsub(getKeyName(settings.hotkeys[hotkeyName].modifier), "Ctrl", "CONTROL");
-					end
-
-					check_double_key_settings(hotkeyName, keyname, modname );
 				else
 					local err = sprintf("Error: There is no ingame hotkey for \'%s\'. "..
 					  "Please set ingame a valid key.", bindingName);
@@ -291,6 +299,7 @@ function settings.load()
 	-- check ingame settings
 	-- only if we can find the bindings.txt file
 	local function check_ingame_settings( _name, _ingame_key)
+	-- no more needed, because we take the keys from the file if we found the file
 		
 		if( not bindings ) then		-- no bindings.txt file loaded
 			return
@@ -373,7 +382,10 @@ function settings.loadProfile(_name)
 				error(err, 0);
 			end
 
-			check_double_key_settings( v:getAttribute("name"), v:getAttribute("key"), v:getAttribute("modifier") );
+			check_key_settings(v:getAttribute("name"),
+			  v:getAttribute("key"), 
+			  v:getAttribute("modifier") );
+
 		end
 	end
 
@@ -440,7 +452,9 @@ function settings.loadProfile(_name)
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
 
-			check_double_key_settings( v:getAttribute("name"), v:getAttribute("hotkey") );
+			check_key_settings( v:getAttribute("name"),
+			  v:getAttribute("hotkey"), 
+			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
 			local priority, maxhpper, inbattle, pullonly, maxuse
