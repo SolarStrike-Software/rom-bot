@@ -86,16 +86,16 @@ function check_double_key_settings( _name, _key, _modifier )
 	local keyname, modname;
 
 	if( _key == nil) then
-		cprintf(cli.yellow, "Error: The key for \'%s\' is empty!\n", _name);
-		error("Please check your settings!", 0);
+		local msg = sprintf("Error: The key for \'%s\' is empty!\nPlease check your settings!", _name);
+		error(msg, 0);
 	end
 
 	-- check if all keys are valid VK
 	if( _modifier  ) then
 		if( key[_modifier]  == nil ) then
-			cprintf(cli.yellow, "Error: The modifier \'%s\' for \'%s\' is not a "..
-			"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n", _modifier, _name);
-			error("Please check your settings!", 0);
+			local msg = sprintf("Error: The modifier \'%s\' for \'%s\' is not a "..
+			"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\nPlease check your settings!", _modifier, _name);
+			error(msg, 0);
 		end
 	end;
 
@@ -122,16 +122,17 @@ function check_double_key_settings( _name, _key, _modifier )
 
 	-- check the using of modifiers
 	if( _modifier ~= nil) then
-		cprintf(cli.yellow, "Due to technical reasons, we don't support " ..
-		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
-		   "Please change your hotkey %s-%s for \'%s\'\n", 
-		   _modifier, _key, _name);
+		local msg = sprintf("Due to technical reasons, we don't support " ..
+			"modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
+			"Please change your hotkey %s-%s for \'%s\'\n", 
+			_modifier, _key, _name);
 		   
-		   -- only a warning for TARGET_FRIEND / else an error
-		   if(_name == "TARGET_FRIEND") then
-		   	cprintf(cli.yellow, "You can't use the player:target_NPC() function until changed!\n");
+			-- only a warning for TARGET_FRIEND / else an error
+			if(_name == "TARGET_FRIEND") then
+				cprintf(cli.yellow, msg ..
+				"You can't use the player:target_NPC() function until changed!\n");
 		   else
-		   	error("Please check your settings!", 0);
+				error(msg .. "Please check your settings!", 0);
 		   end
 	end
 
@@ -296,11 +297,10 @@ function settings.load()
 		end;
 		
 		if( settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
-		    settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
-			cprintf(cli.yellow, "Your bot settings for hotkey \'%s\' in settings.xml "..
-			   "don't match your RoM ingame keyboard settings.\n",
-			        _name);
-			error("Please check your settings!", 0);
+		settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
+			local msg = sprintf("Your bot settings for hotkey \'%s\' in settings.xml " ..
+			"don't match your RoM ingame keyboard settings.\nPlease check your settings!", _name);
+			error(msg, 0);
 		end
 	end
 
@@ -462,40 +462,43 @@ function settings.loadProfile(_name)
 			    v:getAttribute("type")      or
 			    v:getAttribute("target")    or
 			    v:getAttribute("casttime") ) then
-			    	cprintf(cli.yellow, "The options \'mana\', \'manainc\', \'rage\', "..
-			    	   "\'energy\', \'concentration\', \'range\', "..
-			    	   "\'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' "..
-			    	   "are no valid options for your skill \'%s\' in your profile \'%s.xml\'. "..
-			    	   "Please delete them and restart!\n", name, _name);
-			    	   error("Bot finished due of errors above.\n", 0);
+					local msg = sprintf("The options \'mana\', \'manainc\', \'rage\', " ..
+					"\'energy\', \'concentration\', \'range\', " ..
+					"\'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' " ..
+					"are no valid options for your skill \'%s\' in your profile \'%s.xml\'. " ..
+					"Please delete them and restart!\n", name, _name);
+
+					error(msg, 0);
 			end;
 			if( v:getAttribute("modifier") ) then
-			    	cprintf(cli.yellow, "The options \'modifier\' "..
-			    	  "for your skill \'%s\' in your profile \'%s.xml\' "..
-			    	  "is not supported at the moment. "..
-			    	  "Please delete it and restart!\n", name, _name);
-				error("Bot finished due of errors above.\n", 0);
+				local msg = sprintf("The options \'modifier\' " ..
+			    "for your skill \'%s\' in your profile \'%s.xml\' " ..
+			    "is not supported at the moment. " ..
+			    "Please delete it and restart!\n", name, _name);
+
+				error(msg, 0);
 			end;
 
 			if( name == nil) then
-			    	cprintf(cli.yellow, "You defined an \'empty\' skill name in "..
-			    	  "your profile \'%s.xml\'. Please delete or correct "..
-			    	  "that line!\n", _name);
-				error("Bot finished due of errors above.\n", 0);
+				local msg = sprintf("You defined an \'empty\' skill name in " ..
+				"your profile \'%s.xml\'. Please delete or correct " ..
+				"that line!\n", _name);
+				error(msg, 0);
 			end;
 
 			if( inbattle ~= nil ) then
 				if( inbattle == "true" or 
-				    inbattle == true ) then
+					inbattle == true ) then
 					inbattle = true;
 				elseif( inbattle == "false"  or
 					inbattle == false ) then
 					inbattle = false;
 				else
-						cprintf(cli.yellow, "You defined an wrong option inbattle=\'%s\' at skill %s in "..
-						  "your profile \'%s.xml\'. Please delete or correct "..
-						  "that line!\n", inbattle, name, _name);
-					error("Bot finished due of errors above.\n", 0);
+					local msg = sprintf("You defined an wrong option inbattle=\'%s\' at skill %s in " ..
+					"your profile \'%s.xml\'. Please delete or correct " ..
+					"that line!\n", inbattle, name, _name);
+
+					error(msg, 0);
 				end;
 			end
 
@@ -504,10 +507,11 @@ function settings.loadProfile(_name)
 					pullonly == true ) then
 					pullonly = true;
 				else
-						cprintf(cli.yellow, "You defined an wrong option pullonly=\'%s\' at skill %s in "..
-						  "your profile \'%s.xml\'. Only \'true\' is possible. Please delete or correct "..
-						  "that line!\n", pullonly, name, _name);
-					error("Bot finished due of errors above.\n", 0);
+					local msg = sprintf("You defined an wrong option pullonly=\'%s\' at skill %s in "..
+					"your profile \'%s.xml\'. Only \'true\' is possible. Please delete or correct "..
+					"that line!\n", pullonly, name, _name);
+
+					error(msg, 0);
 				end;
 			end
 
