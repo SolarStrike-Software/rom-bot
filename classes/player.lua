@@ -15,8 +15,7 @@ CPlayer = class(CPawn);
 
 function CPlayer:harvest( _second_try )
 	if( foregroundWindow() ~= getWin() ) then
-		cprintf(cli.yellow, "The RoM window have to be in the foreground "..
-		"to be able to use the harvesting function. We can't harvest now!\n");
+		cprintf(cli.yellow, language[94]);
 		return;
 	end
 
@@ -67,26 +66,27 @@ function CPlayer:harvest( _second_try )
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
 					and database.nodes[mousePawn.Id] ) then
-					return mousePawn.Address, mx, my;
+					return mousePawn.Address, mx, my, mousePawn.Id;
 				end
 			end
 		end
 		keyboardRelease(key.VK_SHIFT);
 
 
-		return 0, nil, nil;
+		return 0, nil, nil, 0;
 	end
 
 
 	detach(); -- Remove attach bindings
 	local mouseOrigX, mouseOrigY = mouseGetPos();
-	local foundHarvestNode, nodeMouseX, nodeMouseY = scan();
+	local foundHarvestNode, nodeMouseX, nodeMouseY, hf_node_id = scan();
 	local hf_found = false;
 	local startHarvestTime = os.time();
 
 	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
 		-- We found something. Lets harvest it.
 		hf_found = true;
+		cprintf(cli.green, language[95], database.nodes[hf_node_id].Name);		-- we found ...
 		
 		-- If out of distance, move and rescan
 		local mousePawn = CPawn(foundHarvestNode);
@@ -168,8 +168,8 @@ function CPlayer:harvest( _second_try )
 	if( hf_found == true   and
 	    not _second_try    and 			-- only one extra harverst try
 	    os.difftime(os.time(), startHarvestTime) < 5 ) then
-	    	yrest(2000);
 		cprintf(cli.green, language[81]);		-- Unexpected interruption at harvesting begin
+			yrest(5000);
 		player:harvest( true );
 	end
 
@@ -382,7 +382,7 @@ function CPlayer:fight()
 	   settings.profile.options.COMBAT_RANGED_PULL == true and
 	   self.Battling ~= true ) then
 		self.ranged_pull = true;
-		cprintf(cli.green, "We begin fight with ranged pulling.\n");	-- we start with ranged pulling
+		cprintf(cli.green, language[96]);	-- we start with ranged pulling
 	end
 
 	-- normal melee attack only if ranged pull isn't used
@@ -423,16 +423,16 @@ function CPlayer:fight()
 		-- check if pulling phase should be finished
 		if( self.ranged_pull == true ) then
 			if( dist <= settings.options.MELEE_DISTANCE ) then
-				cprintf(cli.green, "Ranged pulling finished, mob in melee distance.\n");
+				cprintf(cli.green, language[97]); -- Ranged pulling finished, mob in melee distance
 				self.ranged_pull = false;
 			elseif( os.difftime(os.time(), self.aggro_start_time) > 3 and  
 			  self.aggro_start_time ~= 0 ) then
-				cprintf(cli.green, "Ranged pulling after 3 sec wait finished.\n");
+				cprintf(cli.green, language[98]); -- Ranged pulling after 3 sec wait finished
 				self.ranged_pull = false;
 			elseif( dist >=  hf_start_dist-45 and	-- mob not really coming closer
 			  os.difftime(os.time(), self.aggro_start_time) > 1  and
 			  self.aggro_start_time ~= 0 ) then
-				cprintf(cli.green, "Ranged pulling finished. Mob not really moving.\n");			      
+				cprintf(cli.green, language[99]); -- Ranged pulling finished. Mob not really moving
 				self.ranged_pull = false;
 			end;
 		end
@@ -642,8 +642,7 @@ function CPlayer:loot()
 	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
 	    dist > 25 )  then
-		cprintf(cli.yellow, "We didn't move to the loot!? Please be sure you "..
-		"set ingame the standard attack to hotkey %s.\n", 
+		cprintf(cli.yellow, language[100], -- We didn't move to the loot!? 
 		getKeyName(settings.profile.hotkeys.ATTACK.key) );	
 	end;
 
