@@ -54,37 +54,19 @@ function main()
 	cprintf(cli.lightblue, versionMsg .. "\n");
 	logMessage(versionMsg);
 
-	-- Load "english" first, to fill in any gaps in the users' set language.
-	local function setLanguage(name)
-		include(getExecutionPath() .. "/language/" .. name .. ".lua");
-	end
-
-	local lang_base = {};
-	setLanguage("english");
-	for i,v in pairs(language) do lang_base[i] = v; end;
-	setLanguage(settings.options.LANGUAGE);
-	for i,v in pairs(lang_base) do
-		if( language[i] == nil ) then
-			language[i] = v;
-		end
-	end;
-	lang_base = nil; -- Not needed anymore, destroy it.
-	logMessage("Language: " .. settings.options.LANGUAGE);
-
 	database.load();
 
 	attach(getWin());
 
 	if( not checkExecutableCompatible() ) then
 		cprintf(cli.yellow, "!! Notice: !!\n");
-		printf("The game may have been updated or altered.\n" ..
-			"It is recommended that you run rom/update.lua\n\n");
+		printf(language[43]);	-- is recommended that you run rom/update.lua
 
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
 	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-	printf("Attempt to read playerAddress\n");
+	printf(language[44]);	-- Attempt to read playerAddress
 
 	if( playerAddress == nil ) then playerAddress = 0; end;
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
@@ -106,7 +88,7 @@ function main()
 	printf("playerTarget: 0x%X\n", player.TargetPtr);
 
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
-	cprintf(cli.turquoise, "RoM windows size is %dx%d, upper left corner at %d,%d\n", hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
+	cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
 	
 	-- local functions to convert string (e.g. player name) from UTF-8 to ASCII

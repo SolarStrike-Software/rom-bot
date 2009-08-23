@@ -72,12 +72,11 @@ function getWin()
 		local winlist = findWindowList("Runes of Magic", "Radiant Arcana");
 
 		if( #winlist == 0 ) then
-			error("RoM window not found! RoM must be running first.", 0);
+			error(language[47], 0);	-- RoM window not found
 		end
 
 		if( #winlist > 1 ) then
-			cprintf(cli.yellow, "Multiple RoM windows found. Keep the RoM "
-				.. "window to attach this bot to on top, and press %s.\n",
+			cprintf(cli.yellow, language[45],	-- Multiple RoM windows found
 				getKeyName(skey));
 
 			while( not keyPressed(skey) ) do
@@ -154,8 +153,7 @@ local function releaseKeys()
 end
 
 function pauseCallback()
-	local msg = sprintf("Paused. (%s) to continue, (CTRL+L) exit to shell, (CTRL+C) quit\n",
-		getKeyName(getStartKey()));
+	local msg = sprintf(language[46], getKeyName(getStartKey()));	--  to continue, (CTRL+L) exit ...
 		
 	-- If settings haven't been loaded...skip the cleanup.
 	if( not settings ) then
