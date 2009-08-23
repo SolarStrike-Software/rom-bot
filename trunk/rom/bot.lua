@@ -176,22 +176,17 @@ function main()
 			file:close();
 			load_profile_name = new_profile_name;
 		else
-			cprintf(cli.yellow,"Due to technical reasons, we can't use the character/profile name \'%s\' as "..
-			        "a profile name. Please use profile name \'%s.xml\' instead or start "..
-			        "the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\n", 
+			local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
 			        load_profile_name, new_profile_name);
-			error("Bot finished due of errors above.\n", 0);
+			error(msg, 0);
 		end;
 	else				
 
 		-- check if profile exist
 		local file = io.open(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" , "r");
 		if( not file ) then	
-			cprintf(cli.yellow,"We can't find your profile \'%s.xml'\. "..
-			        "Please create a valid profile within the folder \'rom\\profiles\' "..
-			        "or start the bot with a forced profile: \'rom\\bot.lua "..
-			        "profile:xyz\'\n", load_profile_name );
-			        error("Bot finished due of errors above.\n", 0);
+			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
+			error(msg, 0);
 		else
 			file:close();
 		end
@@ -202,6 +197,7 @@ function main()
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
+	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings
@@ -301,9 +297,7 @@ function main()
 
 			-- msg how to activate automatic resurrection
 			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
-				cprintf(cli.yellow, "If you want to use automatic resurrection " ..
-				   "then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' "..
-				   "within your profile.\n");
+				cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection
 			end;
 
 			local hf_res_from_priest; 		-- for check if priest resurrect
@@ -311,12 +305,12 @@ function main()
 				cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 				
 				-- try mouseclick to reanimate
-				cprintf(cli.green, "We will try to resurrect in 10 seconds.\n");  
+				cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
 				yrest(10000);
 				
 				-- try resurrect at the place, click button far right
 				if ( foregroundWindow() == getWin() ) then
-					cprintf(cli.green, "Try to resurrect at the place of death ...\n");  
+					cprintf(cli.green, language[105]);  -- resurrect at the place of death
 					player:mouseclickL(1276, 272, 1920, 1180);	-- mouseclick to resurrec
 					yrest(3000);		-- wait time after resurrec ( no load screen)
 					player:update();
@@ -329,7 +323,7 @@ function main()
 				-- if still death, click button more left, normal resurrect at spawnpoint
 				if ( not player.Alive  and
 				     foregroundWindow() == getWin() ) then
-					cprintf(cli.green, "Try to resurrect at the spawnpoint ...\n");  
+					cprintf(cli.green, language[106]);  -- resurrect at the spawnpoint
 					player:mouseclickL(875, 272, 1920, 1180);	-- mouseclick to resurrec
 					-- wait time after resurrec (loading screen), needs more time on slow PC's
 					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
@@ -339,7 +333,7 @@ function main()
 				-- if still death, try macro if one defined
 				if ( not player.Alive  and 
 				     settings.profile.hotkeys.RES_MACRO.key ) then
-					cprintf(cli.green, "Try to use the ingame resurrect macro ...\n");  
+					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro 
 					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 					-- wait time after resurrec (loading screen), needs more time on slow PC's
 					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
@@ -347,15 +341,12 @@ function main()
 				end;
 
 				if( not player.Alive ) then
-					cprintf(cli.yellow, "You are still dead. There "..
-					  "is a problem with automatic resurrection." ..
-					  " Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
+					cprintf(cli.yellow,  language[108], -- still death, did you set your macro?
 					  getKeyName(settings.profile.hotkeys.RES_MACRO.key));
 				end;
 
 				-- death counter message
-				cprintf(cli.green, "You have died %s times from at most %s "..
-				   "deaths/automatic resurrections.\n",
+				cprintf(cli.green, language[109],	-- You have died %s times 
 				   player.Death_counter, settings.profile.options.MAX_DEATHS);
 				
 				-- check maximal death if automatic mode
@@ -371,16 +362,6 @@ function main()
 				end;
 
 			end
-
-			-- print out the reasons for not automatic returning
---			if( not settings.profile.hotkeys.RES_MACRO ) then
---				cprintf(cli.yellow, "You don't have a RES_MACRO defined in your profile! "..
---				"Hence no automatic returning.\n");
---			end
---			if(__RPL == nil) then
---				cprintf(cli.yellow, "You don't have a defined return path in your profile. "..
---				"Hence no automatic returning.\n");
---			end
 
 			-- use/compare return path if defined, if not use normal one and give a warning
 			-- wen need to search the closest, hence we also accept resurrection at the death place
@@ -400,15 +381,14 @@ function main()
 					cprintf(cli.yellow, language[12]);	-- Starting with return path
 				end;
 			else
-				cprintf(cli.yellow, "You don't have a defined return path!!! We use the "..
-				"normal waypoint file \'%s\' instead. Please check that.\n", __WPL:getFileName() );
+				cprintf(cli.yellow, language[111], __WPL:getFileName() ); -- don't have a defined return path
 			end;
 			
 			-- not using returnpath, so we use the normal waypoint path
 			if( player.Returning == nil) then
 				player.Returning = false;
 				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
-				cprintf(cli.green, "Using normal waypoint file \'%s\' after resurrection.\n", 
+				cprintf(cli.green, language[112], 	-- sing normal waypoint file
 				   __WPL:getFileName() );
 			end
 
@@ -451,8 +431,7 @@ function main()
 		while(player.Battling) do
 
 			if( player.Current_waypoint_type == WPT_RUN ) then	-- runing mode, don't wait for target
-				cprintf(cli.green, "Waypoint type RUN, we don't stop "..
-				  "and don't fight back\n");	-- Waiting on aggressive enemies.
+				cprintf(cli.green, anguage[113]);	-- we don't stop and don't fight back
 				break;
 			end;
 			
@@ -576,7 +555,7 @@ function main()
 						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position
 						   player.Unstick_counter, settings.profile.options.MAX_UNSTICK_TRIALS);
 					else
-						cprintf(cli.red, "Unsticking player... at position %d,%d. Trial %d.\n", 	-- unsticking player... at position
+						cprintf(cli.red, language[114], 	-- unsticking player... at position
 						   player.X, player.Z, player.Unstick_counter);
 					end
 					player:unstick();
