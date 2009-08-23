@@ -84,23 +84,21 @@ function check_key_settings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
 	if( _key == nil) then
-		local msg = sprintf("Error: The key for \'%s\' is empty!\nPlease check your settings!", _name);
+		local msg = sprintf(language[115], _name);	-- key for \'%s\' is empty!
 		error(msg, 0);
 	end
 
 	-- check if all keys are valid VK
 	if( _key ) then
 		if( key[_key]  == nil ) then
-			local msg = sprintf("Error: The hotkey \'%s\' for \'%s\' is not a "..
-			"valid key!\nPlease check your settings!", _key, _name);
+			local msg = sprintf(language[116], _key, _name);	-- The hotkey ... is not a valid key
 			error(msg, 0);
 		end
 	end;
 
 	if( _modifier ) then
 		if( key[_modifier]  == nil ) then
-			local msg = sprintf("Error: The modifier \'%s\' for \'%s\' is not a "..
-			"valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\nPlease check your settings!", _modifier, _name);
+			local msg = sprintf(language[117], _modifier, _name);	-- The modifier ... is not a valid key
 			error(msg, 0);
 		end
 	end;
@@ -113,17 +111,14 @@ function check_key_settings( _name, _key, _modifier)
 	-- check the using of modifiers
 	-- they are not usable at the moment
 	if( _modifier ~= nil) then
-		local msg = sprintf("Due to technical reasons, we don't support " ..
-			"modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. " ..
-			"Please change your hotkey %s-%s for \'%s\'\n", 
+		local msg = sprintf(language[118], -- we don't support modifiers
 			getKeyName(_modifier), getKeyName(_key), _name);
 
 		-- only a warning for TARGET_FRIEND / else an error
 		if(_name == "TARGET_FRIEND") then
-			cprintf(cli.yellow, msg ..
-			"You can't use the player:target_NPC() function until changed!\n");
+			cprintf(cli.yellow, msg .. language[119]);	-- can't use the player:target_NPC() function
 		else
-			error(msg .. "Please check your settings!", 0);
+			error(msg .. language[120], 0);	-- Please check your settings
 		end
 	end
 
@@ -141,12 +136,11 @@ function check_key_settings( _name, _key, _modifier)
 				modname = "";
 			end;
 
-			local errstr = sprintf("Error: You assigned the key \'%s%s\' "..
-			  "double: for \'%s\' and for \'%s\'.\n",
+			local errstr = sprintf(language[121],	-- assigned the key \'%s%s\' double
 				modname, 
 				getKeyName(v.key), 
 				v.name, _name) .. 
-				"Please check your settings!";
+				language[120];	-- Please check your settings
 			error(errstr, 0);
 		end
 	end;
@@ -173,7 +167,8 @@ function settings.load()
 			settings.hotkeys[ v:getAttribute("description") ].modifier = key[v:getAttribute("modifier")];
 
 			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf("settings.xml error: %s does not have a valid hotkey!", v:getAttribute("description"));
+				local err = sprintf(language[122],	-- does not have a valid hotkey!
+				  v:getAttribute("description"));
 				error(err, 0);
 			end
 
@@ -190,7 +185,7 @@ function settings.load()
 		end
 	end
 
-	-- load RoM keyboard bindings.txt file
+	-- Load RoM keyboard bindings.txt file
 	local function load_RoM_bindings_txt()
 		
 		local filename, file;
@@ -216,8 +211,9 @@ function settings.load()
 			local filename = v .. "Runes of Magic\\bindings.txt"
 			if( fileExists(filename) ) then
 				file = io.open(filename, "r");
-				cprintf(cli.green, "We read the hotkey settings from your "..
-				   "bindings.txt file %s instead of using the settings.lua file.\n", filename)
+				local tmp = filename;
+				-- no language variables, because to early
+				cprintf(cli.green, language[123], filename);	-- read the hotkey settings from your bindings.txt
 			end
 		end
 
@@ -278,8 +274,7 @@ function settings.load()
 					end
 					
 				else
-					local err = sprintf("Error: There is no ingame hotkey for \'%s\'. "..
-					  "Please set ingame a valid key.", bindingName);
+					local err = sprintf(language[124], bindingName);	-- no ingame hotkey for
 					error(err, 0);
 				end
 			end
@@ -307,8 +302,7 @@ function settings.load()
 		
 		if( settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
 		settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
-			local msg = sprintf("Your bot settings for hotkey \'%s\' in settings.xml " ..
-			"don't match your RoM ingame keyboard settings.\nPlease check your settings!", _name);
+			local msg = sprintf(language[125], _name);	-- settings.xml don't match your RoM ingame
 			error(msg, 0);
 		end
 	end
@@ -316,7 +310,7 @@ function settings.load()
 
 	function checkHotkeys(_name, _ingame_key)
 		if( not settings.hotkeys[_name] ) then
-			error("ERROR: Global hotkey not set: " .. _name, 0);
+			error(language[126] .. _name, 0);	-- Global hotkey not set
 		end
 		
 		-- check if settings.lua hotkeys match the RoM ingame settings
@@ -333,6 +327,24 @@ function settings.load()
 			loadOptions(v);
 		end
 	end
+
+	-- Load language files
+	-- Load "english" first, to fill in any gaps in the users' set language.
+	local function setLanguage(name)
+		include(getExecutionPath() .. "/language/" .. name .. ".lua");
+	end
+
+	local lang_base = {};
+	setLanguage("english");
+	for i,v in pairs(language) do lang_base[i] = v; end;
+	setLanguage(settings.options.LANGUAGE);
+	for i,v in pairs(lang_base) do
+		if( language[i] == nil ) then
+			language[i] = v;
+		end
+	end;
+	lang_base = nil; -- Not needed anymore, destroy it.
+	logMessage("Language: " .. settings.options.LANGUAGE);
 
 
 	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
@@ -377,8 +389,7 @@ function settings.loadProfile(_name)
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
 
 			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf("Profile error: Please set a valid key for "..
-				  "hotkey %s in your profile file \'%s.xml\'.", tostring(v:getAttribute("name")), _name );
+				local err = sprintf(language[127], tostring(v:getAttribute("name")), _name );	-- Please set a valid key
 				error(err, 0);
 			end
 
@@ -476,27 +487,17 @@ function settings.loadProfile(_name)
 			    v:getAttribute("type")      or
 			    v:getAttribute("target")    or
 			    v:getAttribute("casttime") ) then
-					local msg = sprintf("The options \'mana\', \'manainc\', \'rage\', " ..
-					"\'energy\', \'concentration\', \'range\', " ..
-					"\'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' " ..
-					"are no valid options for your skill \'%s\' in your profile \'%s.xml\'. " ..
-					"Please delete them and restart!\n", name, _name);
-
+					local msg = sprintf(language[128], name, _name);	-- are no valid options for your skill
 					error(msg, 0);
 			end;
 			if( v:getAttribute("modifier") ) then
-				local msg = sprintf("The options \'modifier\' " ..
-			    "for your skill \'%s\' in your profile \'%s.xml\' " ..
-			    "is not supported at the moment. " ..
-			    "Please delete it and restart!\n", name, _name);
+				local msg = sprintf(language[129], name, _name);	-- modifier not supported
 
 				error(msg, 0);
 			end;
 
 			if( name == nil) then
-				local msg = sprintf("You defined an \'empty\' skill name in " ..
-				"your profile \'%s.xml\'. Please delete or correct " ..
-				"that line!\n", _name);
+				local msg = sprintf(language[130], _name);	-- empty\' skill name
 				error(msg, 0);
 			end;
 
@@ -508,9 +509,7 @@ function settings.loadProfile(_name)
 					inbattle == false ) then
 					inbattle = false;
 				else
-					local msg = sprintf("You defined an wrong option inbattle=\'%s\' at skill %s in " ..
-					"your profile \'%s.xml\'. Please delete or correct " ..
-					"that line!\n", inbattle, name, _name);
+					local msg = sprintf(language[131], inbattle, name, _name);	-- wrong option inbattle
 
 					error(msg, 0);
 				end;
@@ -521,9 +520,7 @@ function settings.loadProfile(_name)
 					pullonly == true ) then
 					pullonly = true;
 				else
-					local msg = sprintf("You defined an wrong option pullonly=\'%s\' at skill %s in "..
-					"your profile \'%s.xml\'. Only \'true\' is possible. Please delete or correct "..
-					"that line!\n", pullonly, name, _name);
+					local msg = sprintf(language[132], pullonly, name, _name);	-- wrong option pullonly
 
 					error(msg, 0);
 				end;
