@@ -69,7 +69,7 @@ settings_default = {
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
-			onDeath = function () pauseOnDeath(); end,
+			onDeath = nil,
 			onLoad = nil,
 			onLeaveCombat = nil,
 			onSkillCast = nil,
