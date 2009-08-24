@@ -447,7 +447,7 @@ function settings.loadProfile(_name)
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			local err;
 			settings.profile.events.onSkillCast, err = loadstring(luaCode);
-			assert(settings.profile.events.onLeaveCombat, sprintf(language[151], "onSkillCast"));
+			assert(settings.profile.events.onSkillCast, sprintf(language[151], "onSkillCast"));
 
 			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
 				settings.profile.events.onSkillCast = nil;
