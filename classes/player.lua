@@ -873,7 +873,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		if( waypoint.Action and type(waypoint.Action) == "string" ) then
 			local actionchunk = loadstring(waypoint.Action);
-			assert( actionchunk );
+			assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );
 			actionchunk();
 		end
 	end

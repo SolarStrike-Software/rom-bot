@@ -14,7 +14,7 @@ language = {
 	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
 	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",	
-	
+
 	[20] = "Finished casting\n",
 	[21] = "Use %s: %s",
 	[22] = "Engaging enemy [%s] in combat.\n",
@@ -116,6 +116,6 @@ language = {
 	[139] = "...\n",
 	[140] = "...\n",
 	
-	
-	
+	[150] = "Failed to compile and run Lua code for waypoint #%d",
+	[151] = "Failed to compile and run Lua code for %s in character profile.",
 };

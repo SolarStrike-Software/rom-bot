@@ -109,5 +109,7 @@ language = {
 	[130] = "Sie haben eine \'leere\' F\132higkeit im Profil \'%s.xml\'. Bitte l\148schen oder berichtigen Sie diese Einstellung!\n",
 	[131] = "Sie haben eine falsche Einstellunge f\129r die Option inbattle=\'%s\' bei der F\132higkeit %s im Profil \'%s.xml\'. Bitte l\148schen oder berichtigen Sie diese Einstellung!\n",
 	[132] = "Sie haben eine falsche Einstellunge f\129r die Option pullonly=\'%s\' bei der F\132higkeit %s im Profil \'%s.xml\'. Nur \'true\' ist erlaubt. Bitte l\148schen oder berichtigen Sie diese Einstellung!\n",
-	
+
+	[150] = "Fehler beim kompilieren und Lua Code auszuf\129hren, f\129r Wegpunkt 1",
+	[151] = "Fehler zu kompilieren und zu Lua-Code f\129r% s ausführen Charakter-Profil.",
 };
