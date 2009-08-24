@@ -400,7 +400,7 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	local loadonLoadEvent = function(node)
+	local loadOnLoadEvent = function(node)
 		local luaCode = tostring(node:getValue());
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
@@ -417,8 +417,10 @@ function settings.loadProfile(_name)
 		local luaCode = tostring(node:getValue());
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onDeath = loadstring(luaCode);
-			assert(settings.profile.events.onLoad, sprintf(language[151], "onDeath"));
+			local err
+			settings.profile.events.onDeath, err = loadstring(luaCode);
+			
+			assert(settings.profile.events.onDeath, sprintf(language[151], "onDeath"));
 
 			if( type(settings.profile.events.onDeath) ~= "function" ) then
 				settings.profile.events.onDeath = nil;
@@ -431,7 +433,7 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onLeaveCombat = loadstring(luaCode);
-			assert(settings.profile.events.onLoad, sprintf(language[151], "onLeaveCombat"));
+			assert(settings.profile.events.onLeaveCombat, sprintf(language[151], "onLeaveCombat"));
 
 			if( type(settings.profile.events.onLeaveCombat) ~= "function" ) then
 				settings.profile.events.onLeaveCombat = nil;
@@ -443,8 +445,9 @@ function settings.loadProfile(_name)
 		local luaCode = tostring(node:getValue());
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onSkillCast = loadstring(luaCode);
-			assert(settings.profile.events.onLoad, sprintf(language[151], "onSkillCast"));
+			local err;
+			settings.profile.events.onSkillCast, err = loadstring(luaCode);
+			assert(settings.profile.events.onLeaveCombat, sprintf(language[151], "onSkillCast"));
 
 			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
 				settings.profile.events.onSkillCast = nil;
@@ -586,7 +589,7 @@ function settings.loadProfile(_name)
 		elseif( string.lower(name) == "friends" ) then
 			loadFriends(v);
 		elseif( string.lower(name) == "onload" ) then
-			loadonLoadEvent(v);
+			loadOnLoadEvent(v);
 		elseif( string.lower(name) == "ondeath" ) then
 			loadOnDeathEvent(v);
 		elseif( string.lower(name) == "onleavecombat" ) then
