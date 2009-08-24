@@ -68,6 +68,7 @@ function main()
 	while(running) do
 		local wpList = {};
 
+		settings.load();
 		local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 		player = CPlayer(playerPtr);
 		player:update();

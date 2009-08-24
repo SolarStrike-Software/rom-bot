@@ -405,6 +405,8 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onLoad = loadstring(luaCode);
+			assert(settings.profile.events.onLoad, sprintf(language[151], "onLoad"));
+
 			if( type(settings.profile.events.onLoad) ~= "function" ) then
 				settings.profile.events.onLoad = nil;
 			end;
@@ -416,6 +418,8 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onDeath = loadstring(luaCode);
+			assert(settings.profile.events.onLoad, sprintf(language[151], "onDeath"));
+
 			if( type(settings.profile.events.onDeath) ~= "function" ) then
 				settings.profile.events.onDeath = nil;
 			end;
@@ -427,6 +431,8 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onLeaveCombat = loadstring(luaCode);
+			assert(settings.profile.events.onLoad, sprintf(language[151], "onLeaveCombat"));
+
 			if( type(settings.profile.events.onLeaveCombat) ~= "function" ) then
 				settings.profile.events.onLeaveCombat = nil;
 			end;
@@ -438,6 +444,8 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onSkillCast = loadstring(luaCode);
+			assert(settings.profile.events.onLoad, sprintf(language[151], "onSkillCast"));
+
 			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
 				settings.profile.events.onSkillCast = nil;
 			end;
@@ -577,7 +585,7 @@ function settings.loadProfile(_name)
 			loadSkills(v);
 		elseif( string.lower(name) == "friends" ) then
 			loadFriends(v);
-		elseif( string.lower(name) == "onLoad" ) then
+		elseif( string.lower(name) == "onload" ) then
 			loadonLoadEvent(v);
 		elseif( string.lower(name) == "ondeath" ) then
 			loadOnDeathEvent(v);
