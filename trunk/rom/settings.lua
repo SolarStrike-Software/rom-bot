@@ -417,8 +417,7 @@ function settings.loadProfile(_name)
 		local luaCode = tostring(node:getValue());
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			local err
-			settings.profile.events.onDeath, err = loadstring(luaCode);
+			settings.profile.events.onDeath = loadstring(luaCode);
 			
 			assert(settings.profile.events.onDeath, sprintf(language[151], "onDeath"));
 
@@ -445,8 +444,7 @@ function settings.loadProfile(_name)
 		local luaCode = tostring(node:getValue());
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			local err;
-			settings.profile.events.onSkillCast, err = loadstring(luaCode);
+			settings.profile.events.onSkillCast= loadstring(luaCode);
 			assert(settings.profile.events.onSkillCast, sprintf(language[151], "onSkillCast"));
 
 			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
