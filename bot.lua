@@ -413,7 +413,7 @@ function main()
 		while(player.Battling) do
 
 			if( player.Current_waypoint_type == WPT_RUN ) then	-- runing mode, don't wait for target
-				cprintf(cli.green, anguage[113]);	-- we don't stop and don't fight back
+				cprintf(cli.green, language[113]);	-- we don't stop and don't fight back
 				break;
 			end;
 			
