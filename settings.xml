@@ -17,6 +17,6 @@
 		<option name="ENABLE_FIGHT_SLOW_TURN" value="false" />
 		<option name="MELEE_DISTANCE" value="45" />
 		<option name="LANGUAGE" value="english" />
-		<option name="DEBUG_ASSERT" value="false" />
+		<option name="DEBUGGING" value="false" />
 	</options>
 </settings>

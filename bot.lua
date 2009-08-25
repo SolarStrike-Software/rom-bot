@@ -66,7 +66,9 @@ function main()
 	end
 
 	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-	printf(language[44]);	-- Attempt to read playerAddress
+	if( settings.options.DEBUGGING ) then
+		printf(language[44]);	-- Attempt to read playerAddress
+	end
 
 	if( playerAddress == nil ) then playerAddress = 0; end;
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
@@ -80,12 +82,18 @@ function main()
 	if( cameraAddress == nil ) then cameraAddress = 0; end;
 
 	camera = CCamera(cameraAddress);
+	if( settings.options.DEBUGGING ) then
+		printf("[DEBUG] Cam X: %0.2f, Y: %0.2f, Z: %0.2f\n", camera.X, camera.Y, camera.Z);
+		printf("[DEBUG] Cam XU: %0.2f, YU: %0.2f, ZU: %0.2f\n", camera.XUVec, camera.YUVec, camera.ZUVec);
+	end
 
 	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
-	printf("mousePawn: 0x%X\n", mousePawn.Address);
 
-	printf("playerAddr: 0x%X\n", player.Address);
-	printf("playerTarget: 0x%X\n", player.TargetPtr);
+	if( settings.options.DEBUGGING ) then
+		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
+		printf("[DEBUG] playerTarget: 0x%X\n", player.TargetPtr);
+		printf("[DEBUG] mousePawn: 0x%X\n", mousePawn.Address);
+	end
 
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 	cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
@@ -104,7 +112,7 @@ function main()
 		found_all = 0;
 		for i,v in pairs(database.utf8_ascii) do
 			_str, found = convert_utf8_ascii_character( _str, v.ascii  );	-- replace special characters
-			found_all = found_all + found;			-- count replacements
+			found_all = found_all + found;									-- count replacements
 		end
 	
 		if( found_all > 0) then

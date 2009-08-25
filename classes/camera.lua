@@ -9,8 +9,6 @@ CCamera = class(
 		self.Y = 0;
 		self.Z = 0;
 
-		printf("self.Address: 0x%X\n", ptr);
-
 		if( self.Address ) then
 			self:update();
 		end
@@ -28,9 +26,6 @@ function CCamera:update()
 	self.X = debugAssert(memoryReadFloat(proc, self.Address + camX_offset), memerrmsg);
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + camY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + camZ_offset), memerrmsg);
-
-	printf("X: %0.2f, Y: %0.2f, Z: %0.2f\n", self.X, self.Y, self.Z);
-	printf("XU: %0.2f, YU: %0.2f, ZU: %0.2f\n", self.XUVec, self.YUVec, self.ZUVec);
 
 	if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
 	self.X == nil or self.Y == nil or self.Z == nil ) then
