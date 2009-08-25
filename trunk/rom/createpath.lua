@@ -17,6 +17,7 @@ p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
 p_wp_type = "";		-- type for normal waypoints 
 p_hp_type = "";		-- type for harvest waypoints		
 p_harvest_command = "player:harvest();";	-- harvest command
+p_targetNPC_command = "\n\t\tplayer:target_NPC(\"%s\");\n\t\tplayer:rest(4);\n\t";	-- target NPC command
 -- ********************************************************************
 -- End of Change parameter changes                                    *
 -- ********************************************************************
@@ -27,6 +28,7 @@ setStopKey(key.VK_END);
 
 wpKey = key.VK_NUMPAD1;		-- insert a movement point
 harvKey = key.VK_NUMPAD2;	-- insert a harvest point	
+targetNPCKey = key.VK_NUMPAD4;	-- insert a target a NPC and open dialog waypoint
 saveKey = key.VK_NUMPAD3;	-- save the waypoints
 restartKey = key.VK_NUMPAD9;	-- restart waypoints script
 
@@ -34,7 +36,7 @@ restartKey = key.VK_NUMPAD9;	-- restart waypoints script
 function saveWaypoints(list)
 	keyboardBufferClear();
 	io.stdin:flush();
-	cprintf(cli.green, "What do you want to name your path?\nName> ");
+	cprintf(cli.green, language[500]);	-- What do you want to name your path
 	filename = getExecutionPath() .. "/waypoints/" .. io.stdin:read() .. ".xml";
 
 	file, err = io.open(filename, "w");
@@ -45,14 +47,18 @@ function saveWaypoints(list)
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	file:write(str);					-- write first tag
 
+	local hf_temp1, hf_temp2;
 	for i,v in pairs(list) do
 
-		if( v.harvPoint == true ) then 		-- it's a harvest point?
+		if( v.wp_type == "HP" ) then 		-- it's a harvest point?
 			hf_temp1 = p_hp_type;	-- insert type=TRAVEL for harvest points if you want
 			hf_temp2 = p_harvest_command;	-- then insert harvest command
-		else 
+		elseif( v.wp_type == "WP" ) then
 			hf_temp1 = p_wp_type;		-- normal waypoint type
 			hf_temp2 = ""; 			-- no special command
+		elseif( v.wp_type == "NPC" ) then
+			hf_temp1 = p_wp_type;		-- normal waypoint type
+			hf_temp2 = sprintf(p_targetNPC_command, v.npc_name); -- player:targetNPC(%s);
 		end;							
 
 		local str = sprintf("\t<!-- #%2d --><waypoint x=\"%d\" z=\"%d\"%s>%s</waypoint>\n", i, v.X, v.Z, hf_temp1, hf_temp2);
@@ -74,14 +80,16 @@ function main()
 		player:update();
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
-		cprintf(cli.turquoise, "RoM windows size is %sx%s\n", hf_wide, hf_high );	-- RoM windows size
+		cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
-		cprintf(cli.green, "RoM waypoint creator\n");
-		printf("Hotkeys:\n  (%s)\tInsert new waypoint (at player position)\n"
-			.. "  (%s)\tInsert new harvest waypoint (at player position)\n"	
-			.. "  (%s)\tSave waypoints and quit\n"
-			.. "  (%s)\tSave waypoints and restart\n",
-			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), getKeyName(restartKey) );
+		cprintf(cli.green, language[501]);	-- RoM waypoint creator\n
+		printf(language[502]			-- Insert new waypoint 
+			.. language[503]		-- Insert new harvest waypoint
+			.. language[505]		-- Save waypoints and quit
+			.. language[504]		-- Insert target/dialog NPC waypoint
+			.. language[506],		-- Save waypoints and restart
+			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), 
+			getKeyName(targetNPCKey), getKeyName(restartKey) );
 
 		while(true) do
 
@@ -98,6 +106,11 @@ function main()
 			if( keyPressed(saveKey) ) then	-- save key pressed
 				hf_key_pressed = true;
 				hf_key = "SAVE";
+			end;
+
+			if( keyPressed(targetNPCKey) ) then	-- target NPC key pressed
+				hf_key_pressed = true;
+				hf_key = "NPC";
 			end;
 
 			if( keyPressed(restartKey) ) then	-- restart key pressed
@@ -118,7 +131,8 @@ function main()
 
 				-- waypoint or harvest point key: create a waypoint/harvest waypoint
 				if( hf_key == "WP"  or		-- normal waypoint
-					hf_key == "HP"  ) then	-- harvet waypoint
+					hf_key == "HP"  or	-- harvest waypoint
+					hf_key == "NPC"  ) then	-- NPC waypoint
 
 					player:update();
 
@@ -126,16 +140,27 @@ function main()
 					tmp.X = player.X;		
 					tmp.Z = player.Z;		
 
+					local hf_type;
 					if( hf_key == "HP" ) then 	-- is's a havest point?
-						tmp.harvPoint = true;	-- it is a harvest point
-						hf_temp = "HP";
-					else 
-						tmp.harvPoint = false; 
-						hf_temp = "WP";
+						tmp.wp_type = "HP";	-- it is a harvest point
+						hf_type = "HP";
+					elseif( hf_key == "WP" ) then
+						tmp.wp_type = "WP"; 
+						hf_type = "WP";
+					elseif( hf_key == "NPC" ) then
+						tmp.wp_type = "NPC";
+						
+						-- ask for NPC name
+						keyboardBufferClear();
+						io.stdin:flush();
+						cprintf(cli.green, language[507]);	-- What's the name of the NPC 
+						tmp.npc_name = io.stdin:read();
+
+						hf_type = sprintf("NPC (%s)", tmp.npc_name);
 					end; 
 
-					printf("Recorded [#%2d] %s, Continue to next. Press %s to save and quit\n",
-					#wpList + 1, hf_temp,getKeyName(saveKey));
+					printf(language[508],	-- Continue to next. Press %s to save and quit
+					#wpList + 1, hf_type, getKeyName(saveKey));
 
 					table.insert(wpList, tmp);
 
@@ -156,6 +181,4 @@ function main()
 	end -- End of: while(running)
 end
 
---while (true) do
-	startMacro(main, true);
---end;
+startMacro(main, true);

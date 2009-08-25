@@ -915,6 +915,32 @@ function CPlayer:faceDirection(dir)
 	memoryWriteFloat(getProc(), self.Address + chardirYUVec_offset, Vec2);
 end
 
+-- turns the player at a given angel in grad
+function CPlayer:turnDirection(_angle)	
+-- negative values means 'turn' left
+-- positive values means 'turn' right
+-- self.Direction values are from 0 til Pi and -Pi til 0 / 0 is at East
+
+	local hf_new_direction;
+	if( _angle < 0 ) then
+		hf_new_direction = self.Direction-math.rad(_angle);	-- neg angle value result in neg rad values
+	elseif ( _angle > 0 ) then
+		hf_new_direction = self.Direction-math.rad(_angle);
+	else
+		hf_new_direction = self.Direction;
+	end;
+
+	if(hf_new_direction > math.pi) then 		-- values gt 3,14
+		hf_new_direction = hf_new_direction - 2* math.pi;
+	elseif (hf_new_direction < -math.pi) then 	-- value lt -3,14
+		hf_new_direction = hf_new_direction + 2* math.pi;
+	end
+
+	self:faceDirection(hf_new_direction);	-- turn character
+	camera:setRotation(hf_new_direction);	-- turn camera view behind character
+end
+
+
 -- Attempt to unstick the player
 function CPlayer:unstick()
 
@@ -1578,8 +1604,9 @@ function CPlayer:scan_for_NPC(_npcname)
 	attach(getWin()); -- Re-attach bindings
 end
 
-function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
+function CPlayer:mouseclick(_x, _y, _wwide, _whigh, _type)
 	if( foregroundWindow() ~= getWin() ) then
+		cprintf(cli.yellow, language[139]);	-- RoM window has to be in the foreground
 		return;
 	end
 
@@ -1594,82 +1621,116 @@ function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
 		hf_x = wwide * _x / _wwide;
 		hf_y = whigh * _y / _whigh;
 		cprintf(cli.green, language[92], -- Mouseclick Left at %d,%d in %dx%d (recalculated 
-			hf_x, hf_y, wwide, whigh, _x, _y, _wwide, _whigh);
+			_type, hf_x, hf_y, wwide, whigh, _x, _y, _wwide, _whigh);
 	else
 		hf_x = _x;
 		hf_y = _y;
 		cprintf(cli.green, language[93],	 -- Clicking mouseL at %d,%d in %dx%d\n
-			hf_x, hf_y, wwide, whigh);
+			_type, hf_x, hf_y, wwide, whigh);
 	end;
 	
 	mouseSet(wx + hf_x, wy + hf_y);
 	yrest(100);
 
-	mouseLClick();
+	if( string.lower(_type) == "l"  or  string.lower(_type) == "left" ) then
+		mouseLClick();
+	elseif( string.lower(_type) == "r"  or  string.lower(_type) == "right" ) then
+		mouseRClick();
+	elseif( string.lower(_type) == "m"  or  string.lower(_type) == "middle" ) then	
+		mouseMClick();
+	else
+		cprintf(cli.yellow, "Unknow option %s for function CPlayer:mouseclick()\n", _type);
+	end
 	yrest(100);
 
 	attach(getWin()); -- Re-attach bindings
 end
 
+function CPlayer:mouseclickL(_x, _y, _wwide, _whigh)
+	self:mouseclick(_x, _y, _wwide, _whigh, "left")
+end
+
+function CPlayer:mouseclickR(_x, _y, _wwide, _whigh)
+	self:mouseclick(_x, _y, _wwide, _whigh, "right")
+end
+
+function CPlayer:mouseclickM(_x, _y, _wwide, _whigh)
+	self:mouseclick(_x, _y, _wwide, _whigh, "middle")
+end
+
 function CPlayer:target_NPC(_npcname)
 
 	if( not _npcname ) then
-		cprintf(cli.yellow, "target_NPC(): Please give a NPC name for using that function.\n");
+		cprintf(cli.yellow, language[133]);	-- Please give a NPC name
 		return
 	end
 
 	if(settings.hotkeys.TARGET_FRIEND.modifier) then
-		cprintf(cli.yellow, "Due to technical reasons, we don't support "..
-		   "modifiers like CTRL/ALT/SHIFT for hotkeys at the moment. "..
-		   "Please change your hotkey %s-%s for hotkey TARGET_FRIEND.\n", 
+		cprintf(cli.yellow, language[134], 	-- we don't support modifiers
 		   getKeyName(settings.hotkeys.TARGET_FRIEND.modifier), 
 		   getKeyName(settings.hotkeys.TARGET_FRIEND.key) );
 		return
 	end
 
-	cprintf(cli.green, "We try to find NPC %s: ", _npcname);
+	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC 
 
-	local hf_temp;
-	for i = 1, 10 do
-
-		if(settings.hotkeys.TARGET_FRIEND.modifier) then
-			keyboardHold(settings.hotkeys.TARGET_FRIEND.modifier);
-		end
-		keyboardPress(settings.hotkeys.TARGET_FRIEND.key);
-		if(settings.hotkeys.TARGET_FRIEND.modifier) then
-			keyboardRelease(settings.hotkeys.TARGET_FRIEND.modifier);
-		end
-
-		player:update();
-
-		if(player.TargetPtr ~= 0) then
-			hf_temp = true;					-- we found something
-			local target = self:getTarget();		-- read target informations
-			cprintf(cli.green, "%s, ", target.Name);	-- print name
+	local found_npc = false;
+	local counter = 0;
+	
+	while(true) do
+		counter = counter + 1;
 		
-			if( string.find(string.lower(target.Name), string.lower(_npcname) ) ) then
+		-- turn character if first try wasn't successfull
+		if( counter == 2 ) then
+			self:turnDirection(-45);
+		elseif( counter == 3 ) then
+			self:turnDirection(90);
+		elseif( counter > 3 and  counter < 9) then
+			self:turnDirection(45);
+		elseif( counter > 8 ) then
+			break;
+		end
 
-				cprintf(cli.green, "\nWe successfully target NPC %s and try "..
-				  "to open dialog window.\n", _npcname);
-				if( settings.profile.hotkeys.ATTACK.modifier ) then
-					keyboardHold(settings.hotkeys.ATTACK.modifier);
-				end
-				keyboardPress(settings.profile.hotkeys.ATTACK.key);
-				if( settings.profile.hotkeys.ATTACK.modifier ) then
-					keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
-				end
+		for i = 1, 6 do
 
-				return true;
+			if(settings.hotkeys.TARGET_FRIEND.modifier) then
+				keyboardHold(settings.hotkeys.TARGET_FRIEND.modifier);
 			end
-		end;
+			keyboardPress(settings.hotkeys.TARGET_FRIEND.key);
+			if(settings.hotkeys.TARGET_FRIEND.modifier) then
+				keyboardRelease(settings.hotkeys.TARGET_FRIEND.modifier);
+			end
 
-		yrest(500);
+			player:update();
+
+			if(player.TargetPtr ~= 0) then
+				found_npc = true;				-- we found something
+				local target = self:getTarget();		-- read target informations
+				cprintf(cli.green, "%s, ", target.Name);	-- print name
+
+				if( string.find(string.lower(target.Name), string.lower(_npcname), 1, true ) ) then
+
+					cprintf(cli.green, language[136], _npcname);	-- We successfully target NPC
+					if( settings.profile.hotkeys.ATTACK.modifier ) then
+						keyboardHold(settings.hotkeys.ATTACK.modifier);
+					end
+					keyboardPress(settings.profile.hotkeys.ATTACK.key);
+					if( settings.profile.hotkeys.ATTACK.modifier ) then
+						keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+					end
+
+					return true;
+				end
+			end;
+
+			yrest(500);
+		end
+		
 	end
 
-	cprintf(cli.green, "Sorry, we can't find NPC %s.\n", _npcname);
-	if( not hf_temp) then
-		cprintf(cli.yellow, "We didn't found any NPC! Have you set "..
-		  "your ingame target friendly key to %s?\n", 
+	cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
+	if( not found_npc) then
+		cprintf(cli.yellow, language[138], 	-- We didn't found any NPC
 		  getKeyName(settings.hotkeys.TARGET_FRIEND.key) );	
 	end
 	

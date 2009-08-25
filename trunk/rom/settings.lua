@@ -50,7 +50,7 @@ settings_default = {
 			QUICK_TURN = false,
 			MP_REST = 15,
 			HP_REST = 15,
-			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true | false,
+			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true|false,
 
 			
 			-- expert options
@@ -65,7 +65,7 @@ settings_default = {
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
-			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode afer pressing pause key
+			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
