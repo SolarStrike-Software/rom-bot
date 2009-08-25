@@ -28,6 +28,8 @@ CSkill = class(
 		self.ManaInc = 0; -- Increase in mana per level
 		self.Level = 1;
 
+		self.AutoUse = true; -- Can be used automatically by the bot
+
 		self.MaxHpPer = 100; -- Must have less than this % HP to cast
 		self.Toggleable = false;
 		self.Toggled = false;
@@ -190,15 +192,6 @@ function CSkill:use()
 	keyboardPress(self.hotkey);
 	if( self.modifier ) then
 		keyboardRelease(self.modifier);
-	end
-
-	if( type(settings.profile.events.onSkillCast) == "function" ) then
-		arg1 = self;
-		local status,err = pcall(settings.profile.events.onSkillCast);
-		if( status == false ) then
-			local msg = sprintf("onSkillCast error: %s", err);
-			error(msg);
-		end
 	end
 
 	if( self.Toggleable ) then

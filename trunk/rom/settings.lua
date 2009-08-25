@@ -16,7 +16,7 @@ settings_default = {
 		ENABLE_FIGHT_SLOW_TURN = false,
 		MELEE_DISTANCE = 45,
 		LANGUAGE = "english",
-		DEBUG_ASSERT = false,
+		DEBUGGING = false,
 	},
 	profile = {
 		options = {
@@ -477,12 +477,18 @@ function settings.loadProfile(_name)
 			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
-			local priority, maxhpper, inbattle, pullonly, maxuse
+			local priority, maxhpper, inbattle, pullonly, maxuse, autouse;
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			inbattle = v:getAttribute("inbattle");
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
+			autouse = v:getAttribute("autouse");
+		-- Ensure that auotuse is a proper type.
+			if( not (autouse == true or autouse == false) ) then
+				autouse = true;
+			end;
+
 
 			-- check if 'wrong' options are set
 			if( v:getAttribute("mana")      or
@@ -556,6 +562,7 @@ function settings.loadProfile(_name)
 			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
 			if( pullonly == true ) then tmp.pullonly = pullonly; end;
 			if( maxuse ) then tmp.maxuse = maxuse; end;
+			if( autouse == false ) then tmp.AutoUse = false; end;
 
 			table.insert(settings.profile.skills, tmp);
 		end
