@@ -205,6 +205,8 @@ function CPlayer:cast(skill)
 
 	printf(language[21], getKeyName(skill.hotkey), string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
 	skill:use();
+	yrest(100);
+	self:update();
 
 	-- Wait for casting to start (if it has a decent cast time)
 	if( skill.CastTime > 0 ) then
@@ -301,10 +303,6 @@ function CPlayer:checkSkills(_only_friendly)
 			     v.Type == STYPE_DOT )  ) then	-- without jump
 				return;
 			end;
-
-			v:use();
-			yrest(100);
-			self:update();
 
 			self:cast(v);
 		end

@@ -165,7 +165,6 @@ function CPawn:update()
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
 	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + pawnAttackable_offset), memerrmsg);
-	--printf("attackableFlag: %d  (0x%X)\n", attackableFlag, self.Address + pawnAttackable_offset);
 
 	if( self.Type == PT_MONSTER ) then
 		self.Attackable = true;
