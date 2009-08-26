@@ -401,7 +401,8 @@ function settings.loadProfile(_name)
 	end
 
 	local loadOnLoadEvent = function(node)
-		local luaCode = tostring(node:getValue());
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onLoad = loadstring(luaCode);
@@ -414,7 +415,8 @@ function settings.loadProfile(_name)
 	end
 
 	local loadOnDeathEvent = function(node)
-		local luaCode = tostring(node:getValue());
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onDeath = loadstring(luaCode);
@@ -428,7 +430,8 @@ function settings.loadProfile(_name)
 	end
 
 	local loadOnLeaveCombatEvent = function(node)
-		local luaCode = tostring(node:getValue());
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onLeaveCombat = loadstring(luaCode);
@@ -441,7 +444,8 @@ function settings.loadProfile(_name)
 	end
 
 	local loadOnSkillCastEvent = function(node)
-		local luaCode = tostring(node:getValue());
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onSkillCast= loadstring(luaCode);
