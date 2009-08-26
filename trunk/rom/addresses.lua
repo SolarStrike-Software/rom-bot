@@ -30,7 +30,7 @@ charLevel_offset = 0x2E4;
 charClass2_offset = 0x2E8;
 charLevel2_offset = 0x2EC;
 pawnAttackable_offset = 0x368;
-inBattle_offset = 0x6AA;
+inBattle_offset = 0x6B2;
 
 camX_offset = 0x104; --100
 camY_offset = 0x108; --104
