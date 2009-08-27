@@ -83,23 +83,33 @@ check_keys = { name = { } };
 function check_key_settings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
+	local hf_check_where;
+	if( bindings ) then	-- keys are from bindings.txt
+		hf_check_where = language[141];		-- Datei settings.xml
+	else
+		hf_check_where = language[140];		-- Ingame -> System -> Tastenbelegung
+	end
+	
+	local msg = nil;
+	-- no empty keys pls
 	if( _key == nil) then
-		local msg = sprintf(language[115], _name);	-- key for \'%s\' is empty!
-		error(msg, 0);
+		msg = sprintf(language[115], _name);	-- key for \'%s\' is empty!
+		msg = msg .. hf_check_where;
 	end
 
-	-- check if all keys are valid VK
+	-- check if all keys are valid virtual keys (VK)
 	if( _key ) then
 		if( key[_key]  == nil ) then
-			local msg = sprintf(language[116], _key, _name);	-- The hotkey ... is not a valid key
-			error(msg, 0);
+			msg = sprintf(language[116], _key, _name);	-- The hotkey ... is not a valid key
+			msg = msg .. hf_check_where;
 		end
 	end;
 
+	-- no modifiers allowed at the moment
 	if( _modifier ) then
 		if( key[_modifier]  == nil ) then
-			local msg = sprintf(language[117], _modifier, _name);	-- The modifier ... is not a valid key
-			error(msg, 0);
+			msg = sprintf(language[117], _modifier, _name);	-- The modifier ... is not a valid key
+			msg = msg .. hf_check_where;
 		end
 	end;
 
@@ -111,21 +121,24 @@ function check_key_settings( _name, _key, _modifier)
 	-- check the using of modifiers
 	-- they are not usable at the moment
 	if( _modifier ~= nil) then
-		local msg = sprintf(language[118], -- we don't support modifiers
-			getKeyName(_modifier), getKeyName(_key), _name);
+		msg = sprintf(language[118], -- we don't support modifiers
+		   getKeyName(_modifier), getKeyName(_key), _name);
 
+	end
+
+	-- error output
+	if( msg ~= nil) then
 		-- only a warning for TARGET_FRIEND / else an error
 		if(_name == "TARGET_FRIEND") then
 			cprintf(cli.yellow, msg .. language[119]);	-- can't use the player:target_NPC() function
 		else
-			error(msg .. language[120], 0);	-- Please check your settings
+			error(msg, 0);
 		end
 	end
 
-
 	-- check for double key settings
 	for i,v in pairs(check_keys) do
-		if( v.name ~= _name and	-- because we load same keys from settings.lua and bindings.txt
+		if( v.name ~= _nil and	-- empty entries from deleted settings.xml entries
 		    v.key == _key  and
 		    v.modifier == _modifier ) then
 			local modname;
@@ -140,7 +153,7 @@ function check_key_settings( _name, _key, _modifier)
 				modname, 
 				getKeyName(v.key), 
 				v.name, _name) .. 
-				language[120];	-- Please check your settings
+				hf_check_where;
 			error(errstr, 0);
 		end
 	end;
@@ -222,7 +235,17 @@ function settings.load()
 			return;
 		end
 
-
+		-- delete hotkeys from settings.xml in check table to avoid double entries / wrong checks
+		check_keys["MOVE_FORWARD"] = nil;
+		check_keys["MOVE_BACKWARD"] = nil;
+		check_keys["ROTATE_LEFT"] = nil;
+		check_keys["ROTATE_RIGHT"] = nil;
+		check_keys["STRAFF_LEFT"] = nil;
+		check_keys["STRAFF_RIGHT"] = nil;
+		check_keys["JUMP"] = nil;
+		check_keys["TARGET"] = nil;
+		check_keys["TARGET_FRIEND"] = nil;
+		
 		-- Load bindings.txt into own table structure
 		bindings = { name = { } };
 		-- read the lines in table 'lines'
@@ -270,7 +293,7 @@ function settings.load()
 						check_key_settings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] );
 					else
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
-						check_key_settings( hotkeyName, "VK_" .. bindings[bindingName].key1 );
+						check_key_settings(hotkeyName, "VK_" .. bindings[bindingName].key1 );
 					end
 					
 				else
@@ -488,7 +511,7 @@ function settings.loadProfile(_name)
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
 			autouse = v:getAttribute("autouse");
-		-- Ensure that auotuse is a proper type.
+		-- Ensure that autouse is a proper type.
 			if( not (autouse == true or autouse == false) ) then
 				autouse = true;
 			end;
