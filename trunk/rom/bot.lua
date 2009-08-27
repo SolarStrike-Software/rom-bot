@@ -70,7 +70,10 @@ function main()
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
 
-	if( playerAddress == nil ) then playerAddress = 0; end;
+	if( playerAddress == nil ) then 
+		local msg = sprintf(language[48], "playerAddress");	-- pls update to current version
+		error(msg, 0);
+	end;
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
 		tonumber(staticcharbase_address), tonumber(playerAddress)));
 

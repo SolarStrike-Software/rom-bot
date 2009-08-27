@@ -1,15 +1,20 @@
 <waypoints>
 	<!-- Thats a demo to interact with the NPC York Harris in Logar -->
-	<!-- For autorepairs you need the addon 'streamline'            -->	
 	<!-- # 1 --><waypoint x="-808" z="-6067">
-	player:rest(5);
-	player:scan_for_NPC("York");
-	player:rest(2);
+		player:target_NPC("York");
+		player:rest(2);
 	<!-- The coordinates depends from your screen resolution/window -->
 	<!-- size. We recalculate them for the actual RoM windows size  -->	
 	<!-- hence we need the original values (here 800x617)           -->		
-	player:mouseclickL(130, 200, 800, 617);
-	player:rest(2);
-	player:mouseclickL(130, 300, 800, 617);
+		player:mouseclickL(130, 200, 800, 617);
+		player:rest(2);
+		player:mouseclickL(130, 300, 800, 617);
+	</waypoint>
+	<!-- # 2 --><waypoint x="-757" z="-6036"></waypoint>
+	<!-- # 3 --><waypoint x="-808" z="-5915">
+	<!-- and here the merchant Dan                                  -->
+	<!-- For autorepairs you need the addon 'streamline'            -->
+		player:target_NPC("Dan");
+		player:rest(4);
 	</waypoint>
 </waypoints>
