@@ -46,8 +46,19 @@ function main()
 				forcedPath = val;
 			elseif( var == "retpath" ) then
 				forcedRetPath = val;
+			else
+				-- invalid option
+				local msg = sprintf(language[61], args[i]);
+				error(msg, 0 ); 
 			end
 		end
+
+		-- check the options
+		if(not foundpos  and  args[i] ~= "update" ) then
+			local msg = sprintf(language[61], args[i]);
+			error(msg, 0 ); 
+		end;
+
 	end
 
 	local versionMsg = sprintf("RoM Bot Version %0.2f", BOT_VERSION);
@@ -194,13 +205,13 @@ function main()
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings
-		if( type(settings.profile.events.onLoad) == "function" ) then
-			local status,err = pcall(settings.profile.events.onLoad);
-			if( status == false ) then
-				local msg = sprintf("onLoad error: %s", err);
-				error(msg);
-			end
+	if( type(settings.profile.events.onLoad) == "function" ) then
+		local status,err = pcall(settings.profile.events.onLoad);
+		if( status == false ) then
+			local msg = sprintf("onLoad error: %s", err);
+			error(msg);
 		end
+	end
 
 	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
 		__WPL = CWaypointListWander();

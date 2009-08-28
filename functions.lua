@@ -260,16 +260,19 @@ function load_paths( _wp_path, _rp_path)
 
 	-- waypoint path is defined ... load it
 	if( _wp_path ) then
-		__WPL:load(getExecutionPath() .. "/waypoints/" .. _wp_path );
+		local filename = getExecutionPath() .. "/waypoints/" .. _wp_path;
+		if( not fileExists(filename) ) then 
+			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
+			error(msg, 0);
+		end;
+		__WPL:load(filename);
 		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
 		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 	end
 
 	-- look for default return path with suffix '_return'
 	if( not _rp_path ) then
-		local file = io.open(getExecutionPath() .. "/waypoints/" .. rp_default , "r");
-		if( file ) then	-- file exits
-			file:close();
+		if( fileExists(getExecutionPath() .. "/waypoints/" .. rp_default) ) then 		
 			cprintf(cli.green, "Return path found with default naming: %s\n", rp_default );	
 			_rp_path = rp_default;	-- set default
 		else
@@ -282,7 +285,12 @@ function load_paths( _wp_path, _rp_path)
 		if( not __RPL ) then  		-- define object if not there
 			__RPL = CWaypointList(); 
 		end;
-		__RPL:load(getExecutionPath() .. "/waypoints/" .. _rp_path );
+		local filename = getExecutionPath() .. "/waypoints/" .. _rp_path;
+		if( not fileExists(filename) ) then 
+			local msg = sprintf(language[143], filename ); -- We can't find your returnpath file
+			error(msg, 0);
+		end;
+		__RPL:load(filename);
 		cprintf(cli.green, language[1], __RPL:getFileName());	-- Loaded return path 		
 	else
 		if( __RPL ) then  		-- clear old returnpath object
