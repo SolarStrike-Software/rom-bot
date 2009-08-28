@@ -54,6 +54,7 @@ language = {
 	[52] = "Verbindung zum Spiele Fenster verloren (Client abgestr\129rzt oder geschlossen?). Skript bitte neu starten.",
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berpr\129fen Sie Ihr Profil!\n",
+	[61] = "Fehlerhafte Option \'%s\' f\129r bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tBenutze Profil \'profname.xml\'\npath:pathname\t\tBenutze Wegepunkt Datei \'pathname.xml\'\nretpath:retname\t\tBenutze R\129ckkehrpfad \'retname.xml\'\n",
 	
 	[70] = "Pausieren nach %s Sekunden beendet.\n",	
 	[71] = "Pausiere f\129r %s Sekunden.\n",
@@ -80,7 +81,7 @@ language = {
 	[99] = "Heranziehen des Gegners beendet. Der Gegner scheint sich nicht zu bewegen.\n",
 	[100] = "Wir haben uns nicht zum Pl\129ndern bewegt!? Pr\129fen Sie ob im Spiel die Standardattacke der Taste %s zugeordnet ist.\n",
 	[101] = "Aus technischen Gr\129nden k\148nnen wir den Charakter-/Profilname \'%s\' nicht benutzen. Bitte benutzen Sie statt dessen den Profilnamen  \'%s.xml\' oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
-	[102] = "Wir k\148nnen das Profile \'%s.xml'\ nicht finden. Bitte legen Sie ein entsprechendes Profil im Ordner \'rom\\profiles\' and oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
+	[102] = "Wir k\148nnen das Profile \'%s.xml'\ nicht finden. Bitte legen Sie ein entsprechendes Profil im Ordner \'rom\\profiles\' an oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[103] = "Wenn Sie die automatische Wiederbelebung benutzen m\148chten, m\129ssen Sie die Option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' in Ihrem Profil setzen.\n",
 	[104] = "Wir werden die automatische Wiederbelenung in 10 Sekunden versuchen.\n",
 	[105] = "Wir versuchen die Wiederbelebung am Platz des Todes ...\n",
@@ -119,6 +120,8 @@ language = {
 	[139] = "Das RoM Fenster muss im Vordergrund sein um die Mausklick Funktion zu benutzen. Wir k\148nnen die Funktion im Moment nicht benutzen!\n",
 	[140] = "Bitte \129berpr\129fen Sie Ihre Einstellungen in der Datei settings.xml und in ihrem Profil!\n",
 	[141] = "Bitte \129berpr\129fen Sie Ihre Einstellungen: Ingame -> System -> Tastenbelegung und in Ihrem Profil\n",
+	[142] = "Wir k\148nnen die Wegepunktdatei \'%s'\ nicht finden. Bitte legen Sie eine g\129ltige Wegepunktdatei im Ordner \'waypoints\' an oder geben Sie den richtigen Dateinamen an.\nDer Bot wird wegen dem vorgenannten Fehler beendet.",
+	[143] = "Wir k\148nnen den R\129ckkehrpfad \'%s'\ nicht finden. Bitte legen Sie eine g\129ltige R\129ckkehrpfad-Datei im Ordner \'waypoints\' an oder geben Sie den richtigen Dateinamen an.\nDer Bot wird wegen dem vorgenannten Fehler beendet.",
 
 	[150] = "Fehler beim kompilieren und Lua Code auszuf\129hren, f\129r Wegpunkt 1",
 	[151] = "Fehler zu kompilieren und zu Lua-Code f\129r% s ausf\129hren Charakter-Profil.",

@@ -52,6 +52,7 @@ language = {
 	[52] = "Window lost (Client crashed or closed?). You must re-start the script.",
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
+	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforced the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforced the use of return waypoint path \'retname.xml\'\n",
 	
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
@@ -117,6 +118,9 @@ language = {
 	[139] = "The RoM window has to be in the foreground to be able to use the mouseclick function. We can't use mouseclick now!\n",
 	[140] = "Please check your settings in file settings.xml and in your profile!\n",
 	[141] = "Please check your settings: Ingame -> System -> Hotkeys and in your profile\n",
+	[142] = "We can't find your waypoint file \'%s'\. Please create a valid waypoint file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
+	[143] = "We can't find your return path file \'%s'\. Please create a valid return path file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
+
 	
 	[150] = "Failed to compile and run Lua code for waypoint #%d",
 	[151] = "Failed to compile and run Lua code for %s in character profile.",
