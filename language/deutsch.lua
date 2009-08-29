@@ -122,6 +122,11 @@ language = {
 	[141] = "Bitte \129berpr\129fen Sie Ihre Einstellungen: Ingame -> System -> Tastenbelegung und in Ihrem Profil\n",
 	[142] = "Wir k\148nnen die Wegepunktdatei \'%s'\ nicht finden. Bitte legen Sie eine g\129ltige Wegepunktdatei im Ordner \'waypoints\' an oder geben Sie den richtigen Dateinamen an.\nDer Bot wird wegen dem vorgenannten Fehler beendet.",
 	[143] = "Wir k\148nnen den R\129ckkehrpfad \'%s'\ nicht finden. Bitte legen Sie eine g\129ltige R\129ckkehrpfad-Datei im Ordner \'waypoints\' an oder geben Sie den richtigen Dateinamen an.\nDer Bot wird wegen dem vorgenannten Fehler beendet.",
+	[144] = "Wegepunktdateien in %s:\n",
+	[145] = "Welche Wegpunktdatei m\148chten Sie nutzen? Geben Sie die Nummer ein und dr\129cken Sie %s > ",
+	[146] = "Sie haben ausgew\132hlt: %s\n",
+	[147] = "Falsche Auswahl. Bitte pr\129fen Sie Ihre Eingabe und w\132hlen Sie erneut!\n",
+
 
 	[150] = "Fehler beim kompilieren und Lua Code auszuf\129hren, f\129r Wegpunkt 1",
 	[151] = "Fehler zu kompilieren und zu Lua-Code f\129r% s ausf\129hren Charakter-Profil.",

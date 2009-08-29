@@ -16,7 +16,7 @@
 		<option name="ANTI_KS"            value="true" />
 
 		<!-- Waypoint and movement settings -->
-		<option name="WAYPOINTS"		value="demo.xml" />
+		<option name="WAYPOINTS"		value="demo.xml" />  <!-- leave empty to show a list -->
 		<option name="RETURNPATH"		value="demo_return.xml" />
 		<option name="PATH_TYPE"		value="waypoints" />	<!-- waypoints | wander -->
 		<option name="WANDER_RADIUS"		value="500" />

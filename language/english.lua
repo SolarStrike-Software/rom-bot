@@ -120,6 +120,13 @@ language = {
 	[141] = "Please check your settings: Ingame -> System -> Hotkeys and in your profile\n",
 	[142] = "We can't find your waypoint file \'%s'\. Please create a valid waypoint file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
 	[143] = "We can't find your return path file \'%s'\. Please create a valid return path file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
+	[144] = "Waypoint files from %s:\n",
+	[145] = "Enter the number of the path you want to use and press %s > ",
+	[146] = "You choose %s\n",
+	[147] = "Wrong selection. Please check and choose again!\n",
+	[148] = "...\n",
+	[149] = "...\n",
+	[150] = "...\n",
 
 	
 	[150] = "Failed to compile and run Lua code for waypoint #%d",
