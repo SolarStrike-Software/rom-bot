@@ -324,6 +324,7 @@ function CPlayer:checkPotions()
 		if( modifier ) then keyboardRelease(modifier); end
 
 		self.PotionLastUseTime = os.time();
+		self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
 		cprintf(cli.green, language[10], getKeyName(settings.profile.hotkeys.HP_POTION.key) );		-- Using HP potion
 
 		if( self.Fighting ) then
@@ -340,6 +341,7 @@ function CPlayer:checkPotions()
 			if( modifier ) then keyboardRelease(modifier); end
 
 			self.PotionLastUseTime = os.time();
+			self.MP_counter = self.MP_counter + 1;	-- counts use of mana potions
 			cprintf(cli.green, language[11], getKeyName(settings.profile.hotkeys.MP_POTION.key));
 
 			if( self.Fighting ) then
@@ -480,8 +482,17 @@ function CPlayer:fight()
 			end
 		end
 
-		if( dist > suggestedRange ) then
+		-- check if aggro before attacking
+		if( self.Battling == true  and			-- we have aggro
+		    target.HP/target.MaxHP*100 > 90 and		-- target is alive and no attacking us
+		    target.TargetPtr ~= self.Address ) then	-- but not from that mob
+			cprintf(cli.green, language[36], target.Name);	
+			self:clearTarget();
+			break;
+		end;
 
+		if( dist > suggestedRange ) then
+			
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
 			if( move_closer_counter > 3  and

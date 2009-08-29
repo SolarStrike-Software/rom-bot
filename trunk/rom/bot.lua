@@ -175,9 +175,7 @@ function main()
 	if( hf_convert ) then		-- we replace some special characters
 
 		-- check if profile with replaced characters allready there
-		local file = io.open(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml" , "r");
-		if( file ) then	-- file exits
-			file:close();
+		if( fileExists(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml") ) then
 			load_profile_name = new_profile_name;
 		else
 			local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
@@ -187,12 +185,9 @@ function main()
 	else				
 
 		-- check if profile exist
-		local file = io.open(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" , "r");
-		if( not file ) then	
+		if( not fileExists(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" ) ) then
 			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
 			error(msg, 0);
-		else
-			file:close();
 		end
 	end;
 
@@ -241,6 +236,98 @@ function main()
 			rp_to_load = settings.profile.options.RETURNPATH;
 		end
 	end
+
+	local function list_waypoint_files()
+
+		-- choose a path from the waypoints folder
+		local dir = getDirectory(getExecutionPath() .. "/waypoints/");
+		local pathlist = { }
+
+		cprintf(cli.green, language[144], getExecutionPath());	-- Waypoint files in %s
+
+
+		-- copy table dir to table pathlist
+		-- select only xml files
+		local hf_counter = 0;
+		for i,v in pairs(dir) do
+			if( string.find (v,".xml",1,true) ) then
+				hf_counter = hf_counter + 1;
+				pathlist[hf_counter] = v;
+			end
+		end
+
+		local hf_max_rows = math.ceil(table.getn(pathlist) / 3 );	-- how many rows to output by 3 column
+		hf_print_table = { row = {   }  };	-- DEFINE1
+		local hf_row = 0;
+		local hf_column = 1;	-- start in column 1
+
+		-- copy entrys from table pathlist to a new table 'hf_print_table' 
+		-- arrange in three columns
+		for i,v in pairs(pathlist) do
+			hf_row = hf_row + 1;
+			if( hf_row > hf_max_rows ) then		-- switch column after maxrow
+				hf_column = hf_column + 1;
+				hf_row = 1;
+			end
+
+			if( not hf_print_table[hf_row] ) then
+				hf_print_table[hf_row] = {  };
+				hf_print_table[hf_row] = { column = { {} }  };
+			end
+
+			if( hf_column == 1 ) then
+				hf_print_table[hf_row].col1_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col1_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
+			elseif( hf_column == 2 ) then
+				hf_print_table[hf_row].col2_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col2_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
+			elseif( hf_column == 3 ) then
+				hf_print_table[hf_row].col3_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col3_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
+			end
+		end
+
+		-- printout the table with the columns
+		for i,v in pairs(hf_print_table) do
+			local line = "";
+			if( v.col1_nr ~= nil ) then 
+				line = v.col1_nr..": "..v.col1_filename; 
+			end
+
+			if( v.col2_nr ~= nil ) then 
+				line = line.."  "..v.col2_nr..": "..v.col2_filename; 
+			end
+
+			if( v.col3_nr ~= nil ) then 
+				line = line.."  "..v.col3_nr..": "..v.col3_filename; 
+			end
+
+			cprintf(cli.green, "%s\n", line );
+		end
+
+		-- ask for pathname to choose
+		keyboardBufferClear();
+		io.stdin:flush();
+		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path 
+		local hf_choose_path_nr = tonumber(io.stdin:read() );
+		if( hf_choose_path_nr == nil) then hf_choose_path_nr = " "; end;
+		printf(language[146], hf_choose_path_nr );	-- You choose %s\n
+		if( pathlist[hf_choose_path_nr] ) then
+			wp_to_load = pathlist[hf_choose_path_nr];
+			return true;
+		else
+			cprintf(cli.yellow, language[147]);	-- Wrong selection
+			return false;
+		end
+
+	end	-- end of local function list_waypoint_files()
+
+	-- if no wp file given, list them
+	while(wp_to_load == nil  or
+	  wp_to_load == ""   or
+	  wp_to_load == " ") do
+		list_waypoint_files();
+	end;
 
 	load_paths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 	
