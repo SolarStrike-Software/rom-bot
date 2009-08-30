@@ -26,7 +26,7 @@ language = {
 	[28] = "Stopping waypoint: Target acquired.\n",
 	[29] = "Distance break.\n",
 	[30] = "Target not attackable: %s\n",
-	[31] = "Looting target in distance %d.\n",
+	[31] = "Use %s: Looting target in distance %d.\n",
 	[32] = "Target too far away; not looting.\n",
 	[33] = "Clearing target.\n",
 	[34] = "Aggro wait time out.\n",
@@ -35,7 +35,6 @@ language = {
 	[37] = "Select new target %s in distance %d\n",
 	[38] = "Resting up to %s to fill up mana and HP.\n",
 	[39] = "Stop resting because of aggro.\n",	
-
 
 	[40] = "Player address changed: 0x%X\n",
 	[41] = "Failed to read memory",
@@ -77,7 +76,7 @@ language = {
 	[97] = "Ranged pulling finished, mob in melee distance.\n",
 	[98] = "Ranged pulling after 3 sec wait finished.\n",
 	[99] = "Ranged pulling finished. Mob not really moving.\n",
-	[100] = "We didn't move to the loot!? Please be sure you set ingame the standard attack to hotkey %s.\n",
+	[100] = "We didn't move to the loot!? Please be sure you set ingame the standard attack to hotkey %s and the \'click to move\' option.\n",
 	[101] = "Due to technical reasons, we can't use the character/profile name \'%s\' as a profile name. Please use profile name \'%s.xml\' instead or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
 	[102] = "We can't find your profile \'%s.xml'\. Please create a valid profile within the folder \'rom\\profiles\' or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
 	[103] = "If you want to use automatic resurrection then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' within your profile.\n",
@@ -124,14 +123,23 @@ language = {
 	[145] = "Enter the number of the path you want to use and press %s > ",
 	[146] = "You choose %s\n",
 	[147] = "Wrong selection. Please check and choose again!\n",
-	[148] = "...\n",
-	[149] = "...\n",
-	[150] = "...\n",
-
+	[148] = "We will go to sleep after fight finished / as soon as possible.\n",
+	[149] = "You have died... Sorry.\n",
 	
 	[150] = "Failed to compile and run Lua code for waypoint #%d",
 	[151] = "Failed to compile and run Lua code for %s in character profile.",
 	
+	[160] = "Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
+	[161] = "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n",
+	[162] = "Return path found with default naming: %s\n",
+	[163] = "No return path with default naming %s found.\n",
+	[164] = "We are coming from a return_path. So we will going on using the returnpath %s.\n",
+	[165] = "We use the normal waypoint path %s now.\n",
+	[166] = "...\n",
+	[167] = "...\n",
+	[168] = "...\n",
+	
+
 	-- createpath.lua
 	[500] = "What do you want to name your path (without .xml)?\nName> ",
 	[501] = "RoM waypoint creator\n",

@@ -201,7 +201,7 @@ function resumeCallback()
 
 	-- check if using sleep function
 	if( settings.profile.options.USE_SLEEP_AFTER_RESUME == true ) then
-		cprintf(cli.yellow, "We will go to sleep after fight finished / as soon as possible.\n");	-- Logout at %time%
+		cprintf(cli.yellow, language[148]);	-- LWe will go to sleep after fight finished
 		player.Sleeping = true;		-- activate sleep
 	end
 	
@@ -212,8 +212,8 @@ atResume(resumeCallback);
 function pauseOnDeath()
 	local sk = startKey;
 	if( getVersion() >= 100 ) then sk = getStartKey(); end;
-	cprintf(cli.red, "You have died... Sorry.\n");
-	printf("Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
+	cprintf(cli.red, language[149]);	-- You have died
+	printf(language[160],	-- Script paused until you revive yourself
 		getKeyName(sk))
 	logMessage("Player died.\n");
 	stopPE();
@@ -240,7 +240,7 @@ function load_paths( _wp_path, _rp_path)
 
 	-- check if function is not called empty
 	if( not _wp_path ) and ( not _rp_path ) then
-		cprintf(cli.yellow, "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n");
+		cprintf(cli.yellow, language[161]);	 -- have to specify either
 		return;
 	end;
 	if( _wp_path == "" or _wp_path == " " ) then _wp_path = nil; end;
@@ -273,10 +273,10 @@ function load_paths( _wp_path, _rp_path)
 	-- look for default return path with suffix '_return'
 	if( not _rp_path ) then
 		if( fileExists(getExecutionPath() .. "/waypoints/" .. rp_default) ) then 		
-			cprintf(cli.green, "Return path found with default naming: %s\n", rp_default );	
+			cprintf(cli.green, language[162], rp_default );	-- Return path found with default naming
 			_rp_path = rp_default;	-- set default
 		else
-			cprintf(cli.yellow, "No return path with default naming %s found.\n", rp_default );
+			cprintf(cli.yellow, language[163], rp_default );	-- No return path with default naming
 		end;
 	end
 	
@@ -301,10 +301,10 @@ function load_paths( _wp_path, _rp_path)
 	-- check if on returnpath
 	if( player.Returning == true  and
 	    _rp_path ) then
-		cprintf(cli.green, "We are coming from a return_path. So we will going on using the returnpath %s.\n", __RPL:getFileName());
+		cprintf(cli.green, language[164], __RPL:getFileName());	-- We are coming from a return_path.
 	else
 		player.Returning = false;
-		cprintf(cli.green, "We use the normal waypoint path %s now.\n", __WPL:getFileName() );
+		cprintf(cli.green, language[165], __WPL:getFileName() );-- We use the normal waypoint path %s now
 	end
 
 

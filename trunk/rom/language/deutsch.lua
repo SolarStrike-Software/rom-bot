@@ -28,7 +28,7 @@ language = {
 	[28] = "Stoppe Wegpunkt: Ziel gefunden.\n",
 	[29] = "Distanzabbruch.\n",
 	[30] = "Ziel nicht angreifbar: %s\n",
-	[31] = "Pl\129ndere toten Mob. Entfernung %d.\n",
+	[31] = "Dr\129cke %s: Pl\129ndere toten Mob. Entfernung %d.\n",
 	[32] = "Toter Mob zu weit entfernt, nicht zu pl\129ndern.\n",
 	[33] = "L\148sche Ziel.\n",
 	[34] = "Aggro Wartezeit \129berschritten.\n",
@@ -79,7 +79,7 @@ language = {
 	[97] = "Heranziehen des Gegners beendet. Der Gegner ist im Nahkampfbereich.\n",
 	[98] = "Heranziehen des Gegners nach 3 Sekunden Wartezeit beendet.\n",
 	[99] = "Heranziehen des Gegners beendet. Der Gegner scheint sich nicht zu bewegen.\n",
-	[100] = "Wir haben uns nicht zum Pl\129ndern bewegt!? Pr\129fen Sie ob im Spiel die Standardattacke der Taste %s zugeordnet ist.\n",
+	[100] = "Wir haben uns nicht zum Pl\129ndern bewegt!? Pr\129fen Sie ob im Spiel die Standardattacke der Taste %s zugeordnet ist und die Option \'zum Bewegen klicken\' aktiviert wurde.\n",
 	[101] = "Aus technischen Gr\129nden k\148nnen wir den Charakter-/Profilname \'%s\' nicht benutzen. Bitte benutzen Sie statt dessen den Profilnamen  \'%s.xml\' oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[102] = "Wir k\148nnen das Profile \'%s.xml'\ nicht finden. Bitte legen Sie ein entsprechendes Profil im Ordner \'rom\\profiles\' an oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[103] = "Wenn Sie die automatische Wiederbelebung benutzen m\148chten, m\129ssen Sie die Option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' in Ihrem Profil setzen.\n",
@@ -126,10 +126,18 @@ language = {
 	[145] = "Welche Wegpunktdatei m\148chten Sie nutzen? Geben Sie die Nummer ein und dr\129cken Sie %s > ",
 	[146] = "Sie haben ausgew\132hlt: %s\n",
 	[147] = "Falsche Auswahl. Bitte pr\129fen Sie Ihre Eingabe und w\132hlen Sie erneut!\n",
-
+	[148] = "Wir gehen nach diesem Kampf in den Schlafmodus / sobald als m\149glich.\n",
+	[149] = "Sie sind gestorben... Sorry.\n",	
 
 	[150] = "Fehler beim kompilieren und Lua Code auszuf\129hren, f\129r Wegpunkt 1",
 	[151] = "Fehler zu kompilieren und zu Lua-Code f\129r% s ausf\129hren Charakter-Profil.",
+	
+	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
+	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
+	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
+	[163] = "Es wurde keine R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
+	[164] = "Wir kommen von einem R\129ckkehrpfade. Daher werden wir auch jetzt den R\129ckkehrpfad %s benutzen.\n",
+	[165] = "Wir benutzen nun die normale Wegeöpunktdatei %s.\n",	
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",
