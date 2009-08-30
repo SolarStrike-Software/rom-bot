@@ -663,7 +663,8 @@ function CPlayer:loot()
 		return false
 	end
 
-	cprintf(cli.green, language[31], dist);	-- looting target.
+	cprintf(cli.green, language[31], 
+	   getKeyName(settings.profile.hotkeys.ATTACK.key), dist);	-- looting target.
 	-- "attack" is also the hotkey to loot, strangely.
 	yrest(500);
 	keyboardPress(settings.profile.hotkeys.ATTACK.key);
