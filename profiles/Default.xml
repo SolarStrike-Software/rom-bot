@@ -58,6 +58,7 @@
 		<hotkey name="ATTACK"       key="VK_1" />
 		<hotkey name="RES_MACRO"    key="VK_9" />
 		<hotkey name="LOGOUT_MACRO" key="VK_0" />
+		<hotkey name="MACRO" hotkey="VK_7" />
 	</hotkeys>
 
 	<!-- define your skills depending from your actual primary class -->
