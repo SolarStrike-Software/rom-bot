@@ -6,9 +6,9 @@ local charUpdatePattern = string.char(0x8B, 0x07, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 
 local charUpdateMask = "xxxx????xxx";
 local charUpdateOffset = 4;
 
-local camUpdatePattern = string.char(0x83, 0x3D, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x53, 0x8B, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF, 0x55);
-local camUpdateMask = "xx????xxxx????x";
-local camUpdateOffset = 2;
+local macroUpdatePattern = string.char(0xFF, 0x15, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xE8);
+local macroUpdateMask = "xx????xx????x";
+local macroUpdateOffset = 8;
 
 local romMouseRClickFlag = 0x8000;
 local romMouseLClickFlag = 0x80;
@@ -25,16 +25,16 @@ function getCharUpdateOffset()
 	return charUpdateOffset;
 end
 
-function getCamUpdatePattern()
-	return camUpdatePattern;
+function getMacroUpdatePattern()
+	return macroUpdatePattern;
 end
 
-function getCamUpdateMask()
-	return camUpdateMask;
+function getMacroUpdateMask()
+	return macroUpdateMask;
 end
 
-function getCamUpdateOffset()
-	return camUpdateOffset;
+function getMacroUpdateOffset()
+	return macroUpdateOffset;
 end
 
 function checkExecutableCompatible()
@@ -43,8 +43,8 @@ function checkExecutableCompatible()
 		return false;
 	end
 
-	if( findPatternInProcess(getProc(), camUpdatePattern, camUpdateMask,
-	campatternstart_address, 1) == 0 ) then
+	if( findPatternInProcess(getProc(), macroUpdatePattern, macroUpdateMask,
+	macropatternstart_address, 1) == 0 ) then
 		return false;
 	end
 
@@ -306,6 +306,24 @@ function load_paths( _wp_path, _rp_path)
 		player.Returning = false;
 		cprintf(cli.green, language[165], __WPL:getFileName() );-- We use the normal waypoint path %s now
 	end
+end
 
+--- Run rom scripts, usage: RomScript("AcceptResurrect();");
+function RoMScript(script)
+	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address) + macro_offset;
+	local text = "/script " .. script;
 
+	for i = 0, 254, 1 do
+		local byte = string.byte(text, i+1);
+		if( byte == null ) then
+			memoryWriteByte(getProc(), macro_address + i, 0);
+			break;
+		end
+
+		memoryWriteByte(getProc(), macro_address+i, byte);
+	end
+
+	if( settings.profile.hotkeys.MACRO ) then
+		keyboardPress(settings.profile.hotkeys.MACRO.key);
+	end
 end
