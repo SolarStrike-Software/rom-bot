@@ -96,7 +96,8 @@ function rewriteAddresses()
 		sprintf("camYUVec_offset = 0x%X;\n", camYUVec_offset) ..
 		sprintf("camZUVec_offset = 0x%X;\n", camZUVec_offset) ..
 		"\n" ..
-		sprintf("macro_offset = 0x%X;\n", macro_offset)
+		sprintf("macro1_offset = 0x%X;\n", macro1_offset) ..
+		sprintf("macro2_offset = 0x%X;\n", macro2_offset)
 	);
 
 	file:close();
