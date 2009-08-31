@@ -305,6 +305,8 @@ function CPlayer:checkSkills(_only_friendly)
 			end;
 
 			self:cast(v);
+			
+			lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 		end
 	end
 end

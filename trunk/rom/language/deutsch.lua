@@ -11,8 +11,8 @@ language = {
 	[7] = "R\129ckkehrpfad absolviert. Wiederhole normale Wegpunkte.\n",
 	[8] = "Bewegung zu Wegpunkt fehlgeschlagen!\n",
 	[9] = "Versuche Spieler frei zu bekommen ... an Position %d,%d. Versuch #%d von maximal %d Versuchen.\n",
-	[10] = "Dr\129cke %s: Benutze Heiltrank Trank.\n",
-	[11] = "Dr\129cke %s: Benutze Manatrank Trank.\n",
+	[10] = "Dr\129cke %s: Benutze Heiltrank.\n",
+	[11] = "Dr\129cke %s: Benutze Manatrank.\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
@@ -129,8 +129,8 @@ language = {
 	[148] = "Wir gehen nach diesem Kampf in den Schlafmodus / sobald als m\149glich.\n",
 	[149] = "Sie sind gestorben... Sorry.\n",	
 
-	[150] = "Fehler beim kompilieren und Lua Code auszuf\129hren, f\129r Wegpunkt 1",
-	[151] = "Fehler zu kompilieren und zu Lua-Code f\129r% s ausf\129hren Charakter-Profil.",
+	[150] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Wegpunkt #%d. Bitte pr\129fen Sie den Lua Code an diesem Wegepunkt.",
+	[151] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Event %s im Charakter-Profil. Bitte \129berpr\129fen Sie den Lua Code zu dem angegbenen Event in Ihrem Profile.",
 	
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
 	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
