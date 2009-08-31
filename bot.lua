@@ -430,7 +430,7 @@ function main()
 				end
 
 				-- DEPRECATED
-				if ( not player.Alive  and settings.profile.hotkeys.RES_MACRO.key ) then
+				if ( not player.Alive  and settings.profile.hotkeys.RES_MACRO ) then
 					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro 
 					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 					-- wait time after resurrec (loading screen), needs more time on slow PC's
@@ -441,8 +441,18 @@ function main()
 				
 
 				if( not player.Alive ) then
-					cprintf(cli.yellow,  language[108], -- still death, did you set your macro?
-					  getKeyName(settings.profile.hotkeys.RES_MACRO.key));
+					local hf_keyname ;
+					if( settings.profile.hotkeys.MACRO ) then
+						hf_keyname = getKeyName(settings.profile.hotkeys.MACRO.key)
+					else
+						hf_keyname = "";
+					end
+					cprintf(cli.yellow, language[108], -- still death, did you set your macro?
+					  hf_keyname);
+					if( hf_keyname == "")  then
+						cprintf(cli.yellow, language[166]); -- Please set new profile option MACRO
+					end
+
 				end;
 
 				-- death counter message
@@ -462,6 +472,12 @@ function main()
 				end;
 
 			end
+
+			player:update();
+			-- pause if still death
+			if( not player.Alive ) then
+				pauseOnDeath();
+			end;
 
 			-- use/compare return path if defined, if not use normal one and give a warning
 			-- wen need to search the closest, hence we also accept resurrection at the death place
@@ -488,18 +504,11 @@ function main()
 			if( player.Returning == nil) then
 				player.Returning = false;
 				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
-				cprintf(cli.green, language[112], 	-- sing normal waypoint file
+				cprintf(cli.green, language[112], 	-- using normal waypoint file
 				   __WPL:getFileName() );
 			end
 
-			player:update();
-			-- pause if still death
-			if( not player.Alive ) then
---				cprintf(cli.yellow, "Sorry. You are (still) dead ... \n" );
-				pauseOnDeath();
-			end;
-			
-		end
+		end	-- end of: if( not player.Alive ) then
 
 		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
 			player:clearTarget();

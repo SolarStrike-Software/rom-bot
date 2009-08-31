@@ -84,7 +84,7 @@ language = {
 	[105] = "Try to resurrect at the place of death ...\n",
 	[106] = "Try to resurrect at the spawnpoint ...\n",
 	[107] = "Try to use the ingame resurrect macro ...\n",
-	[108] = "You are still dead. There is a problem with automatic resurrection. Did you set your ingame macro \'/script AcceptResurrect();\' to the key %s?\n",
+	[108] = "You are still dead. There is a problem with automatic resurrection. Did you set ingame your first macro space with a dummy makro and assign that to the key %s?\n",
 	[109] = "You have died %s times from at most %s deaths/automatic resurrections.\n",
 	[111] = "You don't have a defined return path!!! We use the normal waypoint file \'%s\' instead. Please check that.\n",
 	[112] = "Using normal waypoint file \'%s\' after resurrection.\n",
@@ -135,7 +135,7 @@ language = {
 	[163] = "No return path with default naming %s found.\n",
 	[164] = "We are coming from a return_path. So we will going on using the returnpath %s.\n",
 	[165] = "We use the normal waypoint path %s now.\n",
-	[166] = "...\n",
+	[166] = "Please set new profile option <hotkey name=\"MACRO\" key=\"VK_7\" /> to use automtic resurrection macro.\n",	
 	[167] = "...\n",
 	[168] = "...\n",
 	
