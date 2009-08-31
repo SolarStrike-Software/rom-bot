@@ -315,8 +315,9 @@ function RoMScript(script)
 
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
-	local text = "/script r='' a={} a[0],a[1],a[2],a[3],a[4] = " .. script ..
-	" for i=0,4 do if a[i] then r = r..a[i]..'@' end end" ..
+	local text = "/script r='' a={" .. script ..
+	"} for i=1,#a do if a[i] then r=r..a[i]" ..
+	" end r=r..'" .. string.char(9) .. "' end" ..
 	" EditMacro(2,'',7,r);";
 
 	--- Write the macro
@@ -328,32 +329,48 @@ function RoMScript(script)
 		end
 		memoryWriteByte(getProc(), macro_address + macro1_offset + i, byte);
 	end
-   
+
+   -- Write something on the first address, to see when its over written
+   memoryWriteByte(getProc(), macro_address + macro2_offset, 6);
+
 	--- Execute it
 	if( settings.profile.hotkeys.MACRO ) then
 		keyboardPress(settings.profile.hotkeys.MACRO.key);
 	end
-   
-	--- Wait for RoM to process it, so that we can read the outcome.
-	yrest(50);
+
+	-- A cheap version of a Mutex... wait till it is "released"
+	-- Use high-res timers to find out when to time-out
+	local startWaitTime = getTime();
+	while( memoryReadByte(getProc(), macro_address + macro2_offset) == 6 ) do
+		if( deltaTime(getTime(), startWaitTime) > 100 ) then
+			break; -- Timed out
+		end;
+		rest(1);
+	end
    
 	--- Read the outcome from macro 2
 	readsz = "";
-	ret = {false, false, false, false, false, false, false, false, false, false};
+	ret = {};
 	cnt = 0;
 	for i = 0, 254, 1 do
 		local byte = memoryReadByte(getProc(), macro_address + macro2_offset + i);
-      
-		if byte > 0 then
-			if byte == 64 then -- Use @ to seperate
-				ret[cnt] = readsz;
-				cnt = cnt+1;
-				readsz = "";
-			else
-				readsz = readsz .. string.char(byte);
-			end
+
+		if( byte == 0 ) then -- Break on NULL terminator
+			break;
+		elseif( byte == 9 ) then -- Use TAB to seperate
+			-- Implicit casting
+			if( readsz == "true" ) then readsz = true; end;
+			if( readsz == "false" ) then readsz = false; end;
+			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);  end;
+			if( string.find(readsz, "^%d+$") ) then readsz = tonumber(readsz);  end;
+
+			table.insert(ret, readsz);
+			cnt = cnt+1;
+			readsz = "";
+		else
+			readsz = readsz .. string.char(byte);
 		end
 	end
-   
-	return ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9];
+
+	return unpack(ret);
 end
