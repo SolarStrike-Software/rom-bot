@@ -335,11 +335,11 @@ function RoMScript(script)
 	end
    
 	--- Wait for RoM to process it, so that we can read the outcome.
-	yrest(200);
+	yrest(50);
    
 	--- Read the outcome from macro 2
 	readsz = "";
-	ret = {false, false, false, false, false};
+	ret = {false, false, false, false, false, false, false, false, false, false};
 	cnt = 0;
 	for i = 0, 254, 1 do
 		local byte = memoryReadByte(getProc(), macro_address + macro2_offset + i);
@@ -355,5 +355,5 @@ function RoMScript(script)
 		end
 	end
    
-	return ret[0],ret[1],ret[2],ret[3],ret[4];
+	return ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9];
 end
