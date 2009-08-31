@@ -411,7 +411,7 @@ function main()
 					hf_res_from_priest = true;
 				end;
 				
-				-- if still death, click button more left, normal resurrect at spawnpoint
+				-- if still dead, click button more left, normal resurrect at spawnpoint
 				if ( not player.Alive  and
 				     foregroundWindow() == getWin() ) then
 					cprintf(cli.green, language[106]);  -- resurrect at the spawnpoint
@@ -421,15 +421,24 @@ function main()
 					player:update();
 				end;
 
-				-- if still death, try macro if one defined
-				if ( not player.Alive  and 
-				     settings.profile.hotkeys.RES_MACRO.key ) then
+				-- if still dead, try macro if one defined
+				if( not player.Alive and settings.profile.hotkeys.MACRO ) then
+					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
+					RoMScript("AcceptResurrect();");
+					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
+					player:update();
+				end
+
+				-- DEPRECATED
+				if ( not player.Alive  and settings.profile.hotkeys.RES_MACRO.key ) then
 					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro 
 					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
 					-- wait time after resurrec (loading screen), needs more time on slow PC's
 					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 					player:update();
 				end;
+				-- END DEPRECATED
+				
 
 				if( not player.Alive ) then
 					cprintf(cli.yellow,  language[108], -- still death, did you set your macro?

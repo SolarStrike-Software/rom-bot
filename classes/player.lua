@@ -1226,9 +1226,14 @@ function CPlayer:logout(fc_shutdown)
 		fc_shutdown = true;
 	end;
 
-	if( settings.profile.hotkeys.LOGOUT_MACRO ) then
+	if( settings.profile.hotkeys.MACRO ) then
+		RoMScript("Logout();");
+		yrest(30000); -- Wait for the log out to process
+	-- DEPRECATED
+	elseif( settings.profile.hotkeys.LOGOUT_MACRO ) then
 		keyboardPress(settings.profile.hotkeys.LOGOUT_MACRO.key);
 		yrest(30000);	-- Wait for the log out to process
+	-- END DEPRECATED
 	else
 		local PID = findProcessByWindow(getWin()); -- Get process ID
 		os.execute("TASKKILL /PID " .. PID .. " /F");
