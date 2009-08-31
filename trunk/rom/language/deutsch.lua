@@ -83,11 +83,11 @@ language = {
 	[101] = "Aus technischen Gr\129nden k\148nnen wir den Charakter-/Profilname \'%s\' nicht benutzen. Bitte benutzen Sie statt dessen den Profilnamen  \'%s.xml\' oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[102] = "Wir k\148nnen das Profile \'%s.xml'\ nicht finden. Bitte legen Sie ein entsprechendes Profil im Ordner \'rom\\profiles\' an oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[103] = "Wenn Sie die automatische Wiederbelebung benutzen m\148chten, m\129ssen Sie die Option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' in Ihrem Profil setzen.\n",
-	[104] = "Wir werden die automatische Wiederbelenung in 10 Sekunden versuchen.\n",
+	[104] = "Wir werden die automatische Wiederbelebung in 10 Sekunden versuchen.\n",
 	[105] = "Wir versuchen die Wiederbelebung am Platz des Todes ...\n",
 	[106] = "Wir versuchen uns am Auferstehungspunkt wiederzubeleben ...\n",
 	[107] = "Wir versuchen das Ingame Makro zur Wiederbelebung zu benutzen ...\n",
-	[108] = "Sie sind noch immer tot. Es gibt ein Problem mit der automatischen Wiederbelebung. Haben Sie das Ingame Makro \'/script AcceptResurrect();\' der Taste %s zugeordnet?\n",
+	[108] = "Sie sind noch immer tot. Es gibt ein Problem mit der automatischen Wiederbelebung. Haben Sie Ingame den ersten Makro Platz mit einem Dummy Makro belegt und dieses der Taste %s zugeordnet?\n",
 	[109] = "Sie sind %s mal von maximal %s Toden/automatischer Wiederbelebung gestorben.\n",
 	[111] = "Sie haben keinen R\129cklaufpfad angegeben!!! Wir benutzen daher die normale Wegepunktedatei \'%s\' . Bitte pr\129fen Sie das.\n",
 	[112] = "Wir benutzen die normale Wegepunktdatei \'%s\' nach der automatischen Wiederbelebung.\n",
@@ -137,7 +137,8 @@ language = {
 	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[163] = "Es wurde keine R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[164] = "Wir kommen von einem R\129ckkehrpfade. Daher werden wir auch jetzt den R\129ckkehrpfad %s benutzen.\n",
-	[165] = "Wir benutzen nun die normale Wegeöpunktdatei %s.\n",	
+	[165] = "Wir benutzen nun die normale Wegeöpunktdatei %s.\n",
+	[166] = "Bitte neue Profiloption <hotkey name=\"MACRO\" key=\"VK_7\" /> zur automatischen Wiederbelebung setzen.\n",	
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",
