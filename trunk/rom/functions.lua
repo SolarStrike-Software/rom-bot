@@ -308,22 +308,52 @@ function load_paths( _wp_path, _rp_path)
 	end
 end
 
---- Run rom scripts, usage: RomScript("AcceptResurrect();");
+--- Run rom scripts, usage: RoMScript("AcceptResurrect();");
 function RoMScript(script)
-	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address) + macro_offset;
-	local text = "/script " .. script;
+	--- Get the real offset of the address
+	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address);
 
+	--- Macro length is max 255, and after we add the return code,
+	--- we are left with 120 character limit.
+	local text = "/script r='' a={} a[0],a[1],a[2],a[3],a[4] = " .. script ..
+	" for i=0,4 do if a[i] then r = r..a[i]..'@' end end" ..
+	" EditMacro(2,'',7,r);";
+
+	--- Write the macro
 	for i = 0, 254, 1 do
-		local byte = string.byte(text, i+1);
+		local byte = string.byte(text, i + 1);
 		if( byte == null ) then
-			memoryWriteByte(getProc(), macro_address + i, 0);
+			memoryWriteByte(getProc(), macro_address + macro1_offset + i, 0);
 			break;
 		end
-
-		memoryWriteByte(getProc(), macro_address+i, byte);
+		memoryWriteByte(getProc(), macro_address + macro1_offset + i, byte);
 	end
-
+   
+	--- Execute it
 	if( settings.profile.hotkeys.MACRO ) then
 		keyboardPress(settings.profile.hotkeys.MACRO.key);
 	end
+   
+	--- Wait for RoM to process it, so that we can read the outcome.
+	yrest(200);
+   
+	--- Read the outcome from macro 2
+	readsz = "";
+	ret = {false, false, false, false, false};
+	cnt = 0;
+	for i = 0, 254, 1 do
+		local byte = memoryReadByte(getProc(), macro_address + macro2_offset + i);
+      
+		if byte > 0 then
+			if byte == 64 then -- Use @ to seperate
+				ret[cnt] = readsz;
+				cnt = cnt+1;
+				readsz = "";
+			else
+				readsz = readsz .. string.char(byte);
+			end
+		end
+	end
+   
+	return ret[0],ret[1],ret[2],ret[3],ret[4];
 end

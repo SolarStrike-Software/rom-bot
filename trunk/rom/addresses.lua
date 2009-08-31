@@ -39,4 +39,5 @@ camXUVec_offset = 0x124;
 camYUVec_offset = 0x128;
 camZUVec_offset = 0x12C;
 
-macro_offset = 0x110;
+macro1_offset = 0x110;
+macro2_offset = 0x618;
