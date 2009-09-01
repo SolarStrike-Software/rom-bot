@@ -165,6 +165,45 @@ function check_key_settings( _name, _key, _modifier)
 
 end
 
+
+function settings_print_keys()
+-- That function prints the loaded key settings to the MM window and to the log
+
+	local msg;
+	msg ="QUICK_TURN = "..tostring(settings.profile.options.QUICK_TURN);	-- we wander around
+	logMessage(msg);		-- log keyboard settings
+	
+	if( bindings ) then		-- we read from bindings.txt
+		msg = sprintf(language[167], "bindings.txt");	-- Keyboard settings are from
+	else				-- we read settings.xml
+		msg = sprintf(language[167], "settings.xml");	-- Keyboard settings are from
+	end
+
+--	cprintf(cli.green, msg.."\n");	-- Keyboard settings are from
+	logMessage(msg);		-- log keyboard settings
+
+	for i,v in pairs(check_keys) do
+
+		if(v.name) then
+
+			msg = string.sub(v.name.."                               ", 1, 30);	-- function name
+
+			local modname;
+			if( v.modifier ) then 
+				modname = getKeyName(v.modifier).."+";	-- modifier name
+			else
+				modname = "";
+			end;
+			msg = msg..modname..getKeyName(v.key);	-- add key name
+--			printf(msg.."\n");			-- print line
+			logMessage(msg);			-- log keyboard settings
+		
+		end;
+	end;
+
+end
+
+
 function settings.load()
 	local filename = getExecutionPath() .. "/settings.xml";
 	local root = xml.open(filename);
