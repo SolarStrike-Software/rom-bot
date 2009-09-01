@@ -137,8 +137,10 @@ language = {
 	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[163] = "Es wurde keine R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[164] = "Wir kommen von einem R\129ckkehrpfade. Daher werden wir auch jetzt den R\129ckkehrpfad %s benutzen.\n",
-	[165] = "Wir benutzen nun die normale Wegeöpunktdatei %s.\n",
+	[165] = "Wir benutzen nun die normale Wegepunktdatei %s.\n",
 	[166] = "Bitte neue Profiloption <hotkey name=\"MACRO\" key=\"VK_7\" /> zur automatischen Wiederbelebung setzen.\n",	
+	[167] = "Tastenzuordnungen kommen aus Datei %s:",
+	[168] = "Wir wandern in einem Radius von %d umher.\n",	
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",

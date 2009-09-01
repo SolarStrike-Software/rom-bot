@@ -195,6 +195,7 @@ function main()
 	local displayname = string.sub(load_profile_name, 1, 4) .. "****";
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
+	settings_print_keys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 
@@ -322,15 +323,20 @@ function main()
 
 	end	-- end of local function list_waypoint_files()
 
-	-- if no wp file given, list them
-	while(wp_to_load == nil  or
-	  wp_to_load == ""   or
-	  wp_to_load == " ") do
-		list_waypoint_files();
+	if( settings.profile.options.PATH_TYPE == "wander" or
+	    forcedPath == "wander" ) then
+	    cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
+	else
+		-- if no wp file given, list them
+		while(wp_to_load == nil  or
+		  wp_to_load == ""   or
+		  wp_to_load == " ") do
+			list_waypoint_files();
+		end;
+	
+		load_paths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 	end;
 
-	load_paths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
-	
 	-- special option for use waypoint file from profile in a reverse order / not if forced path
 	if( settings.profile.options.WAYPOINTS_REVERSE == true  and
 	    not forcedPath  ) then 

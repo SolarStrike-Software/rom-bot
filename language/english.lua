@@ -136,8 +136,8 @@ language = {
 	[164] = "We are coming from a return_path. So we will going on using the returnpath %s.\n",
 	[165] = "We use the normal waypoint path %s now.\n",
 	[166] = "Please set new profile option <hotkey name=\"MACRO\" key=\"VK_7\" /> to use automtic resurrection macro.\n",	
-	[167] = "...\n",
-	[168] = "...\n",
+	[167] = "Keyboard settings are from %:s",
+	[168] = "We will wander around with a radius of %d.\n",
 	
 
 	-- createpath.lua
