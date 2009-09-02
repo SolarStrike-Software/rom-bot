@@ -305,11 +305,9 @@ function CPlayer:checkSkills(_only_friendly)
 			end;
 
 			self:cast(v);
-			
+			lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 		end
 	end
-
-	lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 
 end
 
@@ -800,7 +798,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
-	local lastDistImprove = os.time();
+	lastDistImprove = os.time();	-- global, because we reset it whil skill use
 	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
@@ -854,7 +852,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end
 
-		-- after lastDistImprove time check to avoid wrong messages
 		self:checkPotions();
 		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
