@@ -353,7 +353,7 @@ function RoMScript(script)
 	ret = {};
 	cnt = 0;
 	for i = 0, 254, 1 do
-		local byte = memoryReadByte(getProc(), macro_address + macro2_offset + i);
+		local byte = memoryReadUByte(getProc(), macro_address + macro2_offset + i);
 
 		if( byte == 0 ) then -- Break on NULL terminator
 			break;
