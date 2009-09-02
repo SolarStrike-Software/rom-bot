@@ -208,6 +208,7 @@ function settings.load()
 	local filename = getExecutionPath() .. "/settings.xml";
 	local root = xml.open(filename);
 	local elements = root:getElements();
+	check_keys = { };	-- clear table, because of restart from createpath.lua
 
 	-- Specific to loading the hotkeys section of the file
 	local loadHotkeys = function (node)
