@@ -306,9 +306,11 @@ function CPlayer:checkSkills(_only_friendly)
 
 			self:cast(v);
 			
-			lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 		end
 	end
+
+	lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
+
 end
 
 -- Check if you need to use any potions, and use them.

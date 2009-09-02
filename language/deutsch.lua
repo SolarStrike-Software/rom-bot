@@ -126,7 +126,7 @@ language = {
 	[145] = "Welche Wegpunktdatei m\148chten Sie nutzen? Geben Sie die Nummer ein und dr\129cken Sie %s > ",
 	[146] = "Sie haben ausgew\132hlt: %s\n",
 	[147] = "Falsche Auswahl. Bitte pr\129fen Sie Ihre Eingabe und w\132hlen Sie erneut!\n",
-	[148] = "Wir gehen nach diesem Kampf in den Schlafmodus / sobald als m\149glich.\n",
+	[148] = "Wir gehen nach diesem Kampf in den Schlafmodus / sobald als m\148glich.\n",
 	[149] = "Sie sind gestorben... Sorry.\n",	
 
 	[150] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Wegpunkt #%d. Bitte pr\129fen Sie den Lua Code an diesem Wegepunkt.",
