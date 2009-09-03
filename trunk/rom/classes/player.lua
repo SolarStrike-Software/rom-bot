@@ -273,10 +273,14 @@ function CPlayer:cast(skill)
 
 	if( type(settings.profile.events.onSkillCast) == "function" ) then
 		arg1 = skill;
-		local status,err = pcall(settings.profile.events.onSkillCast);
-		if( status == false ) then
-			local msg = sprintf("onSkillCast error: %s", err);
-			error(msg);
+		if ( onSkillCast_active ~= true ) then	-- avoid calling event if already within an event
+			onSkillCast_active = true;
+			local status,err = pcall(settings.profile.events.onSkillCast);
+			if( status == false ) then
+				local msg = sprintf("onSkillCast error: %s", err);
+				error(msg);
+			end
+			onSkillCast_active = false;
 		end
 	end
 end
