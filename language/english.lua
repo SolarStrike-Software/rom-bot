@@ -153,4 +153,8 @@ language = {
 	[509] = "...\n",
 	[510] = "...\n",
 	
+	-- Inventory.lua
+	[1000] = "Updating",
+	[1001] = "Shopping",
+	
 };
