@@ -1,7 +1,8 @@
 database =  {
 	skills = {},
 	nodes = {},
-	utf8_ascii = {}	
+	utf8_ascii = {},
+	consumables = {}
 };
 
 function database.load()
@@ -148,6 +149,26 @@ function database.load()
 		tmp.dos_replace = dos_replace;		
 
 		database.utf8_ascii[ascii] = tmp;
+	end
+	
+	root = xml.open(getExecutionPath() .. "/database/consumables.xml");
+	elements = root:getElements();
+
+	for i,v in pairs(elements) do
+	    local type, name, level, id;
+		local tmp = {};
+
+		type = v:getAttribute("type");
+		name = v:getAttribute("name");
+		level = v:getAttribute("level");
+		id = v:getAttribute("id");
+
+		if (type) then tmp.Type = type; end;
+		if (name) then tmp.Name = name; end;
+		if (level) then tmp.Level = level; end;
+		if (id) then tmp.Id = id; end;
+
+		database.consumables[i] = tmp;
 	end
 
 end

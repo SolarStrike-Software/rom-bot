@@ -342,7 +342,7 @@ function RoMScript(script)
 	-- Use high-res timers to find out when to time-out
 	local startWaitTime = getTime();
 	while( memoryReadByte(getProc(), macro_address + macro2_offset) == 6 ) do
-		if( deltaTime(getTime(), startWaitTime) > 100 ) then
+		if( deltaTime(getTime(), startWaitTime) > 500 ) then
 			break; -- Timed out
 		end;
 		rest(1);
