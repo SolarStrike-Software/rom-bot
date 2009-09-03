@@ -1,0 +1,26 @@
+<potions>
+	<!-- Healing potions -->
+	<potion type="healing" id="204889" name="Spirit Herb" level="51" />
+	<potion type="healing" id="200820" name="Ancestral Spirit Herbs" level="46" />
+	<potion type="healing" id="200819" name="Military Regeneration Formula" level="41" />
+	<potion type="healing" id="200816" name="Potent Regeneration Formula" level="36" />
+	<potion type="healing" id="200815" name="Regeneration Mixture" level="31" />
+	<potion type="healing" id="200812" name="Healer's First Aid Potion" level="26" />
+	<potion type="healing" id="200811" name="Barbarian Herbs" level="21" />
+	<potion type="healing" id="200808" name="Major First Aid Potion" level="16" />
+	<potion type="healing" id="200807" name="First Aid Potion" level="11" />
+	<potion type="healing" id="200664" name="Basic First Aid Potion" level="6" />
+	<potion type="healing" id="200663" name="Simple First Aid Potion" level="1" />
+
+	<!-- Mana potions -->
+	<potion type="mana" id="201061" name="Elemental Spirit Stone" level="46" />
+	<potion type="mana" id="201060" name="Refined Crystal Mana Medicine" level="41" />
+	<potion type="mana" id="201057" name="Potent Crystal Mana Medicine" level="36" />
+	<potion type="mana" id="201056" name="Crystal Mana Medicine" level="31" />
+	<potion type="mana" id="201053" name="Condensed Magic Potion" level="26" />
+	<potion type="mana" id="201052" name="Elemental Mana Stone" level="21" />
+	<potion type="mana" id="201047" name="Major Magic Potion" level="16" />
+	<potion type="mana" id="201046" name="Magic Potion" level="11" />
+	<potion type="mana" id="201043" name="Basic Magic Potion" level="6" />
+	<potion type="mana" id="201042" name="Simple Magic Potion" level="1" />
+</potions>
