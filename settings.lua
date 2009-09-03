@@ -61,10 +61,11 @@ settings_default = {
 			HARVEST_SCAN_WIDTH = 10,	-- steps horizontal
 			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
 			HARVEST_SCAN_STEPSIZE = 35,	-- wide of every step
-			HARVEST_SCAN_TOPDOWN = true,	-- true = top->down  false = botton->up
+			HARVEST_SCAN_TOPDOWN = false,	-- true = top->down  false = botton->up
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
+			HARVEST_SCAN_YMOVE = 1.1,		-- move scan area top/down ( 1=middle of screen )
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			
 		}, hotkeys = {}, skills = {}, friends = {},

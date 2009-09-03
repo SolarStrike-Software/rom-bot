@@ -54,7 +54,8 @@ function CPlayer:harvest( _second_try )
 		-- Scan nearby area for a node
 		keyboardHold(key.VK_SHIFT);	-- press shift so you can scan trough players
 		for y = scanstart, scanende, scanstep do
-			my = math.ceil(halfHeight * scanYMultiplier - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
+			my = math.ceil(halfHeight * scanYMultiplier * settings.profile.options.HARVEST_SCAN_YMOVE
+			               - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
 
 			for x = 0,scanWidth-1 do
 				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
