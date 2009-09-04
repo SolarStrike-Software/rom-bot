@@ -214,7 +214,7 @@ function CPlayer:cast(skill)
 		local startTime = os.time();
 		while( not self.Casting ) do
 			-- break cast with jump if aggro before casting finished
-			if( self:check_aggro_before_cast(JUMP_TRUE) and
+			if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
 			   ( skill.Type == STYPE_DAMAGE or
 				 skill.Type == STYPE_DOT ) ) then	-- with jump
 				printf(language[82]);	-- close print 'Casting ..." / aborted
@@ -230,7 +230,7 @@ function CPlayer:cast(skill)
 
 		while(self.Casting) do
 			-- break cast with jump if aggro before casting finished
-			if( self:check_aggro_before_cast(JUMP_TRUE) and
+			if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
 			   ( skill.Type == STYPE_DAMAGE or
 				 skill.Type == STYPE_DOT ) ) then	--  with jump
 				printf(language[82]);	-- close print 'Casting ..."
@@ -303,7 +303,7 @@ function CPlayer:checkSkills(_only_friendly)
 			end
 
 			-- break cast if aggro before casting
-			if( self:check_aggro_before_cast(JUMP_FALSE) and
+			if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
 			   ( v.Type == STYPE_DAMAGE or
 			     v.Type == STYPE_DOT )  ) then	-- without jump
 				return;
@@ -1262,7 +1262,7 @@ function CPlayer:logout(fc_shutdown)
 
 end
 
-function CPlayer:check_aggro_before_cast(_jump)
+function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 -- break cast in last moment / works not for groups, because you get battling flag from your groupmembers  !!!
 -- works also if target is not visible and we get aggro from another mob
 -- _jump = true       abort cast with jump hotkey
@@ -1271,9 +1271,22 @@ function CPlayer:check_aggro_before_cast(_jump)
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
-			
+	
+	-- don't break friendly skills
+	if( _skill_type == STYPE_HEAL  or
+	    _skill_type == STYPE_BUFF  or
+	    _skill_type == STYPE_HOT ) then
+		return false;
+	end
+
 	local target = self:getTarget();
 	if( self.TargetPtr ~= 0 ) then  target:update(); end;
+
+	-- don't break if no target or self targeting
+	if( target.Name == "<UNKNOWN>"  or
+	    self.TargetPtr == self.Address) then
+		return false;
+	end
 
 	-- check if the target is attacking us, if not we can break and take the other mob
 	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
@@ -1308,11 +1321,8 @@ function CPlayer:findTarget()
 	-- We've got a target, fight it instead of worrying about our waypoint.
 
 	if( self:haveTarget() ) then
---	if( self:haveTarget() and self.Fighting == false ) then
--- do we nee self.Fighting == false check?
--- not sure, so I just deleted it to see what happens
+	-- all other checks are within the self:haveTarget(), so the target should be ok
 
--- all other checks are within the self:haveTarget(), so the target should be ok
 		local target = self:getTarget();
 		local dist = distance(self.X, self.Z, target.X, target.Z);
 		cprintf(cli.green, language[37], target.Name, dist);	-- Select new target %s in distance
