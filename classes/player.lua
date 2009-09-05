@@ -611,12 +611,26 @@ function CPlayer:fight()
 		end
 	end
 
-	-- give client a little time to update battle flag, if we loot even at combat
-	-- we don't need the time
+	-- count kills per target name
+	local target_Name = target.Name;
+	if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
+	if(self.mobs[target_Name] == nil) then  self.mobs[target_Name] = 0; end;
+	self.mobs[target_Name] = self.mobs[target_Name] + 1;
+	
+	self.Fights = self.Fights + 1;		-- count our fights
+
+	-- give client a little time to update battle flag (to come out of combat), 
+	-- if we loot even at combat we don't need the time
 	if( settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 		yrest(800);
 	end;
 
+	cprintf(cli.green, language[27], 	-- Fight finished. Target dead/lost
+	  self.mobs[target_Name],
+	  target_Name,
+	  self.Fights, 
+	  os.difftime(os.time(), 
+	  self.BotStartTime_nr)/60);
 
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
@@ -638,8 +652,6 @@ function CPlayer:fight()
 		self:clearTarget();
 	end;
 
-	self.Fights = self.Fights + 1;		-- count our fights
-	cprintf(cli.green, language[27], self.Fights, os.difftime(os.time(), self.BotStartTime_nr)/60);	-- Fight finished. Target dead/lost
 	self.Fighting = false;
 end
 

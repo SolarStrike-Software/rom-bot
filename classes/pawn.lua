@@ -76,6 +76,7 @@ CPawn = class(
 		self.Sleeping = false;		-- sleep mode with fight back if attacked
 		self.Sleeping_time = 0;		-- counts the sleeping time
 		self.Fights = 0;			-- counts the fights
+		self.mobs = {};				-- counts the kills per target name
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 		self.MP_counter = 0;		-- counts use of mana potions
 		self.HP_counter = 0;		-- counts use of HP potions
