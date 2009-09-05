@@ -57,6 +57,12 @@ function CInventory:update()
 	printf("\n");
 end
 
+-- uses romscript
+function CInventory:getItemCount(itemId)
+	return RoMScript("GetItemCount("..itemId..")");
+end
+
+-- uses pre existing information
 function CInventory:itemTotalCount(itemNameOrId)
 	totalCount = 0;
  	for slot,item in pairs(self.BagSlot) do
