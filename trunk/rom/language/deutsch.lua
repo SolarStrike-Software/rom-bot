@@ -24,7 +24,7 @@ language = {
 	[24] = "Zu nah. Nehme Abstand.\n",
 	[25] = "Bewegung zu | Soll Entfernung: %d | Ist: %d\n",
 	[26] = "Drehung dauert zu lange... breche ab\n",
-	[27] = "Kampf beendet. Ziel tot/verloren (Kampf #%d / Laufzeit %d Minuten)\n",
+	[27] = "Kampf beendet. %d %s get\148tet. (Kampf #%d / Laufzeit %d Minuten)\n",
 	[28] = "Stoppe Wegpunkt: Ziel gefunden.\n",
 	[29] = "Distanzabbruch.\n",
 	[30] = "Ziel nicht angreifbar: %s\n",
@@ -130,7 +130,7 @@ language = {
 	[149] = "Sie sind gestorben... Sorry.\n",	
 
 	[150] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Wegpunkt #%d. Bitte pr\129fen Sie den Lua Code an diesem Wegepunkt.",
-	[151] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Event %s im Charakter-Profil. Bitte \129berpr\129fen Sie den Lua Code zu dem angegbenen Event in Ihrem Profile.",
+	[151] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Event %s im Charakter-Profil. Bitte \129berpr\129fen Sie den Lua Code zu dem angegebenen Event in Ihrem Profile.",
 	
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
 	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
@@ -141,6 +141,7 @@ language = {
 	[166] = "Bitte neue Profiloption <hotkey name=\"MACRO\" key=\"VK_7\" /> zur automatischen Wiederbelebung setzen.\n",	
 	[167] = "Tastenzuordnungen kommen aus Datei %s:",
 	[168] = "Wir wandern in einem Radius von %d umher.\n",	
+	[169] = "Dr\129cke %s: RoMScript ausf\129hren \"%s\".\n",
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",

@@ -22,7 +22,7 @@ language = {
 	[24] = "Too close. Backing up.\n",
 	[25] = "Moving in | Suggested range: %d | Distance: %d\n",
 	[26] = "Taking too long to turn... breaking\n",
-	[27] = "Fight finished. Target dead/lost (fight #%d / runtime %d minutes)\n",
+	[27] = "Fight finished. Killed %d %s. (fight #%d / runtime %d minutes)\n",
 	[28] = "Stopping waypoint: Target acquired.\n",
 	[29] = "Distance break.\n",
 	[30] = "Target not attackable: %s\n",
@@ -138,6 +138,7 @@ language = {
 	[166] = "Please set new profile option <hotkey name=\"MACRO\" key=\"VK_7\" /> to use automtic resurrection macro.\n",	
 	[167] = "Keyboard settings are from %s:",
 	[168] = "We will wander around with a radius of %d.\n",
+	[169] = "Use %s: Executing RoMScript \"%s\".\n",
 	
 
 	-- createpath.lua
