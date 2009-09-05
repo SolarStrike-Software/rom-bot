@@ -316,7 +316,7 @@ function RoMScript(script)
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
 	local text = "/script r='' a={" .. script ..
-	"} for i=1,#a do if a[i] then r=r..a[i]" ..
+	"} for i=1,#a do if a[i] then r=r..tostring(a[i])" ..
 	" end r=r..'" .. string.char(9) .. "' end" ..
 	" EditMacro(2,'',7,r);";
 
@@ -359,10 +359,10 @@ function RoMScript(script)
 			break;
 		elseif( byte == 9 ) then -- Use TAB to seperate
 			-- Implicit casting
-			if( readsz == "true" ) then readsz = true; end;
-			if( readsz == "false" ) then readsz = false; end;
 			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);  end;
 			if( string.find(readsz, "^%d+$") ) then readsz = tonumber(readsz);  end;
+			if( readsz == "true" ) then readsz = true; end;
+			if( readsz == "false" ) then readsz = false; end;
 
 			table.insert(ret, readsz);
 			cnt = cnt+1;
