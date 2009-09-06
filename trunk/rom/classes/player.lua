@@ -1208,7 +1208,8 @@ function CPlayer:isFriend(pawn)
 	pawn:update();
 
 	for i,v in pairs(settings.profile.friends) do
-		if(string.lower(pawn.Name) == string.lower(v)) then
+		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) then
+--		if(string.lower(pawn.Name) == string.lower(v)) then
 			return true;
 		end
 	end
@@ -1760,6 +1761,13 @@ function CPlayer:target_NPC(_npcname)
 					keyboardPress(settings.profile.hotkeys.ATTACK.key);
 					if( settings.profile.hotkeys.ATTACK.modifier ) then
 						keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+					end
+
+					-- repair all with macro script
+					-- we do that at all NPC's
+					-- we cant use ChoiceOption(1) by default because of transport NPC and so on
+					if( settings.profile.hotkeys.MACRO ) then
+						RoMScript("ClickRepairAllButton();");
 					end
 
 					return true;

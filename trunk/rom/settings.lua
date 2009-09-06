@@ -644,6 +644,17 @@ function settings.loadProfile(_name)
 
 		for i,v in pairs(elements) do
 			local name = v:getAttribute("name");
+		
+			-- fix, because getAttribute seems not to recognize the escape characters
+			-- for special ASCII characters
+			name = string.gsub (name, "\\132", string.char(132));	-- ä
+			name = string.gsub (name, "\\142", string.char(142));	-- Ä
+			name = string.gsub (name, "\\148", string.char(148));	-- ö
+			name = string.gsub (name, "\\153", string.char(153));	-- Ö
+			name = string.gsub (name, "\\129", string.char(129));	-- ü
+			name = string.gsub (name, "\\154", string.char(154));	-- Ü
+			name = string.gsub (name, "\\225", string.char(225));	-- ß
+			
 			table.insert(settings.profile.friends, name);
 		end
 	end
