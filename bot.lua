@@ -201,8 +201,8 @@ function main()
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	
 	-- Register and update inventory
-	local inventory = CInventory();
-	--inventory:update();
+	inventory = CInventory();
+	inventory:update();
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings

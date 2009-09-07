@@ -1,8 +1,15 @@
+include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
+include("classes/inventory.lua");
+include("classes/camera.lua");
 include("classes/waypoint.lua");
+include("classes/waypointlist.lua");
+include("classes/waypointlist_wander.lua");
+include("classes/node.lua");
 include("settings.lua");
 include("functions.lua");
+database.load();
 
 -- ********************************************************************
 -- Change the parameters below to your need                           *
@@ -17,7 +24,7 @@ p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
 p_wp_type = "";		-- type for normal waypoints 
 p_hp_type = "";		-- type for harvest waypoints		
 p_harvest_command = "player:harvest();";	-- harvest command
-p_targetNPC_command = "\n\t\tplayer:target_NPC(\"%s\");\n\t\tplayer:rest(4);\n\t";	-- target NPC command
+p_targetNPC_command = "\n\t\tplayer:merchant(\"%s\");\n\t";	-- target NPC command
 -- ********************************************************************
 -- End of Change parameter changes                                    *
 -- ********************************************************************
@@ -31,6 +38,7 @@ harvKey = key.VK_NUMPAD2;	-- insert a harvest point
 targetNPCKey = key.VK_NUMPAD4;	-- insert a target a NPC and open dialog waypoint
 saveKey = key.VK_NUMPAD3;	-- save the waypoints
 restartKey = key.VK_NUMPAD9;	-- restart waypoints script
+
 
 
 function saveWaypoints(list)
@@ -70,6 +78,7 @@ function saveWaypoints(list)
 end
 
 function main()
+
 	local running = true;
 	while(running) do
 		local wpList = {};
@@ -78,6 +87,8 @@ function main()
 		local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
 		player = CPlayer(playerPtr);
 		player:update();
+		 
+		settings.loadProfile(player.Name);
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 		cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
@@ -90,6 +101,9 @@ function main()
 			.. language[506],		-- Save waypoints and restart
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), 
 			getKeyName(targetNPCKey), getKeyName(restartKey) );
+		
+		attach(getWin())	
+		addMessage(language[501]);
 
 		while(true) do
 
@@ -143,22 +157,29 @@ function main()
 					local hf_type;
 					if( hf_key == "HP" ) then 	-- is's a havest point?
 						tmp.wp_type = "HP";	-- it is a harvest point
-						hf_type = "HP";
+						hf_type = "HP"; 
+						addMessage(language[512]); -- harvestpoint added
 					elseif( hf_key == "WP" ) then
 						tmp.wp_type = "WP"; 
 						hf_type = "WP";
+						addMessage(string.gsub(language[511],"¤",(#wpList + 1))); -- waypoint added
 					elseif( hf_key == "NPC" ) then
 						tmp.wp_type = "NPC";
 						
 						-- ask for NPC name
-						keyboardBufferClear();
-						io.stdin:flush();
-						cprintf(cli.green, language[507]);	-- What's the name of the NPC 
-						tmp.npc_name = io.stdin:read();
+						--keyboardBufferClear();
+						--io.stdin:flush();
+						--cprintf(cli.green, language[507]);	-- What's the name of the NPC 
+						--tmp.npc_name = io.stdin:read();
+						
+						-- get target name
+						local target = player:getTarget();
+						tmp.npc_name = target.Name;
 
-						hf_type = sprintf("NPC (%s)", tmp.npc_name);
+						hf_type = sprintf("NPC (%s)", tmp.npc_name); 
+						addMessage(string.gsub(language[513],"¤",tmp.npc_name));
 					end; 
-
+                    
 					printf(language[508],	-- Continue to next. Press %s to save and quit
 					#wpList + 1, hf_type, getKeyName(saveKey));
 

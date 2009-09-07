@@ -153,6 +153,9 @@ language = {
 	[508] = "Recorded [#%3d] %s, Continue to next. Press %s to save and quit\n",
 	[509] = "...\n",
 	[510] = "...\n",
+	[511] = "Waypoint ¤ added\n",
+	[512] = "Harvestpoint added\n",
+	[513] = "Merchant ¤ is your new dealer!\n",
 	
 	-- Inventory.lua
 	[1000] = "Mapping inventory",

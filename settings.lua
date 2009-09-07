@@ -38,7 +38,7 @@ settings_default = {
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
 			LOOT_PAUSE_AFTER = 10,	-- probability for short pause after loot to look more human
-			POTION_COOLDOWN = 15,
+			-- POTION_COOLDOWN = 15, -- allways 15
 			MAX_FIGHT_TIME = 12,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
@@ -51,6 +51,10 @@ settings_default = {
 			MP_REST = 15,
 			HP_REST = 15,
 			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true|false,
+			HEALING_POTION = 0,                 -- shopping options
+			MANA_POTION = 0,
+			ARRAY_QUIVER = 0,
+			THROWN_BAG = 0,
 
 			
 			-- expert options

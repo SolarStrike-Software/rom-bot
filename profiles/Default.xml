@@ -5,7 +5,6 @@
 		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
-		<option name="POTION_COOLDOWN"    value="15" />
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        value="" />	<!-- leave empty or choose ranged/melee if not using class default -->
@@ -37,6 +36,12 @@
 		<option name="HP_REST" value="15" />
 		<option name="MP_REST" value="15" />
 
+		<!-- Shopping options, how many of what do you want to keep in your inventory -->
+		<option name="HEALING_POTION" value="99" />
+		<option name="MANA_POTION" value="99" />
+		<option name="ARROW_QUIVER" value="2" />
+		<option name="THROWN_BAG" value="2" />
+
 		<!-- Log out and resurrect settings -->
 		<option name="LOGOUT_TIME" value="0" />			<!-- in minutes, 0 = timer disabled -->
 		<option name="LOGOUT_SHUTDOWN" value="false" />
@@ -53,8 +58,6 @@
 	</friends>
 
 	<hotkeys>
-		<hotkey name="HP_POTION"    key="VK_MINUS" />
-		<hotkey name="MP_POTION"    key="VK_PLUS" />
 		<hotkey name="ATTACK"       key="VK_1" />
 		<hotkey name="MACRO"        key="VK_0" />
 	</hotkeys>

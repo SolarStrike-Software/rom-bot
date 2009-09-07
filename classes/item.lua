@@ -4,7 +4,7 @@ CItem = class(
 	function(self)
 		self.Id = 0;
 		self.BagId = 0;
-    	self.Name = "";
+    	self.Name = "Empty";
     	self.ItemCount = 0;
     	self.Color = "ffffff";
 	end
