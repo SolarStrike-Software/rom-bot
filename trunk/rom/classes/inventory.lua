@@ -85,10 +85,13 @@ function CInventory:updateBagSlot(slotNumber)
 end
 
 -- Make a full update
-function CInventory:update()
+-- or update slot 1 to _maxslot
+function CInventory:update(_maxslot)
 	printf(language[1000]);  -- Updating
-
-	for slotNumber = 1, 60, 1 do
+	
+	if( not _maxslot ) then _maxslot = 60; end
+	
+	for slotNumber = 1, _maxslot, 1 do
 		self:updateBagSlot(slotNumber);
 		printf(".");
 	end
