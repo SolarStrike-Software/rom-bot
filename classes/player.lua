@@ -402,12 +402,16 @@ function CPlayer:fight()
 			end
 		end;
 
-		if( settings.profile.hotkeys.ATTACK.modifier ) then
-			keyboardHold(settings.hotkeys.ATTACK.modifier);
-		end
-		keyboardPress(settings.profile.hotkeys.ATTACK.key);
-		if( settings.profile.hotkeys.ATTACK.modifier ) then
-			keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+		if( settings.profile.hotkeys.MACRO ) then
+			RoMScript("UseSkill(1,1);");
+		else
+			if( settings.profile.hotkeys.ATTACK.modifier ) then
+				keyboardHold(settings.hotkeys.ATTACK.modifier);
+			end
+			keyboardPress(settings.profile.hotkeys.ATTACK.key);
+			if( settings.profile.hotkeys.ATTACK.modifier ) then
+				keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+			end
 		end
 	end
 
@@ -710,11 +714,22 @@ function CPlayer:loot()
 		return false
 	end
 
-	cprintf(cli.green, language[31], 
-	   getKeyName(settings.profile.hotkeys.ATTACK.key), dist);	-- looting target.
+	yrest(500);	-- ?? 
+
 	-- "attack" is also the hotkey to loot, strangely.
-	yrest(500);
-	keyboardPress(settings.profile.hotkeys.ATTACK.key);
+	local hf_attack_key;
+	if( settings.profile.hotkeys.MACRO ) then
+		hf_attack_key = "MACRO";
+		cprintf(cli.green, language[31], 
+		   hf_attack_key , dist);	-- looting target.
+		RoMScript("UseSkill(1,1);");
+	else
+		hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
+		cprintf(cli.green, language[31], 
+		   hf_attack_key , dist);	-- looting target.
+		keyboardPress(settings.profile.hotkeys.ATTACK.key);
+	end
+	
 	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 
 	-- check for loot problems to give a noob mesassage
@@ -723,7 +738,7 @@ function CPlayer:loot()
 	    self.Z == hf_z  and
 	    dist > 25 )  then
 		cprintf(cli.yellow, language[100], -- We didn't move to the loot!? 
-		getKeyName(settings.profile.hotkeys.ATTACK.key) );	
+		hf_attack_key );	
 	end;
 
 	-- rnd pause from 3-6 sec after loot to look more human
@@ -1802,12 +1817,16 @@ function CPlayer:target_NPC(_npcname)
 				if( string.find(string.lower(target.Name), string.lower(_npcname), 1, true ) ) then
 
 					cprintf(cli.green, language[136], _npcname);	-- We successfully target NPC
-					if( settings.profile.hotkeys.ATTACK.modifier ) then
-						keyboardHold(settings.hotkeys.ATTACK.modifier);
-					end
-					keyboardPress(settings.profile.hotkeys.ATTACK.key);
-					if( settings.profile.hotkeys.ATTACK.modifier ) then
-						keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+					if( settings.profile.hotkeys.MACRO ) then
+						RoMScript("UseSkill(1,1);");
+					else
+						if( settings.profile.hotkeys.ATTACK.modifier ) then
+							keyboardHold(settings.hotkeys.ATTACK.modifier);
+						end
+						keyboardPress(settings.profile.hotkeys.ATTACK.key);
+						if( settings.profile.hotkeys.ATTACK.modifier ) then
+							keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
+						end
 					end
 
 					-- repair all with macro script
