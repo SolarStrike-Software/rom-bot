@@ -1733,7 +1733,7 @@ end
 -- auto interact with a merchant
 function CPlayer:merchant(_npcname)
 	if self:target_NPC(_npcname) then
-		yrest(1000);
+		yrest(3000);
 		RoMScript("ChoiceOption(1)");
 		yrest(1000);
 		RoMScript("ClickRepairAllButton()");
@@ -1743,6 +1743,7 @@ function CPlayer:merchant(_npcname)
 		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
 		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
 		inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
+		inventory:update();
 	end
 	
 end
