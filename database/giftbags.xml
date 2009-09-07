@@ -1,0 +1,23 @@
+<giftbags>
+	<!-- Giftbags Lvl 1 - 10 -->
+	<giftbag id="201843" class=""     level="1" name="Magischer Geschenkbeutel" />
+	<giftbag id="221668" class="mage" level="1" name="Magischer Ring (Geschenk des Pionierdorfs)" />
+	<giftbag id="201844" class="mage" level="2" name="Abenteurer-Geschenkbeutel" />
+	<giftbag id="221669" class="mage" level="2" name="Stoffg\195\188rtel (Geschenk des Pionierdorfs" />
+	<giftbag id="201845" class=""     level="3" name="Pionier-Geschenkbeutel" />
+	<giftbag id="221672" class="mage" level="3" name="Ohrringe (Geschenk des Pionierdorfs)" />
+	<giftbag id="201846" class=""     level="4" name="Siedlungs-Geschenkbeutel" />
+	<giftbag id="221673" class="mage" level="4" name="Umhang (Geschenk des Pionierdorfs" />
+	<giftbag id="201847" class=""     level="5" name="Minen-Geschenkbeutel" />
+	<giftbag id="221674" class="mage" level="5" name="Stoff\195\188berhose (Geschenk des Pionierdorfs)" />
+	<giftbag id="201848" class=""     level="6" name="Logar-Geschenkbeutel" />
+	<giftbag id="221677" class="mage" level="6" name="Ohrringe (Geschenk aus Logar)" />
+	<giftbag id="201849" class=""     level="7" name="Toter-Baum-Geschenkbeutel" />
+	<giftbag id="221678" class="mage" level="7" name="Stoffschuhe (Geschenk aus Logar)" />
+	<giftbag id="201850" class=""     level="8" name="Zerlumpter Geschenkbeutel" />
+	<giftbag id="221681" class="mage" level="8" name="Robe (Geschenk aus Logar)" />
+	<giftbag id="201851" class=""     level="9" name="Mondquellen-Geschenkbeutel" />
+	<giftbag id="221684" class="mage" level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
+	<giftbag id="202152" class=""     level="9" name="Frucht der zus\195\164tzlichen Erfahrung" />
+	<giftbag id="201852" class=""     level="10" name="Heulender Geschenkbeutel" />
+</giftbags>
