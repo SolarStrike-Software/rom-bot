@@ -23,4 +23,50 @@
 	<potion type="mana" id="201046" name="Magic Potion" level="11" />
 	<potion type="mana" id="201043" name="Basic Magic Potion" level="6" />
 	<potion type="mana" id="201042" name="Simple Magic Potion" level="1" />
+
+	<!-- Arrow quivers -->
+	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
+	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
+	<potion type="arrow_quiver" id="202083" name="Gunpowder Arrow Quiver" level="49" />
+	<potion type="arrow_quiver" id="202082" name="Razor Tooth Arrow Quiver" level="42" />
+	<potion type="arrow_quiver" id="202081" name="Cross Spike Arrow Quiver" level="35" />
+	<potion type="arrow_quiver" id="202080" name="Spike Arrow Quiver" level="28" />
+	<potion type="arrow_quiver" id="202079" name="Iron Arrow Quiver" level="21" />
+	<potion type="arrow_quiver" id="202078" name="Copper Arrow Quiver" level="14" />
+	<potion type="arrow_quiver" id="202077" name="Bone Arrow Quiver" level="7" />
+	<potion type="arrow_quiver" id="202075" name="Wooden Arrow Quiver" level="1" />
+
+	<!-- Arrows -->
+	<potion type="arrow" id="210311" name="Gunpowder Arrow" level="49" />
+	<potion type="arrow" id="210310" name="Razor Tooth Arrow" level="42" />
+	<potion type="arrow" id="210309" name="Cross Spike Arrow" level="35" />
+	<potion type="arrow" id="210308" name="Spike Arrow" level="28" />
+	<potion type="arrow" id="210307" name="Iron Arrow" level="21" />
+	<potion type="arrow" id="210306" name="Copper Arrow" level="14" />
+	<potion type="arrow" id="210305" name="Bone Arrow" level="7" />
+	<potion type="arrow" id="210304" name="Wooden Arrow" level="1" />
+
+	<!-- Thrown bags -->
+	<potion type="thrown_bag" id="202142" name="Totem-hunting Axe Bag" level="63" />
+	<potion type="thrown_bag" id="202141" name="Iron Rose Bag" level="56" />
+	<potion type="thrown_bag" id="202140" name="Assassin's Blade Bag" level="49" />
+	<potion type="thrown_bag" id="202139" name="Three-leaf Knife Bag" level="42" />
+	<potion type="thrown_bag" id="202138" name="Puncturing Dart Bag" level="35" />
+	<potion type="thrown_bag" id="202137" name="Improved Throwing Axe Bag" level="28" />
+	<potion type="thrown_bag" id="202136" name="Balanced Throwing Knife Bag" level="21" />
+	<potion type="thrown_bag" id="202135" name="Throwing Axe Bag" level="14" />
+	<potion type="thrown_bag" id="202134" name="Throwing Knife Bag" level="7" />
+	<potion type="thrown_bag" id="202133" name="Stone Bag" level="1" />
+
+	<!-- Thrown -->
+	<potion type="thrown" id="210303" name="Totem-hunting Axe" level="63" />
+	<potion type="thrown" id="210302" name="Iron Rose" level="56" />
+	<potion type="thrown" id="210301" name="Assassin's Blade" level="49" />
+	<potion type="thrown" id="210300" name="Three-leaf Knife" level="42" />
+	<potion type="thrown" id="210299" name="Puncturing Dart" level="35" />
+	<potion type="thrown" id="210298" name="Improved Throwing Axe" level="28" />
+	<potion type="thrown" id="210297" name="Balanced Throwing Knife" level="21" />
+	<potion type="thrown" id="210296" name="Throwing Axe" level="14" />
+	<potion type="thrown" id="210295" name="Throwing Knife" level="7" />
+	<potion type="thrown" id="210294" name="Stone" level="1" />
 </potions>

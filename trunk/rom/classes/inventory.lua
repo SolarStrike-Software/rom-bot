@@ -12,6 +12,35 @@ function CInventory:getAmmunitionCount()
 	return RoMScript("GetInventoryItemCount('player', 9);");
 end
 
+ 
+-- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
+function CInventory:reloadAmmunition(type) 
+	item = self:bestAvailableConsumable(type);
+	-- if theres no ammunition, open a ammunition bag
+	if item.Id == 0 then
+		print("LASDAS");
+		if type == "arrow" then
+			openItem = self:bestAvailableConsumable("arrow_quiver");
+		elseif type == "thrown" then
+			openItem = self:bestAvailableConsumable("thrown_bag");
+		end
+		
+		if not openItem then
+			return false;
+		end
+		
+		openItem:use();
+		
+		-- after opening, update the inventory (this takes about 10 sec)
+		self:update();
+		
+		item = self:bestAvailableConsumable(type);
+	end
+	
+	-- use it
+	item:use();
+end
+
 function CInventory:getMainHandDurability()
     local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player', 15);");
 	return durability/durabilityMax;
@@ -20,12 +49,18 @@ end
 -- Parse from |Hitem:7efa5|h|cffffffff[Qufdsfdsickness I]|r|h
 -- hmm, i whonder if we could get more information out of it than id, color and name.
 function CInventory:parseItemLink(itemLink)
-	if itemLink == "" then
+	if itemLink == "" or itemLink == nil then
 		return;
  	end
 	id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
 	color = string.sub(itemLink, 19, 24);
-	name = string.sub(itemLink, string.find(itemLink, '[\[]')+1, string.find(itemLink, '[\]]')-1);
+	-- this is causing some problems so lets be safe
+	name_parse_from = string.find(itemLink, '[\[]');
+	name_parse_to = string.find(itemLink, '[\]]');
+	name = "Error parsing name";
+	if name_parse_from == nil or name_parse_to == nil then
+		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
+	end
 	return id, color, name;
 end
 
@@ -59,7 +94,8 @@ end
 
 -- uses romscript
 function CInventory:getItemCount(itemId)
-	return RoMScript("GetItemCount("..itemId..")");
+	itemCount = RoMScript("GetBagItemCount("..itemId..")");
+	return tonumber(itemCount);
 end
 
 -- uses pre existing information
@@ -81,7 +117,7 @@ function CInventory:useItem(itemNameOrId)
 	end
 end
 
--- Returns item name or false, takes in type, example: "Healing" or "Mana" or "Array"
+-- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
  	local bestLevel = 0;
  	local bestItem = CItem();
@@ -100,14 +136,15 @@ function CInventory:bestAvailableConsumable(type)
 	return bestItem;
 end
 
--- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw"
+-- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
 -- quantity is how many of them do we need, for example, for potions its 99 or 198
 -- but for arraws it might be 1 or 2
 function CInventory:storeBuyConsumable(type, quantity)
  	local bestLevel = 0;
  	for storeSlot = 1, 20, 1 do
  	    local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
- 	    if storeItemLink == "" then
+
+		if (storeItemLink == "" or storeItemLink == nil) then
  	        break;
  	    end
  	    
@@ -132,7 +169,7 @@ function CInventory:storeBuyConsumable(type, quantity)
  	end
 
  	
-	if self:itemTotalCount(bestItem) < quantity then
+	if self:getItemCount(bestItem) < quantity then
 	    numberToBuy = quantity - self:itemTotalCount(bestItem);
 	    printf(language[1001]);  -- Shopping
 	    for i = 1, numberToBuy, 1 do
@@ -148,12 +185,6 @@ function CInventory:deleteItemInSlot(slot)
 end
 
 
-
-function CInventory:filter()
-
-end
-
--- function CInfontroy:shopping..
--- shopping for potions, and ammunation
-
--- banking functions
+-- TODO: banking functions
+-- TODO: loot filter functions
+-- TODO: keeping inventory slots open

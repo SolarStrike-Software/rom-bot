@@ -12,7 +12,11 @@ CItem = class(
 
 function CItem:use()
 	RoMScript("UseBagItem("..self.BagId..");");
-	self.ItemCount = self.ItemCount - 1;
+	
+	-- Set the default values since our item does not exist anymore.
+	if self.ItemCount <= 0 then
+		self = CItem();
+	end
 end
 
 function CItem:delete()
@@ -20,17 +24,9 @@ function CItem:delete()
 	RoMScript("DeleteCursorItem();");
 	
 	-- Set the default values since our item is deleted.
-	self.Id = 0;
-	self.BagId = 0;
-    self.Name = "";
-    self.ItemCount = 0;
-    self.Color = "ffffff";
-end
+	self = CItem();
+end 
 
-function CItem:__tostring()
-	if self.Id then
-	    return self.Id;
-	else
-	    return false;
-	end
+function CItem:__tonumber()
+	return self.Id;
 end

@@ -158,7 +158,7 @@ language = {
 	
 	
 	-- Inventory.lua
-	[1000] = "Aktualisierung",
+	[1000] = "Aktualisierung inventar",
 	[1001] = "Einkaufen",
 	
 };
