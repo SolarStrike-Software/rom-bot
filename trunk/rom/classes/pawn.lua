@@ -105,26 +105,6 @@ function CPawn:update()
 	local memerrmsg = "Failed to read memory";
 	local tmp;
 
-	local function replace_UTF8( _str, _ascii )
-		local tmp = database.utf8_ascii[_ascii];
-		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(_ascii) );
-		return _str
-	end
-
-	-- we only replace umlaute, hence only that are importent for mob names
-	-- player names are at the moment not importent for the MM protocol
-	-- player names will be handled while loading the profile
-	local function UTF8_to_ASCII(_str)
-		_str = replace_UTF8(_str, 132);		-- ä
-		_str = replace_UTF8(_str, 142);		-- Ä
-		_str = replace_UTF8(_str, 148);		-- ö
-		_str = replace_UTF8(_str, 153);		-- Ö
-		_str = replace_UTF8(_str, 129);		-- ü
-		_str = replace_UTF8(_str, 154);		-- Ü
-		_str = replace_UTF8(_str, 225);		-- ß
-		return _str;
-	end
-
 	tmp = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg);
 	self.Alive = not(tmp == 9 or tmp == 8);
 	self.HP = debugAssert(memoryReadInt(proc, self.Address + charHP_offset), memerrmsg);
@@ -150,6 +130,8 @@ function CPawn:update()
 	showWarnings(true); -- Re-enable warnings after reading
 
 	-- UTF8 -> ASCII translation not for player names
+	-- because that would need the whole table and there we normaly
+	-- don't need it, we don't print player names in the MM window or so
 	if( tmp == nil ) then
 		self.Name = "<UNKNOW>";
 	elseif(self.Type == PT_PLAYER ) then
