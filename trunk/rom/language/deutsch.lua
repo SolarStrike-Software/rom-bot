@@ -162,6 +162,12 @@ language = {
 	[512] = "Ressourcenpunkt hinzugef\129gt\n",
 	[513] = "Kaufmann ¤ ist Ihr neuer H\132ndler!\n",
 	
+	[900] = "Wir benutzen eine neue Macro Funktion um mit dem Spiel zu kommunizieren.\n",
+	[901] = "Bitte den neuen Hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
+	[902] = "im Profil anlegen. Die folgenden alten Hotkeys k\148nnen gel\148scht werden:\n",	
+	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
+	[904] = "Legen Sie im Spiel auf dem ERSTEN Macroplatz ein leeres Macro an und ordnen Sie dieses dem vorher angegeben MACRO hotkey zu.\n",	
+	[905] = "Bitte berichtigen Sie das Profile \'%s\' und starten Sie den Bot nochmal.\n",	
 	
 	-- Inventory.lua
 	[1000] = "Aktualisierung Inventar",

@@ -160,6 +160,13 @@ language = {
 	[512] = "Harvestpoint added\n",
 	[513] = "Merchant ¤ is your new dealer!\n",
 	
+	[900] = "We now use a new macro function to communicate with the client.\n",
+	[901] = "Please define the new hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
+	[902] = "within your profile. You can delete the old hotkeys for:\n",	
+	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
+	[904] = "After doint that, define ingame an empty macro at the FIRST macro space and assign that to your defined MACRO hotkey..\n",
+	[905] = "Please correct the profile \'%s\' and restart the bot again.\n",
+
 	-- Inventory.lua
 	[1000] = "Mapping inventory",
 	[1001] = "Shopping",

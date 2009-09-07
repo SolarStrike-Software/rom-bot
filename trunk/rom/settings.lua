@@ -51,7 +51,7 @@ settings_default = {
 			MP_REST = 15,
 			HP_REST = 15,
 			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true|false,
-			HEALING_POTION = 0,                 -- shopping options
+			HEALING_POTION = 0,			-- shopping options
 			MANA_POTION = 0,
 			ARRAY_QUIVER = 0,
 			THROWN_BAG = 0,
@@ -71,6 +71,7 @@ settings_default = {
 			HARVEST_SCAN_YREST = 10,	-- scanspeed
 			HARVEST_SCAN_YMOVE = 1.1,		-- move scan area top/down ( 1=middle of screen )
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
+			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
@@ -731,7 +732,8 @@ function settings.loadProfile(_name)
 	end
 
 	-- Check to make sure everything important is set
-	checkProfileHotkeys("ATTACK");
+--	checkProfileHotkeys("ATTACK");
+-- no more needed because of using RoMScript("UseSkill(1,1);"); instead
 
 	-- default combat type if not in profile defined
 	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and 
@@ -750,6 +752,19 @@ function settings.loadProfile(_name)
 		else
 			error("undefined player.Class1 in settings.lua", 0);
 		end;
+	end
+
+	-- print error if new macro option isn't defined
+	if( not settings.profile.hotkeys.MACRO ) then
+		cprintf(cli.yellow, language[900]);
+		cprintf(cli.yellow, language[901]);
+		cprintf(cli.yellow, language[902]);
+		cprintf(cli.yellow, language[903]);
+		cprintf(cli.yellow, language[904]);
+		local msg = sprintf(language[905], _name);
+		if( not settings.profile.options.IGNORE_MACRO_ERROR) then
+			error(msg, 0);
+		end
 	end
 
 end
