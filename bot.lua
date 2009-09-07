@@ -472,6 +472,8 @@ function main()
 				
 				-- check maximal death if automatic mode
 				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
+					cprintf(cli.yellow, language[54], player.Death_counter, 
+					  settings.profile.options.MAX_DEATHS );	-- to much deaths
 					player:logout();
 				end
 
@@ -672,6 +674,9 @@ function main()
 					if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
 						if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
 						    player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
+							cprintf(cli.yellow, language[55], 
+							  player.Unstick_counter, 
+							  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
 							player:logout(); 
 						end;
 						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position

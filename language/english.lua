@@ -49,6 +49,9 @@ language = {
 	[50] = "%s  Auto-logging out.\n",
 	[51] = "Shutting system down.\n",
 	[52] = "Window lost (Client crashed or closed?). You must re-start the script.",
+	[53] = "Elapsed time %d greater then scheduled time %d. We will logout.\n",
+	[54] = "Counted deaths %d greater then maximal allowed deaths %d. We will logout.\n",	
+	[55] = "Unstick tries %d greater then maximal allowed untick tries %d. We will logout.\n",		
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforced the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforced the use of return waypoint path \'retname.xml\'\n",
