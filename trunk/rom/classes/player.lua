@@ -1256,6 +1256,7 @@ function CPlayer:logoutCheck()
 		local elapsed = os.difftime(os.time(), self.BotStartTime);
 
 		if( elapsed >= settings.profile.options.LOGOUT_TIME * 60 ) then
+			cprintf(cli.yellow, language[53], math.ceil(elapsed/60), settings.profile.options.LOGOUT_TIME );	-- Logout elapsed > planned
 			self:logout();
 		end
 	end

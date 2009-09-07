@@ -52,6 +52,9 @@ language = {
 	[50] = "%s  Automatisches Ausloggen\n",
 	[51] = "Herunterfahren des Systems.\n",
 	[52] = "Verbindung zum Spiele Fenster verloren (Client abgestr\129rzt oder geschlossen?). Skript bitte neu starten.",
+	[53] = "Laufzeit %d gr\148\225er als maximale Laufzeit %d. Wir loggen uns aus.\n",	
+	[54] = "Anzahl Tode %d gr\148\225er als maximal erlaubte Tode %d. Wir loggen uns aus.\n",
+	[55] = "Anzahl Freikommversuche %d gr\148\225er als maximal erlaubte Anzahl %d. Wir loggen uns aus.\n",	
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berpr\129fen Sie Ihr Profil!\n",
 	[61] = "Fehlerhafte Option \'%s\' f\129r bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tBenutze Profil \'profname.xml\'\npath:pathname\t\tBenutze Wegepunkt Datei \'pathname.xml\'\nretpath:retname\t\tBenutze R\129ckkehrpfad \'retname.xml\'\n",
