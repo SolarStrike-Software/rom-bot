@@ -492,6 +492,8 @@ function main()
 
 			-- use/compare return path if defined, if not use normal one and give a warning
 			-- wen need to search the closest, hence we also accept resurrection at the death place
+			player:rest(10); -- give some time to be really sure that loadscreen is gone
+			-- if not it could result in loading NOT the returnpath, becaus we dont hat the new position
 			player.Returning = nil;
 			if( __RPL ) then
 				-- compare closest waypoint with closest returnpath point

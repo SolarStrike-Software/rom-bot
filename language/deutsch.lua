@@ -11,8 +11,8 @@ language = {
 	[7] = "R\129ckkehrpfad absolviert. Wiederhole normale Wegpunkte.\n",
 	[8] = "Bewegung zu Wegpunkt fehlgeschlagen!\n",
 	[9] = "Versuche Spieler frei zu bekommen ... an Position %d,%d. Versuch #%d von maximal %d Versuchen.\n",
-	[10] = "Dr\129cke %s: Benutze Heiltrank.\n",
-	[11] = "Dr\129cke %s: Benutze Manatrank.\n",
+	[10] = "Benutze Heiltrank: %s\n",
+	[11] = "Benutze Manatrank: %s\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
@@ -155,13 +155,13 @@ language = {
 	[508] = "Gespeichert [#%3d] %s, Gehen Sie zum n\132chsten Wegepunkt.\n",
 	[509] = "...\n",
 	[510] = "...\n",
-	[511] = "Wegpunkt ¤ hinzugefügt\n",
-	[512] = "Sammeln Sie Punkte hinzugefügt\n",
-	[513] = "Kaufmann ¤ ist Ihr neuer Händler!\n",
+	[511] = "Wegepunkt ¤ hinzugef\129gt\n",
+	[512] = "Ressourcenpunkt hinzugef\129gt\n",
+	[513] = "Kaufmann ¤ ist Ihr neuer H\132ndler!\n",
 	
 	
 	-- Inventory.lua
-	[1000] = "Aktualisierung inventar",
+	[1000] = "Aktualisierung Inventar",
 	[1001] = "Einkaufen",
 	
 };

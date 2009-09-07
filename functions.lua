@@ -308,12 +308,20 @@ function load_paths( _wp_path, _rp_path)
 	end
 end
 
+-- executing RoMScript and send a MM window message before
+function send_macro(_script)
+
+	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
+	   getKeyName(settings.profile.hotkeys.MACRO.key),
+	   string.sub(_script, 1, 40) );
+
+	RoMScript(_script);
+	
+end
+
+
 --- Run rom scripts, usage: RoMScript("AcceptResurrect();");
 function RoMScript(script)
-
-	-- cprintf(cli.green, language[169], 		-- Executing RoMScript ...
-	--   getKeyName(settings.profile.hotkeys.MACRO.key),
-	--   string.sub(script, 1, 40) );
 
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address);
@@ -385,5 +393,46 @@ function addMessage(message)
 	message = string.gsub(message, "\n", "\\n")
 	message = string.gsub(message, "\"", "\\\"")
 
+	message = ASCII_to_UTF8(message);	-- for ingame umlauts
+
 	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
+end
+
+function replace_UTF8( _str, _ascii )
+	local tmp = database.utf8_ascii[_ascii];
+	_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(_ascii) );
+	return _str
+end
+
+function replace_ASCII( _str, _ascii )
+	local tmp = database.utf8_ascii[_ascii];
+	_str = string.gsub(_str, string.char(_ascii), string.char(tmp.utf8_1, tmp.utf8_2) );
+	return _str
+end
+
+-- we only replace umlaute, hence only that are importent for mob names
+-- player names are at the moment not importent for the MM protocol
+-- player names will be handled while loading the profile
+function UTF8_to_ASCII(_str)
+	_str = replace_UTF8(_str, 132);		-- ä
+	_str = replace_UTF8(_str, 142);		-- Ä
+	_str = replace_UTF8(_str, 148);		-- ö
+	_str = replace_UTF8(_str, 153);		-- Ö
+	_str = replace_UTF8(_str, 129);		-- ü
+	_str = replace_UTF8(_str, 154);		-- Ü
+	_str = replace_UTF8(_str, 225);		-- ß
+	return _str;
+end
+
+-- we only replace umlaute, hence only that are importent for
+-- printing ingame messages
+function ASCII_to_UTF8(_str)
+	_str = replace_ASCII(_str, 132);		-- ä
+	_str = replace_ASCII(_str, 142);		-- Ä
+	_str = replace_ASCII(_str, 148);		-- ö
+	_str = replace_ASCII(_str, 153);		-- Ö
+	_str = replace_ASCII(_str, 129);		-- ü
+	_str = replace_ASCII(_str, 154);		-- Ü
+	_str = replace_ASCII(_str, 225);		-- ß
+	return _str;
 end
