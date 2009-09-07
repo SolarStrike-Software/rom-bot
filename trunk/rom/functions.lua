@@ -379,3 +379,11 @@ function RoMScript(script)
 
 	return unpack(ret);
 end
+
+-- send message to the game
+function addMessage(message)
+	message = string.gsub(message, "\n", "\\n")
+	message = string.gsub(message, "\"", "\\\"")
+
+	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
+end

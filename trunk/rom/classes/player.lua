@@ -319,20 +319,29 @@ end
 -- Check if you need to use any potions, and use them.
 function CPlayer:checkPotions()
 	-- Still cooling down, don't use.
-	if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
+	-- if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
+	if( os.difftime(os.time(), self.PotionLastUseTime) < 15+1 ) then
 		return;
 	end
 
 	-- If we need to use a health potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
-		local modifier = settings.profile.hotkeys.HP_POTION.modifier
-		if( modifier ) then keyboardHold(modifier); end
-		keyboardPress(settings.profile.hotkeys.HP_POTION.key);
-		if( modifier ) then keyboardRelease(modifier); end
+	
+		-- old code
+		-- local modifier = settings.profile.hotkeys.HP_POTION.modifier
+		-- if( modifier ) then keyboardHold(modifier); end
+		-- keyboardPress(settings.profile.hotkeys.HP_POTION.key);
+		-- if( modifier ) then keyboardRelease(modifier); end
+
+		-- new code, use the inventory class to use the best potion available
+		local item = inventory:bestAvailableConsumable("healing");
+		item:use();
 
 		self.PotionLastUseTime = os.time();
 		self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
-		cprintf(cli.green, language[10], getKeyName(settings.profile.hotkeys.HP_POTION.key) );		-- Using HP potion
+		-- cprintf(cli.green, language[10], getKeyName(settings.profile.hotkeys.HP_POTION.key) );		-- Using HP potion
+		cprintf(cli.green, language[10], item.Name );		-- Using HP potion
+		
 
 		if( self.Fighting ) then
 			yrest(1000);
@@ -340,16 +349,22 @@ function CPlayer:checkPotions()
 	end
 
 	-- If we need to use a mana potion(if we even have mana)
-	if( self.MaxMana > 0 ) then
-		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then
-			local modifier = settings.profile.hotkeys.MP_POTION.modifier
-			if( modifier ) then keyboardHold(modifier); end
-			keyboardPress(settings.profile.hotkeys.MP_POTION.key);
-			if( modifier ) then keyboardRelease(modifier); end
+	if( self.MaxMana > 0 ) then 
+		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
+			-- old code
+			-- local modifier = settings.profile.hotkeys.MP_POTION.modifier
+			-- if( modifier ) then keyboardHold(modifier); end
+			-- keyboardPress(settings.profile.hotkeys.MP_POTION.key);
+			-- if( modifier ) then keyboardRelease(modifier); end
+			
+			-- new code
+			local item = inventory:bestAvailableConsumable("mana");
+			item:use();
 
 			self.PotionLastUseTime = os.time();
 			self.MP_counter = self.MP_counter + 1;	-- counts use of mana potions
-			cprintf(cli.green, language[11], getKeyName(settings.profile.hotkeys.MP_POTION.key));
+			-- cprintf(cli.green, language[11], getKeyName(settings.profile.hotkeys.MP_POTION.key));
+			cprintf(cli.green, language[11], item.Name);
 
 			if( self.Fighting ) then
 				yrest(1000);
@@ -603,6 +618,18 @@ function CPlayer:fight()
 		unregisterTimer("timedAttack");
 	end
 
+
+	-- check if we need to reload ammunition
+	--if not settings.profile.options.RELOAD_AMMUNITION == nil then
+	--	if( string.lower(settings.profile.options.RELOAD_AMMUNITION) == "arrow" or string.lower(settings.profile.options.RELOAD_AMMUNITION) == "thrown" ) then
+	--		if inventory:getAmmunitionCount() == 0 then
+	--			inventory:reloadAmmunition(settings.profile.options.RELOAD_AMMUNITION);
+	--		end
+	--	end
+	--end
+	
+	-- edit: too tired to fix this now..
+	
 	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
 		local status,err = pcall(settings.profile.events.onLeaveCombat);
 		if( status == false ) then
@@ -610,6 +637,7 @@ function CPlayer:fight()
 			error(msg);
 		end
 	end
+	
 
 	-- count kills per target name
 	local target_Name = target.Name;
@@ -1700,6 +1728,23 @@ end
 
 function CPlayer:mouseclickM(_x, _y, _wwide, _whigh)
 	self:mouseclick(_x, _y, _wwide, _whigh, "middle")
+end
+
+-- auto interact with a merchant
+function CPlayer:merchant(_npcname)
+	if self:target_NPC(_npcname) then
+		yrest(1000);
+		RoMScript("ChoiceOption(1)");
+		yrest(1000);
+		RoMScript("ClickRepairAllButton()");
+		yrest(1000);
+		inventory:update();
+		inventory:storeBuyConsumable("healing", settings.profile.options.HEALING_POTION);
+		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
+		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
+		inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
+	end
+	
 end
 
 function CPlayer:target_NPC(_npcname)

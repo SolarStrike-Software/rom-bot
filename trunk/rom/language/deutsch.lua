@@ -155,6 +155,9 @@ language = {
 	[508] = "Gespeichert [#%3d] %s, Gehen Sie zum n\132chsten Wegepunkt.\n",
 	[509] = "...\n",
 	[510] = "...\n",
+	[511] = "Wegpunkt ¤ hinzugefügt\n",
+	[512] = "Sammeln Sie Punkte hinzugefügt\n",
+	[513] = "Kaufmann ¤ ist Ihr neuer Händler!\n",
 	
 	
 	-- Inventory.lua

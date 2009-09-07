@@ -9,7 +9,11 @@ CInventory = class(
 
 
 function CInventory:getAmmunitionCount()
-	return RoMScript("GetInventoryItemCount('player', 9);");
+	local count = RoMScript("GetInventoryItemCount('player', 9);");
+	if count == nil then
+		count = 0;
+	end
+	return count;
 end
 
  
@@ -18,7 +22,6 @@ function CInventory:reloadAmmunition(type)
 	item = self:bestAvailableConsumable(type);
 	-- if theres no ammunition, open a ammunition bag
 	if item.Id == 0 then
-		print("LASDAS");
 		if type == "arrow" then
 			openItem = self:bestAvailableConsumable("arrow_quiver");
 		elseif type == "thrown" then
@@ -58,7 +61,7 @@ function CInventory:parseItemLink(itemLink)
 	name_parse_from = string.find(itemLink, '[\[]');
 	name_parse_to = string.find(itemLink, '[\]]');
 	name = "Error parsing name";
-	if name_parse_from == nil or name_parse_to == nil then
+	if not name_parse_from == nil or not name_parse_to == nil then
 		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
 	end
 	return id, color, name;
