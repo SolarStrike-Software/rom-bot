@@ -311,9 +311,9 @@ end
 --- Run rom scripts, usage: RoMScript("AcceptResurrect();");
 function RoMScript(script)
 
-	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
-	   getKeyName(settings.profile.hotkeys.MACRO.key),
-	   string.sub(script, 1, 40) );
+	-- cprintf(cli.green, language[169], 		-- Executing RoMScript ...
+	--   getKeyName(settings.profile.hotkeys.MACRO.key),
+	--   string.sub(script, 1, 40) );
 
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address);

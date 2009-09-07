@@ -3,6 +3,7 @@ BOT_VERSION = 2.46;
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
+include("classes/inventory.lua");
 include("classes/camera.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
@@ -198,6 +199,10 @@ function main()
 	settings_print_keys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
+	
+	-- Register and update inventory
+	local inventory = CInventory();
+	--inventory:update();
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings
