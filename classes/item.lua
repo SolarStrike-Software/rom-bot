@@ -12,7 +12,11 @@ CItem = class(
 
 function CItem:use()
 	RoMScript("UseBagItem("..self.BagId..");");
-	
+
+	if( settings.profile.options.DEBUG_INV) then	
+		cprintf(cli.lightblue, "DEBUG - UseBagItem: %s\n", self.BagId );				-- Open/eqipt item:
+	end;
+
 	-- Set the default values since our item does not exist anymore.
 	if self.ItemCount <= 0 then
 		self = CItem();

@@ -72,6 +72,7 @@ settings_default = {
 			HARVEST_SCAN_YMOVE = 1.1,		-- move scan area top/down ( 1=middle of screen )
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
+			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
@@ -769,16 +770,9 @@ function settings.loadProfile(_name)
 
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
-	local hf_return = RoMScript("GetLocation();");
-	if( hf_return ~= "DE"  and
-	    hf_return ~= "ENUS" and
-	    hf_return ~= "ENEU" and
-	    hf_return ~= "CN"  and
-	    hf_return ~= "JP"  and
-	    hf_return ~= "SG"  and
-	    hf_return ~= "TR"  and
-	    hf_return ~= "TW" ) then
-	    	RoMScript("GetPing();");				-- overwrite return values
+	local hf_return = RoMScript("815");
+	if( hf_return ~= 815 ) then
+	    	RoMScript("000");						-- overwrite return values
 			cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
 			local msg = sprintf(language[904], getKeyName(settings.profile.hotkeys.MACRO.key) );
 			if( not settings.profile.options.IGNORE_MACRO_ERROR) then	-- only temporary, can be deleted later

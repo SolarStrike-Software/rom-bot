@@ -444,7 +444,7 @@ function open_giftbag(_player_level, _maxslot)
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
 	
 	-- open giftbag and equipt content
-	yrest(3000);	-- time for the bag to appear
+--	yrest(1000);	-- time for the bag to appear
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
 			-- send_macro("UseBagItem( CheckForItem('Magischer Geschenkbeutel') )");
@@ -452,10 +452,13 @@ function open_giftbag(_player_level, _maxslot)
 			
 			if ( hf_return ) then
 				cprintf(cli.lightblue, language[171], hf_name );				-- Open/eqipt item:
+			else
+				cprintf(cli.yellow, language[174], v.name );				-- Open/eqipt item:
 			end
-			yrest(2000);				-- wait for using that item
+			yrest(2000);	-- wait for using that item
 
 			if( v.type == "bag" ) then	-- after opening bag update inventory
+				yrest(4000);	-- some more time to open the bag
 				inventory:update(_maxslot);	-- update slots
 			end;
 		end;
