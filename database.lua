@@ -2,7 +2,8 @@ database =  {
 	skills = {},
 	nodes = {},
 	utf8_ascii = {},
-	consumables = {}
+	consumables = {},
+	giftbags = {}	
 };
 
 function database.load()
@@ -102,7 +103,7 @@ function database.load()
 	end
 
 
-
+	-- import nodes/ressouces 
 	root = xml.open(getExecutionPath() .. "/database/nodes.xml");
 	elements = root:getElements();
 
@@ -151,6 +152,7 @@ function database.load()
 		database.utf8_ascii[ascii] = tmp;
 	end
 	
+	-- import consumables (potions, arrows, stones, ...)
 	root = xml.open(getExecutionPath() .. "/database/consumables.xml");
 	elements = root:getElements();
 
@@ -169,6 +171,29 @@ function database.load()
 		if (id) then tmp.Id = id; end;
 
 		database.consumables[i] = tmp;
+	end
+
+	-- import giftbag contents
+	root = xml.open(getExecutionPath() .. "/database/giftbags.xml");
+	elements = root:getElements();
+
+	for i,v in pairs(elements) do
+	    local itemid, type, class, level, name;
+		local tmp = {};
+
+		itemid = v:getAttribute("itemid");
+		type   = v:getAttribute("type");
+		class  = v:getAttribute("class");		
+		level  = v:getAttribute("level");
+		name   = v:getAttribute("name");
+
+		if (itemid) then tmp.itemid = itemid; end;
+		if (type)   then tmp.type   = type;   end;
+		if (class)  then tmp.class  = class;  end;
+		if (level)  then tmp.level  = level;  end;
+		if (name)   then tmp.name   = name;   end;
+
+		database.giftbags[i] = tmp;
 	end
 
 end

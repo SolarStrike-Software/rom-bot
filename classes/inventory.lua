@@ -116,11 +116,13 @@ function CInventory:itemTotalCount(itemNameOrId)
 end
 
 function CInventory:useItem(itemNameOrId)
- 	for slot,item in pairs(self.BagSlot) do
-     	if item.Id == ItemNameOrId or item.Name == itemNameOrId then
-    		item:use();
+	for slot,item in pairs(self.BagSlot) do
+		if item.Id == itemNameOrId or item.Name == itemNameOrId then
+			item:use();
+			return true, item.Id, item.Name;
 		end
 	end
+	return false
 end
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"

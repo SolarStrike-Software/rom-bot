@@ -145,6 +145,8 @@ language = {
 	[167] = "Tastenzuordnungen kommen aus Datei %s:",
 	[168] = "Wir wandern in einem Radius von %d umher.\n",	
 	[169] = "Dr\129cke %s: RoMScript ausf\129hren \"%s\".\n",
+	[170] = "Level %d Geschenkbeutel \148ffnen bzw. ausr\129sten.\n",
+	[171] = "\148ffne/anziehen Gegenstand: %s\n",
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",

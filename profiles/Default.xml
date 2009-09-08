@@ -1,10 +1,14 @@
 <profile>
 	<options>
-		<!-- Try the bot with a new char mage or priest         -->
+		<!-- Try the bot with a new char mage                   -->
 		<!-- At the pioneer village. Use demo.xml waypoint file -->
 		<option name="HP_LOW"        value="85" />
 		<option name="MP_LOW_POTION" value="50" />
 		<option name="HP_LOW_POTION" value="40" />
+
+		<!-- Rest if HP or Mana is below that level -->
+		<option name="HP_REST" value="15" />
+		<option name="MP_REST" value="15" />
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        value="" />	<!-- leave empty or choose ranged/melee if not using class default -->
@@ -14,6 +18,10 @@
 		<option name="DOT_PERCENT"        value="90" />
 		<option name="ANTI_KS"            value="true" />
 
+		<!-- Attack monsters 3 levels above or 10 below your level -->
+		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
+		<option name="TARGET_LEVELDIF_BELOW" value="10" />
+
 		<!-- Waypoint and movement settings -->
 		<option name="WAYPOINTS"		value="demo.xml" />  <!-- leave empty to show a list -->
 		<option name="RETURNPATH"		value="demo_return.xml" />
@@ -22,19 +30,17 @@
 		<option name="WAYPOINT_DEVIATION"	value="0" />
 		<option name="QUICK_TURN" 		value="false" />
 
-		<!-- Attack monsters 3 levels above or 10 below your level -->
-		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
-		<option name="TARGET_LEVELDIF_BELOW" value="10" />
-		
 		<!-- Loot settings -->
 		<option name="LOOT"               value="true" />
 		<option name="LOOT_IN_COMBAT"     value="true" />
 		<option name="LOOT_DISTANCE"      value="100" />
 		<option name="LOOT_PAUSE_AFTER"   value="0" />		<!-- probability in % for a short rest -->
 
-		<!-- Rest if HP or Mana is below that level -->
-		<option name="HP_REST" value="15" />
-		<option name="MP_REST" value="15" />
+		<!-- Log out and resurrect settings -->
+		<option name="LOGOUT_TIME" value="0" />			<!-- in minutes, 0 = timer disabled -->
+		<option name="LOGOUT_SHUTDOWN" value="false" />
+		<option name="LOGOUT_WHEN_STUCK" value="true" />
+		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 
 		<!-- Shopping options, how many of what do you want to keep in your inventory -->
 		<option name="HEALING_POTION" value="99" />
@@ -42,11 +48,6 @@
 		<option name="ARROW_QUIVER" value="2" />
 		<option name="THROWN_BAG" value="2" />
 
-		<!-- Log out and resurrect settings -->
-		<option name="LOGOUT_TIME" value="0" />			<!-- in minutes, 0 = timer disabled -->
-		<option name="LOGOUT_SHUTDOWN" value="false" />
-		<option name="LOGOUT_WHEN_STUCK" value="true" />
-		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 	</options>
 
 	<friends>
@@ -58,12 +59,11 @@
 	</friends>
 
 	<hotkeys>
-		<hotkey name="ATTACK"       key="VK_1" />
 		<hotkey name="MACRO"        key="VK_0" />
 	</hotkeys>
 
 	<!-- define your skills depending from your actual primary class -->
-	<!-- see the example for a priest/mage respectively mage/priest  -->
+	<!-- see the example for a priest/mage                           -->
 	<!-- delete skills you don't have or don't want to use.          -->
 	<!-- For more skills to use see /database/skills.xml             -->
 	<!-- demo skills for LvL 1 character for all classes             -->
@@ -82,28 +82,22 @@
 	<skills_warrior>
 		<skill name="WARRIOR_SLASH"          hotkey="VK_2" priority="90" />
 		<skill name="WARRIOR_PROBING_ATTACK" hotkey="VK_4" priority="80" />
-		<skill name="WARRIOR_OPEN_FLANK"     hotkey="VK_5" priority="70" />		
+		<skill name="WARRIOR_OPEN_FLANK"     hotkey="VK_5" priority="70" />
 	</skills_warrior>
 
-	<skills_scout> 
+	<skills_scout>
 		<skill name="SCOUT_SHOT"        hotkey="VK_2" priority="90" />
 		<skill name="SCOUT_AUTOSHOT"    hotkey="VK_4" priority="80" />
-		<skill name="SCOUT_WIND_ARROWS" hotkey="VK_5" priority="70" />	
+		<skill name="SCOUT_WIND_ARROWS" hotkey="VK_5" priority="70" />
 	</skills_scout>
 
-	<skills_rogue> 
+	<skills_rogue>
 		<skill name="ROGUE_SHADOWSTAB"  hotkey="VK_2" priority="90" />
 		<skill name="ROGUE_LOW_BLOW"    hotkey="VK_4" priority="80" />
 	</skills_rogue>
 
 	<skills_mage>
-		<skill name="PRIEST_HOLY_AURA"      hotkey="VK_7" priority="110" hpper="30" inbattle="true" />
-		<skill name="PRIEST_URGENT_HEAL"    hotkey="VK_2" priority="100" hpper="30"  />
-		<skill name="MAGE_PLASMA_ARROW"     hotkey="VK_4" priority="90" />
-		<skill name="MAGE_FLAME"            hotkey="VK_3" priority="80" />
-		<skill name="PRIEST_REGENERATE"     hotkey="VK_6" priority="70" />
-		<skill name="MAGE_ESSENCE_OF_MAGIC" hotkey="VK_8" priority="60" />
-		<!--skill name="PRIEST_MAGIC_BARRIER"  hotkey="VK_F" priority="50" /> -->     
+		<skill name="MAGE_FLAME"        hotkey="VK_3" priority="80" />
 	</skills_mage>
 
 	<skills_knight>
@@ -132,6 +126,28 @@
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after killing an enemy
+
+		-- thats a demo for opening the gift bags from Lvl 1-10
+		-- and levelup the skills for a new mage character
+		-- you can delete that lines
+		if( player.Level > player.free_counter1) then
+			player.free_counter1 = player.Level;
+
+			-- levelup skills
+			-- 4 = third skill tab, 2 = mage flame
+			if(	player.Level == 2 ) then
+				send_macro("SetSpellPoint( 4, 2 );");
+				yrest(1000);
+				send_macro("SetSpellPoint( 4, 2 );");
+			else
+				player.free_counter1 = player.Level;
+				send_macro("SetSpellPoint( 4, 2 );");
+			end
+
+			-- open giftbag and equipt content
+			-- updates first 18 bag slots / update all if empty
+			open_giftbag(player.Level, 18);
+
 	</onLeaveCombat>
 
 	<onSkillCast>
