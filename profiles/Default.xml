@@ -97,7 +97,8 @@
 	</skills_rogue>
 
 	<skills_mage>
-		<skill name="MAGE_FLAME"        hotkey="VK_3" priority="80" />
+		<skill name="MAGE_FLAME"              hotkey="VK_3" priority="80" />
+		<skill name="MAGE_ELEMENTAL_CATALYST" hotkey="VK_2" priority="30"   inbattle="true" />
 	</skills_mage>
 
 	<skills_knight>

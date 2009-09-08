@@ -441,7 +441,7 @@ end
 function open_giftbag(_player_level, _maxslot)
 
 	if( not _player_level) then _player_level = player.Level; end
-	cprintf(cli.green, language[170], _player_level );	-- Open and equipt giftbag for level 
+	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
 	
 	-- open giftbag and equipt content
 	yrest(3000);	-- time for the bag to appear
@@ -451,7 +451,7 @@ function open_giftbag(_player_level, _maxslot)
 			local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
 			
 			if ( hf_return ) then
-				cprintf(cli.green, language[171], hf_name );				-- Open/eqipt item:
+				cprintf(cli.lightblue, language[171], hf_name );				-- Open/eqipt item:
 			end
 			yrest(2000);				-- wait for using that item
 
@@ -462,4 +462,19 @@ function open_giftbag(_player_level, _maxslot)
 
 	end
 
+end
+
+-- change profile options and print values in MM protocol
+function change_profile_option(_option, _value)
+
+	if( settings.profile.options[_option] == nil ) then
+		cprintf(cli.green, language[173], _option );	-- Unknown profile option 
+		return;
+	end
+	
+	local hf_old_value = settings.profile.options[_option];
+	settings.profile.options[_option] = _value;
+	
+	cprintf(cli.lightblue, language[172], _option, hf_old_value, _value );	-- We change the option 
+	
 end
