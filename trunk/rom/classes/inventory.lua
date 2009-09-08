@@ -72,9 +72,25 @@ function CInventory:updateBagSlot(slotNumber)
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..slotNumber..")),GetBagItemInfo("..slotNumber..")");
 
 	self.BagSlot[slotNumber] = CItem();
+
+	if( settings.profile.options.DEBUG_INV) then	
+		local msg;
+		if(slotNumber) then msg = "DEBUG - "..slotNumber..": "; end;
+		if(itemLink) then msg = msg.."/"..itemLink; end;
+		if(name) then msg = msg.."/"..name.."/"; end;
+		cprintf(cli.lightblue, msg);				-- Open/eqipt item:
+	end;
 	
 	if (itemLink ~= "") then
 		local id, color = self:parseItemLink(itemLink);
+
+		if( settings.profile.options.DEBUG_INV) then	
+			if(id) then msg = id; end;
+			if(bagId) then msg = msg.."/"..bagId; end;
+			if(itemCount) then msg = msg.."/"..itemCount; end;
+			if(color) then msg = msg.."/"..color; end;
+			cprintf(cli.lightblue, msg.."\n");				-- Open/eqipt item:
+		end
 
 		self.BagSlot[slotNumber].Id = id			     -- The real item id
 		self.BagSlot[slotNumber].BagId = bagId;          -- GetBagItemLink and other RoM functins need this..
