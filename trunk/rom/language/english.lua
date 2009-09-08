@@ -144,8 +144,8 @@ language = {
 	[169] = "Use %s: Executing RoMScript \"%s\".\n",
 	[170] = "Open and equipt giftbag for level %d\n",
 	[171] = "Open/eqipt item: %s\n",
-	[172] = "...\n",
-	[173] = "...\n",
+	[172] = "We change the option \'%s\' from \'%s\' to \'%s\'.\n",
+	[173] = "Unknown profile option \'%s\'. We can't change that value. Please check your settings.\n",
 	[174] = "...\n",
 	[175] = "...\n",
 	[176] = "...\n",
@@ -175,8 +175,9 @@ language = {
 	[901] = "Please define the new hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
 	[902] = "within your profile. You can delete the old hotkeys for:\n",	
 	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
-	[904] = "After doint that, define ingame an empty macro at the FIRST macro space and assign that to your defined MACRO hotkey..\n",
+	[904] = "Define ingame an empty macro at the FIRST macro space and assign that to your MACRO hotkey \'%s\'.\n",
 	[905] = "Please correct the profile \'%s\' and restart the bot again.\n",
+	[906] = "The communication to the game with the MACRO function seems not to work.\n",		
 
 	-- Inventory.lua
 	[1000] = "Mapping inventory",

@@ -147,6 +147,8 @@ language = {
 	[169] = "Dr\129cke %s: RoMScript ausf\129hren \"%s\".\n",
 	[170] = "Level %d Geschenkbeutel \148ffnen bzw. ausr\129sten.\n",
 	[171] = "\148ffne/anziehen Gegenstand: %s\n",
+	[172] = "Die Option \'%s\' wurde von \'%s\' auf \'%s\' ge\132ndert.\n",
+	[173] = "Unbekannte Option \'%s\'. Wir k\148nnen den Wert nicht ver\132ndern. Bitte Einstellungen pr\129fen.\n",
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",
@@ -168,8 +170,9 @@ language = {
 	[901] = "Bitte den neuen Hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
 	[902] = "im Profil anlegen. Die folgenden alten Hotkeys k\148nnen gel\148scht werden:\n",	
 	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
-	[904] = "Legen Sie im Spiel auf dem ERSTEN Macroplatz ein leeres Macro an und ordnen Sie dieses dem vorher angegeben MACRO hotkey zu.\n",	
-	[905] = "Bitte berichtigen Sie das Profile \'%s\' und starten Sie den Bot nochmal.\n",	
+	[904] = "Legen Sie im Spiel auf dem ERSTEN Macroplatz ein leeres Macro an und ordnen Sie dieses dem MACRO hotkey \'%s\' zu.\n",	
+	[905] = "Bitte berichtigen Sie das Profile \'%s\' und starten Sie den Bot nochmal.\n",
+	[906] = "Die Macro\129bergabe an das Spiel scheint nicht zu funktionieren.\n",		
 	
 	-- Inventory.lua
 	[1000] = "Aktualisierung Inventar",

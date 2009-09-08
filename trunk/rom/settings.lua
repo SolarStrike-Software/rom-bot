@@ -762,9 +762,28 @@ function settings.loadProfile(_name)
 		cprintf(cli.yellow, language[903]);
 		cprintf(cli.yellow, language[904]);
 		local msg = sprintf(language[905], _name);
-		if( not settings.profile.options.IGNORE_MACRO_ERROR) then
+		if( not settings.profile.options.IGNORE_MACRO_ERROR) then		-- only temporary, can be deleted later
 			error(msg, 0);
 		end
+	end
+
+	-- check if new macro option is working / ingame macro defined and assigned
+	-- check it with a function with defined return values
+	local hf_return = RoMScript("GetLocation();");
+	if( hf_return ~= "DE"  and
+	    hf_return ~= "ENUS" and
+	    hf_return ~= "ENEU" and
+	    hf_return ~= "CN"  and
+	    hf_return ~= "JP"  and
+	    hf_return ~= "SG"  and
+	    hf_return ~= "TR"  and
+	    hf_return ~= "TW" ) then
+	    	RoMScript("GetPing();");				-- overwrite return values
+			cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
+			local msg = sprintf(language[904], getKeyName(settings.profile.hotkeys.MACRO.key) );
+			if( not settings.profile.options.IGNORE_MACRO_ERROR) then	-- only temporary, can be deleted later
+				error(msg, 0);
+			end
 	end
 
 end
