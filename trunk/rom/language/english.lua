@@ -142,6 +142,17 @@ language = {
 	[167] = "Keyboard settings are from %s:",
 	[168] = "We will wander around with a radius of %d.\n",
 	[169] = "Use %s: Executing RoMScript \"%s\".\n",
+	[170] = "Open and equipt giftbag for level %d\n",
+	[171] = "Open/eqipt item: %s\n",
+	[172] = "...\n",
+	[173] = "...\n",
+	[174] = "...\n",
+	[175] = "...\n",
+	[176] = "...\n",
+	[177] = "...\n",
+	[178] = "...\n",
+	[179] = "...\n",
+	
 	
 
 	-- createpath.lua

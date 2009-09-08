@@ -436,3 +436,30 @@ function ASCII_to_UTF8(_str)
 	_str = replace_ASCII(_str, 225);		-- ß
 	return _str;
 end
+
+-- open giftbag (at the moment level 1-10)
+function open_giftbag(_player_level, _maxslot)
+
+	if( not _player_level) then _player_level = player.Level; end
+	cprintf(cli.green, language[170], _player_level );	-- Open and equipt giftbag for level 
+	
+	-- open giftbag and equipt content
+	yrest(3000);	-- time for the bag to appear
+	for i,v in pairs(database.giftbags)  do
+		if( v.level == _player_level) then
+			-- send_macro("UseBagItem( CheckForItem('Magischer Geschenkbeutel') )");
+			local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
+			
+			if ( hf_return ) then
+				cprintf(cli.green, language[171], hf_name );				-- Open/eqipt item:
+			end
+			yrest(2000);				-- wait for using that item
+
+			if( v.type == "bag" ) then	-- after opening bag update inventory
+				inventory:update(_maxslot);	-- update slots
+			end;
+		end;
+
+	end
+
+end
