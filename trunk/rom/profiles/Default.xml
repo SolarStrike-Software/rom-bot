@@ -29,8 +29,8 @@
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
 
 		<!-- Waypoint and movement settings -->
-		<option name="WAYPOINTS"		value="demo.xml" />  <!-- leave empty to show a list -->
-		<option name="RETURNPATH"		value="demo_return.xml" />
+		<option name="WAYPOINTS"		value="" />  <!-- leave empty to show a list -->
+		<option name="RETURNPATH"		value="" />
 		<option name="PATH_TYPE"		value="waypoints" />	<!-- waypoints | wander -->
 		<option name="WANDER_RADIUS"		value="500" />
 		<option name="WAYPOINT_DEVIATION"	value="0" />
@@ -48,10 +48,14 @@
 		<option name="LOGOUT_WHEN_STUCK" value="true" />
 		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 
+		<!-- For more options and documentation see the RoM Bot Wiki:  -->
+		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
+
 	</options>
 
 	<friends>
 		<!-- names of friends we help fighting or enemys we don't want to attack -->
+		<!-- for umlauts use \129=ü \132=ä \148=ö e.g. K\132fer                  -->
 		<friend name="MyOtherCharacter1" />
 		<friend name="MyOtherCharacter2" />
 		<friend name="Elite_Mob_Name1" />
