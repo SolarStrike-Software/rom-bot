@@ -55,7 +55,7 @@
 
 	<friends>
 		<!-- names of friends we help fighting or enemys we don't want to attack -->
-		<!-- for umlauts use \129=ü \132=ä \148=ö e.g. K\132fer                  -->
+		<!-- for umlauts use \129 (ue),\132 (ae),\148 (oe) e.g. K\132fer         -->
 		<friend name="MyOtherCharacter1" />
 		<friend name="MyOtherCharacter2" />
 		<friend name="Elite_Mob_Name1" />
@@ -135,23 +135,28 @@
 		-- thats a demo for opening the gift bags from Lvl 1-10
 		-- and levelup the skills for a new mage character
 		-- you can delete that lines
+
 		if( player.Level > player.free_counter1) then
 			player.free_counter1 = player.Level;
-
-			-- levelup skills
-			-- 4 = third skill tab, 2 = mage flame
-			if(	player.Level == 2 ) then
-				send_macro("SetSpellPoint( 4, 2 );");
-				yrest(1000);
-				send_macro("SetSpellPoint( 4, 2 );");
-			else
-				player.free_counter1 = player.Level;
-				send_macro("SetSpellPoint( 4, 2 );");
-			end
 
 			-- open giftbag and equipt content
 			-- updates first 18 bag slots / update all if empty
 			open_giftbag(player.Level, 18);
+
+			-- levelup skills
+			-- mage: 4 = third skill tab, 2 = mage flame
+			-- priest: 2,1 (rising tide) 2,2 (urgent heal)
+			-- CAUTION: addressing a invalid skill will crash the RoM client
+			if(player.Class1 == CLASS_MAGE) then
+				if(	player.Level == 2 ) then
+					send_macro("SetSpellPoint( 4, 2 );");
+					yrest(1000);
+					send_macro("SetSpellPoint( 4, 2 );");
+				else
+					player.free_counter1 = player.Level;
+					send_macro("SetSpellPoint( 4, 2 );");
+				end
+			end
 
 		end
 
