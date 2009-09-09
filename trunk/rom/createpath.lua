@@ -202,4 +202,5 @@ function main()
 	end -- End of: while(running)
 end
 
+attach(getWin());
 startMacro(main, true);
