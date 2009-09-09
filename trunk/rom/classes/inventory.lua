@@ -105,7 +105,7 @@ end
 function CInventory:update(_maxslot)
 	printf(language[1000]);  -- Updating
 	
-	if( not _maxslot ) then _maxslot = 60; end
+	if( not _maxslot ) then _maxslot = settings.profile.options.INV_MAX_SLOTS; end;
 	
 	for slotNumber = 1, _maxslot, 1 do
 		self:updateBagSlot(slotNumber);
