@@ -73,6 +73,8 @@ settings_default = {
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
+			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
+
 			
 		}, hotkeys = {}, skills = {}, friends = {},
 		events = {
