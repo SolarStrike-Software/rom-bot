@@ -149,6 +149,8 @@
 			-- updates first 18 bag slots / update all if empty
 			open_giftbag(player.Level, 18);
 
+		end
+
 	</onLeaveCombat>
 
 	<onSkillCast>
