@@ -89,7 +89,7 @@ settings_default = {
 settings = settings_default;
 
 check_keys = { name = { } };
-function check_key_settings( _name, _key, _modifier)
+function checkKeySettings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
 	local hf_check_where;
@@ -175,7 +175,7 @@ function check_key_settings( _name, _key, _modifier)
 end
 
 
-function settings_print_keys()
+function settingsPrintKeys()
 -- That function prints the loaded key settings to the MM window and to the log
 
 	local msg;
@@ -234,7 +234,7 @@ function settings.load()
 				error(err, 0);
 			end
 
-			check_key_settings( v:getAttribute("description"),
+			checkKeySettings( v:getAttribute("description"),
 			  v:getAttribute("key"), 
 			  v:getAttribute("modifier") );
 		end
@@ -339,10 +339,10 @@ function settings.load()
 
 						settings.hotkeys[hotkeyName].key = key["VK_" .. parts[2]];
 						settings.hotkeys[hotkeyName].modifier = key["VK_" .. parts[1]];
-						check_key_settings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] );
+						checkKeySettings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] );
 					else
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
-						check_key_settings(hotkeyName, "VK_" .. bindings[bindingName].key1 );
+						checkKeySettings(hotkeyName, "VK_" .. bindings[bindingName].key1 );
 					end
 					
 				else
@@ -465,7 +465,7 @@ function settings.loadProfile(_name)
 				error(err, 0);
 			end
 
-			check_key_settings(v:getAttribute("name"),
+			checkKeySettings(v:getAttribute("name"),
 			  v:getAttribute("key"), 
 			  v:getAttribute("modifier") );
 
@@ -548,7 +548,7 @@ function settings.loadProfile(_name)
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
 
-			check_key_settings( v:getAttribute("name"),
+			checkKeySettings( v:getAttribute("name"),
 			  v:getAttribute("hotkey"), 
 			  v:getAttribute("modifier") );
 

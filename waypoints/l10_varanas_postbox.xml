@@ -1,0 +1,27 @@
+<waypoints type="TRAVEL" > 
+	<!-- # 1 --><waypoint x="5529" z="-4428"></waypoint>
+	<!-- # 2 --><waypoint x="5523" z="-4371"></waypoint>
+	<!-- # 3 --><waypoint x="5408" z="-4163"></waypoint>
+	<!-- # 4 --><waypoint x="5242" z="-4028"></waypoint>
+	<!-- # 5 --><waypoint x="5238" z="-3996"></waypoint>
+	<!-- # 6 --><waypoint x="5277" z="-3963"></waypoint>
+	<!-- # 7 --><waypoint x="5276" z="-3915"></waypoint>
+	<!-- # 8 --><waypoint x="5210" z="-3809"></waypoint>
+	<!-- # 9 --><waypoint x="5197" z="-3680"></waypoint>
+	<!-- #10 --><waypoint x="5255" z="-3494"></waypoint>
+	<!-- #11 --><waypoint x="5302" z="-3326"></waypoint>
+	<!-- #12 --><waypoint x="5376" z="-3165"></waypoint>
+	<!-- #13 --><waypoint x="5432" z="-3000"></waypoint>
+	<!-- #14 --><waypoint x="5381" z="-2924"></waypoint>
+	<!-- #15 --><waypoint x="5218" z="-2773"></waypoint>
+	<!-- #16 --><waypoint x="4950" z="-2907"></waypoint>
+	<!-- #17 --><waypoint x="4831" z="-2894"></waypoint>
+	<!-- #18 --><waypoint x="4820" z="-2786"></waypoint>
+	<!-- #19 --><waypoint x="4838" z="-2604"></waypoint>
+	<!-- #20 --><waypoint x="4737" z="-2426"></waypoint>
+	<!-- #21 --><waypoint x="4619" z="-2218"></waypoint>
+	<!-- #22 --><waypoint x="4574" z="-2206">
+	printf("We where running for %s seconds.\n", os.difftime(os.time(),player.BotStartTime_nr) - player.Sleeping_time );
+	error("Bot finished", 0); -- Not really an error, but it will drop us back to shell.
+	</waypoint>
+</waypoints>
