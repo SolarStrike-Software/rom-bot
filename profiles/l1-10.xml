@@ -122,30 +122,18 @@
 	<onLeaveCombat>
 
 		-- thats a demo for opening the gift bags from Lvl 1-10
-		-- and levelup the skills for a new mage character
-		-- you can delete that lines
+		-- and levelup the skills for a new character (mage or priest recommended)
+		-- you can delete that lines if you want to use that
 
 		if( player.Level > player.free_counter1) then
 			player.free_counter1 = player.Level;
 
+			-- single skill would be: sendMacro("SetSpellPoint(4,2);");
+			levelupSkills1To10();
+
 			-- open giftbag and equipt content
 			-- updates first 18 bag slots / update all if empty
 			openGiftbag(player.Level, 18);
-
-			-- levelup skills
-			-- mage: 4 = third skill tab, 2 = mage flame
-			-- priest: 2,1 (rising tide) 2,2 (urgent heal)
-			-- CAUTION: addressing a invalid skill will crash the RoM client
-			if(player.Class1 == CLASS_MAGE) then
-				if(	player.Level == 2 ) then
-					sendMacro("SetSpellPoint( 4, 2 );");
-					yrest(1000);
-					sendMacro("SetSpellPoint( 4, 2 );");
-				else
-					player.free_counter1 = player.Level;
-					sendMacro("SetSpellPoint( 4, 2 );");
-				end
-			end
 
 		end
 
