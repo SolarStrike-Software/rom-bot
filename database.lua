@@ -178,18 +178,18 @@ function database.load()
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
-	    local itemid, type, class, level, name;
+	    local itemid, type, armor, level, name;
 		local tmp = {};
 
 		itemid = v:getAttribute("itemid");
 		type   = v:getAttribute("type");
-		class  = v:getAttribute("class");		
+		armor  = v:getAttribute("armor");		
 		level  = v:getAttribute("level");
 		name   = v:getAttribute("name");
 
 		if (itemid) then tmp.itemid = itemid; end;
 		if (type)   then tmp.type   = type;   end;
-		if (class)  then tmp.class  = class;  end;
+		if (armor)  then tmp.armor  = armor;  end;
 		if (level)  then tmp.level  = level;  end;
 		if (name)   then tmp.name   = name;   end;
 

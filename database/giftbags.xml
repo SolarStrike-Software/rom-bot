@@ -1,24 +1,35 @@
 <giftbags>
 	<!-- Giftbags Lvl 1 - 10 -->
-	<!-- field 'name' is only as info, will be updated from client -->
-	<giftbag itemid="201843" type="bag" class=""     level="1" name="Magischer Geschenkbeutel" />
-	<giftbag itemid="221668" type=""    class="mage" level="1" name="Magischer Ring (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="201844" type="bag" class=""     level="2" name="Abenteurer-Geschenkbeutel" />
-	<giftbag itemid="221669" type=""    class="mage" level="2" name="Stoffg\195\188rtel (Geschenk des Pionierdorfs" />
-	<giftbag itemid="201845" type="bag" class=""     level="3" name="Pionier-Geschenkbeutel" />
-	<giftbag itemid="221672" type=""    class="mage" level="3" name="Ohrringe (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="201846" type="bag" class=""     level="4" name="Siedlungs-Geschenkbeutel" />
-	<giftbag itemid="221673" type=""    class="mage" level="4" name="Umhang (Geschenk des Pionierdorfs" />
-	<giftbag itemid="201847" type="bag" class=""     level="5" name="Minen-Geschenkbeutel" />
-	<giftbag itemid="221674" type=""    class="mage" level="5" name="Stoff\195\188berhose (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="201848" type="bag" class=""     level="6" name="Logar-Geschenkbeutel" />
-	<giftbag itemid="221677" type=""    class="mage" level="6" name="Ohrringe (Geschenk aus Logar)" />
-	<giftbag itemid="201849" type="bag" class=""     level="7" name="Toter-Baum-Geschenkbeutel" />
-	<giftbag itemid="221678" type=""    class="mage" level="7" name="Stoffschuhe (Geschenk aus Logar)" />
-	<giftbag itemid="201850" type="bag" class=""     level="8" name="Zerlumpter Geschenkbeutel" />
-	<giftbag itemid="221681" type=""    class="mage" level="8" name="Robe (Geschenk aus Logar)" />
-	<giftbag itemid="201851" type="bag" class=""     level="9" name="Mondquellen-Geschenkbeutel" />
-	<giftbag itemid="221684" type=""    class="mage" level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
-	<giftbag itemid="202152" type=""    class=""     level="9" name="Frucht der zus\195\164tzlichen Erfahrung" />
-	<giftbag itemid="201852" type="bag" class=""     level="10" name="Heulender Geschenkbeutel" />
+	<!-- field 'name' is only as info, we read the name later from the client -->
+	<giftbag itemid="201843" type="bag" armor=""        level="1" name="Magischer Geschenkbeutel" />
+	<giftbag itemid="221668" type=""    armor=""        level="1" name="Magischer Ring (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="201844" type="bag" armor=""        level="2" name="Abenteurer-Geschenkbeutel" />
+	<giftbag itemid="221669" type=""    armor="cloth"   level="2" name="Stoffg\129rtel (Geschenk des Pionierdorfs" />
+	<giftbag itemid="221670" type=""    armor="leather" level="2" name="Lederr\129stung (Geschenk des Pionierdorfs" />
+	<giftbag itemid="221671" type=""    armor="chain"   level="2" name="Ketteng\129rtel (Geschenk des Pionierdorfs" />
+	<giftbag itemid="201845" type="bag" armor=""        level="3" name="Pionier-Geschenkbeutel" />
+	<giftbag itemid="221672" type=""    armor=""        level="3" name="Ohrringe (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="201846" type="bag" armor=""        level="4" name="Siedlungs-Geschenkbeutel" />
+	<giftbag itemid="221673" type=""    armor=""        level="4" name="Umhang (Geschenk des Pionierdorfs" />
+	<giftbag itemid="201847" type="bag" armor=""        level="5" name="Minen-Geschenkbeutel" />
+	<giftbag itemid="221674" type=""    armor="cloth"   level="5" name="Stoff\129berhose (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="221675" type=""    armor="leather" level="5" name="Leder\129berhose (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="221676" type=""    armor="chain"   level="5" name="Kettenr\129stungs\129berhose (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="201848" type="bag" armor=""        level="6" name="Logar-Geschenkbeutel" />
+	<giftbag itemid="221677" type=""    armor=""        level="6" name="Ohrringe (Geschenk aus Logar)" />
+	<giftbag itemid="201849" type="bag" armor=""        level="7" name="Toter-Baum-Geschenkbeutel" />
+	<giftbag itemid="221678" type=""    armor="cloth"   level="7" name="Stoffschuhe (Geschenk aus Logar)" />
+	<giftbag itemid="221679" type=""    armor="leather" level="7" name="Lederstiefel (Geschenk aus Logar)" />
+	<giftbag itemid="221680" type=""    armor="chain"   level="7" name="Kettenstiefel (Geschenk aus Logar)" />
+	<giftbag itemid="201850" type="bag" armor=""        level="8" name="Zerlumpter Geschenkbeutel" />
+	<giftbag itemid="221681" type=""    armor="cloth"   level="8" name="Robe (Geschenk aus Logar)" />
+	<giftbag itemid="221682" type=""    armor="leather" level="8" name="Lederr\129stung (Geschenk aus Logar)" />
+	<giftbag itemid="221683" type=""    armor="leather" level="8" name="Kettenr\129stung (Geschenk aus Logar)" />
+	<giftbag itemid="201851" type="bag" armor=""        level="9" name="Mondquellen-Geschenkbeutel" />
+	<giftbag itemid="221684" type=""    armor=""        level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
+	<giftbag itemid="202152" type=""    armor=""        level="9" name="Frucht der zus\132tzlichen Erfahrung" />
+	<giftbag itemid="201852" type="bag" armor=""        level="10" name="Heulender Geschenkbeutel" />
+	<giftbag itemid="221685" type=""    armor="cloth"   level="10" name="Stoffhandschuhe (Geschenk aus Logar" />
+	<giftbag itemid="221686" type=""    armor="leather" level="10" name="Lederhandschuhe (Geschenk aus Logar" />
+	<giftbag itemid="221687" type=""    armor="chain"   level="10" name="Kettenhandschuhe (Geschenk aus Logar" />
 </giftbags>

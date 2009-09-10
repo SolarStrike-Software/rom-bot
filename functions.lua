@@ -454,18 +454,21 @@ function openGiftbag(_player_level, _maxslot)
 	yrest(2000);	-- time for cooldowns to phase-out (prevents from missed opening tries)
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
-			local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
-			
-			if ( hf_return ) then
-				cprintf(cli.lightblue, language[171], hf_name );	-- Open/eqipt item:
-			else
-				cprintf(cli.yellow, language[174], v.name );		-- item not found
-			end
-			yrest(2000);					-- wait for using that item
+			if( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
+			    v.armor == nil ) then						-- or is armor independent
+				local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
 
-			if( v.type == "bag" ) then		-- after opening bag update inventory
-				yrest(4000);				-- some more time to open the bag
-				inventory:update(_maxslot);	-- update slots
+				if ( hf_return ) then
+					cprintf(cli.lightblue, language[171], hf_name );	-- Open/eqipt item:
+				else
+					cprintf(cli.yellow, language[174], v.name );		-- item not found
+				end
+				yrest(2000);					-- wait for using that item
+
+				if( v.type == "bag" ) then		-- after opening bag update inventory
+					yrest(4000);				-- some more time to open the bag
+					inventory:update(_maxslot);	-- update slots
+				end;
 			end;
 		end;
 
