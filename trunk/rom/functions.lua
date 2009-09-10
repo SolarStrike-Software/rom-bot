@@ -233,6 +233,13 @@ function timedSetWindowName(profile)
 end
 
 function load_paths( _wp_path, _rp_path)
+
+	cprintf("Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
+	loadPaths( _wp_path, _rp_path);
+	
+end
+
+function loadPaths( _wp_path, _rp_path)
 -- load given waypoint path and return path file
 -- if you don't specify a return path the function will look for
 -- a default return path based on the waypoint path name and
@@ -309,7 +316,7 @@ function load_paths( _wp_path, _rp_path)
 end
 
 -- executing RoMScript and send a MM window message before
-function send_macro(_script)
+function sendMacro(_script)
 
 	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
 	   getKeyName(settings.profile.hotkeys.MACRO.key),
@@ -393,18 +400,18 @@ function addMessage(message)
 	message = string.gsub(message, "\n", "\\n")
 	message = string.gsub(message, "\"", "\\\"")
 
-	message = ASCII_to_UTF8(message);	-- for ingame umlauts
+	message = asciiToUtf8(message);	-- for ingame umlauts
 
 	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
 end
 
-function replace_UTF8( _str, _ascii )
+function replaceUtf8( _str, _ascii )
 	local tmp = database.utf8_ascii[_ascii];
 	_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(_ascii) );
 	return _str
 end
 
-function replace_ASCII( _str, _ascii )
+function replaceAscii( _str, _ascii )
 	local tmp = database.utf8_ascii[_ascii];
 	_str = string.gsub(_str, string.char(_ascii), string.char(tmp.utf8_1, tmp.utf8_2) );
 	return _str
@@ -413,32 +420,32 @@ end
 -- we only replace umlaute, hence only that are importent for mob names
 -- player names are at the moment not importent for the MM protocol
 -- player names will be handled while loading the profile
-function UTF8_to_ASCII(_str)
-	_str = replace_UTF8(_str, 132);		-- ä
-	_str = replace_UTF8(_str, 142);		-- Ä
-	_str = replace_UTF8(_str, 148);		-- ö
-	_str = replace_UTF8(_str, 153);		-- Ö
-	_str = replace_UTF8(_str, 129);		-- ü
-	_str = replace_UTF8(_str, 154);		-- Ü
-	_str = replace_UTF8(_str, 225);		-- ß
+function utf8ToAscii(_str)
+	_str = replaceUtf8(_str, 132);		-- ä
+	_str = replaceUtf8(_str, 142);		-- Ä
+	_str = replaceUtf8(_str, 148);		-- ö
+	_str = replaceUtf8(_str, 153);		-- Ö
+	_str = replaceUtf8(_str, 129);		-- ü
+	_str = replaceUtf8(_str, 154);		-- Ü
+	_str = replaceUtf8(_str, 225);		-- ß
 	return _str;
 end
 
 -- we only replace umlaute, hence only that are importent for
 -- printing ingame messages
-function ASCII_to_UTF8(_str)
-	_str = replace_ASCII(_str, 132);		-- ä
-	_str = replace_ASCII(_str, 142);		-- Ä
-	_str = replace_ASCII(_str, 148);		-- ö
-	_str = replace_ASCII(_str, 153);		-- Ö
-	_str = replace_ASCII(_str, 129);		-- ü
-	_str = replace_ASCII(_str, 154);		-- Ü
-	_str = replace_ASCII(_str, 225);		-- ß
+function asciiToUtf8(_str)
+	_str = replaceAscii(_str, 132);		-- ä
+	_str = replaceAscii(_str, 142);		-- Ä
+	_str = replaceAscii(_str, 148);		-- ö
+	_str = replaceAscii(_str, 153);		-- Ö
+	_str = replaceAscii(_str, 129);		-- ü
+	_str = replaceAscii(_str, 154);		-- Ü
+	_str = replaceAscii(_str, 225);		-- ß
 	return _str;
 end
 
 -- open giftbag (at the moment level 1-10)
-function open_giftbag(_player_level, _maxslot)
+function openGiftbag(_player_level, _maxslot)
 
 	if( not _player_level) then _player_level = player.Level; end
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
@@ -447,7 +454,6 @@ function open_giftbag(_player_level, _maxslot)
 	yrest(2000);	-- time for cooldowns to phase-out (prevents from missed opening tries)
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
-			-- send_macro("UseBagItem( CheckForItem('Magischer Geschenkbeutel') )");
 			local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
 			
 			if ( hf_return ) then
@@ -468,7 +474,7 @@ function open_giftbag(_player_level, _maxslot)
 end
 
 -- change profile options and print values in MM protocol
-function change_profile_option(_option, _value)
+function changeProfileOption(_option, _value)
 
 	if( settings.profile.options[_option] == nil ) then
 		cprintf(cli.green, language[173], _option );	-- Unknown profile option 

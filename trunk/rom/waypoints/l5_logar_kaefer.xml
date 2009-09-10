@@ -1,0 +1,10 @@
+<waypoints>
+	<!-- # 1 --><waypoint x="-442" z="-6016"></waypoint>
+	<!-- # 2 --><waypoint x="-675" z="-5941"></waypoint>
+	<!-- # 3 --><waypoint x="-702" z="-5753"></waypoint>
+	<!-- # 4 --><waypoint x="-826" z="-5547"></waypoint>
+	<!-- # 5 --><waypoint x="-987" z="-5458"></waypoint>
+	<!-- # 6 --><waypoint x="-1145" z="-5396"></waypoint>
+	<!-- # 7 --><waypoint x="-1305" z="-5364"></waypoint>
+	<!-- # 8 --><waypoint x="-1463" z="-5360">loadPaths("l5_kaefer");</waypoint>
+</waypoints>

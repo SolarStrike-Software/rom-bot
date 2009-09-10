@@ -19,7 +19,7 @@
 	<!-- #18 --><waypoint x="-3919" z="-7663"></waypoint>
 	<!-- #19 --><waypoint x="-3861" z="-7817">
 	if( player.Level > 2 ) then
-		load_paths("demo2");
+		loadPaths("demo2");
   	end
 	</waypoint>
 </waypoints>

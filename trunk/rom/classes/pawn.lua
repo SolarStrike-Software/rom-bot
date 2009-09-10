@@ -137,7 +137,7 @@ function CPawn:update()
 	elseif(self.Type == PT_PLAYER ) then
 		self.Name = tmp;
 	else
-		self.Name = UTF8_to_ASCII(tmp);
+		self.Name = utf8ToAscii(tmp);
 	end
 
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);

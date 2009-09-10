@@ -196,7 +196,7 @@ function main()
 	local displayname = string.sub(load_profile_name, 1, 4) .. "****";
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
-	settings_print_keys();		-- print keyboard settings to MM and log
+	settingsPrintKeys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	
@@ -339,7 +339,7 @@ function main()
 			list_waypoint_files();
 		end;
 	
-		load_paths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
+		loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 	end;
 
 	-- special option for use waypoint file from profile in a reverse order / not if forced path

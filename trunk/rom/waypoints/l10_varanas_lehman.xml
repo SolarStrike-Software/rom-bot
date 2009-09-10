@@ -1,0 +1,77 @@
+<waypoints type="TRAVEL">
+	<!-- # 1 --><waypoint x="94" z="-1199"></waypoint>
+	<!-- # 2 --><waypoint x="185" z="-1111"></waypoint>
+	<!-- # 3 --><waypoint x="313" z="-903"></waypoint>
+	<!-- # 4 --><waypoint x="462" z="-726"></waypoint>
+	<!-- # 5 --><waypoint x="546" z="-588"></waypoint>
+	<!-- # 6 --><waypoint x="697" z="-361"></waypoint>
+	<!-- # 7 --><waypoint x="826" z="-164"></waypoint>
+	<!-- # 8 --><waypoint x="855" z="48"></waypoint>
+	<!-- # 9 --><waypoint x="861" z="173"></waypoint>
+	<!-- #10 --><waypoint x="917" z="497"></waypoint>
+	<!-- #11 --><waypoint x="988" z="599"></waypoint>
+	<!-- #12 --><waypoint x="1079" z="637"></waypoint>
+	<!-- #13 --><waypoint x="1316" z="655"></waypoint>
+	<!-- #14 --><waypoint x="1553" z="707"></waypoint>
+	<!-- #15 --><waypoint x="1775" z="867"></waypoint>
+	<!-- #16 --><waypoint x="1848" z="918"></waypoint>
+	<!-- #17 --><waypoint x="2105" z="986"></waypoint>
+	<!-- #18 --><waypoint x="2280" z="1027"></waypoint>
+	<!-- #19 --><waypoint x="2461" z="1058"></waypoint>
+	<!-- #20 --><waypoint x="2578" z="1011"></waypoint>
+	<!-- #21 --><waypoint x="2736" z="805"></waypoint>
+	<!-- #22 --><waypoint x="2901" z="586"></waypoint>
+	<!-- #23 --><waypoint x="3032" z="414"></waypoint>
+	<!-- #24 --><waypoint x="3207" z="180"></waypoint>
+	<!-- #25 --><waypoint x="3373" z="-47"></waypoint>
+	<!-- #26 --><waypoint x="3491" z="-215"></waypoint>
+	<!-- #27 --><waypoint x="3560" z="-317"></waypoint>
+	<!-- #28 --><waypoint x="3730" z="-569"></waypoint>
+	<!-- #29 --><waypoint x="3802" z="-711"></waypoint>
+	<!-- #31 --><waypoint x="3718" z="-730"></waypoint>
+	<!-- #32 --><waypoint x="3622" z="-811"></waypoint>
+	<!-- #33 --><waypoint x="3638" z="-903"></waypoint>
+	<!-- #34 --><waypoint x="3649" z="-974"></waypoint>
+	<!-- #35 --><waypoint x="3652" z="-1119"></waypoint>
+	<!-- #36 --><waypoint x="3687" z="-1204"></waypoint>
+	<!-- #37 --><waypoint x="3688" z="-1311"></waypoint>
+	<!-- #38 --><waypoint x="3567" z="-1465"></waypoint>
+	<!-- #39 --><waypoint x="3494" z="-1552"></waypoint>
+	<!-- #40 --><waypoint x="3600" z="-1677"></waypoint>
+	<!-- #41 --><waypoint x="3719" z="-1725"></waypoint>
+	<!-- #42 --><waypoint x="3810" z="-1693"></waypoint>
+	<!-- #43 --><waypoint x="3872" z="-1692"></waypoint>
+	<!-- #44 --><waypoint x="4004" z="-1747"></waypoint>
+	<!-- #45 --><waypoint x="4209" z="-1859"></waypoint>
+	<!-- #46 --><waypoint x="4293" z="-1927"></waypoint>
+	<!-- #47 --><waypoint x="4480" z="-2059"></waypoint>
+	<!-- #48 --><waypoint x="4639" z="-2228"></waypoint>
+	<!-- #49 --><waypoint x="4769" z="-2417"></waypoint>
+	<!-- #50 --><waypoint x="4830" z="-2594"></waypoint>
+	<!-- #51 --><waypoint x="4811" z="-2749"></waypoint>
+	<!-- #52 --><waypoint x="4797" z="-2854"></waypoint>
+	<!-- #53 --><waypoint x="4852" z="-2925"></waypoint>
+	<!-- #54 --><waypoint x="5117" z="-2838"></waypoint>
+	<!-- #55 --><waypoint x="5251" z="-2800"></waypoint>
+	<!-- #56 --><waypoint x="5334" z="-2881"></waypoint>
+	<!-- #57 --><waypoint x="5377" z="-2940"></waypoint>
+	<!-- #58 --><waypoint x="5413" z="-3149"></waypoint>
+	<!-- #59 --><waypoint x="5349" z="-3256"></waypoint>
+	<!-- #60 --><waypoint x="5303" z="-3360"></waypoint>
+	<!-- #61 --><waypoint x="5219" z="-3546"></waypoint>
+	<!-- #62 --><waypoint x="5185" z="-3674"></waypoint>
+	<!-- #63 --><waypoint x="5199" z="-3754"></waypoint>
+	<!-- #64 --><waypoint x="5250" z="-3871"></waypoint>
+	<!-- #65 --><waypoint x="5281" z="-3923"></waypoint>
+	<!-- #66 --><waypoint x="5265" z="-3971"></waypoint>
+	<!-- #67 --><waypoint x="5236" z="-4022"></waypoint>
+	<!-- #68 --><waypoint x="5282" z="-4071"></waypoint>
+	<!-- #69 --><waypoint x="5397" z="-4202"></waypoint>
+	<!-- #70 --><waypoint x="5523" z="-4356"></waypoint>
+	<!-- #71 --><waypoint x="5529" z="-4428">
+	player:target_NPC("Lehman");
+	player:rest(4);
+	player:sleep();
+	loadPaths("l10_varanas_postbox");
+	</waypoint>
+</waypoints>
