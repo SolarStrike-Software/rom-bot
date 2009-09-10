@@ -476,6 +476,40 @@ function openGiftbag(_player_level, _maxslot)
 
 end
 
+function levelupSkills1To10()
+-- levelup skills
+
+	-- e.g. 4 = third skill tab, 2 = second skill on the tab
+	-- CAUTION: addressing a invalid skill will crash the RoM client
+	local skillLevelupMap = {
+		[CLASS_WARRIOR]		= {  [1] = { level = 1, skilltab = 2, skillnum = 2 } },	-- slash
+		[CLASS_SCOUT]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 } },	-- shot
+		[CLASS_ROGUE]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 } },	-- meucheln
+		[CLASS_MAGE]		= {  [1] = { level = 1, skilltab = 4, skillnum = 2 },	-- flame
+								 [2] = { level = 4, skilltab = 2, skillnum = 1 } },	-- fireball
+		[CLASS_PRIEST]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 },	-- rising tide
+								 [2] = { level = 1, skilltab = 2, skillnum = 2 } }, -- urgent heal
+		[CLASS_KNIGHT]      = {  [1] = { level = 1, skilltab = 2, skillnum = 1 },	-- Bestrafung
+								 [2] = { level = 1, skilltab = 2, skillnum = 2 } }, -- Heiliger Schlag
+		[CLASS_RUNEDANCER] = "???",	-- ???
+		[CLASS_DRUID]      = "???",	-- ???
+		};
+
+	local leveluptable = skillLevelupMap[player.Class1];
+	for i,v in pairs(leveluptable)  do
+		if( player.Level >= v.level ) then 
+			sendMacro("SetSpellPoint("..v.skilltab..","..v.skillnum..");");
+			yrest(1000);
+			if(	player.Level == 2 ) then
+				-- twice at lvl 2 for lvl 1 and lvl 2
+				sendMacro("SetSpellPoint("..v.skilltab..","..v.skillnum..");");
+				yrest(1000);
+			end
+		end
+	end
+
+end
+
 -- change profile options and print values in MM protocol
 function changeProfileOption(_option, _value)
 
