@@ -17,6 +17,19 @@ CLASS_DRUID = 8;
 ATTACKABLE_MASK_PLAYER = 0x10000;
 ATTACKABLE_MASK_MONSTER = 0xE0000;
 
+-- used in function.lua for openGiftbag()
+armorMap = {
+	[CLASS_NONE] = "none",
+	[CLASS_WARRIOR] = "chain",
+	[CLASS_SCOUT] = "leather",
+	[CLASS_ROGUE] = "leather",
+	[CLASS_MAGE] = "cloth",
+	[CLASS_PRIEST] = "cloth",
+	[CLASS_KNIGHT] = "chain",
+	[CLASS_RUNEDANCER] = "cloth",	-- ???
+	[CLASS_DRUID] = "leather",		-- ???
+	};
+
 local classEnergyMap = {
 	[CLASS_NONE] = "none",
 	[CLASS_WARRIOR] = "rage",

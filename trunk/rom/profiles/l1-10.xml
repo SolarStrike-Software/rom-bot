@@ -18,7 +18,7 @@
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"			value="" />		<!-- leave empty or choose ranged/melee if not using class default -->
-		<option name="COMBAT_RANGED_PULL"	value="true" />	<!-- only important for melees -->
+		<option name="COMBAT_RANGED_PULL"	value="false" />	<!-- only important for melees -->
 		<option name="COMBAT_DISTANCE"		value="200" />
 		<option name="MAX_FIGHT_TIME"		value="15" />		<!-- Max time without damage before break -->
 		<option name="DOT_PERCENT"			value="90" />
@@ -29,12 +29,12 @@
 		<option name="TARGET_LEVELDIF_BELOW" value="2" />
 
 		<!-- Waypoint and movement settings -->
-		<option name="WAYPOINTS"		value="l1_goto_2" /> 	<!-- leave empty to show a list -->
-		<option name="RETURNPATH"		value="" />
-		<option name="PATH_TYPE"		value="waypoints" />	<!-- waypoints | wander -->
+		<option name="WAYPOINTS"			value="" /> 	<!-- leave empty to show a list -->
+		<option name="RETURNPATH"			value="" />
+		<option name="PATH_TYPE"			value="waypoints" />	<!-- waypoints | wander -->
 		<option name="WANDER_RADIUS"		value="500" />
 		<option name="WAYPOINT_DEVIATION"	value="0" />
-		<option name="QUICK_TURN" 		value="false" />
+		<option name="QUICK_TURN" 			value="true" />
 
 		<!-- Loot settings -->
 		<option name="LOOT"					value="false" />
