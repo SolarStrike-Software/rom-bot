@@ -13,6 +13,9 @@ STARGET_FRIENDLY = 2
 CSkill = class(
 	function (self, copyfrom)
 		self.Name = "";
+		self.aslevel = 0;		-- player level, >= that skill can be used
+		self.skilltab = nil;	-- skill tab number
+		self.skillnum = nil;	-- number of the skill at that skill tab
 		self.Mana = 0;
 		self.Rage = 0;
 		self.Energy = 0;
@@ -63,6 +66,9 @@ CSkill = class(
 			self.priority = copyfrom.priority;
 			self.pullonly = copyfrom.pullonly;
 			self.maxuse = copyfrom.maxuse;
+			self.aslevel = copyfrom.aslevel;
+			self.skilltab = copyfrom.skilltab;
+			self.skillnum = copyfrom.skillnum;
 		end
 	end
 );
@@ -186,12 +192,16 @@ function CSkill:use()
 
 	self.used = self.used + 1;	-- count use of skill per fight
 	self.LastCastTime = os.time() + self.CastTime;
-	if( self.modifier ) then
-		keyboardHold(self.modifier);
-	end
-	keyboardPress(self.hotkey);
-	if( self.modifier ) then
-		keyboardRelease(self.modifier);
+	if(self.hotkey == "MACRO") then
+		RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
+	else
+		if( self.modifier ) then
+			keyboardHold(self.modifier);
+		end
+		keyboardPress(self.hotkey);
+		if( self.modifier ) then
+			keyboardRelease(self.modifier);
+		end
 	end
 
 	if( self.Toggleable ) then

@@ -1,15 +1,15 @@
 <skills>
 	<!-- Mage Skills -->
-	<skill name="MAGE_FIREBALL" mana="30" manainc="3" range="225" cooldown="6" priority="65" type="damage" target="enemy" />
-	<skill name="MAGE_LIGHTNING" mana="20" manainc="2.0" range="150" minrange="75" priority="100" cooldown="20" type="damage" target="enemy" />
-	<skill name="MAGE_INTENSIFICATION" mana="10" cooldown="20" type="buff" target="self" />
+	<skill name="MAGE_FIREBALL" aslevel="4" skilltab="2" skillnum="1" mana="30" manainc="3" range="225" cooldown="6" priority="65" type="damage" target="enemy" />
+	<skill name="MAGE_LIGHTNING" aslevel="8" skilltab="2" skillnum="2" mana="20" manainc="2.0" range="150" minrange="75" priority="100" cooldown="20" type="damage" target="enemy" />
+	<skill name="MAGE_INTENSIFICATION" aslevel="16" skilltab="2" skillnum="4" mana="10" cooldown="20" type="buff" target="self" />
 	<skill name="MAGE_SILENCE" mana="50" range="150" cooldown="24" type="debuff" target="enemy" />
 	<skill name="MAGE_FIRE_WARD" mana="120" cooldown="600" type="buff" target="self" />
 	<skill name="MAGE_ELEMENTAL_CATALYST" cooldown="300" type="buff" target="self" />
-	<skill name="MAGE_FLAME" mana="20" manainc="2.0" range="225" casttime="3" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTROSTATIC_CHARGE" mana="75" manainc="7.5" cooldown="20" type="buff" target="self"  />
-	<skill name="MAGE_PLASMA_ARROW" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTRIC_BOLT" mana="30" manainc="3.0" range="200" casttime="1" type="dot" target="enemy" />
+	<skill name="MAGE_FLAME" aslevel="1" skilltab="4" skillnum="2" mana="20" manainc="2.0" range="225" casttime="3" type="damage" target="enemy" />
+	<skill name="MAGE_ELECTROSTATIC_CHARGE" aslevel="2" skilltab="4" skillnum="3" mana="75" manainc="7.5" cooldown="20" type="buff" target="self"  />
+	<skill name="MAGE_PLASMA_ARROW" aslevel="2" skilltab="4" skillnum="4" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
+	<skill name="MAGE_ELECTRIC_BOLT" aslevel="10" skilltab="4" skillnum="6" mana="30" manainc="3.0" range="200" casttime="1" type="dot" target="enemy" />
 	<skill name="MAGE_GALAXY" mana="35" manainc="3.5" range="150" type="damage" target="enemy" />
 	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" manainc="3.25" cooldown="1800" range="200" type="buff" target="self" />
 
@@ -55,23 +55,26 @@
 
 
 	<!-- Priest Skills -->
-	<skill name="PRIEST_URGENT_HEAL" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
-	<skill name="PRIEST_RISING_TIDE" mana="15" manainc="1.09" range="217" casttime="2" type="damage" target="enemy" />
-	<skill name="PRIEST_REGENERATE" mana="35" manainc="3.47" cooldown="15" range="180" type="hot" target="friendly" />
-	<skill name="PRIEST_HOLY_AURA" mana="60" cooldown="120" type="buff" target="self" inbattle="true" />
-	<skill name="PRIEST_MAGIC_BARRIER" mana="120" manainc="12.0" type="buff" cooldown="600" target="self" />
-	<skill name="PRIEST_BLESSING_OF_RAIN" mana="120" type="buff" cooldown="600" target="self" />
-	<skill name="PRIEST_SOUL_SOURCE" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
-	<skill name="PRIEST_WAVE_ARMOR" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" />
-	<skill name="PRIEST_HEAL" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
-	<skill name="PRIEST_BONE_CHILL" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
-	<skill name="PRIEST_ICE_FOG" mana="44" range="240" casttime="3" cooldown="10" type="damage" target="enemy" />
-	<skill name="PRIEST_SOUL_BOND" mana="500" range="225" type="buff" cooldown="1800" target="friendly" />
-	<skill name="PRIEST_RESURRECTION" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
-	<skill name="PRIEST_GRACE_OF_LIFE" mana="30" manainc="3.0" range="200" type="buff" target="friendly" cooldown="1800" />
-	<skill name="PRIEST_AMPLIFIED_ATTACK" mana="36" manainc="3.5" range="150" type="buff" target="friendly" cooldown="1800" />
-	<skill name="PRIEST_GROUP_HEAL" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
-	<skill name="PRIEST_CHAIN_OF_LIGHT" mana="60" range="217" manainc="6.0" casttime="6" type="damage" target="enemy" />
+	<skill name="PRIEST_URGENT_HEAL" aslevel="1" skilltab="2" skillnum="2" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
+	<skill name="PRIEST_RISING_TIDE" aslevel="1" skilltab="2" skillnum="1" mana="15" manainc="1.09" range="217" casttime="2" type="damage" target="enemy" />
+	<skill name="PRIEST_REGENERATE" aslevel="4" skilltab="2" skillnum="3" mana="35" manainc="3.47" cooldown="15" range="180" type="hot" target="friendly" />
+	<skill name="PRIEST_HOLY_AURA" aslevel="8" skilltab="2" skillnum="4" mana="60" cooldown="120" type="buff" target="self" inbattle="true" maxhpper="30" />
+	<skill name="PRIEST_MAGIC_BARRIER" aslevel="12" skilltab="2" skillnum="5" mana="120" manainc="12.0" type="buff" cooldown="600" target="self" />
+	<skill name="PRIEST_BLESSING_OF_RAIN" aslevel="16" mana="120" type="buff" cooldown="600" target="self" />	<!-- name outdated new: BLESSED_SPRING_WATER -->
+	<skill name="PRIEST_BLESSED_SPRING_WATER" aslevel="16" skilltab="2" skillnum="6" mana="120" type="buff" cooldown="600" target="self" />
+	<skill name="PRIEST_SOUL_SOURCE" aslevel="1" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
+	<skill name="PRIEST_WAVE_ARMOR" aslevel="2" skilltab="4" skillnum="2" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" inbattle="true" />
+	<skill name="PRIEST_HEAL" aslevel="6" skilltab="4" skillnum="3" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
+	<skill name="PRIEST_BONE_CHILL" aslevel="8" skilltab="4" skillnum="4" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
+	<skill name="PRIEST_ICE_FOG" aslevel="8" skilltab="4" skillnum="5" mana="44" range="240" casttime="3" cooldown="10" type="damage" target="enemy" />
+	<skill name="PRIEST_RESURRECTION" aslevel="10" skilltab="4" skillnum="6" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
+	<skill name="PRIEST_SOUL_BOND" aslevel="10" skilltab="4" skillnum="7" mana="500" range="225" type="buff" cooldown="1800" target="friendly" />
+	<skill name="PRIEST_GROUP_HEAL" aslevel="14" skilltab="4" skillnum="8" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
+	<skill name="PRIEST_GRACE_OF_LIFE" aslevel="14" skilltab="4" skillnum="9" mana="30" manainc="3.0" range="200" type="buff" target="friendly" cooldown="1800" />
+	<!-- manainc? -->
+	<skill name="PRIEST_CLEANSE" aslevel="18" skilltab="4" skillnum="10" mana="150" manainc="0.0" range="200" type="heal" target="friendly" cooldown="10" />
+	<skill name="PRIEST_CHAIN_OF_LIGHT" aslevel="18" skilltab="4" skillnum="11" mana="60" range="217" manainc="6.0" casttime="6" type="damage" target="enemy" />
+	<skill name="PRIEST_AMPLIFIED_ATTACK" aslevel="20" skilltab="4" skillnum="13" mana="36" manainc="3.5" range="150" type="buff" target="friendly" cooldown="1800" />
 
 	<!-- Elite -->
 	<skill name="PRIEST_BATTLE_MONK_STANCE" mana="20" cooldown="600" type="buff" target="self" />
@@ -102,7 +105,7 @@
 	<skill name="PRIEST_CALM_HEART" mana="30" cooldown="60" range="150" type="buff" target="self" />
 
 	<!-- Warrior skills -->
-	<skill name="WARRIOR_SLASH" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
+	<skill name="WARRIOR_SLASH" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
 	<skill name="WARRIOR_ENRAGED" cooldown="40" type="buff" target="self" inbattle="false" />
 	<skill name="WARRIOR_WHIRLWIND" cooldown="30" rage="50" type="damage" target="enemy" />
 	<skill name="WARRIOR_BERSERK" rage="25" cooldown="60" type="buff" target="self" />
@@ -149,11 +152,11 @@
 	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" cooldown="20" target="self" type="buff" />
 	<skill name="WARRIOR_IGNORE_PAIN" cooldown="300" target="self" type="buff" />
 	<skill name="WARRIOR_SHIELD_BASH" mana="30" range="50" />
-	<skill name="WARRIOR_SURPRISE_ATTACK" range="150" minrage="60" cooldown="12" /> 
+	<skill name="WARRIOR_SURPRISE_ATTACK" range="150" minrage="60" cooldown="12" />
 
 
 	<!-- Rogue skills -->
-	<skill name="ROGUE_SHADOWSTAB" energy="20" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOWSTAB" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="300" target="self" />
 	<skill name="ROGUE_LOW_BLOW" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
@@ -161,9 +164,9 @@
 	<skill name="ROGUE_HIDE" type="buff" target="self" inbattle="false" cooldown="30" />
 	<skill name="ROGUE_BLIND_STAB" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
-	<skill name="ROGUE_SHADOW_STEP" energy="20" range="100" type="damage" target="enemy" />  
+	<skill name="ROGUE_SHADOW_STEP" energy="20" range="100" type="damage" target="enemy" />
 	<skill name="ROGUE_BLIND_SPOT" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
-	<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target --> 
+	<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target -->
 	<skill name="ROGUE_NUMBING_DAGGER" consumable="1" range="150" casttime="1" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
 	<skill name="ROGUE_POISON" consumable="1" cooldown="600" casttime="1" type="buff" target="self" />
@@ -203,7 +206,7 @@
 
 
 	<!-- Knight skills -->
-	<skill name="KNIGHT_HOLY_STRIKE" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
+	<skill name="KNIGHT_HOLY_STRIKE" skilltab="2" skillnum="2" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
 	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" target="self" />
 	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="120" type="buff" target="self" />
 	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
@@ -212,7 +215,7 @@
 	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
 	<skill name="KNIGHT_DISARMAMENT" mana="20" manainc="2.0" range="50" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
-	<skill name="KNIGHT_PUNISHMENT" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" />
+	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_BASH" mana="50" manainc="5.0" range="10" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
 	<skill name="KNIGHT_SHIELD_OF_TRUTH" mana="150" cooldown="60" type="buff" target="self" inbattle="true" />
@@ -250,7 +253,7 @@
 
 	<!-- Scout skills -->
 	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" toggleable="true" />
-	<skill name="SCOUT_SHOT" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" />
+	<skill name="SCOUT_SHOT" skilltab="2" skillnum="1" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" />
 	<skill name="SCOUT_VAMPIRE_ARROWS" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
 	<skill name="SCOUT_JOINT_BLOW" concentration="30" range="50" type="damage" target="enemy" />
 	<skill name="SCOUT_BLOOD_ARROW" cooldown="60" type="buff" target="self" />

@@ -14,7 +14,7 @@ function database.load()
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
 		local name, mana, rage, energy, concentration, range, minrange, casttime, cooldown, type, target;
-		local toggleable, maxhpper, priority, manainc, level;
+		local toggleable, maxhpper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
 
 		name = v:getAttribute("name");
 		mana = v:getAttribute("mana");
@@ -29,9 +29,13 @@ function database.load()
 		target = v:getAttribute("target");
 		toggleable = v:getAttribute("toggleable");
 		maxhpper = v:getAttribute("maxhpper");
+		inbattle = v:getAttribute("inbattle");
 		manainc = v:getAttribute("manainc");
 		level = v:getAttribute("level");
 		priority = v:getAttribute("priority");
+		aslevel = v:getAttribute("aslevel");
+		skilltab = v:getAttribute("skilltab");
+		skillnum = v:getAttribute("skillnum");
 
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
@@ -95,9 +99,13 @@ function database.load()
 		if(target) then tmp.Target = target; end;
 		if(toggleable) then tmp.Toggleable = toggleable; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
+		if(inbattle) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
 		if(manainc) then tmp.ManaInc = manainc; end;
 		if(level) then tmp.Level = level; end;
+		if(aslevel) then tmp.aslevel = aslevel; end;	
+		if(skilltab) then tmp.skilltab = skilltab; end;	
+		if(skillnum) then tmp.skillnum = skillnum; end;		
 
 		database.skills[name] = tmp;
 	end

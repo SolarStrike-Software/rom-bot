@@ -204,7 +204,14 @@ function CPlayer:cast(skill)
 		end
 	end
 
-	printf(language[21], getKeyName(skill.hotkey), string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
+	local hf_temp;
+	if( skill.hotkey == "MACRO" ) then
+		hf_temp = "MACRO";
+	else
+		hf_temp = getKeyName(skill.hotkey);
+	end
+	
+	printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
 	skill:use();
 	yrest(100);
 	self:update();
@@ -418,10 +425,10 @@ function CPlayer:fight()
 	-- Prep for battle, if needed.
 	--self:checkSkills();
 
-	local target = self:getTarget();
+--	local target = self:getTarget();  / double
 	self.lastHitTime = os.time();
 	local lastTargetHP = target.HP;
-	local move_closer_counter = 0;		-- count move closer trys
+	local move_closer_counter = 0;	-- count move closer trys
 	self.Cast_to_target = 0;		-- reset counter cast at enemy target
 	self.ranged_pull = false;		-- flag for timed ranged pull for melees
 	local hf_start_dist = 0;		-- distance to mob where we start the fight
@@ -634,14 +641,6 @@ function CPlayer:fight()
 	
 	-- edit: too tired to fix this now..
 	
-	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
-		local status,err = pcall(settings.profile.events.onLeaveCombat);
-		if( status == false ) then
-			local msg = sprintf(language[85], err);
-			error(msg);
-		end
-	end
-	
 
 	-- count kills per target name
 	local target_Name = target.Name;
@@ -650,6 +649,32 @@ function CPlayer:fight()
 	self.mobs[target_Name] = self.mobs[target_Name] + 1;
 	
 	self.Fights = self.Fights + 1;		-- count our fights
+
+
+	-- check if onLeaveCombat event is used in profile
+	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
+		local status,err = pcall(settings.profile.events.onLeaveCombat);
+		if( status == false ) then
+			local msg = sprintf(language[85], err);
+			error(msg);
+		end
+	end
+
+	
+	-- check if levelup happens
+	if(player.Level > player.level_detect_levelup )  then
+		player.level_detect_levelup = player.Level;
+		
+		-- check if onLevelup event is used in profile
+		if( type(settings.profile.events.onLevelup) == "function" ) then
+			local status,err = pcall(settings.profile.events.onLevelup);
+			if( status == false ) then
+				local msg = sprintf(language[85], err);
+				error(msg);
+			end
+		end
+	end
+
 
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
