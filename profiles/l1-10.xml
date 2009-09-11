@@ -3,7 +3,7 @@
 		<!-- Try the bot with a new char mage                   -->
 		<!-- At the pioneer village. Use demo.xml waypoint file -->
 		<option name="HP_LOW"			value="85" />
-		<option name="MP_LOW_POTION"	value="60" />
+		<option name="MP_LOW_POTION"	value="50" />
 		<option name="HP_LOW_POTION"	value="60" />
 
 		<!-- Rest if HP or Mana is below that level -->
@@ -77,11 +77,9 @@
 	</skills_mage>
 
 	<skills_priest>
-	<skill name="PRIEST_SOUL_SOURCE" hotkey="VK_4" priority="110" inbattle="true" hpper="15" />
-		<skill name="PRIEST_URGENT_HEAL" hotkey="VK_2" priority="99" hpper="29"  />
+		<skill name="PRIEST_SOUL_SOURCE" hotkey="VK_4" priority="110" inbattle="true" hpper="25" />
+		<skill name="PRIEST_URGENT_HEAL" hotkey="VK_2" priority="99" hpper="30"  />
 		<skill name="PRIEST_RISING_TIDE" hotkey="VK_3" priority="70" level="" />
-		<skill name="PRIEST_REGENERATE"  hotkey="VK_5" priority="95" level="" />
-		<skill name="PRIEST_WAVE_ARMOR"  hotkey="VK_6" priority="50" inbattle="true" level="" />
 	</skills_priest>
 
 	<skills_warrior>
@@ -112,32 +110,35 @@
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here
 		-- like: changeProfileOption("HP_REST", 60);
+
+		levelupSkills1To10("loadonly");
+		openGiftbag(player.Level, 18);
+
 	</onLoad>
 
-	<onDeath>-- Additional Lua code to execute on death
+	<onDeath>
 		-- Additional Lua code to execute on death
 		-- pauseOnDeath(); -- Stop the script
 	</onDeath>
 
 	<onLeaveCombat>
+		-- Additional Lua code to execute after a target is finished
+	</onLeaveCombat>
 
+	<onLevelup>
 		-- thats a demo for opening the gift bags from Lvl 1-10
 		-- and levelup the skills for a new character (mage or priest recommended)
-		-- you can delete that lines if you want to use that
-
-		if( player.Level > player.free_counter1) then
-			player.free_counter1 = player.Level;
+		-- you can delete that lines if you don't want to use that
 
 			-- single skill would be: sendMacro("SetSpellPoint(4,2);");
+			-- or levelupSkill(_skillname, _times)
 			levelupSkills1To10();
 
 			-- open giftbag and equipt content
 			-- updates first 18 bag slots / update all if empty
 			openGiftbag(player.Level, 18);
 
-		end
-
-	</onLeaveCombat>
+	</onLevelup>
 
 	<onSkillCast>
 		-- Additional Lua code to execute when casting a skill

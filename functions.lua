@@ -476,36 +476,116 @@ function openGiftbag(_player_level, _maxslot)
 
 end
 
-function levelupSkills1To10()
+
+function levelupSkill(_skillname, _times)
+-- _skillname = name of the skill in skills.xml
+-- _times = how many levels do you want to levelup that skill
+
+	if(player.Level == 1 ) then
+		return false;
+	end
+
+	if(_times == nil or
+	   _times == 0 ) then
+		_times = 1;
+	end
+
+	local skill_from_db = database.skills[_skillname];	-- read skill parameters from database
+
+	-- check is skill has an aslevel in skills.xml
+	if ( skill_from_db.aslevel ~= nil and
+		 skill_from_db.aslevel > player.Level ) then
+		cprintf(cli.yellow, "You need at least level %d to levelup skill %s. Your level is %d.\n", 
+		   skill_from_db.aslevel, _skillname, player.Level );
+		return false;
+	end
+
+	-- check if skill parameters for automatic leveling are in skills.xml for that skill
+	if ( skill_from_db.skilltab == nil or
+		 skill_from_db.skillnum == nil ) then
+		cprintf(cli.yellow, "Missing skill parameters in skills.xml to levelup skill %s\n", _skillname );
+		return false;
+	end
+
+	local hf_return = false;
+	for i = 1, _times do
+		yrest(1000);
+		sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
+		hf_return = true;
+	end
+	return hf_return;
+
+end
+
+
+function levelupSkills1To10(_loadonly)
 -- levelup skills
 
 	-- e.g. 4 = third skill tab, 2 = second skill on the tab
 	-- CAUTION: addressing a invalid skill will crash the RoM client
 	local skillLevelupMap = {
-		[CLASS_WARRIOR]		= {  [1] = { level = 1, skilltab = 2, skillnum = 2 } },	-- slash
-		[CLASS_SCOUT]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 } },	-- shot
-		[CLASS_ROGUE]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 } },	-- meucheln
-		[CLASS_MAGE]		= {  [1] = { level = 1, skilltab = 4, skillnum = 2 },	-- flame
-								 [2] = { level = 4, skilltab = 2, skillnum = 1 } },	-- fireball
-		[CLASS_PRIEST]		= {  [1] = { level = 1, skilltab = 2, skillnum = 1 },	-- rising tide
-								 [2] = { level = 1, skilltab = 2, skillnum = 2 } }, -- urgent heal
-		[CLASS_KNIGHT]      = {  [1] = { level = 1, skilltab = 2, skillnum = 1 },	-- Bestrafung
-								 [2] = { level = 1, skilltab = 2, skillnum = 2 } }, -- Heiliger Schlag
+		[CLASS_WARRIOR]		= {  [1] = { aslevel = 1, skillname="WARRIOR_SLASH" } },
+		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" } },
+		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" } },
+		[CLASS_MAGE]		= {  [1] = { aslevel = 1, skillname="MAGE_FLAME" } },
+		[CLASS_PRIEST]		= {  [1] = { aslevel = 1, skillname="PRIEST_RISING_TIDE" },
+								 [2] = { aslevel = 1, skillname="PRIEST_URGENT_HEAL" },
+--								 [3] = { aslevel = 2, skillname="PRIEST_WAVE_ARMOR" },	-- needs to much mana
+								 [3] = { aslevel = 4, skillname="PRIEST_REGENERATE" } ,
+								 [4] = { aslevel = 8, skillname="PRIEST_HOLY_AURA" } },
+		[CLASS_KNIGHT]      = {  [1] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
+								 [2] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" } },
 		[CLASS_RUNEDANCER] = "???",	-- ???
 		[CLASS_DRUID]      = "???",	-- ???
 		};
 
+
 	local leveluptable = skillLevelupMap[player.Class1];
 	for i,v in pairs(leveluptable)  do
-		if( player.Level >= v.level ) then 
-			sendMacro("SetSpellPoint("..v.skilltab..","..v.skillnum..");");
-			yrest(1000);
-			if(	player.Level == 2 ) then
-				-- twice at lvl 2 for lvl 1 and lvl 2
-				sendMacro("SetSpellPoint("..v.skilltab..","..v.skillnum..");");
-				yrest(1000);
+
+		if (_loadonly ~= "loadonly") then
+			-- levelup the skill ingame
+			-- TODO: maxlevel skills vs. new skill with only one level
+			if( player.Level == v.aslevel ) then		-- maxlevel the new skill
+					levelupSkill(v.skillname, v.aslevel);
+			elseif( player.Level == 2 and
+					v.aslevel == 1) then			-- 2x aft level 2  
+					levelupSkill(v.skillname, 2);
+			elseif( player.Level > v.aslevel ) then  	-- levelup 1 level
+					levelupSkill(v.skillname);
+			end
+		end;
+
+		-- add skill to skilltable
+--		if( player.Level == v.aslevel ) then
+		-- we will also reload skills into skilltable if we restart the bot
+		-- TODO: but only at the levelup event
+		if( player.Level >= v.aslevel ) then 
+
+			local hf_found;
+			for i,profile_skills in pairs(settings.profile.skills)  do
+				if( profile_skills.Name == v.skillname ) then
+					hf_found = true;		-- skill allready in the table
+				end
+			end
+			if( not hf_found ) then			-- skill not there, insert it
+				local tmp = database.skills[v.skillname];
+				tmp.hotkey = "MACRO";		-- use ROM API to use that skills
+				tmp.Level = 1;
+				table.insert(settings.profile.skills, tmp);
+				cprintf(cli.lightblue, "We learned skill \'%s\' and will use it\n", v.skillname );	-- Open/eqipt item:				
 			end
 		end
+
+		-- sort the skill table
+		local skillSort = function(tab1, tab2)
+			if( tab2.priority < tab1.priority ) then
+				return true;
+			end;
+			return false;
+		end
+		table.sort(settings.profile.skills, skillSort);
+
 	end
 
 end

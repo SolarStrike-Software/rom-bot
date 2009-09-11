@@ -82,6 +82,7 @@ settings_default = {
 			onLoad = nil,
 			onLeaveCombat = nil,
 			onSkillCast = nil,
+			onLevelup = nil,
 		}
 	},
 };
@@ -515,6 +516,20 @@ function settings.loadProfile(_name)
 		end
 	end
 
+	local loadOnLevelupEvent = function(node)
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onLevelup = loadstring(luaCode);
+			assert(settings.profile.events.onLevelup, sprintf(language[151], "onLevelup"));
+
+			if( type(settings.profile.events.onLevelup) ~= "function" ) then
+				settings.profile.events.onLevelup = nil;
+			end;
+		end
+	end
+
 	local loadOnSkillCastEvent = function(node)
 		local luaCode = node:getValue();
 		if( luaCode == nil ) then return; end;
@@ -686,6 +701,8 @@ function settings.loadProfile(_name)
 			loadOnDeathEvent(v);
 		elseif( string.lower(name) == "onleavecombat" ) then
 			loadOnLeaveCombatEvent(v);
+		elseif( string.lower(name) == "onlevelup" ) then
+			loadOnLevelupEvent(v);
 		elseif( string.lower(name) == "onskillcast" ) then
 			loadOnSkillCastEvent(v);
 		elseif( string.lower(name) == "skills_warrior"  and

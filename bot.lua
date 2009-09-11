@@ -199,6 +199,7 @@ function main()
 	settingsPrintKeys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
+	player.level_detect_levelup = player.Level;	-- remember actual player level
 	
 	-- Register and update inventory
 	inventory = CInventory();
