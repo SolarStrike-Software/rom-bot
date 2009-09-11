@@ -11,8 +11,8 @@ language = {
 	[7] = "R\129ckkehrpfad absolviert. Wiederhole normale Wegpunkte.\n",
 	[8] = "Bewegung zu Wegpunkt fehlgeschlagen!\n",
 	[9] = "Versuche Spieler frei zu bekommen ... an Position %d,%d. Versuch #%d von maximal %d Versuchen.\n",
-	[10] = "Benutze Heiltrank: %s\n",
-	[11] = "Benutze Manatrank: %s\n",
+	[10] = "Dr\129cke %s: Benutze Heiltrank %d/%d (%d%%): %s\n",
+	[11] = "Dr\129cke %s: Benutze Manatrank %d/%d (%d%%): %s\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
@@ -150,6 +150,7 @@ language = {
 	[172] = "Die Option \'%s\' wurde von \'%s\' auf \'%s\' ge\132ndert.\n",
 	[173] = "Unbekannte Option \'%s\'. Wir k\148nnen den Wert nicht ver\132ndern. Bitte Einstellungen pr\129fen.\n",
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
+	[175] = "Sturobold",
 	
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",

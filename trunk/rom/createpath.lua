@@ -35,12 +35,55 @@ p_targetNPC_command = "\n\t\tplayer:merchant(\"%s\");\n\t";	-- target NPC comman
 setStartKey(key.VK_DELETE);
 setStopKey(key.VK_END);
 
-wpKey = key.VK_NUMPAD1;		-- insert a movement point
-harvKey = key.VK_NUMPAD2;	-- insert a harvest point	
+wpKey = key.VK_NUMPAD1;			-- insert a movement point
+harvKey = key.VK_NUMPAD2;		-- insert a harvest point	
 targetNPCKey = key.VK_NUMPAD4;	-- insert a target a NPC and open dialog waypoint
-saveKey = key.VK_NUMPAD3;	-- save the waypoints
+saveKey = key.VK_NUMPAD3;		-- save the waypoints
 restartKey = key.VK_NUMPAD9;	-- restart waypoints script
 
+
+-- read arguments / forced profile perhaps
+local forcedProfile = nil;
+for i = 2,#args do
+
+	local foundpos = string.find(args[i], ":", 1, true);
+	if( foundpos ) then
+		local var = string.sub(args[i], 1, foundpos-1);
+		local val = string.sub(args[i], foundpos+1);
+
+		if( var == "profile" ) then
+			forcedProfile = val;
+		else
+			-- invalid option
+			local msg = sprintf(language[61], args[i]);
+			error(msg, 0 ); 
+		end
+	end
+
+	-- check the options
+	if(not foundpos  and  args[i] ~= "update" ) then
+		local msg = sprintf(language[61], args[i]);
+		error(msg, 0 ); 
+	end;
+
+end
+
+-- convert player name to profile name and check if profile exist
+local load_profile_name;	-- name of profile to load
+if( forcedProfile ) then
+	load_profile_name = convertProfileName(forcedProfile);
+else
+	load_profile_name = convertProfileName(player.Name);
+end
+
+
+local wpList = {};
+
+local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+player = CPlayer(playerPtr);
+player:update();
+
+settings.loadProfile(load_profile_name);
 
 
 function saveWaypoints(list)
@@ -83,13 +126,6 @@ function main()
 
 	local running = true;
 	while(running) do
-		local wpList = {};
-
-		local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
-		player = CPlayer(playerPtr);
-		player:update();
-		 
-		settings.loadProfile(player.Name);
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 		cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size

@@ -319,10 +319,12 @@ end
 function sendMacro(_script)
 
 	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
-	   getKeyName(settings.profile.hotkeys.MACRO.key),
+	   "MACRO",
+--	   getKeyName(settings.profile.hotkeys.MACRO.key),
 	   string.sub(_script, 1, 40) );
 
-	RoMScript(_script);
+	local ret1, ret2, ret3, ret4, ret5, ret6, ret7, ret8, ret9, ret10 = RoMScript(_script);
+	return ret1, ret2, ret3, ret4, ret5, ret6, ret7, ret8, ret9, ret10;
 	
 end
 
@@ -451,7 +453,7 @@ function openGiftbag(_player_level, _maxslot)
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
 	
 	-- open giftbag and equipt content
-	yrest(2000);	-- time for cooldowns to phase-out (prevents from missed opening tries)
+--	yrest(2000);	-- time for cooldowns to phase-out 
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
 			if( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
@@ -509,7 +511,7 @@ function levelupSkill(_skillname, _times)
 
 	local hf_return = false;
 	for i = 1, _times do
-		yrest(1000);
+		yrest(100);
 		sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
 		hf_return = true;
 	end
@@ -603,4 +605,82 @@ function changeProfileOption(_option, _value)
 	
 	cprintf(cli.lightblue, language[172], _option, hf_old_value, _value );	-- We change the option 
 	
+end
+
+
+function convertProfileName(_profilename)
+	-- local functions to convert string (e.g. player name) from UTF-8 to ASCII
+	local function convert_utf8_ascii_character( _str, _ascii )
+		local found;
+		local tmp = database.utf8_ascii[_ascii];
+		_str, found = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		return _str, found;
+	end
+	
+	local function convert_utf8_ascii( _str )
+		local found, found_all;
+		found_all = 0;
+		for i,v in pairs(database.utf8_ascii) do
+			_str, found = convert_utf8_ascii_character( _str, v.ascii  );	-- replace special characters
+			found_all = found_all + found;									-- count replacements
+		end
+	
+		if( found_all > 0) then
+			return _str, true;
+		else
+			return _str, false;
+		end
+	end
+
+	-- local functions to replace special ASCII characters (e.g. in player name) 
+	local function replace_special_ascii_character( _str, _ascii )
+		local found;
+		local tmp = database.utf8_ascii[_ascii];
+		_str, found = string.gsub(_str, string.char(tmp.ascii), tmp.dos_replace );
+		return _str, found;
+	end
+
+	local function replace_special_ascii( _str )
+		local found, found_all;
+		found_all = 0;
+		for i,v in pairs(database.utf8_ascii) do
+			_str, found = replace_special_ascii_character( _str, v.ascii  );	-- replace special characters
+			found_all = found_all + found;			-- count replacements
+		end
+	
+		if( found_all > 0) then
+			return _str, true;
+		else
+			return _str, false;
+		end
+	end
+
+	local load_profile_name, new_profile_name;	-- name of profile to load
+
+	-- convert player/profile name from UTF-8 to ASCII
+	load_profile_name = convert_utf8_ascii(_profilename);
+
+	-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
+	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
+
+	if( hf_convert ) then		-- we replace some special characters
+
+		-- check if profile with replaced characters allready there
+		if( fileExists(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml") ) then
+			load_profile_name = new_profile_name;
+		else
+			local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
+			        load_profile_name, new_profile_name);
+			error(msg, 0);
+		end;
+	else				
+
+		-- check if profile exist
+		if( not fileExists(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" ) ) then
+			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
+			error(msg, 0);
+		end
+	end;
+
+	return load_profile_name;
 end

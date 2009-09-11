@@ -334,20 +334,25 @@ function CPlayer:checkPotions()
 	-- If we need to use a health potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
 	
-		-- old code
-		-- local modifier = settings.profile.hotkeys.HP_POTION.modifier
-		-- if( modifier ) then keyboardHold(modifier); end
-		-- keyboardPress(settings.profile.hotkeys.HP_POTION.key);
-		-- if( modifier ) then keyboardRelease(modifier); end
-
-		-- new code, use the inventory class to use the best potion available
-		local item = inventory:bestAvailableConsumable("healing");
-		item:use();
+		local hf_keyname, item;
+		if( settings.profile.hotkeys.MACRO ) then
+			-- new code, use the inventory class to use the best potion available
+			item = inventory:bestAvailableConsumable("healing");
+			item:use();
+			hf_keyname = "MACRO";
+		else
+			-- old code / keep it to be able to use old stype if there are problems with the RoM API
+			local modifier = settings.profile.hotkeys.HP_POTION.modifier
+			if( modifier ) then keyboardHold(modifier); end
+			keyboardPress(settings.profile.hotkeys.HP_POTION.key);
+			hf_keyname = getKeyName(settings.profile.hotkeys.HP_POTION.key);
+			if( modifier ) then keyboardRelease(modifier); end
+		end
 
 		self.PotionLastUseTime = os.time();
 		self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
-		-- cprintf(cli.green, language[10], getKeyName(settings.profile.hotkeys.HP_POTION.key) );		-- Using HP potion
-		cprintf(cli.green, language[10], item.Name );		-- Using HP potion
+		cprintf(cli.green, language[10], 		-- Using HP potion
+		   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, item.Name);
 		
 
 		if( self.Fighting ) then
@@ -357,21 +362,29 @@ function CPlayer:checkPotions()
 
 	-- If we need to use a mana potion(if we even have mana)
 	if( self.MaxMana > 0 ) then 
+
+		local hf_keyname, item;
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
-			-- old code
-			-- local modifier = settings.profile.hotkeys.MP_POTION.modifier
-			-- if( modifier ) then keyboardHold(modifier); end
-			-- keyboardPress(settings.profile.hotkeys.MP_POTION.key);
-			-- if( modifier ) then keyboardRelease(modifier); end
 			
-			-- new code
-			local item = inventory:bestAvailableConsumable("mana");
-			item:use();
+			
+			if( settings.profile.hotkeys.MACRO ) then
+				-- new code
+				item = inventory:bestAvailableConsumable("mana");
+				item:use();
+				hf_keyname = "MACRO";
+			else
+				-- old code
+				local modifier = settings.profile.hotkeys.MP_POTION.modifier
+				if( modifier ) then keyboardHold(modifier); end
+				keyboardPress(settings.profile.hotkeys.MP_POTION.key);
+				hf_keyname = getKeyName(settings.profile.hotkeys.MP_POTION.key);
+				if( modifier ) then keyboardRelease(modifier); end
+			end
 
 			self.PotionLastUseTime = os.time();
 			self.MP_counter = self.MP_counter + 1;	-- counts use of mana potions
-			-- cprintf(cli.green, language[11], getKeyName(settings.profile.hotkeys.MP_POTION.key));
-			cprintf(cli.green, language[11], item.Name);
+			cprintf(cli.green, language[11], 		-- Using HP potion
+			   hf_keyname, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, item.Name);
 
 			if( self.Fighting ) then
 				yrest(1000);

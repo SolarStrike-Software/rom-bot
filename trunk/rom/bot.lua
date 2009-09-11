@@ -113,84 +113,13 @@ function main()
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 	cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
-	
-	-- local functions to convert string (e.g. player name) from UTF-8 to ASCII
-	local function convert_utf8_ascii_character( _str, _ascii )
-		local found;
-		local tmp = database.utf8_ascii[_ascii];
-		_str, found = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
-		return _str, found;
-	end
-	
-	local function convert_utf8_ascii( _str )
-		local found, found_all;
-		found_all = 0;
-		for i,v in pairs(database.utf8_ascii) do
-			_str, found = convert_utf8_ascii_character( _str, v.ascii  );	-- replace special characters
-			found_all = found_all + found;									-- count replacements
-		end
-	
-		if( found_all > 0) then
-			return _str, true;
-		else
-			return _str, false;
-		end
-	end
-
-	-- local functions to replace special ASCII characters (e.g. in player name) 
-	local function replace_special_ascii_character( _str, _ascii )
-		local found;
-		local tmp = database.utf8_ascii[_ascii];
-		_str, found = string.gsub(_str, string.char(tmp.ascii), tmp.dos_replace );
-		return _str, found;
-	end
-
-	local function replace_special_ascii( _str )
-		local found, found_all;
-		found_all = 0;
-		for i,v in pairs(database.utf8_ascii) do
-			_str, found = replace_special_ascii_character( _str, v.ascii  );	-- replace special characters
-			found_all = found_all + found;			-- count replacements
-		end
-	
-		if( found_all > 0) then
-			return _str, true;
-		else
-			return _str, false;
-		end
-	end
-
-	local load_profile_name, new_profile_name;	-- name of profile to load
+	-- convert player name to profile name and check if profile exist
+	local load_profile_name;	-- name of profile to load
 	if( forcedProfile ) then
-		load_profile_name = forcedProfile;
+		load_profile_name = convertProfileName(forcedProfile);
 	else
-		load_profile_name = player.Name;
+		load_profile_name = convertProfileName(player.Name);
 	end
-
-	-- convert player name from UTF-8 to ASCII
-	load_profile_name = convert_utf8_ascii(load_profile_name);
-
-	-- replace special ASCII characters like צüהת / hence open.XML() can't handle them
-	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
-
-	if( hf_convert ) then		-- we replace some special characters
-
-		-- check if profile with replaced characters allready there
-		if( fileExists(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml") ) then
-			load_profile_name = new_profile_name;
-		else
-			local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
-			        load_profile_name, new_profile_name);
-			error(msg, 0);
-		end;
-	else				
-
-		-- check if profile exist
-		if( not fileExists(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" ) ) then
-			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
-			error(msg, 0);
-		end
-	end;
 
 	-- Set window name, install timer to automatically do it once a second
 	local displayname = string.sub(load_profile_name, 1, 4) .. "****";
