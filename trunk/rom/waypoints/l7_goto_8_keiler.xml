@@ -1,9 +1,0 @@
-<waypoints type="NORMAL" >
-	<!-- # 1 --><waypoint x="-2007" z="-5999"></waypoint>
-	<!-- # 2 --><waypoint x="-1930" z="-5846"></waypoint>
-	<!-- # 3 --><waypoint x="-1834" z="-5618"></waypoint>
-	<!-- # 4 --><waypoint x="-1662" z="-5428"></waypoint>
-	<!-- # 5 --><waypoint x="-1488" z="-5246"></waypoint>
-	<!-- # 6 --><waypoint x="-1394" z="-5143"></waypoint>
-	<!-- # 7 --><waypoint x="-1397" z="-4808">loadPaths("l7_keiler");</waypoint>
-</waypoints>
