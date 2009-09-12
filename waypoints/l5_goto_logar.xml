@@ -1,0 +1,29 @@
+<waypoints>
+	<!-- # 1 --><waypoint x="-1864" z="-9634"></waypoint>
+	<!-- # 2 --><waypoint x="-1680" z="-9638"></waypoint>
+	<!-- # 3 --><waypoint x="-1404" z="-9554"></waypoint>
+	<!-- # 4 --><waypoint x="-1164" z="-9452"></waypoint>
+	<!-- # 5 --><waypoint x="-1089" z="-9264"></waypoint>
+	<!-- # 6 --><waypoint x="-993" z="-9060"></waypoint>
+	<!-- # 7 --><waypoint x="-755" z="-9051"></waypoint>
+	<!-- # 8 --><waypoint x="-567" z="-9048"></waypoint>
+	<!-- # 9 --><waypoint x="-405" z="-8905"></waypoint>
+	<!-- #10 --><waypoint x="-228" z="-8737"></waypoint>
+	<!-- #11 --><waypoint x="79" z="-8532"></waypoint>
+	<!-- #12 --><waypoint x="95" z="-8397"></waypoint>
+	<!-- #13 --><waypoint x="148" z="-8190"></waypoint>
+	<!-- #14 --><waypoint x="144" z="-8014"></waypoint>
+	<!-- #15 --><waypoint x="38" z="-7687"></waypoint>
+	<!-- #16 --><waypoint x="-33" z="-7311"></waypoint>
+	<!-- #17 --><waypoint x="-63" z="-7022"></waypoint>
+	<!-- #18 --><waypoint x="-77" z="-6856"></waypoint>
+	<!-- #19 --><waypoint x="-169" z="-6750"></waypoint>
+	<!-- #20 --><waypoint x="-216" z="-6547"></waypoint>
+	<!-- #21 --><waypoint x="-284" z="-6354"></waypoint>
+	<!-- #22 --><waypoint x="-405" z="-6172"></waypoint>
+	<!-- #23 --><waypoint x="-448" z="-6107"></waypoint>
+	<!-- #24 --><waypoint x="-408" z="-5995">
+		<!--  player:sleep();-->
+		loadPaths("l5_logar_kaefer");
+	</waypoint>
+</waypoints>
