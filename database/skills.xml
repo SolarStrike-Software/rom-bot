@@ -159,7 +159,7 @@
 
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" aslevel="1" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" />
+	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" maxhpper="30" />
 	<skill name="ROGUE_LOW_BLOW" aslevel="2" skilltab="4" skillnum="2" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" aslevel="4" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" aslevel="6" skilltab="4" skillnum="3" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
@@ -253,19 +253,20 @@
 
 
 	<!-- Scout skills -->
-	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" toggleable="true" />
-	<skill name="SCOUT_SHOT" skilltab="2" skillnum="1" consumable="1" range="200" cooldown="2.5" type="damage" target="enemy" />
-	<skill name="SCOUT_VAMPIRE_ARROWS" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
-	<skill name="SCOUT_JOINT_BLOW" concentration="30" range="50" type="damage" target="enemy" />
-	<skill name="SCOUT_BLOOD_ARROW" cooldown="60" type="buff" target="self" />
-	<skill name="SCOUT_THROAT_ATTACK" concentration="30" range="50" type="damage" target="enemy" />
-	<skill name="SCOUT_WRIST_ATTACK" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
-	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="300" type="buff" target="self" />
-	<skill name="SCOUT_WIND_ARROWS" concentration="15" range="225" type="damage" target="enemy" />
-	<skill name="SCOUT_FROST_ARROW" concentration="20" cooldown="1800" type="buff" target="self" />
-	<skill name="SCOUT_MANA_DRAIN_SHOT" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
-	<skill name="SCOUT_LASSO" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
-	<skill name="SCOUT_PIERCING_ARROW" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
+	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2" type="damage" target="enemy" toggleable="true" />
+	<skill name="SCOUT_SHOT" aslevel="1" skilltab="2" skillnum="2" consumable="1" range="200" cooldown="2" type="damage" target="enemy" />
+	<skill name="SCOUT_VAMPIRE_ARROWS" aslevel="4" skilltab="2" skillnum="3" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
+	<skill name="SCOUT_JOINT_BLOW" aslevel="8" skilltab="4" skillnum="4" concentration="30" range="50" type="damage" target="enemy" />
+	<skill name="SCOUT_BLOOD_ARROW" aslevel="12" skilltab="4" skillnum="5" cooldown="60" type="buff" target="self" />
+	<skill name="SCOUT_THROAT_ATTACK" aslevel="16" concentration="30" range="50" type="damage" target="enemy" />
+	<skill name="SCOUT_WRIST_ATTACK" aslevel="20" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
+	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="300" type="buff" target="self" maxhpper="30" />
+	<skill name="SCOUT_WIND_ARROWS" aslevel="2" skilltab="4" skillnum="3" concentration="15" range="225" type="damage" target="enemy" />
+	<skill name="SCOUT_RANGED_WEAPON_MASTERY" aslevel="6" skilltab="4" skillnum="4"  />
+	<skill name="SCOUT_FROST_ARROW" aslevel="10" skilltab="4" skillnum="5" concentration="20" cooldown="1800" type="buff" target="self" />
+	<skill name="SCOUT_MANA_DRAIN_SHOT" aslevel="12" skilltab="4" skillnum="6" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
+	<skill name="SCOUT_LASSO" aslevel="14" skilltab="4" skillnum="7" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
+	<skill name="SCOUT_PIERCING_ARROW" aslevel="18" skilltab="4" skillnum="8" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
 	<skill name="SCOUT_SNIPE" consumable="1" range="240" casttime="4" cooldown="15" type="buff" target="self" />
 	<skill name="SCOUT_DETECTION" concentration="9" type="buff" target="self" />
 	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="180" cooldown="20" type="damage" target="enemy" />

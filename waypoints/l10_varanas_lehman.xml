@@ -25,7 +25,7 @@
 	<!-- #21 --><waypoint x="2755" z="960">
 		player:target_NPC("Lieve");
 		player:rest(2);
-		sendMacro("ChoiceOption(5);");
+		sendMacro("ChoiceOption(1);");
 		yrest(12000);
 		player:update();
 		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));

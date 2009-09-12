@@ -11,10 +11,10 @@
 		<option name="MP_REST" value="40" />
 
 		<!-- Shopping options, how many of what do you want to keep in your inventory -->
-		<option name="HEALING_POTION"	value="99" />
-		<option name="MANA_POTION"		value="99" />
-		<option name="ARROW_QUIVER"		value="2" />
-		<option name="THROWN_BAG"		value="2" />
+		<option name="HEALING_POTION"	value="0" />
+		<option name="MANA_POTION"		value="0" />
+		<option name="ARROW_QUIVER"		value="0" />
+		<option name="THROWN_BAG"		value="0" />
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"			value="" />		<!-- leave empty or choose ranged/melee if not using class default -->
@@ -89,7 +89,6 @@
 	<skills_scout>
 		<skill name="SCOUT_SHOT"        hotkey="VK_2" priority="90" />
 		<skill name="SCOUT_AUTOSHOT"    hotkey="VK_4" priority="80" />
-		<skill name="SCOUT_WIND_ARROWS" hotkey="VK_5" priority="70" />
 	</skills_scout>
 
 	<skills_rogue>
@@ -123,6 +122,9 @@
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after a target is finished
+		if(player.Class1 == CLASS_SCOUT) then
+			inventory:reloadAmmunition("arrow");
+		end;
 	</onLeaveCombat>
 
 	<onLevelup>
