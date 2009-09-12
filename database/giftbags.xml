@@ -24,7 +24,7 @@
 	<giftbag itemid="201850" type="bag" armor=""        level="8" name="Zerlumpter Geschenkbeutel" />
 	<giftbag itemid="221681" type=""    armor="cloth"   level="8" name="Robe (Geschenk aus Logar)" />
 	<giftbag itemid="221682" type=""    armor="leather" level="8" name="Lederr\129stung (Geschenk aus Logar)" />
-	<giftbag itemid="221683" type=""    armor="leather" level="8" name="Kettenr\129stung (Geschenk aus Logar)" />
+	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Kettenr\129stung (Geschenk aus Logar)" />
 	<giftbag itemid="201851" type="bag" armor=""        level="9" name="Mondquellen-Geschenkbeutel" />
 	<giftbag itemid="221684" type=""    armor=""        level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
 	<giftbag itemid="202152" type=""    armor=""        level="9" name="Frucht der zus\132tzlichen Erfahrung" />

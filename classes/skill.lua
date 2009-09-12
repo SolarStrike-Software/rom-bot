@@ -193,7 +193,12 @@ function CSkill:use()
 	self.used = self.used + 1;	-- count use of skill per fight
 	self.LastCastTime = os.time() + self.CastTime;
 	if(self.hotkey == "MACRO") then
-		RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
+		if( self.skilltab == nil  or  self.skillnum == nil ) then
+			cprintf(cli.yellow, "missing skilltab/skillnum in skills.xml for %s. "..
+			  "Can't use that skill via MACRO\n", self.Name);	
+		else
+			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
+		end;
 	else
 		if( self.modifier ) then
 			keyboardHold(self.modifier);

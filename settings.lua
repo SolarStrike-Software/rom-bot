@@ -255,7 +255,7 @@ function settings.load()
 		
 		local userprofilePath = os.getenv("USERPROFILE");
 		local documentPaths = {
-			--userprofilePath .. "\\My Documents\\" .. "Runes of Magic", -- English
+			userprofilePath .. "\\My Documents\\" .. "Runes of Magic", -- English
 			userprofilePath .. "\\Eigene Dateien\\" .. "Runes of Magic", -- German
 			userprofilePath .. "\\Mes Documents\\" .. "Runes of Magic", -- French
 			userprofilePath .. "\\Omat tiedostot\\" .. "Runes of Magic", -- Finish

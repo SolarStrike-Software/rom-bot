@@ -674,8 +674,9 @@ function CPlayer:fight()
 	end
 
 	
-	-- check if levelup happens
-	if(player.Level > player.level_detect_levelup )  then
+	-- check if levelup happens / execute after aggro is gone
+	if(player.Level > player.level_detect_levelup  and
+	   player.Battling == false )  then
 		player.level_detect_levelup = player.Level;
 		
 		-- check if onLevelup event is used in profile

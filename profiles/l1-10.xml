@@ -84,8 +84,6 @@
 
 	<skills_warrior>
 		<skill name="WARRIOR_SLASH"          hotkey="VK_2" priority="90" />
-		<skill name="WARRIOR_PROBING_ATTACK" hotkey="VK_4" priority="80" />
-		<skill name="WARRIOR_OPEN_FLANK"     hotkey="VK_5" priority="70" />
 	</skills_warrior>
 
 	<skills_scout>
@@ -96,7 +94,6 @@
 
 	<skills_rogue>
 		<skill name="ROGUE_SHADOWSTAB"  hotkey="VK_2" priority="90" />
-		<skill name="ROGUE_LOW_BLOW"    hotkey="VK_4" priority="80" />
 	</skills_rogue>
 
 	<skills_knight>
