@@ -521,7 +521,8 @@ end
 
 
 function levelupSkills1To10(_loadonly)
--- levelup skills
+-- level up the skill by using an internal leveling table
+-- load the skills for using into the profile skill table
 
 	-- e.g. 4 = third skill tab, 2 = second skill on the tab
 	-- CAUTION: addressing a invalid skill will crash the RoM client
@@ -531,7 +532,9 @@ function levelupSkills1To10(_loadonly)
 								 [3] = { aslevel = 2, skillname="WARRIOR_PROBING_ATTACK" },
 								 [4] = { aslevel = 4, skillname="WARRIOR_ENRAGED" },
 								 [5] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
-		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" } },
+		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" },
+								 [2] = { aslevel = 2, skillname="SCOUT_WIND_ARROWS" },
+								 [3] = { aslevel = 4, skillname="SCOUT_VAMPIRE_ARROWS" },},
 		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" },
 								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" }, 
 								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" },
@@ -565,7 +568,7 @@ function levelupSkills1To10(_loadonly)
 			end
 		end;
 
-		-- add skill to skilltable
+		-- add skill to profile skilltable
 --		if( player.Level == v.aslevel ) then
 		-- we will also reload skills into skilltable if we restart the bot
 		-- TODO: but only at the levelup event
@@ -595,6 +598,17 @@ function levelupSkills1To10(_loadonly)
 		end
 		table.sort(settings.profile.skills, skillSort);
 
+	end
+
+	-- special skill for SCOUT / not usable, just level it
+	if(_loadonly ~= "loadonly") then
+		if(player.Class1 == CLASS_SCOUT and
+		   player.Level  == 6 ) then
+			levelupSkill("SCOUT_RANGED_WEAPON_MASTERY", 6)
+		elseif(player.Class1 == CLASS_SCOUT and
+		   player.Level  > 6 ) then
+		   levelupSkill("SCOUT_RANGED_WEAPON_MASTERY")
+		end
 	end
 
 end

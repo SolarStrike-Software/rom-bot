@@ -20,7 +20,12 @@
 	<!-- #19 --><waypoint x="-169" z="-6750"></waypoint>
 	<!-- #20 --><waypoint x="-216" z="-6547"></waypoint>
 	<!-- #21 --><waypoint x="-284" z="-6354"></waypoint>
-	<!-- #22 --><waypoint x="-405" z="-6172"></waypoint>
+	<!-- #22 --><waypoint x="-538" z="-6196">
+		if(player.Class1 == CLASS_SCOUT ) then
+			changeProfileOption("ARROW_QUIVER", 4);
+			player:merchant("Dimar");
+		end;
+	</waypoint>
 	<!-- #23 --><waypoint x="-448" z="-6107"></waypoint>
 	<!-- #24 --><waypoint x="-408" z="-5995">
 		<!--  player:sleep();-->
