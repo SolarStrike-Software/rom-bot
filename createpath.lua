@@ -130,7 +130,7 @@ function saveWaypoints(list)
 			   p_harvest_command);			-- then insert harvest command
 			hf_line = hf_line .."</waypoint>\n";
 		elseif( v.wp_type == "WP" ) then
-			hf_line = sprintf(wp_string, i, v.X, v.Z, 
+			hf_line = hf_line..sprintf(wp_string, i, v.X, v.Z, 
 			   p_wp_type,					-- insert type=TRAVEL for waypoints if you want
 			   "");							-- no command
 			   hf_line = hf_line .."</waypoint>\n";
