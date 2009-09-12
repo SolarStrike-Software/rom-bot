@@ -105,28 +105,30 @@
 	<skill name="PRIEST_CALM_HEART" mana="30" cooldown="60" range="150" type="buff" target="self" />
 
 	<!-- Warrior skills -->
-	<skill name="WARRIOR_SLASH" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
-	<skill name="WARRIOR_ENRAGED" cooldown="40" type="buff" target="self" inbattle="false" />
-	<skill name="WARRIOR_WHIRLWIND" cooldown="30" rage="50" type="damage" target="enemy" />
-	<skill name="WARRIOR_BERSERK" rage="25" cooldown="60" type="buff" target="self" />
-	<skill name="WARRIOR_DEFENSIVE_FORMATION" rage="25" cooldown="120" type="buff" target="self" />
+	<skill name="WARRIOR_SLASH" aslevel="1" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
+	<skill name="WARRIOR_ENRAGED" aslevel="4" skilltab="2" skillnum="3" cooldown="40" type="buff" target="self" inbattle="false" />
+	<skill name="WARRIOR_WHIRLWIND" aslevel="8" cooldown="30" rage="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_BERSERK" aslevel="12" rage="25" cooldown="60" type="buff" target="self" />
+	<skill name="WARRIOR_DEFENSIVE_FORMATION" aslevel="16" rage="25" cooldown="120" type="buff" target="self" />
 	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="300" target="self" />
-	<skill name="WARRIOR_PROBING_ATTACK" rage="20" range="50" cooldown="4" type="damage" target="enemy" />
-	<skill name="WARRIOR_OPEN_FLANK" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_OPEN_FLANK" aslevel="2" skilltab="4" skillnum="2" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_PROBING_ATTACK" aslevel="2" skilltab="4" skillnum="3" rage="20" range="50" cooldown="4" type="damage" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
-	<skill name="WARRIOR_TACTICAL_ATTACK" rage="15" range="50" cooldown="5" type="damage" target="enemy" />
+	<skill name="WARRIOR_TACTICAL_ATTACK" aslevel="4" skilltab="4" skillnum="4" rage="15" range="50" cooldown="5" type="damage" target="enemy" />
+	<skill name="WARRIOR_THUNDER" aslevel="6" skilltab="4" skillnum="5" debuff="weakened" rage="15" range="50" cooldown="15" type="damage" target="enemy" />
 	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
-	<skill name="WARRIOR_FEINT" range="50" cooldown="2" type="damage" target="enemy" />
+	<skill name="WARRIOR_FEINT" aslevel="10" range="50" cooldown="2" type="damage" target="enemy" />
 	<!-- TODO: Feint can only be used after an enemy dodges an attack -->
-	<skill name="WARRIOR_SNEAK_ATTACK" minrange="60" range="150" cooldown="10" type="damage" target="enemy" inbattle="false" />
-	<skill name="WARRIOR_TAUNT" range="50" cooldown="25" type="damage" target="enemy" />
-	<skill name="WARRIOR_SHOUT" rage="30" range="50" cooldown="120" type="damage" target="enemy" />
-	<skill name="WARRIOR_MOON_CLEAVE" rage="50" range="50" cooldown="30" type="damage" target="enemy" />
-	<skill name="WARRIOR_TERRORIZE" rage="30" range="90" cooldown="45" type="damage" target="enemy" />
-	<skill name="WARRIOR_AGGRESSIVENESS" cooldown="180" type="buff" target="self" />
-	<skill name="WARRIOR_SURVIVAL_INSTINCT" maxhpper="25" cooldown="300" type="buff" target="self" />
-	<skill name="WARRIOR_GROUP_TAUNT" cooldown="300" type="damage" target="enemy" />
-	<skill name="WARRIOR_BLASTING_CYCLONE" rage="50" casttime="2" cooldown="30" type="damage" target="enemy" />
+	<skill name="WARRIOR_SURPRISE_ATTACK" aslevel="14" minrange="60" range="150" cooldown="12" type="damage" target="enemy" inbattle="false" />
+	<skill name="WARRIOR_SNEAK_ATTACK" minrange="60" range="150" cooldown="10" type="damage" target="enemy" inbattle="false" /> <!-- outdated name ?-->
+	<skill name="WARRIOR_TAUNT" aslevel="18" range="50" cooldown="25" type="damage" target="enemy" />
+	<skill name="WARRIOR_MOON_CLEAVE" aslevel="22" rage="50" range="50" cooldown="30" type="damage" target="enemy" />
+	<skill name="WARRIOR_SHOUT" aslevel="26" rage="30" range="50" cooldown="120" type="damage" target="enemy" />
+	<skill name="WARRIOR_TERRORIZE" aslevel="32" rage="30" range="90" cooldown="45" type="damage" target="enemy" />
+	<skill name="WARRIOR_AGGRESSIVENESS" aslevel="34" cooldown="180" type="buff" target="self" />
+	<skill name="WARRIOR_SURVIVAL_INSTINCT" aslevel="36" maxhpper="25" cooldown="300" type="buff" target="self" />
+	<skill name="WARRIOR_GROUP_TAUNT" aslevel="38" cooldown="300" type="damage" target="enemy" />
+	<skill name="WARRIOR_BLASTING_CYCLONE" aslevel="40" rage="50" casttime="2" cooldown="30" type="damage" target="enemy" />
 	<skill name="WARRIOR_THUNDERING" range="50" cooldown="15" type="damage" target="enemy" />
 	<skill name="KNIGHT_CHARGE" range="120" cooldown="30" type="charge" target="enemy" />
 
@@ -156,31 +158,31 @@
 
 
 	<!-- Rogue skills -->
-	<skill name="ROGUE_SHADOWSTAB" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_ASSASSINS_RAGE" type="buff" cooldown="300" target="self" />
-	<skill name="ROGUE_LOW_BLOW" energy="30" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_THROW" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
-	<skill name="ROGUE_WOUND_ATTACK" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
-	<skill name="ROGUE_HIDE" type="buff" target="self" inbattle="false" cooldown="30" />
-	<skill name="ROGUE_BLIND_STAB" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOWSTAB" aslevel="1" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" />
+	<skill name="ROGUE_LOW_BLOW" aslevel="2" skilltab="4" skillnum="2" energy="30" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_THROW" aslevel="4" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
+	<skill name="ROGUE_WOUND_ATTACK" aslevel="6" skilltab="4" skillnum="3" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="ROGUE_HIDE" aslevel="18" type="buff" target="self" inbattle="false" cooldown="30" />
+	<skill name="ROGUE_BLIND_STAB" aslevel="8" skilltab="2" skillnum="3" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
-	<skill name="ROGUE_SHADOW_STEP" energy="20" range="100" type="damage" target="enemy" />
-	<skill name="ROGUE_BLIND_SPOT" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOW_STEP" aslevel="28" energy="20" range="100" type="damage" target="enemy" />
+	<skill name="ROGUE_BLIND_SPOT" aslevel="14" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target -->
 	<skill name="ROGUE_NUMBING_DAGGER" consumable="1" range="150" casttime="1" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
-	<skill name="ROGUE_POISON" consumable="1" cooldown="600" casttime="1" type="buff" target="self" />
-	<skill name="ROGUE_PREMEDITATION" energy="20" type="buff" target="enemy" inbattle="false" />
+	<skill name="ROGUE_POISON" aslevel="16" consumable="1" cooldown="600" casttime="1" type="buff" target="self" />
+	<skill name="ROGUE_PREMEDITATION" aslevel="18" energy="20" type="buff" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
 	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
-	<skill name="ROGUE_VANISH" cooldown="600" type="buff" target="self" />
-	<skill name="ROGUE_SPRINT" range="100" cooldown="300" type="buff" target="self" />
-	<skill name="ROGUE_EVASION" cooldown="120" type="buff" target="self" />
-	<skill name="ROGUE_COMBO_THROW" consumable="1" range="150" cooldown="3.3" type="damage" target="enemy" />
-	<skill name="ROGUE_SHADOW_PRISON" energy="49" range="180" type="damage" target="enemy" />
-	<skill name="ROGUE_INFORMER" cooldown="300" type="buff" target="self" />
-	<skill name="ROGUE_FERVENT_ATTACK" cooldown="300" type="buff" target="self" />
+	<skill name="ROGUE_VANISH" aslevel="30" cooldown="600" type="buff" target="self" />
+	<skill name="ROGUE_SPRINT" aslevel="34" range="100" cooldown="300" type="buff" target="self" />
+	<skill name="ROGUE_EVASION" aslevel="36" cooldown="120" type="buff" target="self" />
+	<skill name="ROGUE_COMBO_THROW" aslevel="38" consumable="1" range="150" cooldown="3.3" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOW_PRISON" aslevel="40" energy="49" range="180" type="damage" target="enemy" />
+	<skill name="ROGUE_INFORMER" aslevel="42" cooldown="300" type="buff" target="self" />
+	<skill name="ROGUE_FERVENT_ATTACK" aslevel="44" cooldown="300" type="buff" target="self" />
 
 	<!-- Elite -->
 	<skill name="ROGUE_DEATHS_TOUCH" rage="20" range="50" cooldown="10" />
@@ -194,7 +196,6 @@
 	<!-- TODO: Poison Flame requires poisonous state -->
 	<skill name="ROGUE_POISON_FLAME" energy="25" range="50" cooldown="12" type="dot" />
 	<skill name="ROGUE_QUICKNESS_AURA" mana="27" manainc="3" type="buff" cooldown="600" target="self" />
-	<skill name="ROGUE_WOUND_ATTACK" energy="35" range="50" cooldown="6" />
 	<!-- TODO: Can only use when behind the target -->
 	<skill name="ROGUE_SNEAK_ATTACK" energy="20" range="50" cooldown="10" />
 	<skill name="ROGUE_FEARLESS" mana="40" range="50" cooldown="60" type="buff" target="self" />

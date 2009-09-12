@@ -511,7 +511,7 @@ function levelupSkill(_skillname, _times)
 
 	local hf_return = false;
 	for i = 1, _times do
-		yrest(100);
+		yrest(600);
 		sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
 		hf_return = true;
 	end
@@ -526,9 +526,16 @@ function levelupSkills1To10(_loadonly)
 	-- e.g. 4 = third skill tab, 2 = second skill on the tab
 	-- CAUTION: addressing a invalid skill will crash the RoM client
 	local skillLevelupMap = {
-		[CLASS_WARRIOR]		= {  [1] = { aslevel = 1, skillname="WARRIOR_SLASH" } },
+		[CLASS_WARRIOR]		= {  [1] = { aslevel = 1, skillname="WARRIOR_SLASH" },
+								 [2] = { aslevel = 2, skillname="WARRIOR_OPEN_FLANK" }, 
+								 [3] = { aslevel = 2, skillname="WARRIOR_PROBING_ATTACK" },
+								 [4] = { aslevel = 4, skillname="WARRIOR_ENRAGED" },
+								 [5] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
 		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" } },
-		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" } },
+		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" },
+								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" }, 
+								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" },
+								 [4] = { aslevel = 8, skillname="ROGUE_BLIND_STAB" } },
 		[CLASS_MAGE]		= {  [1] = { aslevel = 1, skillname="MAGE_FLAME" } },
 		[CLASS_PRIEST]		= {  [1] = { aslevel = 1, skillname="PRIEST_RISING_TIDE" },
 								 [2] = { aslevel = 1, skillname="PRIEST_URGENT_HEAL" },
