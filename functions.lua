@@ -185,7 +185,7 @@ function resumeCallback()
 		player:update();
 	end
 
-	if( settings.profile.options.PATH_TYPE == "wander" ) then
+	if( settings.profile.options.PATH_TYPE == "wander" and __WPL ~= nil ) then
 		__WPL.OrigX = player.X;
 		__WPL.OrigZ = player.Z;
 	end
