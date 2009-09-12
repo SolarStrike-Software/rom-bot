@@ -250,7 +250,6 @@ function settings.load()
 
 	-- Load RoM keyboard bindings.txt file
 	local function load_RoM_bindings_txt()
-		
 		local filename, file;
 		
 		local userprofilePath = os.getenv("USERPROFILE");
@@ -266,7 +265,6 @@ function settings.load()
 			userprofilePath .. "\\Mijn documenten\\", -- Dutch
 			userprofilePath .. "\\Moje dokumenty\\", -- Polish
 			userprofilePath .. "\\Mis documentos\\", -- Spanish
-			"F:\\privat\\",
 		};
 
 		-- Select the first path that exists
@@ -421,7 +419,7 @@ function settings.load()
 
 
 	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
-	
+
 	-- Check to make sure everything important is set
 	--           bot hotkey name    RoM ingame key name         
 	checkHotkeys("MOVE_FORWARD",   "MOVEFORWARD");
