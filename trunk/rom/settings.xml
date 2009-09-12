@@ -18,5 +18,13 @@
 		<option name="MELEE_DISTANCE" value="45" />
 		<option name="LANGUAGE" value="english" />
 		<option name="DEBUGGING" value="false" />
+
+		<!--
+			Leave ROMDATA_PATH blank to use automatic settings.
+			If it cannot find your bindings.txt automatically,
+			place the FULL PATH to the "Runes of Magic"
+			directory here.
+		-->
+		<option name="ROMDATA_PATH" value="" />
 	</options>
 </settings>

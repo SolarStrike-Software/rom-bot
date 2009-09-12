@@ -17,6 +17,7 @@ settings_default = {
 		MELEE_DISTANCE = 45,
 		LANGUAGE = "english",
 		DEBUGGING = false,
+		ROMDATA_PATH = nil,
 	},
 	profile = {
 		options = {
@@ -254,22 +255,31 @@ function settings.load()
 		
 		local userprofilePath = os.getenv("USERPROFILE");
 		local documentPaths = {
-			userprofilePath .. "\\My Documents\\", -- English
-			userprofilePath .. "\\Eigene Dateien\\", -- German
-			userprofilePath .. "\\Mes Documents\\", -- French
-			userprofilePath .. "\\Omat tiedostot\\", -- Finish
-			userprofilePath .. "\\Belgelerim\\", -- Turkish
-			userprofilePath .. "\\Mina Dokument\\", -- Swedish
-			userprofilePath .. "\\Dokumenter\\", -- Danish
-			userprofilePath .. "\\Documenti\\", -- Italian
-			userprofilePath .. "\\Mijn documenten\\", -- Dutch
-			userprofilePath .. "\\Moje dokumenty\\", -- Polish
-			userprofilePath .. "\\Mis documentos\\", -- Spanish
+			--userprofilePath .. "\\My Documents\\" .. "Runes of Magic", -- English
+			userprofilePath .. "\\Eigene Dateien\\" .. "Runes of Magic", -- German
+			userprofilePath .. "\\Mes Documents\\" .. "Runes of Magic", -- French
+			userprofilePath .. "\\Omat tiedostot\\" .. "Runes of Magic", -- Finish
+			userprofilePath .. "\\Belgelerim\\" .. "Runes of Magic", -- Turkish
+			userprofilePath .. "\\Mina Dokument\\" .. "Runes of Magic", -- Swedish
+			userprofilePath .. "\\Dokumenter\\" .. "Runes of Magic", -- Danish
+			userprofilePath .. "\\Documenti\\" .. "Runes of Magic", -- Italian
+			userprofilePath .. "\\Mijn documenten\\" .. "Runes of Magic", -- Dutch
+			userprofilePath .. "\\Moje dokumenty\\" .. "Runes of Magic", -- Polish
+			userprofilePath .. "\\Mis documentos\\" .. "Runes of Magic", -- Spanish
 		};
+
+		-- Use a user-specified path from settings.xml
+		if( settings.options.ROMDATA_PATH ) then
+			table.insert(documentPaths, settings.options.ROMDATA_PATH);
+		end
 
 		-- Select the first path that exists
 		for i,v in pairs(documentPaths) do
-			local filename = v .. "Runes of Magic\\bindings.txt"
+			if( string.sub(v, -1 ) ~= "\\" and string.sub(v, -1 ) ~= "/" ) then
+				v = v .. "\\"; -- Append the trailing backslash if necessary.
+			end
+
+			local filename = v .. "bindings.txt"
 			if( fileExists(filename) ) then
 				file = io.open(filename, "r");
 				local tmp = filename;
