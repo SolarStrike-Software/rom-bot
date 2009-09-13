@@ -673,22 +673,6 @@ function CPlayer:fight()
 		end
 	end
 
-	-- check if levelup happens / execute after aggro is gone
-	self:update();
-	if(self.Level > self.level_detect_levelup  and
-	   not self.Battling )  then
-		self.level_detect_levelup = self.Level;
-		
-		-- check if onLevelup event is used in profile
-		if( type(settings.profile.events.onLevelup) == "function" ) then
-			local status,err = pcall(settings.profile.events.onLevelup);
-			if( status == false ) then
-				local msg = sprintf(language[85], err);
-				error(msg);
-			end
-		end
-	end
-
 
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
@@ -722,6 +706,25 @@ function CPlayer:fight()
 
 		self:clearTarget();
 	end;
+
+	-- check if levelup happens / execute after aggro is gone
+	-- do it at the very end here, to be sure, aggro flag is gone
+	--	if(self.Level > self.level_detect_levelup  and
+	--	   not self.Battling )  then
+	--  aggro flag would needs a wait (if no loot), so we don't check it
+	if(self.Level > self.level_detect_levelup  )  then
+
+		self.level_detect_levelup = self.Level;
+		
+		-- check if onLevelup event is used in profile
+		if( type(settings.profile.events.onLevelup) == "function" ) then
+			local status,err = pcall(settings.profile.events.onLevelup);
+			if( status == false ) then
+				local msg = sprintf(language[85], err);
+				error(msg);
+			end
+		end
+	end
 
 	self.Fighting = false;
 end
