@@ -445,7 +445,7 @@ function asciiToUtf8(_str)
 end
 
 -- open giftbag (at the moment level 1-10)
-function openGiftbag(_player_level, _maxslot)
+function openGiftbags1To10(_player_level, _maxslot)
 
 	if( not _player_level) then _player_level = player.Level; end
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 

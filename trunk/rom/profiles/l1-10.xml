@@ -108,7 +108,7 @@
 		-- like: changeProfileOption("HP_REST", 60);
 
 		if(player.Level == 1) then
-			openGiftbag(player.Level, 18);
+			openGiftbags1To10(player.Level, 18);
 		else
 			levelupSkills1To10("loadonly");
 		end;
@@ -138,7 +138,7 @@
 
 			-- open giftbag and equipt content
 			-- updates first 18 bag slots / update all if empty
-			openGiftbag(player.Level, 18);
+			openGiftbags1To10(player.Level, 18);
 
 	</onLevelup>
 
