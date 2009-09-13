@@ -212,13 +212,13 @@ function main()
 			end
 
 			if( hf_column == 1 ) then
-				hf_print_table[hf_row].col1_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col1_nr = sprintf("%3d", i); 	-- remember nr of the entry
 				hf_print_table[hf_row].col1_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
 			elseif( hf_column == 2 ) then
-				hf_print_table[hf_row].col2_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col2_nr = sprintf("%3d", i); 	-- remember nr of the entry
 				hf_print_table[hf_row].col2_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
 			elseif( hf_column == 3 ) then
-				hf_print_table[hf_row].col3_nr = sprintf("%.3d", i); 	-- remember nr of the entry
+				hf_print_table[hf_row].col3_nr = sprintf("%3d", i); 	-- remember nr of the entry
 				hf_print_table[hf_row].col3_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
 			end
 		end
