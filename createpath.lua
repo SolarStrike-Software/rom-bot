@@ -117,8 +117,8 @@ function saveWaypoints(list)
 			tag_open = false;
 		elseif( v.wp_type == "WP" ) then -- Waypoint
 			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type, "") .. closeformat;
-			tag_open = false;
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type, "");
+			tag_open = true;
 		elseif( v.wp_type == "MER" ) then -- Merchant
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, v.npc_name) .. "\n";
@@ -137,7 +137,7 @@ function saveWaypoints(list)
 			end
 		elseif( v.wp_type == "CO" ) then -- Choice Option
 			if( tag_open ) then
-				hf_line = hf_line .. "\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) .. "\n";
+				hf_line = hf_line .. "\t\t" .. sprintf(p_choiceOption_command, v.co_num) .. "\n";
 			else
 				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
 				"\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) ) .. "\n";

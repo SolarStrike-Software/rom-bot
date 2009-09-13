@@ -19,6 +19,7 @@
 	<!-- #18 --><waypoint x="2303" z="1134">
 		player:target_NPC(language[175]);
 		player:rest(2);
+		sendMacro("ChoiceOption(4);");
 		</waypoint>
 	<!-- #19 --><waypoint x="2459" z="1138"></waypoint>
 	<!-- #20 --><waypoint x="2578" z="1011"></waypoint>
@@ -27,7 +28,6 @@
 		player:rest(2);
 		sendMacro("ChoiceOption(1);");
 		yrest(12000);
-		player:update();
 		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 	</waypoint>
 	<!-- #22 --><waypoint x="2901" z="586"></waypoint>
