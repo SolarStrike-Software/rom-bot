@@ -296,4 +296,33 @@
 	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" />
 	<skill name="SCOUT_MANA_CONVERSION" mana="50" cooldown="60" type="buff" target="self" />
 	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" type="heal" target="self" />
+
+
+
+	<!-- Druid skills -->
+	<skill name="DRUID_RECOVER" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
+	<skill name="DRUID_DETOXICATION" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
+	<skill name="DRUID_SAVAGE_BLESSING" mana="50" range="180" cooldown="300" type="buff" target="friendly" />
+	<skill name="DRUID_ROCK_CANNON" mana="40" manainc="4" range="180" cooldown="15" />
+	<skill name="DRUID_EARTHS_PROTECTION" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
+	<skill name="DRUID_EARTH_ARROW" mana="12" manainc="1.1" range="200" casttime="2" />
+	<skill name="DRUID_BRIAR_TWISTING" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
+	<skill name="DRUID_DECURSE" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
+	<skill name="DRUID_RESTORE_LIFE" mana="40" manainc="4" range="250" casttime="2" type="heal" target="friendly" />
+	<skill name="DRUID_FUSION_OF_THE_EARTH" cooldown="300" type="buff" target="self" />
+	<skill name="DRUID_RELEASE_LIFE" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
+	<skill name="DRUID_REBIRTH" mana="150" casttime="6" type="buff" target="friendly" />
+	<skill name="DRUID_WEAKENING_SEED" mana="50" manainc="5" nature="2" range="180" cooldown="20" type="dot" />
+	<skill name="DRUID_FALLING_STONE" mana="25" range="180" cooldown="8" />
+	<skill name="DRUID_BLINDING_SILENCE" mana="100" range="180" cooldown="30" />
+	<skill name="DRUID_CURING_SEED" mana="50" range="150" cooldown="30" type="buff" target="friendly" />
+	<skill name="DRUID_FANATIC_PRAYER" mana="35" cooldown="600" type="buff" target="self" />
+	<skill name="DRUID_ROCK_PROTECTION" mana="60" nature="2" cooldown="180" type="buff" target="self" hpper="10" />
+	<skill name="DRUID_SPIRIT_GUIDANCE" mana="200" nature="5" range="180" casttime="1" cooldown="30" target="enemy" />
+	<skill name="DRUID_BODY_ACTIVATION" mana="100" nature="1" range="160" cooldown="120" type="buff" target="friendly" />
+	<skill name="DRUID_EARTHS_FOUNTAIN" mana="60" nature="2" range="200" cooldown="5" type="heal" target="self" />
+	<skill name="DRUID_DEHYDRATION_SEED" mana="50" nature="2" range="180" cooldown="20" />
+	<skill name="DRUID_GREAT_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
+	<skill name="DRUID_SUMMON_SANDSTORM" mana="70" nature="4" range="180" cooldown="8" />
+
 </skills>

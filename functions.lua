@@ -545,7 +545,7 @@ function levelupSkills1To10(_loadonly)
 								 [4] = { aslevel = 8, skillname="PRIEST_HOLY_AURA" } },
 		[CLASS_KNIGHT]      = {  [1] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
 								 [2] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" } },
-		[CLASS_RUNEDANCER] = "???",	-- ???
+		[CLASS_WARDEN] = "???",	-- ???
 		[CLASS_DRUID]      = "???",	-- ???
 		};
 

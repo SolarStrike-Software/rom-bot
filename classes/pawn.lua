@@ -11,7 +11,7 @@ CLASS_ROGUE = 3;
 CLASS_MAGE = 4;
 CLASS_PRIEST = 5;
 CLASS_KNIGHT = 6;
-CLASS_RUNEDANCER = 7;
+CLASS_WARDEN = 7;
 CLASS_DRUID = 8;
 
 ATTACKABLE_MASK_PLAYER = 0x10000;
@@ -26,8 +26,8 @@ armorMap = {
 	[CLASS_MAGE] = "cloth",
 	[CLASS_PRIEST] = "cloth",
 	[CLASS_KNIGHT] = "chain",
-	[CLASS_RUNEDANCER] = "cloth",	-- ???
-	[CLASS_DRUID] = "leather",		-- ???
+	[CLASS_WARDEN] = "chain",	-- ???
+	[CLASS_DRUID] = "cloth",		-- ???
 	};
 
 local classEnergyMap = {
@@ -38,7 +38,7 @@ local classEnergyMap = {
 	[CLASS_MAGE] = "mana",
 	[CLASS_PRIEST] = "mana",
 	[CLASS_KNIGHT] = "mana",
-	[CLASS_RUNEDANCER] = "mana",
+	[CLASS_WARDEN] = "mana",
 	[CLASS_DRUID] = "mana",
 };
 
