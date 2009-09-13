@@ -109,7 +109,8 @@ function CInventory:update(_maxslot)
 	
 	for slotNumber = 1, _maxslot, 1 do
 		self:updateBagSlot(slotNumber);
-		printf(".");
+		--printf(".");
+		displayProgressBar(slotNumber/_maxslot*100, 50);
 	end
 	printf("\n");
 end

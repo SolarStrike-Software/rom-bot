@@ -181,7 +181,7 @@ language = {
 	[906] = "Die Makro\129bergabe an das Spiel scheint nicht zu funktionieren.\n",		
 	
 	-- Inventory.lua
-	[1000] = "Aktualisierung Inventar",
+	[1000] = "Aktualisierung Inventar\n",
 	[1001] = "Einkaufen",
 	
 };
