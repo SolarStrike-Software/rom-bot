@@ -184,7 +184,7 @@ language = {
 	[906] = "The communication to the game with the MACRO function seems not to work.\n",		
 
 	-- Inventory.lua
-	[1000] = "Mapping inventory",
+	[1000] = "Mapping inventory...\n",
 	[1001] = "Shopping",
 	
 };

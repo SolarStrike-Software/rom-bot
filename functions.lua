@@ -703,3 +703,19 @@ function convertProfileName(_profilename)
 
 	return load_profile_name;
 end
+
+
+local lastDisplayBlocks = 0;
+function displayProgressBar(percent, size)
+	size = size or 10;
+	local blocksFilled = math.floor(size*percent/100);
+	local blocksUnfilled = size - blocksFilled;
+
+	if( blocksFilled ~= lastDisplayBlocks ) then
+		printf("\r%03d%% [", percent);
+		cprintf(cli.turquoise, string.rep("*", blocksFilled));
+		printf(string.rep("-", blocksUnfilled) .. "]");
+
+		lastDisplayBlocks = blocksFilled;
+	end
+end
