@@ -103,63 +103,72 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
+	local openformat = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\"%s>%s";
+	local closeformat = "</waypoint>\n";
+
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	file:write(str);					-- write first tag
 
-	local hf_line, tag_open;
+	local hf_line, tag_open = "", false;
 	for i,v in pairs(list) do
-		
-		
-		-- close open waypoint tag if new waypoint come
-		if( tag_open  and 
-		    (v.wp_type == "HP"  or 
-		     v.wp_type == "WP"  or
-		     v.wp_type == "MER" or
-		     v.wp_type == "NPC" )  ) then 
-		    hf_line = "\n\t</waypoint>\n";
-		    tag_open = false;
-		else
-			hf_line = "";
+		if( v.wp_type == "HP" ) then -- Harvest point
+			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_hp_type, p_harvest_command) .. closeformat;
+			tag_open = false;
+		elseif( v.wp_type == "WP" ) then -- Waypoint
+			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type, "") .. closeformat;
+			tag_open = false;
+		elseif( v.wp_type == "MER" ) then -- Merchant
+			if( tag_open ) then
+				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, v.npc_name) .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
+				tag_open = true;
+			end
+		elseif( v.wp_type == "NPC" ) then -- Open NPC Dialog
+			if( tag_open ) then
+				hf_line = hf_line .. "\t\t" .. sprintf(p_targetNPC_command, v.npc_name) .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				"\n\t\t" .. sprintf(p_targetNPC_command, v.npc_name) ) .. "\n";
+				tag_open = true;
+			end
+		elseif( v.wp_type == "CO" ) then -- Choice Option
+			if( tag_open ) then
+				hf_line = hf_line .. "\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				"\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) ) .. "\n";
+				tag_open = true;
+			end
+		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
+			if( tag_open ) then
+				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
+				tag_open = true;
+			end
 		end
-		
-		
-		local wp_string = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\"%s>%s";
-		if( v.wp_type == "HP" ) then 		-- it's a harvest point?
-			hf_line = hf_line ..sprintf(wp_string, i, v.X, v.Z, 
-			   p_hp_type,					-- insert type=TRAVEL for harvest points if you want
-			   p_harvest_command);			-- then insert harvest command
-			hf_line = hf_line .."</waypoint>\n";
-		elseif( v.wp_type == "WP" ) then
-			hf_line = hf_line..sprintf(wp_string, i, v.X, v.Z, 
-			   p_wp_type,					-- insert type=TRAVEL for waypoints if you want
-			   "");							-- no command
-			   hf_line = hf_line .."</waypoint>\n";
-		elseif( v.wp_type == "MER" ) then	-- target merchant
-			hf_line = hf_line ..sprintf(wp_string, i, v.X, v.Z, 
-			   p_wp_type,					-- insert type=TRAVEL for waypoints if you want
-			   "\n\t\t"..sprintf(p_merchant_command, v.npc_name) );			-- merchant command
-			tag_open = true;
-		elseif( v.wp_type == "NPC" ) then
-			hf_line = hf_line ..sprintf(wp_string, i, v.X, v.Z, 
-			   p_wp_type,					-- insert type=TRAVEL for waypoints if you want
-			   "\n\t\t"..sprintf(p_targetNPC_command, v.npc_name) );			-- merchant command
-			tag_open = true;
-		elseif( v.wp_type == "CO" ) then	-- choice option 
-			hf_line  = hf_line .."\n\t\t"..sprintf(p_choiceOption_command, v.co_num); -- ChoiceOption()
-			tag_open = true;
-		elseif( v.wp_type == "MC" ) then
-			hf_line  = hf_line .."\n\t\t"..sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high); -- player:MouseClickL(%d,%d);
-			tag_open = true;
-		end;							
-
-		file:write(hf_line);
 	end
-	
+
+	-- If we left a tag open, close it.
+	if( tag_open ) then
+		hf_line = hf_line .. "\t" .. closeformat;
+	end
+
+	file:write(hf_line);
+	file:write("</waypoints>");
+
+--[[	
 	if( tag_open ) then 
 		file:write("\n\t</waypoint>\n</waypoints>\n");
 	else
 		file:write("</waypoints>\n");
 	end
+]]
 
 	file:close();
 	
