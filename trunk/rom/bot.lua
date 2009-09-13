@@ -68,6 +68,7 @@ function main()
 
 	database.load();
 
+	keyboardSetDelay(0); -- TEMP FIX! Remove after MicroMacro 7 beta full release
 	attach(getWin());
 
 	if( not checkExecutableCompatible() ) then
