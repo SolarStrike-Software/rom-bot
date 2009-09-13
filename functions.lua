@@ -363,6 +363,7 @@ function RoMScript(script)
 	local startWaitTime = getTime();
 	while( memoryReadByte(getProc(), macro_address + macro2_offset) == 6 ) do
 		if( deltaTime(getTime(), startWaitTime) > 500 ) then
+--			printf("TIMEOUT in RoMScript ...\n");
 			break; -- Timed out
 		end;
 		rest(1);
@@ -445,7 +446,7 @@ function asciiToUtf8(_str)
 end
 
 -- open giftbag (at the moment level 1-10)
-function openGiftbags1To10(_player_level, _maxslot)
+function openGiftbags1To10(_player_level)
 
 	if( not _player_level) then _player_level = player.Level; end
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
@@ -467,7 +468,7 @@ function openGiftbags1To10(_player_level, _maxslot)
 
 				if( v.type == "bag" ) then		-- after opening bag update inventory
 					yrest(4000);				-- some more time to open the bag
-					inventory:update(_maxslot);	-- update slots
+					inventory:update();			-- update slots
 				end;
 			end;
 		end;

@@ -15,6 +15,7 @@
 		<option name="MANA_POTION"		value="0" />
 		<option name="ARROW_QUIVER"		value="0" />
 		<option name="THROWN_BAG"		value="0" />
+		<option name="INV_MAX_SLOTS"	value="18" />	<!-- max slots for inventory scan -->
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"			value="" />		<!-- leave empty or choose ranged/melee if not using class default -->
@@ -108,7 +109,7 @@
 		-- like: changeProfileOption("HP_REST", 60);
 
 		if(player.Level == 1) then
-			openGiftbags1To10(player.Level, 18);
+			openGiftbags1To10(player.Level);
 		else
 			levelupSkills1To10("loadonly");
 		end;
@@ -137,8 +138,7 @@
 			levelupSkills1To10();
 
 			-- open giftbag and equipt content
-			-- updates first 18 bag slots / update all if empty
-			openGiftbags1To10(player.Level, 18);
+			openGiftbags1To10(player.Level);
 
 	</onLevelup>
 
