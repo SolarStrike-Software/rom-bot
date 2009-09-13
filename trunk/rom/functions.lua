@@ -317,14 +317,12 @@ end
 
 -- executing RoMScript and send a MM window message before
 function sendMacro(_script)
-
 	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
 	   "MACRO",
 --	   getKeyName(settings.profile.hotkeys.MACRO.key),
 	   string.sub(_script, 1, 40) );
 
-	local ret1, ret2, ret3, ret4, ret5, ret6, ret7, ret8, ret9, ret10 = RoMScript(_script);
-	return ret1, ret2, ret3, ret4, ret5, ret6, ret7, ret8, ret9, ret10;
+	return RoMScript(_script);
 	
 end
 
