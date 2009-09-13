@@ -10,6 +10,7 @@
 		player:rest(2);
 		sendMacro("ChoiceOption(2);");
 		yrest(12000);
+		player:update();
 		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 	</waypoint>
 	<!-- # 8 --><waypoint x="5210" z="-3809"></waypoint>
