@@ -731,8 +731,8 @@ function settings.loadProfile(_name)
 		elseif( string.lower(name) == "skills_knight"  and
 		        player.Class1 == CLASS_KNIGHT ) then
 			loadSkills(v);
-		elseif( string.lower(name) == "skills_runedancer"  and
-		        player.Class1 == CLASS_RUNEDANCER ) then
+		elseif( string.lower(name) == "skills_warden"  and
+		        player.Class1 == CLASS_WARDEN ) then
 			loadSkills(v);
 		elseif( string.lower(name) == "skills_druid"  and
 		        player.Class1 == CLASS_DRUID ) then
@@ -744,7 +744,7 @@ function settings.loadProfile(_name)
 	 		     string.lower(name) ~= "skills_mage"        and
 			     string.lower(name) ~= "skills_priest"      and
 			     string.lower(name) ~= "skills_knight"      and
-			     string.lower(name) ~= "skills_runedancer"  and
+			     string.lower(name) ~= "skills_warden"  and
 			     string.lower(name) ~= "skills_druid" )     then
 				cprintf(cli.yellow, tostring(language[60]), string.lower(tostring(name)),
 					tostring(hf_temp));
@@ -768,13 +768,13 @@ function settings.loadProfile(_name)
 	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
 		if( player.Class1 == CLASS_WARRIOR or
 		    player.Class1 == CLASS_ROGUE   or
---		    player.Class1 == CLASS_RUNEDANCER  or
+		    player.Class1 == CLASS_WARDEN  or
 		    player.Class1 == CLASS_KNIGHT  ) then
 			settings.profile.options.COMBAT_TYPE  = "melee";
 		elseif(
 		    player.Class1 == CLASS_PRIEST  or
 		    player.Class1 == CLASS_SCOUT   or
---		    player.Class1 == CLASS_DRUID   or
+		    player.Class1 == CLASS_DRUID   or
 		    player.Class1 == CLASS_MAGE    ) then
 			settings.profile.options.COMBAT_TYPE  = "ranged";
 		else

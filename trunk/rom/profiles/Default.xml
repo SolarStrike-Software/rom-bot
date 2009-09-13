@@ -113,8 +113,8 @@
 		<skill name="KNIGHT_PUNISHMENT"   hotkey="VK_2" priority="60" />
 	</skills_knight>
 
-	<skills_runedancer>
-	</skills_runedancer>
+	<skills_warden>
+	</skills_warden>
 
 	<skills_druid>
 	</skills_druid>
