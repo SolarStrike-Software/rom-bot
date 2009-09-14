@@ -334,12 +334,15 @@ function CPlayer:checkPotions()
 	-- If we need to use a health potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
 	
-		local hf_keyname, item;
+		local hf_keyname, item, hf_itemcount;
 		if( settings.profile.hotkeys.MACRO ) then
 			-- new code, use the inventory class to use the best potion available
 			item = inventory:bestAvailableConsumable("healing");
-			item:use();
-			hf_keyname = "MACRO";
+			if( item ) then
+				item:use();
+				hf_itemcount = item.ItemCount;	-- remember quantity for msg
+			end
+			hf_keyname = "MACRO"
 		else
 			-- old code / keep it to be able to use old stype if there are problems with the RoM API
 			local modifier = settings.profile.hotkeys.HP_POTION.modifier
@@ -347,13 +350,20 @@ function CPlayer:checkPotions()
 			keyboardPress(settings.profile.hotkeys.HP_POTION.key);
 			hf_keyname = getKeyName(settings.profile.hotkeys.HP_POTION.key);
 			if( modifier ) then keyboardRelease(modifier); end
+			hf_itemcount ="unknown";
 		end
 
-		self.PotionLastUseTime = os.time();
-		self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
-		cprintf(cli.green, language[10], 		-- Using HP potion
-		   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, item.Name);
-		
+			if( item or 
+				not settings.profile.hotkeys.MACRO) then
+
+				self.PotionLastUseTime = os.time();
+				self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
+				cprintf(cli.green, language[10], 		-- Using HP potion
+				   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+				   item.Name, hf_itemcount);
+			else
+				cprintf(cli.yellow, "no more mana potions found, sorry\n"); 			
+			end
 
 		if( self.Fighting ) then
 			yrest(1000);
@@ -363,15 +373,19 @@ function CPlayer:checkPotions()
 	-- If we need to use a mana potion(if we even have mana)
 	if( self.MaxMana > 0 ) then 
 
-		local hf_keyname, item;
+		local hf_keyname, item, hf_itemcount;
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
 			
 			
 			if( settings.profile.hotkeys.MACRO ) then
 				-- new code
 				item = inventory:bestAvailableConsumable("mana");
-				item:use();
+				if( item ) then
+					item:use();
+					hf_itemcount = item.ItemCount;	-- remember quantity for msg
+				end;
 				hf_keyname = "MACRO";
+				
 			else
 				-- old code
 				local modifier = settings.profile.hotkeys.MP_POTION.modifier
@@ -379,12 +393,21 @@ function CPlayer:checkPotions()
 				keyboardPress(settings.profile.hotkeys.MP_POTION.key);
 				hf_keyname = getKeyName(settings.profile.hotkeys.MP_POTION.key);
 				if( modifier ) then keyboardRelease(modifier); end
+				hf_itemcount ="unknown";
 			end
 
-			self.PotionLastUseTime = os.time();
-			self.MP_counter = self.MP_counter + 1;	-- counts use of mana potions
-			cprintf(cli.green, language[11], 		-- Using HP potion
-			   hf_keyname, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, item.Name);
+			if( item or 
+				not settings.profile.hotkeys.MACRO) then
+
+				self.PotionLastUseTime = os.time();
+				self.MP_counter = self.MP_counter + 1;	-- counts use of mana potions
+				cprintf(cli.green, language[11], 		-- Using HP potion
+				   hf_keyname, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
+				   item.Name, hf_itemcount);
+			else
+				cprintf(cli.yellow, "no more mana potions found, sorry\n"); 
+			end
+
 
 			if( self.Fighting ) then
 				yrest(1000);

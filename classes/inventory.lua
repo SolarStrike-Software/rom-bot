@@ -146,19 +146,27 @@ end
 function CInventory:bestAvailableConsumable(type)
  	local bestLevel = 0;
  	local bestItem = CItem();
+ 	local bestFound;
  	for slot,item in pairs(self.BagSlot) do
 		for num,consumable in pairs(database.consumables) do
-		    if consumable.Type == type and consumable.Level <= player.Level then
-		        if item.Id == consumable.Id then
-		            if consumable.Level > bestLevel then
-		                bestLevel = consumable.Level;
-		                bestItem = item;
+			if consumable.Type == type and 
+			   consumable.Level <= player.Level  then
+				if item.Id == consumable.Id and
+				   item.ItemCount > 0 then			-- use only if some available
+					if consumable.Level > bestLevel then
+						bestLevel = consumable.Level;
+						bestItem = item;
+						bestFound = true;
 					end
 		        end
 			end
 		end
 	end
-	return bestItem;
+	if (bestFound) then
+		return bestItem;
+	else
+		return false;
+	end
 end
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"

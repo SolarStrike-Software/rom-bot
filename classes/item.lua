@@ -17,6 +17,10 @@ function CItem:use()
 		cprintf(cli.lightblue, "DEBUG - UseBagItem: %s\n", self.BagId );				-- Open/eqipt item:
 	end;
 
+	self.ItemCount = self.ItemCount - 1;	-- reduce quantity in by 1
+-- TODO: only a fix for using potions / have to be checked for items like mounts
+-- which will not be 0 after using
+
 	-- Set the default values since our item does not exist anymore.
 	if self.ItemCount <= 0 then
 		self = CItem();
