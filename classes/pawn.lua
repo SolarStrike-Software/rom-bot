@@ -65,6 +65,10 @@ CPawn = class(
 		self.Attackable = false;
 		self.Alive = true;
 
+		self.LastBuffUpdateTime = getTime();
+		self.Buffs = {};
+		self.Debuffs = {};
+
 
 		-- Directed more at player, but may be changed later.
 		self.Battling = false; -- The actual "in combat" flag.
@@ -237,6 +241,52 @@ function CPawn:update()
 		elseif( energyStorage2 == "concentration" ) then
 		self.Concentration = self.MP2;
 		self.MaxConcentration = self.MaxMP2;
+	end
+
+
+	-- Update buffs/debuffs (only allowed every 500ms
+	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
+		-- Is this the player?
+		if( player ) then
+			if( self.Address == player.Address ) then
+				-- Yes, this is the player.
+				self:updateBuffs('player');
+			else
+				self:updateBuffs('target');
+			end
+		else
+			self:updateBuffs('target');
+		end
+	end
+end
+
+function CPawn:updateBuffs(target)
+	target = target or "player"; -- By default, assume player.
+	self.Buffs = {}; -- Flush old buffs/debuffs
+	self.Debuffs = {};
+
+	local buffs = {RoMScript("} for i=1,9 do w,x,y,z=UnitBuff('" .. target ..
+	"', i) table.insert(a,w) table.insert(a,y) end z={")};
+
+	local debuffs = {RoMScript("} for i=1,9 do w,x,y,z=UnitDebuff('" .. target
+	.. "', i) table.insert(a,w) table.insert(a,y) end z={")};
+
+	if( buffs ) then
+		for i = 1,#buffs/2,2 do
+			local buffname = buffs[i];
+			local count = buffs[i+1] or 0;
+
+			self.Buffs[buffname] = count;
+		end
+	end
+
+	if( debuffs ) then
+		for i = 1,#debuffs/2,2 do
+			local buffname = debuffs[i] or "<UNKNOWN>";
+			local count = debuffs[i+1] or 0;
+
+			self.Debuffs[buffname] = count;
+		end
 	end
 end
 
