@@ -103,6 +103,7 @@
 	<!-- TODO: Divine Incarnation: cooldown ? -->
 	<skill name="PRIEST_DIVINE_INCARNATION" mana="30" type="buff" target="self" />
 	<skill name="PRIEST_CALM_HEART" mana="30" cooldown="60" range="150" type="buff" target="self" />
+	<skill name="PRIEST_ICEWIND_BLADE" mana="18" manainc="2" range="180" cooldown="3" type="damage" target="enemy" />
 
 	<!-- Warrior skills -->
 	<skill name="WARRIOR_SLASH" aslevel="1" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />

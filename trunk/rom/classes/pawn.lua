@@ -244,20 +244,23 @@ function CPawn:update()
 	end
 
 
+-- detect strong lags while walking
+-- so I just deactivate the update to look deeper for that(d003232)
+
 	-- Update buffs/debuffs (only allowed every 500ms
-	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
-		-- Is this the player?
-		if( player ) then
-			if( self.Address == player.Address ) then
-				-- Yes, this is the player.
-				self:updateBuffs('player');
-			else
-				self:updateBuffs('target');
-			end
-		else
-			self:updateBuffs('target');
-		end
-	end
+--	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
+--		-- Is this the player?
+--		if( player ) then
+--			if( self.Address == player.Address ) then
+--				-- Yes, this is the player.
+--				self:updateBuffs('player');
+--			else
+--				self:updateBuffs('target');
+--			end
+--		else
+--			self:updateBuffs('target');
+--		end
+--	end
 end
 
 function CPawn:updateBuffs(target)

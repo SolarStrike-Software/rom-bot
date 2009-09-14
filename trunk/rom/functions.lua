@@ -319,7 +319,6 @@ end
 function sendMacro(_script)
 	cprintf(cli.green, language[169], 		-- Executing RoMScript ...
 	   "MACRO",
---	   getKeyName(settings.profile.hotkeys.MACRO.key),
 	   string.sub(_script, 1, 40) );
 
 	return RoMScript(_script);
