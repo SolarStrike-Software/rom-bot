@@ -17,6 +17,7 @@ CSkill = class(
 		self.skilltab = nil;	-- skill tab number
 		self.skillnum = nil;	-- number of the skill at that skill tab
 		self.Mana = 0;
+		self.ManaPer = 0;
 		self.Rage = 0;
 		self.Energy = 0;
 		self.Concentration = 0;
@@ -50,6 +51,7 @@ CSkill = class(
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
 			self.Mana = copyfrom.Mana;
+			self.ManaPer = copyfrom.ManaPer;
 			self.Rage = copyfrom.Rage;
 			self.Energy = copyfrom.Energy;
 			self.Concentration = copyfrom.Concentration;
@@ -91,7 +93,13 @@ function CSkill:canUse(_only_friendly)
 		end;
 	end
 
+	-- Not enough mana
 	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then
+		return false;
+	end
+
+	-- Not enough mana percent
+	if( (player.Mana/player.MaxMana*100) < self.ManaPer ) then
 		return false;
 	end
 
@@ -181,7 +189,12 @@ end
 
 
 function CSkill:use()
-	local estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
+	local estimatedMana;
+	if( self.ManaPer > 0 ) then
+		estimatedMana = math.ceil((self.ManaPer/100)*player.MaxMana);
+	else
+		estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
+	end
 
 	local target = player:getTarget();
 
