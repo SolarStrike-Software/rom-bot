@@ -13,7 +13,7 @@
 	<!-- #12 --><waypoint x="-2033" z="-5765">player:restrnd(10, 2, 10);</waypoint>
 	<!-- #13 --><waypoint x="-2005" z="-5345">
 		if( player.Level > 6 ) then
-			loadPaths("l7_goto_8_keiler");
+			loadPaths("l1-10Pioneers/l7t_7-9_boar");
 	  	end
 	</waypoint>
 	<!-- #14 --><waypoint x="-1715" z="-5414">player:restrnd(10, 2, 10);</waypoint>
@@ -30,7 +30,7 @@
 	<!-- #25 --><waypoint x="-2069" z="-5729">player:restrnd(10, 2, 10);</waypoint>
 	<!-- #26 --><waypoint x="-1919" z="-5956">
 		if( player.Level > 6 ) then
-			loadPaths("l7_goto_8_keiler");
+			loadPaths("l1-10Pioneers/l7t_7-9_boar");
 	  	end
 	</waypoint>
 </waypoints>

@@ -103,6 +103,16 @@
 		<skill name="KNIGHT_PUNISHMENT"   hotkey="VK_2" priority="60" />
 	</skills_knight>
 
+	<skills_druid>
+		<skill name="DRUID_RECOVER"		hotkey="VK_2" priority="90" hpper="30" />
+		<skill name="DRUID_EARTH_ARROW"	hotkey="VK_3" priority="80" />
+	</skills_druid>
+
+	<skills_warden>
+		<skill name="WARDEN_CHARGED_CHOP"	hotkey="VK_2" priority="90" />
+		<skill name="WARDEN_ENERGY_ABSORB"	hotkey="VK_3" priority="80" inbattle="true" hpper="25" />
+	</skills_warden>
+
 	<onLoad>
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here

@@ -11,7 +11,7 @@
 	<!-- #10 --><waypoint x="-1140" z="-4099">player:restrnd(10, 2, 10);</waypoint>
 	<!-- #11 --><waypoint x="-987" z="-4152">
 		if( player.Level > 8 ) then
-			loadPaths("l8_goto_8-10_kaefer");
+			loadPaths("l1-10Pioneers/l9t_9-10_bugs");
 	  	end
 	</waypoint>
 	<!-- #12 --><waypoint x="-851" z="-4366">player:restrnd(20, 2, 10);</waypoint>
@@ -26,7 +26,7 @@
 	<!-- #21 --><waypoint x="-1436" z="-4220"></waypoint>
 	<!-- #22 --><waypoint x="-1450" z="-4532">
 		if( player.Level > 8 ) then
-			loadPaths("l8_goto_8-10_kaefer");
+			loadPaths("l1-10Pioneers/l9t_9-10_bugs");
 	  	end
 	</waypoint>
 </waypoints>

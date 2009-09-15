@@ -798,15 +798,25 @@ function settings.loadProfile(_name)
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
 	local hf_return = RoMScript("1234;SendSystemChat(\"MACRO test: send value 1234 to macro place 2\");");
-	if( hf_return ~= 1234 ) then
-		 	RoMScript("xxxx;SendSystemChat(\"MACRO test: testvalue cleared\");");	-- overwrite return values
+	if( hf_return ~= 1234 ) then	-- return values not found
+		 	RoMScript("SendSystemChat(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
 			cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
-			local msg = sprintf(language[904], getKeyName(settings.profile.hotkeys.MACRO.key) );
-			if( not settings.profile.options.IGNORE_MACRO_ERROR) then	-- only temporary, can be deleted later
+
+			if ( settings.profile.hotkeys.MACRO.key) then
+				hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key);
+			else
+				local hf_temp ="<UNKNOWN>";	-- if ignore, key must not be set, so give value
+			end
+
+			local msg = sprintf(language[904], hf_temp );
+
+			if( settings.profile.options.IGNORE_MACRO_ERROR == true ) then	-- only temporary, can be deleted later
+				cprintf(cli.yellow, msg);		
+			else							-- ignore MACRO error
 				error(msg, 0);
 			end
-	else
-		RoMScript("SendSystemChat(\"MACRO test: successful\");");
+	else								-- return values found, clear it and send message
+		RoMScript("xxxx; SendSystemChat(\"MACRO test: successful\");");	-- overwrite values
 	end
 
 end

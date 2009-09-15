@@ -186,72 +186,106 @@ function main()
 		end
 	end
 
+
+	-- list waypoint files and files in folders
+	-- only files with filetype '.xml' are listed
+	-- only folders without '.' are listed
+	-- only 1 level of subfolders will be listed
 	local function list_waypoint_files()
 
-		-- choose a path from the waypoints folder
-		local dir = getDirectory(getExecutionPath() .. "/waypoints/");
+		local hf_counter = 0;
 		local pathlist = { }
+		
+		local function read_subdirectory(_folder)
+			local subdir = getDirectory(getExecutionPath() .. "/waypoints/".._folder);
+			if( not subdir) then return; end
+			
+			for i,v in pairs(subdir) do
+				if( string.find (v,".xml",1,true) ) then
+					hf_counter = hf_counter + 1;
+						pathlist[hf_counter] = { };
+						pathlist[hf_counter].folder = _folder;
+						pathlist[hf_counter].filename = v;
+				end
+			end
+			
+		end		-- end of: local function read_subdirectory(_folder)
+
+
+		local function concat_filename(_i, _folder, _filename)
+			
+			local hf_newname;
+			local hf_folder = "";
+			local hf_dots = "";
+			local hf_slash = "";
+			
+			if( _folder  and  string.len(_folder) > 8 )  then 
+				hf_folder = string.sub(_folder, 1, 6); 
+				hf_dots = "..";
+				hf_slash = "/";
+			elseif( _folder  and  string.len(_folder) > 0 )  then 
+				hf_folder = _folder;
+				hf_slash = "/";
+			end
+			
+			hf_newname = sprintf("%s%s%s%s",
+			  hf_folder,
+			  hf_dots,
+			  hf_slash,
+			  _filename);
+			
+			hf_nr = sprintf("%3d:", _i);
+			
+			return hf_nr, hf_newname;
+
+		end
+
+		-- choose a path from the waypoints folder
+		local dir = getDirectory(getExecutionPath() .. "/waypoints/")
 
 		cprintf(cli.green, language[144], getExecutionPath());	-- Waypoint files in %s
 
 
 		-- copy table dir to table pathlist
 		-- select only xml files
-		local hf_counter = 0;
 		for i,v in pairs(dir) do
-			if( string.find (v,".xml",1,true) ) then
+		
+			-- no . means perhaps folder
+			if( not string.find (v,".",1,true) ) then
+				read_subdirectory(v);
+				
+			-- only list files with extension .xml
+			elseif( string.find (v,".xml",1,true) ) then
 				hf_counter = hf_counter + 1;
-				pathlist[hf_counter] = v;
+				pathlist[hf_counter] = { };
+				pathlist[hf_counter].filename = v;
 			end
 		end
 
-		local hf_max_rows = math.ceil(table.getn(pathlist) / 3 );	-- how many rows to output by 3 column
-		hf_print_table = { row = {   }  };	-- DEFINE1
-		local hf_row = 0;
-		local hf_column = 1;	-- start in column 1
-
-		-- copy entrys from table pathlist to a new table 'hf_print_table' 
-		-- arrange in three columns
-		for i,v in pairs(pathlist) do
-			hf_row = hf_row + 1;
-			if( hf_row > hf_max_rows ) then		-- switch column after maxrow
-				hf_column = hf_column + 1;
-				hf_row = 1;
+		local inc = math.ceil(#pathlist/3);
+		
+		for i = 1, inc do
+			
+			local column1 = ""; local column2 = ""; local column3 = "";
+			local col1nr = ""; local col2nr = ""; local col3nr = "";
+			
+			col1nr, column1 = concat_filename(i, pathlist[i].folder, pathlist[i].filename)
+			
+			if ( (i + inc) <= #pathlist ) then
+				col2nr, column2 = concat_filename(i+inc, pathlist[i+inc].folder, pathlist[i+inc].filename);
+			end
+			if ( (i+inc*2) <= #pathlist ) then
+				col3nr, column3 = concat_filename(i+inc*2, pathlist[i+inc*2].folder, pathlist[i+inc*2].filename);
 			end
 
-			if( not hf_print_table[hf_row] ) then
-				hf_print_table[hf_row] = {  };
-				hf_print_table[hf_row] = { column = { {} }  };
-			end
+			cprintf(cli.green,"%s %s %s %s %s %s\n", 
+				col1nr,
+				string.sub(column1.."                    ", 1, 21),
+				col2nr,
+				string.sub(column2.."                    ", 1, 21),
+				col3nr,
+				string.sub(column3.."                    ", 1, 20) );
 
-			if( hf_column == 1 ) then
-				hf_print_table[hf_row].col1_nr = sprintf("%3d", i); 	-- remember nr of the entry
-				hf_print_table[hf_row].col1_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
-			elseif( hf_column == 2 ) then
-				hf_print_table[hf_row].col2_nr = sprintf("%3d", i); 	-- remember nr of the entry
-				hf_print_table[hf_row].col2_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
-			elseif( hf_column == 3 ) then
-				hf_print_table[hf_row].col3_nr = sprintf("%3d", i); 	-- remember nr of the entry
-				hf_print_table[hf_row].col3_filename = string.sub(v.."                    ", 1, 20);	-- waypoint filename
-			end
-		end
-
-		-- printout the table with the columns
-		for i,v in pairs(hf_print_table) do
-			local line = "";
-			if( v.col1_nr ~= nil ) then 
-				line = v.col1_nr..": "..v.col1_filename; 
-			end
-
-			if( v.col2_nr ~= nil ) then 
-				line = line.."  "..v.col2_nr..": "..v.col2_filename; 
-			end
-
-			if( v.col3_nr ~= nil ) then 
-				line = line.."  "..v.col3_nr..": "..v.col3_filename; 
-			end
-
-			cprintf(cli.green, "%s\n", line );
 		end
 
 		-- ask for pathname to choose
@@ -259,17 +293,24 @@ function main()
 		io.stdin:flush();
 		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path 
 		local hf_choose_path_nr = tonumber(io.stdin:read() );
-		if( hf_choose_path_nr == nil) then hf_choose_path_nr = " "; end;
-		printf(language[146], hf_choose_path_nr );	-- You choose %s\n
-		if( pathlist[hf_choose_path_nr] ) then
-			wp_to_load = pathlist[hf_choose_path_nr];
-			return true;
+		if( hf_choose_path_nr == nil) then hf_choose_path_nr = 0; end;
+		if( hf_choose_path_nr > 0 and
+			hf_choose_path_nr <= #pathlist ) then 
+			printf(language[146], hf_choose_path_nr );	-- You choose %s\n
+			if( pathlist[hf_choose_path_nr].folder ) then
+				wp_to_load = pathlist[hf_choose_path_nr].folder.."/"..pathlist[hf_choose_path_nr].filename;
+			else
+				wp_to_load = pathlist[hf_choose_path_nr].filename;
+			end
+			
+			return wp_to_load;
 		else
 			cprintf(cli.yellow, language[147]);	-- Wrong selection
 			return false;
 		end
 
 	end	-- end of local function list_waypoint_files()
+
 
 	if( settings.profile.options.PATH_TYPE == "wander" or
 	    forcedPath == "wander" ) then
@@ -278,8 +319,9 @@ function main()
 		-- if no wp file given, list them
 		while(wp_to_load == nil  or
 		  wp_to_load == ""   or
+		  wp_to_load == false   or		  
 		  wp_to_load == " ") do
-			list_waypoint_files();
+			wp_to_load = list_waypoint_files();
 		end;
 	
 		loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
