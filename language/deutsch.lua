@@ -151,7 +151,9 @@ language = {
 	[173] = "Unbekannte Option \'%s\'. Wir k\148nnen den Wert nicht ver\132ndern. Bitte Einstellungen pr\129fen.\n",
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
 	[175] = "Sturobold",
-	
+
+	[200] = "Keine reichten Kompetenzen im Profil angegeben; COMBAT_RANGED_PULL ausgeschaltet ist.\n",
+
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",
 	[501] = "RoM Wegepunktdateien erstellen\n",

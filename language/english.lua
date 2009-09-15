@@ -152,7 +152,8 @@ language = {
 	[177] = "...\n",
 	[178] = "...\n",
 	[179] = "...\n",
-	
+
+	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 	
 
 	-- createpath.lua

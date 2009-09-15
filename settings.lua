@@ -667,7 +667,6 @@ function settings.loadProfile(_name)
 		end
 
 		table.sort(settings.profile.skills, skillSort);
-
 	end
 
 	local loadFriends = function(node)
@@ -750,6 +749,22 @@ function settings.loadProfile(_name)
 					tostring(hf_temp));
 			end;
 		end
+	end
+
+	-- Check if the player has any ranged skills
+	local rangedSkills = false;
+	for i,v in pairs(settings.profile.skills) do
+
+		if( v.Range > 100 ) then
+			rangedSkills = true;
+			printf("Ranged skill found: %s\n", v.Name);
+			break;
+		end
+	end
+
+	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
+		printf(language[200]);
+		settings.profile.options.COMBAT_RANGED_PULL = false;
 	end
 
 
