@@ -543,10 +543,17 @@ function levelupSkills1To10(_loadonly)
 --								 [3] = { aslevel = 2, skillname="PRIEST_WAVE_ARMOR" },	-- needs to much mana
 								 [3] = { aslevel = 4, skillname="PRIEST_REGENERATE" } ,
 								 [4] = { aslevel = 8, skillname="PRIEST_HOLY_AURA" } },
-		[CLASS_KNIGHT]      = {  [1] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
+		[CLASS_KNIGHT]		= {  [1] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
 								 [2] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" } },
-		[CLASS_WARDEN] = "???",	-- ???
-		[CLASS_DRUID]      = "???",	-- ???
+		[CLASS_WARDEN]		= {  [1] = { aslevel = 1, skillname="WARDEN_CHARGED_CHOP" },
+								 [2] = { aslevel = 1, skillname="WARDEN_ENERGY_ABSORB" },
+								 [3] = { aslevel = 2, skillname="WARDEN_THORNY_VINE" },
+								 [4] = { aslevel = 4, skillname="WARDEN_BRIAR_SHIELD" },
+								 [5] = { aslevel = 8, skillname="WARDEN_POWER_OF_THE_WOOD_SPIRIT" } },
+		[CLASS_DRUID]		= {  [1] = { aslevel = 1, skillname="DRUID_RECOVER" },
+								 [2] = { aslevel = 1, skillname="DRUID_EARTH_ARROW" }, 
+								 [3] = { aslevel = 2, skillname="DRUID_BRIAR_TWISTING" },
+								 [4] = { aslevel = 6, skillname="DRUID_RESTORE_LIFE" } },
 		};
 
 

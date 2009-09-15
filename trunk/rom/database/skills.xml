@@ -299,19 +299,18 @@
 	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" type="heal" target="self" />
 
 
-
 	<!-- Druid skills -->
-	<skill name="DRUID_RECOVER" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
-	<skill name="DRUID_DETOXICATION" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
-	<skill name="DRUID_SAVAGE_BLESSING" mana="50" range="180" cooldown="300" type="buff" target="friendly" />
-	<skill name="DRUID_ROCK_CANNON" mana="40" manainc="4" range="180" cooldown="15" />
-	<skill name="DRUID_EARTHS_PROTECTION" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
-	<skill name="DRUID_EARTH_ARROW" mana="12" manainc="1.1" range="200" casttime="2" />
-	<skill name="DRUID_BRIAR_TWISTING" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
-	<skill name="DRUID_DECURSE" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
-	<skill name="DRUID_RESTORE_LIFE" mana="40" manainc="4" range="250" casttime="2" type="heal" target="friendly" />
-	<skill name="DRUID_FUSION_OF_THE_EARTH" cooldown="300" type="buff" target="self" />
-	<skill name="DRUID_RELEASE_LIFE" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
+	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
+	<skill name="DRUID_DETOXICATION" aslevel="4" skilltab="2" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
+	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" cooldown="300" type="buff" target="friendly" />
+	<skill name="DRUID_ROCK_CANNON" aslevel="12" skilltab="2" skillnum="4" mana="40" manainc="4" range="180" cooldown="15" />
+	<skill name="DRUID_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
+	<skill name="DRUID_EARTH_ARROW" aslevel="1" skilltab="4" skillnum="1" mana="12" manainc="1.1" range="200" casttime="2" />
+	<skill name="DRUID_BRIAR_TWISTING" aslevel="2" skilltab="4" skillnum="3" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
+	<skill name="DRUID_DECURSE" aslevel="2" skilltab="4" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
+	<skill name="DRUID_RESTORE_LIFE" aslevel="6" skilltab="4" skillnum="4" mana="40" manainc="4" range="250" casttime="2" type="heal" target="friendly" />
+	<skill name="DRUID_FUSION_OF_THE_EARTH" aslevel="10" skilltab="4" skillnum="5" cooldown="300" type="buff" target="self" />
+	<skill name="DRUID_RELEASE_LIFE" aslevel="10" skilltab="4" skillnum="6" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
 	<skill name="DRUID_REBIRTH" mana="150" casttime="6" type="buff" target="friendly" />
 	<skill name="DRUID_WEAKENING_SEED" mana="50" manainc="5" nature="2" range="180" cooldown="20" type="dot" />
 	<skill name="DRUID_FALLING_STONE" mana="25" range="180" cooldown="8" />

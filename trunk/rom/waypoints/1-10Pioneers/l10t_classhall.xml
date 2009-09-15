@@ -83,6 +83,6 @@
 	player:target_NPC("Lehman");
 	player:rest(4);
 	player:sleep();
-	loadPaths("l10_varanas_postbox");
+	loadPaths("l1-10Pioneers/l10t_postbox");
 	</waypoint>
 </waypoints>

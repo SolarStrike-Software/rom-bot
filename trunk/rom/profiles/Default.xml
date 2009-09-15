@@ -103,20 +103,24 @@
 
 	<skills_mage>
 		<skill name="MAGE_FLAME"              hotkey="VK_3" priority="80" />
-		<skill name="MAGE_ELEMENTAL_CATALYST" hotkey="VK_2" priority="30"   inbattle="true" />
+		<skill name="MAGE_ELEMENTAL_CATALYST" hotkey="VK_2" priority="30" inbattle="true" />
 	</skills_mage>
 
 	<skills_knight>
 		<skill name="KNIGHT_HOLY_STRIKE"  hotkey="VK_3" priority="90" />
-		<skill name="KNIGHT_HOLY_SHIELD"  hotkey="VK_4" priority="80"  inbattle="true" hpper="15" />
+		<skill name="KNIGHT_HOLY_SHIELD"  hotkey="VK_4" priority="80" inbattle="true" hpper="15" />
 		<skill name="KNIGHT_HOLY_SEAL"    hotkey="VK_5" priority="70" />
 		<skill name="KNIGHT_PUNISHMENT"   hotkey="VK_2" priority="60" />
 	</skills_knight>
 
 	<skills_warden>
+		<skill name="WARDEN_CHARGED_CHOP"	hotkey="VK_2" priority="90" />
+		<skill name="WARDEN_ENERGY_ABSORB"	hotkey="VK_3" priority="80" inbattle="true" hpper="25" />
 	</skills_warden>
 
 	<skills_druid>
+		<skill name="DRUID_RECOVER"        hotkey="VK_2" priority="90" hpper="30" />
+		<skill name="DRUID_EARTH_ARROW"    hotkey="VK_3" priority="80" />
 	</skills_druid>
 
 	<onLoad>

@@ -10,5 +10,5 @@
 		sendMacro("ChoiceOption(2);");
 		</waypoint>
 	<!-- # 7 --><waypoint x="-1305" z="-5364"></waypoint>
-	<!-- # 8 --><waypoint x="-1463" z="-5360">loadPaths("l5_kaefer");</waypoint>
+	<!-- # 8 --><waypoint x="-1463" z="-5360">loadPaths("l1-10Pioneers/l5-7_beetle");</waypoint>
 </waypoints>
