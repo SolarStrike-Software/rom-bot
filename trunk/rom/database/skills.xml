@@ -325,4 +325,36 @@
 	<skill name="DRUID_GREAT_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
 	<skill name="DRUID_SUMMON_SANDSTORM" mana="70" nature="4" range="180" cooldown="8" />
 
+	<!-- Warden skills -->
+	<skill name="WARDEN_CHARGED_CHOP" mana="20" range="50" casttime="2" cooldown="3" />
+	<skill name="WARDEN_BRIAR_SHIELD" mana="30" type="buff" target="self" cooldown="300" />
+	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" mana="15" range="50" type="buff" target="self" />
+	<skill name="WARDEN_ELVEN_AMULET" mana="150" cooldown="60" type="buff" target="self" hpper="50" inbattle="true" />
+	<skill name="WARDEN_SAVAGE_POWER" mana="150" cooldown="120" type="buff" target="self" inbattle="true" />
+
+	<skill name="WARDEN_ENERGY_ABSORB" range="80" cooldown="300" />
+	<skill name="WARDEN_RECALL_PET" type="buff" target="self" />
+	<!-- TODO: Summon Spirit of the Oak uses 15% mana -->
+	<skill name="WARDEN_SUMMON_SPIRIT_OF_THE_OAK" manaper="15" casttime="8" inbattle="false" />
+	<skill name="WARDEN_THORNY_VINE" mana="30" manainc="3" range="50" cooldown="8" type="dot" />
+	<!-- TODO: Elven Prayer Heals pet -->
+	<skill name="WARDEN_ELVEN_PRAYER" mana="20" range="150" cooldown="5" />
+	<skill name="WARDEN_MOVEMENT_RESTRICTION" mana="45" range="150" minrange="80" cooldown="45" />
+	<!-- TODO: Summon Nature Crystal uses 15% mana -->
+	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" manaper="15" casttime="8" inbattle="false" />
+	<!-- TODO: Damage Transfer requires pet -->
+	<skill name="WARDEN_DAMAGE_TRANSFER" mana="30" cooldown="180" />
+	<skill name="WARDEN_HEART_OF_THE_OAK" mana="55" cooldown="600" />
+	<skill name="WARDEN_FRANTIC_BRIAR" mana="70" casttime="2" />
+	<!-- TODO: Requires pet HP > 30% -->
+	<skill name="WARDEN_SOUL_ATTACK" range="150" casttime="2" cooldown="6" />
+	<skill name="WARDEN_SUMMON_OAK_WALKER" manaper="15" casttime="8" inbattle="false" />
+	<skill name="WARDEN_PROTECTION_OF_NATURE" mana="55" cooldown="600" type="buff" target="self" />
+	<skill name="WARDEN_BANISH" mana="50" range="150" casttime="1" cooldown="60" hpper="15" />
+	<skill name="WARDEN_POWER_OF_THE_OAK" mana="55" cooldown="600" type="buff" target="self" />
+	<!-- TODO: Explosion of Power requires pet -->
+	<skill name="WARDEN_EXPLOSION_OF_POWER" mana="50" cooldown="180" type="buff" target="self" />
+	<!-- TODO: Elven Guidance requires pet -->
+	<skill name="WARDEN_ELVEN_GUIDANCE" mana="30" cooldown="60" type="buff" target="self" />
+	<skill name="WARDEN_CROSS_CHOP" mana="50" cooldown="6" range="100" />
 </skills>
