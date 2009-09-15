@@ -14,8 +14,8 @@ CLASS_KNIGHT = 6;
 CLASS_WARDEN = 7;
 CLASS_DRUID = 8;
 
-ATTACKABLE_MASK_PLAYER = 0x10000;
-ATTACKABLE_MASK_MONSTER = 0xE0000;
+ATTACKABLE_MASK_PLAYER = 0x4000;
+ATTACKABLE_MASK_MONSTER = 0xA0000;
 
 -- used in function.lua for openGiftbag()
 armorMap = {
@@ -242,25 +242,6 @@ function CPawn:update()
 		self.Concentration = self.MP2;
 		self.MaxConcentration = self.MaxMP2;
 	end
-
-
--- detect strong lags while walking
--- so I just deactivate the update to look deeper for that(d003232)
-
-	-- Update buffs/debuffs (only allowed every 500ms
---	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
---		-- Is this the player?
---		if( player ) then
---			if( self.Address == player.Address ) then
---				-- Yes, this is the player.
---				self:updateBuffs('player');
---			else
---				self:updateBuffs('target');
---			end
---		else
---			self:updateBuffs('target');
---		end
---	end
 end
 
 function CPawn:updateBuffs(target)
