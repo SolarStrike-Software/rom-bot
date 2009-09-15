@@ -788,9 +788,9 @@ function settings.loadProfile(_name)
 		cprintf(cli.yellow, language[901]);
 		cprintf(cli.yellow, language[902]);
 		cprintf(cli.yellow, language[903]);
-		cprintf(cli.yellow, language[904]);
+		cprintf(cli.yellow, language[904], "VK_0"); -- TODO: Change VK_0 to the actual hotkey we should use
 		local msg = sprintf(language[905], _name);
-		if( not settings.profile.options.IGNORE_MACRO_ERROR) then		-- only temporary, can be deleted later
+		if( not settings.profile.options.IGNORE_MACRO_ERROR) then -- only temporary, can be deleted later
 			error(msg, 0);
 		end
 	end

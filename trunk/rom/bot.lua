@@ -68,7 +68,7 @@ function main()
 
 	database.load();
 
-	--keyboardSetDelay(0); -- TEMP FIX! Remove after MicroMacro 7 beta full release
+	keyboardSetDelay(0);
 	attach(getWin());
 
 	if( not checkExecutableCompatible() ) then
@@ -93,22 +93,34 @@ function main()
 	player = CPlayer(playerAddress);
 	player:initialize();
 	player:update();
+	if( settings.options.DEBUGGING ) then
+		-- Player debugging info
+		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
+		printf("[DEBUG] Player target: 0x%X\n", player.TargetPtr);
+
+		if( player.TargetPtr ~= 0 ) then
+			local target = CPawn(player.TargetPtr);
+			printf("[DEBUG] Player target type: 0x%X\n", target.Type);
+			printf("[DEBUG] Player target attackable: %s\n", target.Attackable);
+		end
+	end
+
+	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
+
+	if( settings.options.DEBUGGING ) then
+		-- Mouse pawn debugging info
+		printf("[DEBUG] mousePawn: 0x%X\n", mousePawn.Address);
+		printf("[DEBUG] mousePawn id: %d\n", mousePawn.Id);
+	end
 
 	local cameraAddress = memoryReadIntPtr(getProc(), staticcharbase_address, camPtr_offset);
 	if( cameraAddress == nil ) then cameraAddress = 0; end;
 
 	camera = CCamera(cameraAddress);
 	if( settings.options.DEBUGGING ) then
+		-- Camera debugging info
 		printf("[DEBUG] Cam X: %0.2f, Y: %0.2f, Z: %0.2f\n", camera.X, camera.Y, camera.Z);
 		printf("[DEBUG] Cam XU: %0.2f, YU: %0.2f, ZU: %0.2f\n", camera.XUVec, camera.YUVec, camera.ZUVec);
-	end
-
-	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
-
-	if( settings.options.DEBUGGING ) then
-		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
-		printf("[DEBUG] playerTarget: 0x%X\n", player.TargetPtr);
-		printf("[DEBUG] mousePawn: 0x%X\n", mousePawn.Address);
 	end
 
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
