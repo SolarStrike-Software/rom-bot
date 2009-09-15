@@ -890,13 +890,17 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 			-- rotate left
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			yrest(50);
 			keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+			yrest(50);
 
 			--self:faceDirection( angle );
 		else
 			-- rotate right
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+			yrest(50);
 			keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+			yrest(50);
 
 			--self:faceDirection( angle );
 		end
@@ -924,6 +928,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	lastDistImprove = os.time();	-- global, because we reset it whil skill use
+	local moving_forward = false;
 	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
@@ -942,6 +947,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			movingForward = false;
 			success = false;
 			failreason = WF_COMBAT;
 			break;
@@ -996,10 +1002,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+					yrest(50);
 					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
 					yrest(100);
 			else
 					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+					yrest(50);
 					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
 					yrest(100);
 			end
@@ -1011,9 +1019,17 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			self:faceDirection(angle);
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+
+			yrest(50);
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+			movingForward = true;
+			yrest(50);
 		else
-			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+			if( not movingForward ) then
+				keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+				movingForward = true;
+				yrest(50);
+			end
 		end
 
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
@@ -1023,6 +1039,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	end
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+	movingForward = false;
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
@@ -1079,8 +1096,6 @@ end
 
 -- Attempt to unstick the player
 function CPlayer:unstick()
-
-
 -- after 2x unsuccesfull unsticks try to reach last waypoint
 	if( self.Unstick_counter == 3 ) then
 		if( self.Returning ) then
