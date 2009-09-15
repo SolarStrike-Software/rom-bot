@@ -45,14 +45,6 @@ function database.load()
 			cooldown = 1;
 		end
 
-		--[[
-		if( not priority and type == "damage" ) then type = STYPE_DAMAGE; priority = 70; end;
-		if( not priority and type == "hot" ) then type = STYPE_HOT; priority = 110; end;
-		if( not priority and type == "heal" ) then type = STYPE_HEAL; priority = 100; end;
-		if( not priority and type == "buff" ) then type = STYPE_BUFF; priority = 90; end;
-		if( not priority and type == "dot" ) then type = STYPE_DOT; priority = 80; end;
-		]]
-
 		-- Automatically assign priority (if not given) based on type
 		if( not priority ) then
 			if( type == "damage" ) then
@@ -101,7 +93,7 @@ function database.load()
 		if(target) then tmp.Target = target; end;
 		if(toggleable) then tmp.Toggleable = toggleable; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
-		if(inbattle) then tmp.InBattle = inbattle; end;
+		if(inbattle ~= nil) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
 		if(manainc) then tmp.ManaInc = manainc; end;
 		if(level) then tmp.Level = level; end;

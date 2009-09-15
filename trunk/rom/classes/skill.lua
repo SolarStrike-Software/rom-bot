@@ -110,7 +110,7 @@ function CSkill:canUse(_only_friendly)
 	end
 
 	-- This skill cannot be used in battle
-	if( player.Battling and self.InBattle == false ) then
+	if( (player.Battling or player.Fighting) and self.InBattle == false ) then
 		return false;
 	end
 

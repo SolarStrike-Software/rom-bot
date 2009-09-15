@@ -607,6 +607,7 @@ function CPlayer:fight()
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
 			self:faceDirection(angle);
 			camera:setRotation(angle);
+			yrest(50);
 		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
 			-- Make sure we're facing the enemy
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
@@ -866,6 +867,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		camera:setRotation(angle);
 		self:update();
 		angleDif = angleDifference(angle, self.Direction);
+		yrest(50);
 	end
 
 	-- If more than X degrees off, correct before moving.
@@ -912,6 +914,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+	yrest(50);
 
 	-- direction ok, now look for a target before start movig
 	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
@@ -923,6 +926,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			return success, failreason;
 		end;
 	end;
+
+	yrest(50);
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
@@ -994,6 +999,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle);
 			camera:setRotation(angle);
+			yrest(50);
 		end
 
 		if( angleDif > math.rad(15) ) then
@@ -1014,6 +1020,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		elseif( angleDif > math.rad(1) ) then
 			if( settings.profile.options.QUICK_TURN ) then
 				camera:setRotation(angle);
+				yrest(50);
 			end
 
 			self:faceDirection(angle);
@@ -1878,15 +1885,8 @@ function CPlayer:target_NPC(_npcname)
 		end
 
 		for i = 1, 6 do
-
-			if(settings.hotkeys.TARGET_FRIEND.modifier) then
-				keyboardHold(settings.hotkeys.TARGET_FRIEND.modifier);
-			end
 			keyboardPress(settings.hotkeys.TARGET_FRIEND.key);
-			if(settings.hotkeys.TARGET_FRIEND.modifier) then
-				keyboardRelease(settings.hotkeys.TARGET_FRIEND.modifier);
-			end
-
+			yrest(100);
 			player:update();
 
 			if(player.TargetPtr ~= 0) then
