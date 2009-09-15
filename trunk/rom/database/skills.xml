@@ -160,7 +160,7 @@
 
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" aslevel="1" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" maxhpper="30" />
+	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" maxhpper="30" inbattle="true" />
 	<skill name="ROGUE_LOW_BLOW" aslevel="2" skilltab="4" skillnum="2" energy="30" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" aslevel="4" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" aslevel="6" skilltab="4" skillnum="3" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
