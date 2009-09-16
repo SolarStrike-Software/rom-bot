@@ -353,17 +353,17 @@ function CPlayer:checkPotions()
 			hf_itemcount ="unknown";
 		end
 
-			if( item or 
-				not settings.profile.hotkeys.MACRO) then
+		if( item or 			-- means item found or just old coding style without MACRO and no qty check
+			not settings.profile.hotkeys.MACRO) then
 
-				self.PotionLastUseTime = os.time();
-				self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
-				cprintf(cli.green, language[10], 		-- Using HP potion
-				   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
-				   item.Name, hf_itemcount);
-			else
-				cprintf(cli.yellow, "no more mana potions found, sorry\n"); 			
-			end
+			self.PotionLastUseTime = os.time();
+			self.HP_counter = self.HP_counter + 1;	-- counts use of HP potions
+			cprintf(cli.green, language[10], 		-- Using HP potion
+			   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+			   item.Name, hf_itemcount);
+		else
+			cprintf(cli.yellow, "no more mana potions found, sorry\n"); 			
+		end
 
 		if( self.Fighting ) then
 			yrest(1000);
@@ -396,7 +396,7 @@ function CPlayer:checkPotions()
 				hf_itemcount ="unknown";
 			end
 
-			if( item or 
+			if( item or 			-- means item found or just old coding style without MACRO and no qty check
 				not settings.profile.hotkeys.MACRO) then
 
 				self.PotionLastUseTime = os.time();
@@ -927,7 +927,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	lastDistImprove = os.time();	-- global, because we reset it whil skill use
-	local moving_forward = false;
+	local movingForward = false;
 	while( dist > 20.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
