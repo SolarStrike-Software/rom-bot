@@ -16,6 +16,7 @@ language = {
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
+	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",	
 
 	[20] = "Aus\129bung abgeschlossen\n",
 	[21] = "Dr\129cke %s: %s",
