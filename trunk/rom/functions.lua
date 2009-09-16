@@ -362,7 +362,9 @@ function RoMScript(script)
 	local startWaitTime = getTime();
 	while( memoryReadByte(getProc(), macro_address + macro2_offset) == 6 ) do
 		if( deltaTime(getTime(), startWaitTime) > 500 ) then
---			printf("TIMEOUT in RoMScript ...\n");
+			if( settings.options.DEBUGGING_MACRO ) then
+				cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
+			end;
 			break; -- Timed out
 		end;
 		rest(1);

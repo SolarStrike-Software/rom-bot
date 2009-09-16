@@ -152,7 +152,7 @@ language = {
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
 	[175] = "Sturobold",
 
-	[200] = "Keine reichten Kompetenzen im Profil angegeben; COMBAT_RANGED_PULL ausgeschaltet ist.\n",
+	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 
 	-- createpath.lua
 	[500] = "Unter welchem Namen m\148chten Sie die Wegepunktdatei speichern (ohne .xml)?\nName> ",
