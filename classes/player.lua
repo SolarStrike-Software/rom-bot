@@ -104,7 +104,8 @@ function CPlayer:harvest( _second_try )
 
 			self:update();
 
-			if( self.Battling ) then	-- we get aggro, stop harversting
+			if( self.Battling ) then	-- we get aggro, stop harvesting
+				keyboardRelease(key.VK_SHIFT);
 				if( self.Returning ) then	-- set wp one back to harverst wp
 					__RPL:backward();	-- again after the fight
 				else
