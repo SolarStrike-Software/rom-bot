@@ -334,7 +334,6 @@ function CPlayer:checkPotions()
 
 	-- If we need to use a health potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
-	
 		local hf_keyname, item, hf_itemcount;
 		if( settings.profile.hotkeys.MACRO ) then
 			-- new code, use the inventory class to use the best potion available
@@ -449,13 +448,7 @@ function CPlayer:fight()
 		if( settings.profile.hotkeys.MACRO ) then
 			RoMScript("UseSkill(1,1);");
 		else
-			if( settings.profile.hotkeys.ATTACK.modifier ) then
-				keyboardHold(settings.hotkeys.ATTACK.modifier);
-			end
 			keyboardPress(settings.profile.hotkeys.ATTACK.key);
-			if( settings.profile.hotkeys.ATTACK.modifier ) then
-				keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
-			end
 		end
 	end
 
@@ -935,7 +928,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local lastDist = dist;
 	lastDistImprove = os.time();	-- global, because we reset it whil skill use
 	local moving_forward = false;
-	while( dist > 15.0 ) do
+	while( dist > 20.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
