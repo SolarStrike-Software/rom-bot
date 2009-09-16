@@ -157,35 +157,6 @@ function main()
 		end
 	end
 
-	if( settings.profile.options.PATH_TYPE == "wander" or forcedPath == "wander" ) then
-		__WPL = CWaypointListWander();
-		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
-		__WPL:setMode("wander");
-	elseif( settings.profile.options.PATH_TYPE == "waypoints" or forcedPath ) then
-		__WPL = CWaypointList();
-	else
-		error("Unknown PATH_TYPE in profile.", 0);
-	end
-
-
-	-- This logic prevents files from being loaded if wandering was forced
-	local wp_to_load, rp_to_load;
-	if( forcedPath and not (forcedPath == "wander") ) then
-		wp_to_load = forcedPath;
-	else
-		if( settings.profile.options.WAYPOINTS ) then
-			wp_to_load = settings.profile.options.WAYPOINTS;
-		end
-	end
-
-	if( forcedRetPath ) then
-		rp_to_load = forcedRetPath;
-	else
-		if( settings.profile.options.RETURNPATH ) then
-			rp_to_load = settings.profile.options.RETURNPATH;
-		end
-	end
-
 
 	-- list waypoint files and files in folders
 	-- only files with filetype '.xml' are listed
@@ -248,6 +219,8 @@ function main()
 
 		-- copy table dir to table pathlist
 		-- select only xml files
+		pathlist[0] = { };
+		pathlist[0].filename = "wander";
 		for i,v in pairs(dir) do
 		
 			-- no . means perhaps folder
@@ -264,7 +237,7 @@ function main()
 
 		local inc = math.ceil(#pathlist/3);
 		
-		for i = 1, inc do
+		for i = 0, inc do
 			
 			local column1 = ""; local column2 = ""; local column3 = "";
 			local col1nr = ""; local col2nr = ""; local col3nr = "";
@@ -294,7 +267,7 @@ function main()
 		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path 
 		local hf_choose_path_nr = tonumber(io.stdin:read() );
 		if( hf_choose_path_nr == nil) then hf_choose_path_nr = 0; end;
-		if( hf_choose_path_nr > 0 and
+		if( hf_choose_path_nr >= 0 and
 			hf_choose_path_nr <= #pathlist ) then 
 			printf(language[146], hf_choose_path_nr );	-- You choose %s\n
 			if( pathlist[hf_choose_path_nr].folder ) then
@@ -309,21 +282,47 @@ function main()
 			return false;
 		end
 
-	end	-- end of local function list_waypoint_files()
+	end	
+	-- end of local function list_waypoint_files()
+	
 
+	-- This logic prevents files from being loaded if wandering was forced
+	local wp_to_load, rp_to_load;
+	if( forcedPath ) then			-- waypointfile or 'wander'
+		wp_to_load = forcedPath;
+	else
+		if( settings.profile.options.WAYPOINTS ) then
+			wp_to_load = settings.profile.options.WAYPOINTS;
+		end
+	end
 
-	if( settings.profile.options.PATH_TYPE == "wander" or
-	    forcedPath == "wander" ) then
+	if( forcedRetPath ) then
+		rp_to_load = forcedRetPath;
+	else
+		if( settings.profile.options.RETURNPATH ) then
+			rp_to_load = settings.profile.options.RETURNPATH;
+		end
+	end
+
+	if( settings.profile.options.PATH_TYPE == "wander") then
+	    wp_to_load = "wander";
+	end
+	
+	-- if we don't have a wp file to load, list them
+	while(wp_to_load == nil	or
+	  wp_to_load == ""		or
+	  wp_to_load == false	or		  
+	  wp_to_load == " ") do
+		wp_to_load = list_waypoint_files();
+	end;
+		
+	if( wp_to_load == "wander" ) then
+		__WPL = CWaypointListWander();
+		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
+		__WPL:setMode("wander");
 	    cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
 	else
-		-- if no wp file given, list them
-		while(wp_to_load == nil  or
-		  wp_to_load == ""   or
-		  wp_to_load == false   or		  
-		  wp_to_load == " ") do
-			wp_to_load = list_waypoint_files();
-		end;
-	
+		__WPL = CWaypointList();
 		loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 	end;
 
@@ -648,7 +647,6 @@ function main()
 				end
 
 				if( reason == WF_STUCK or distBreakCount > 3 ) then
-
 					-- Get ourselves unstuck, then!
 					distBreakCount = 0;
 					player:clearTarget();
