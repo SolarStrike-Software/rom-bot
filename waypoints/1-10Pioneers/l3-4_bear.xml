@@ -6,7 +6,7 @@
 	<!-- # 5 --><waypoint x="-321" z="-8583">player:restrnd(15, 1, 10);</waypoint>
 	<!-- # 6 --><waypoint x="-128" z="-8708">
 		if( player.Level > 3 ) then
-			loadPaths("l1-10Pioneers/l4t_logar");
+			loadPaths("1-10Pioneers/l4t_logar");
 	  	end
 	</waypoint>
 	<!-- # 7 --><waypoint x="79" z="-8490"></waypoint>
@@ -17,7 +17,7 @@
 	<!-- #12 --><waypoint x="56" z="-7650">player:restrnd(15, 1, 10);</waypoint>
 	<!-- #13 --><waypoint x="-27" z="-7385">
 		if( player.Level > 3 ) then
-			loadPaths("l1-10Pioneers/l4t_logar");
+			loadPaths("1-10Pioneers/l4t_logar");
 	  	end
 	</waypoint>
 	<!-- #14 --><waypoint x="-123" z="-7052">player:restrnd(15, 1, 10);</waypoint>
@@ -30,7 +30,7 @@
 	<!-- #21 --><waypoint x="-539" z="-7818">player:restrnd(15, 1, 10);</waypoint>
 	<!-- #22 --><waypoint x="-646" z="-8070">
 		if( player.Level > 3 ) then
-			loadPaths("l1-10Pioneers/l4t_logar");
+			loadPaths("1-10Pioneers/l4t_logar");
 	  	end
 	</waypoint>
 </waypoints>

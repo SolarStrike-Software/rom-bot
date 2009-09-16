@@ -7,7 +7,7 @@
 	<!-- # 6 --><waypoint x="-2462" z="-9625"></waypoint>
 	<!-- # 7 --><waypoint x="-2391" z="-9639">
 		if( player.Level > 2 ) then
-			loadPaths("l1-10Pioneers/l3t_3-4_bear");
+			loadPaths("1-10Pioneers/l3t_3-4_bear");
 	  	end
 	</waypoint>
 	<!-- # 8 --><waypoint x="-2144" z="-9585"></waypoint>
@@ -18,7 +18,7 @@
 	<!-- #13 --><waypoint x="-1709" z="-9915"></waypoint>
 	<!-- #14 --><waypoint x="-1931" z="-9750">
 	if( player.Level > 2) then
-		loadPaths("l1-10Pioneers/l3t_3-4_bear");
+		loadPaths("1-10Pioneers/l3t_3-4_bear");
   	end
 	</waypoint>
 </waypoints>

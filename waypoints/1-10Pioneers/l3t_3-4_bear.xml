@@ -5,5 +5,5 @@
 	<!-- # 4 --><waypoint x="-1154" z="-9424"></waypoint>
 	<!-- # 5 --><waypoint x="-967" z="-9225"></waypoint>
 	<!-- # 6 --><waypoint x="-588" z="-9057"></waypoint>
-	<!-- # 7 --><waypoint x="-355" z="-8779">loadPaths("l1-10Pioneers/l3_3-4_bear");</waypoint>
+	<!-- # 7 --><waypoint x="-355" z="-8779">loadPaths("1-10Pioneers/l3_3-4_bear");</waypoint>
 </waypoints>
