@@ -806,8 +806,8 @@ function CPlayer:loot()
 		self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,3,6);
 	end;
 
-	-- now take a 'step' forward (closes loot bag if full inventory)
-	keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
+	-- Close the booty bag.
+	RoMScript("CloseBooty()");
 
 	-- Maybe take a step forward to pick up a buff.
 	if( math.random(100) > 80 ) then
