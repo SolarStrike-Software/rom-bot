@@ -9,7 +9,7 @@
 	<!-- # 5 --><waypoint x="607" z="-858"></waypoint>
 	<!-- # 6 --><waypoint x="713" z="-739">
 		if( player.Level > 9 ) then
-			loadPaths("l1-10Pioneers/l10t_classhall");
+			loadPaths("1-10Pioneers/l10t_classhall");
 		end
 	</waypoint>
 	<!-- # 7 --><waypoint x="772" z="-613"></waypoint>
@@ -23,7 +23,7 @@
 	<!-- #15 --><waypoint x="575" z="28"></waypoint>
 	<!-- #16 --><waypoint x="408" z="-59">
 		if( player.Level > 9 ) then
-			loadPaths("l1-10Pioneers/l10t_classhall");
+			loadPaths("1-10Pioneers/l10t_classhall");
 	  	end
 	</waypoint>
 	<!-- #17 --><waypoint x="436" z="-248"></waypoint>
@@ -35,7 +35,7 @@
 	<!-- #23 --><waypoint x="798" z="-492"></waypoint>
 	<!-- #24 --><waypoint x="771" z="-635">player:restrnd(20, 1, 10);
 		if( player.Level > 9 ) then
-			loadPaths("l1-10Pioneers/l10t_classhall");
+			loadPaths("1-10Pioneers/l10t_classhall");
 	  	end
 	</waypoint>
 	<!-- #25 --><waypoint x="566" z="-894"></waypoint>
@@ -48,7 +48,7 @@
 	<!-- #32 --><waypoint x="26" z="-939"></waypoint>
 	<!-- #33 --><waypoint x="119" z="-942">
 		if( player.Level > 9 ) then
-			loadPaths("l1-10Pioneers/l10t_classhall");
+			loadPaths("1-10Pioneers/l10t_classhall");
 	  	end
 	</waypoint>
 </waypoints>

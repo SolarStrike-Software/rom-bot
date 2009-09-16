@@ -29,6 +29,6 @@
 	<!-- #23 --><waypoint x="-448" z="-6107"></waypoint>
 	<!-- #24 --><waypoint x="-408" z="-5995">
 		<!--  player:sleep();-->
-		loadPaths("l1-10Pioneers/l4t_5-7_beetle");
+		loadPaths("1-10Pioneers/l4t_5-7_beetle");
 	</waypoint>
 </waypoints>

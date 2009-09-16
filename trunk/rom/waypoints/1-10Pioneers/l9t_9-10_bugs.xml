@@ -19,5 +19,5 @@
 	<!-- #18 --><waypoint x="-88" z="-1349"></waypoint>
 	<!-- #19 --><waypoint x="125" z="-1206"></waypoint>
 	<!-- #20 --><waypoint x="303" z="-1166"></waypoint>
-	<!-- #21 --><waypoint x="426" z="-1106">loadPaths("l1-10Pioneers/l9-10_bugs");</waypoint>
+	<!-- #21 --><waypoint x="426" z="-1106">loadPaths("1-10Pioneers/l9-10_bugs");</waypoint>
 </waypoints>
