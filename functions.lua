@@ -339,14 +339,28 @@ function RoMScript(script)
 	" end r=r..'" .. string.char(9) .. "' end" ..
 	" EditMacro(2,'',7,r);";
 
+	-- Check to make sure length is within bounds
+	local len = string.len(text);
+	if( len > 254 ) then
+		error("Macro text too long.", 2);
+	end
+
 	--- Write the macro
+	local i;
+	local byte;
 	for i = 0, 254, 1 do
-		local byte = string.byte(text, i + 1);
-		if( byte == null ) then
+		byte = string.byte(text, i + 1);
+		if( byte == nil or byte == 0 ) then
+			byte = 0;
 			memoryWriteByte(getProc(), macro_address + macro1_offset + i, 0);
 			break;
 		end
 		memoryWriteByte(getProc(), macro_address + macro1_offset + i, byte);
+	end
+
+	-- Make sure we write out the NULL terminator
+	if( byte ~= 0 ) then
+		memoryWriteByte(getProc(), macro_address + macro1_offset + i, 0);
 	end
 
    -- Write something on the first address, to see when its over written
