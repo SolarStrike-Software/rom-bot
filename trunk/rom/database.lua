@@ -13,12 +13,11 @@ function database.load()
 
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
-		local name, mana, manaper, rage, energy, concentration, range, minrange, casttime, cooldown, type, target;
-		local toggleable, maxhpper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
+		local name, mana, maxhpper, maxmanaper, rage, energy, concentration, range, minrange, casttime, cooldown, type, target;
+		local toggleable, minmanaper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
 
 		name = v:getAttribute("name");
 		mana = v:getAttribute("mana");
-		manaper = v:getAttribute("manaper");
 		rage = v:getAttribute("rage");
 		energy = v:getAttribute("energy");
 		concentration = v:getAttribute("concentration");
@@ -30,6 +29,8 @@ function database.load()
 		target = v:getAttribute("target");
 		toggleable = v:getAttribute("toggleable");
 		maxhpper = v:getAttribute("maxhpper");
+		maxmanaper = v:getAttribute("maxmanaper");
+		minmanaper = v:getAttribute("minmanaper");
 		inbattle = v:getAttribute("inbattle");
 		manainc = v:getAttribute("manainc");
 		level = v:getAttribute("level");
@@ -81,7 +82,6 @@ function database.load()
 
 		if(name) then tmp.Name = name; end;
 		if(mana) then tmp.Mana = mana; end;
-		if(manaper) then tmp.ManaPer = manaper; end;
 		if(rage) then tmp.Rage = rage; end;
 		if(energy) then tmp.Energy = energy; end;
 		if(concentration) then tmp.Concentration = concentration; end;
@@ -93,6 +93,8 @@ function database.load()
 		if(target) then tmp.Target = target; end;
 		if(toggleable) then tmp.Toggleable = toggleable; end;
 		if(maxhpper) then tmp.MaxHpPer = maxhpper; end;
+		if(maxmanaper) then tmp.MaxManaPer = maxmanaper; end;
+		if(minmanaper) then tmp.MinManaPer = minmanaper; end;
 		if(inbattle ~= nil) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
 		if(manainc) then tmp.ManaInc = manainc; end;
