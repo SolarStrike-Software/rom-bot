@@ -967,8 +967,16 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end
 
-		self:checkPotions();
-		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
+		local usedPotion, usedSkill = false, false;
+		usedPotion = self:checkPotions();
+		usedSkill = self:checkSkills( ONLY_FRIENDLY ); -- only cast friendly spells to ourself
+
+		if( usedPotion or usedSkill ) then
+			-- If we used a skill or potion, reset our
+			-- distance improvement time to prevent
+			-- unsticking when not necessary
+			lastDistImprove = os.time();
+		end
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
