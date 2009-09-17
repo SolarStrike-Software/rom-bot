@@ -339,8 +339,10 @@ function CPlayer:checkPotions()
 			-- new code, use the inventory class to use the best potion available
 			item = inventory:bestAvailableConsumable("healing");
 			if( item ) then
-				item:use();
-				hf_itemcount = item.ItemCount;	-- remember quantity for msg
+				hf_itemcount = item:use();
+	-- TODO: client seems to be to slow. If we have 2 und use 1, we will still get 2 here
+	-- so will reduce the qty manuel by 1 Player:checkPotions() function
+				hf_itemcount = hf_itemcount - 1;
 			end
 			hf_keyname = "MACRO"
 		else
@@ -362,7 +364,7 @@ function CPlayer:checkPotions()
 			   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
 			   item.Name, hf_itemcount);
 		else
-			cprintf(cli.yellow, "no more mana potions found, sorry\n"); 			
+			cprintf(cli.yellow, "No more HP potions found, sorry (here is a TODO, sry for the msg spam)\n"); 			
 		end
 
 		if( self.Fighting ) then
@@ -381,8 +383,10 @@ function CPlayer:checkPotions()
 				-- new code
 				item = inventory:bestAvailableConsumable("mana");
 				if( item ) then
-					item:use();
-					hf_itemcount = item.ItemCount;	-- remember quantity for msg
+					hf_itemcount = item:use();
+	-- TODO: client seems to be to slow. If we have 2 und use 1, we will still get 2 here
+	-- so will reduce the qty manuel by 1 Player:checkPotions() function
+					hf_itemcount = hf_itemcount - 1;
 				end;
 				hf_keyname = "MACRO";
 				
@@ -405,7 +409,7 @@ function CPlayer:checkPotions()
 				   hf_keyname, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
 				   item.Name, hf_itemcount);
 			else
-				cprintf(cli.yellow, "no more mana potions found, sorry\n"); 
+				cprintf(cli.yellow, "no more mana potions found, sorry (here is a TODO, sry for the msg spam)\n"); 
 			end
 
 
@@ -724,25 +728,6 @@ function CPlayer:fight()
 
 		self:clearTarget();
 	end;
-
-	-- check if levelup happens / execute after aggro is gone
-	-- do it at the very end here, to be sure, aggro flag is gone
-	--	if(self.Level > self.level_detect_levelup  and
-	--	   not self.Battling )  then
-	--  aggro flag would needs a wait (if no loot), so we don't check it
-	if(self.Level > self.level_detect_levelup  )  then
-
-		self.level_detect_levelup = self.Level;
-		
-		-- check if onLevelup event is used in profile
-		if( type(settings.profile.events.onLevelup) == "function" ) then
-			local status,err = pcall(settings.profile.events.onLevelup);
-			if( status == false ) then
-				local msg = sprintf(language[85], err);
-				error(msg);
-			end
-		end
-	end
 
 	self.Fighting = false;
 end

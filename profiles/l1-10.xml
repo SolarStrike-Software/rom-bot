@@ -49,6 +49,7 @@
 		<option name="LOGOUT_WHEN_STUCK"	value="true" />
 		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 
+
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
 
@@ -74,11 +75,11 @@
 	<!-- demo skills for LvL 1 character for all classes             -->
 	<skills_mage>
 		<skill name="MAGE_FLAME"              hotkey="VK_3" priority="80" />
-		<skill name="MAGE_ELEMENTAL_CATALYST" hotkey="VK_2" priority="30"   inbattle="true" />
+		<skill name="MAGE_ELEMENTAL_CATALYST" hotkey="VK_2" priority="30" hpper="30" inbattle="true" />
 	</skills_mage>
 
 	<skills_priest>
-		<skill name="PRIEST_SOUL_SOURCE" hotkey="VK_4" priority="110" inbattle="true" hpper="25" />
+		<skill name="PRIEST_SOUL_SOURCE" hotkey="VK_4" priority="110" hpper="25" inbattle="true" />
 		<skill name="PRIEST_URGENT_HEAL" hotkey="VK_2" priority="99" hpper="30"  />
 		<skill name="PRIEST_RISING_TIDE" hotkey="VK_3" priority="70" level="" />
 	</skills_priest>

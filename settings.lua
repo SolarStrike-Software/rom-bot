@@ -76,9 +76,13 @@ settings_default = {
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
+			INV_UPDATE_INTERVAL = 300,	 		-- full inventory update every x seconds
 
 			
-		}, hotkeys = {}, skills = {}, friends = {},
+		},	
+		hotkeys = {  }, 
+		skills = {}, 
+		friends = {},
 		events = {
 			onDeath = nil,
 			onLoad = nil,
@@ -409,6 +413,23 @@ function settings.load()
 			loadOptions(v);
 		end
 	end
+
+
+-- TODO: don't work at the moment, becaus MACRO hotkey not available at this time
+-- will first be available after reading profile file
+	-- read language from client if not set in settings.xml
+--	if( not settings.options.LANGUAGE ) then
+--		local hf_language = RoMScript("GetLanguage();");	-- read clients language
+--		if( hf_language == "DE" ) then
+--			settings.options.LANGUAGE = "deutsch";
+--		elseif(hf_language == "ENEU" ) then
+--			settings.options.LANGUAGE = "english";
+--		elseif(hf_language == "FR" ) then
+--			settings.options.LANGUAGE = "french";
+--		else
+--			settings.options.LANGUAGE = "english";		
+--		end
+--	end
 
 	-- Load language files
 	-- Load "english" first, to fill in any gaps in the users' set language.
