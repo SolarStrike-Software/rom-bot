@@ -188,5 +188,6 @@ language = {
 	-- Inventory.lua
 	[1000] = "Mapping inventory (bagslot 1 to %d)...\n",
 	[1001] = "Shopping",
+	[1002] = "Next full inventory update not later then %d seconds.\n",
 	
 };
