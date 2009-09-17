@@ -296,6 +296,8 @@ end
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills(_only_friendly)
+	local used = false;
+
 	for i,v in pairs(settings.profile.skills) do
 		if( v.AutoUse and v:canUse(_only_friendly) ) then
 			if( v.CastTime > 0 ) then
@@ -314,22 +316,26 @@ function CPlayer:checkSkills(_only_friendly)
 			if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
 			   ( v.Type == STYPE_DAMAGE or
 			     v.Type == STYPE_DOT )  ) then	-- without jump
-				return;
+				return false;
 			end;
 
 			self:cast(v);
-			lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
+			--lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
+			used = true;
 		end
 	end
 
+	return used;
 end
 
 -- Check if you need to use any potions, and use them.
 function CPlayer:checkPotions()
+	local used = false;
+
 	-- Still cooling down, don't use.
 	-- if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
 	if( os.difftime(os.time(), self.PotionLastUseTime) < 15+1 ) then
-		return;
+		return false;
 	end
 
 	-- If we need to use a health potion
@@ -352,7 +358,7 @@ function CPlayer:checkPotions()
 			keyboardPress(settings.profile.hotkeys.HP_POTION.key);
 			hf_keyname = getKeyName(settings.profile.hotkeys.HP_POTION.key);
 			if( modifier ) then keyboardRelease(modifier); end
-			hf_itemcount ="unknown";
+			hf_itemcount = "unknown";
 		end
 
 		if( item or 			-- means item found or just old coding style without MACRO and no qty check
@@ -363,13 +369,16 @@ function CPlayer:checkPotions()
 			cprintf(cli.green, language[10], 		-- Using HP potion
 			   hf_keyname, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
 			   item.Name, hf_itemcount);
+
+			if( self.Fighting ) then
+				yrest(1000);
+			end
+
+			used = true;
 		else
 			cprintf(cli.yellow, "No more HP potions found, sorry (here is a TODO, sry for the msg spam)\n"); 			
 		end
 
-		if( self.Fighting ) then
-			yrest(1000);
-		end
 	end
 
 	-- If we need to use a mana potion(if we even have mana)
@@ -408,16 +417,20 @@ function CPlayer:checkPotions()
 				cprintf(cli.green, language[11], 		-- Using HP potion
 				   hf_keyname, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
 				   item.Name, hf_itemcount);
+
+				if( self.Fighting ) then
+					yrest(1000);
+				end
+
+				used = true;
 			else
 				cprintf(cli.yellow, "no more mana potions found, sorry (here is a TODO, sry for the msg spam)\n"); 
 			end
 
-
-			if( self.Fighting ) then
-				yrest(1000);
-			end
 		end
 	end
+
+	return used;
 end
 
 function CPlayer:fight()
