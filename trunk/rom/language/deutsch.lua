@@ -186,5 +186,6 @@ language = {
 	-- Inventory.lua
 	[1000] = "Aktualisierung Inventar (Taschenplatz 1 bis %d)...\n",
 	[1001] = "Einkaufen",
+	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
 	
 };

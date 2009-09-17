@@ -113,10 +113,23 @@ function CInventory:update(_maxslot)
 		displayProgressBar(slotNumber/_maxslot*100, 50);
 	end
 	printf("\n");
+	
+	player.InventoryDoUpdate = false;			-- set back update trigger
+	player.InventoryLastUpdate = os.time();		-- remember update time
+
+	cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
+	
 end
 
 -- uses romscript
 function CInventory:getItemCount(itemId)
+
+	-- TODO: bug / look for the reason
+	if(itemId == nil) then
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please inform the developers.\n" );	
+		return 0;
+	end
+
 	itemCount = RoMScript("GetBagItemCount("..itemId..")");
 	return tonumber(itemCount);
 end

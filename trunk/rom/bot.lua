@@ -499,9 +499,10 @@ function main()
 
 		-- update inventory if update flag is set
 		-- TODO: rolling update while resting?
-		if(player.InventoryDoUpdate == true) then
-			player.InventoryDoUpdate = false;
-			player.InventoryLastUpdate = os.time();		-- remember update time
+		if(player.InventoryDoUpdate == true and
+		   not player.Battling ) then
+--			player.InventoryDoUpdate = false;
+--			player.InventoryLastUpdate = os.time();		-- remember update time
 			inventory:update();
 		end;
 
