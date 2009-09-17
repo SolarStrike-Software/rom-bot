@@ -21,7 +21,7 @@ end
 function CInventory:reloadAmmunition(type) 
 	item = self:bestAvailableConsumable(type);
 	-- if theres no ammunition, open a ammunition bag
-	if item.Id == 0 then
+	if not item then
 		if type == "arrow" then
 			openItem = self:bestAvailableConsumable("arrow_quiver");
 		elseif type == "thrown" then
@@ -46,10 +46,10 @@ end
 
 function CInventory:getMainHandDurability()
     local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player', 15);");
-	return durability/durabilityMax;
+	return tonumber(durability)/tonumber(durabilityMax);
 end
 
--- Parse from |Hitem:7efa5|h|cffffffff[Qufdsfdsickness I]|r|h
+-- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
 -- hmm, i whonder if we could get more information out of it than id, color and name.
 function CInventory:parseItemLink(itemLink)
 	if itemLink == "" or itemLink == nil then
