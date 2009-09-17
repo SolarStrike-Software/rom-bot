@@ -17,7 +17,6 @@ CSkill = class(
 		self.skilltab = nil;	-- skill tab number
 		self.skillnum = nil;	-- number of the skill at that skill tab
 		self.Mana = 0;
-		self.ManaPer = 0;
 		self.Rage = 0;
 		self.Energy = 0;
 		self.Concentration = 0;
@@ -34,7 +33,9 @@ CSkill = class(
 
 		self.AutoUse = true; -- Can be used automatically by the bot
 
-		self.MaxHpPer = 100; -- Must have less than this % HP to cast
+		self.MaxHpPer = 100; -- Must have less than this % HP to use
+		self.MaxManaPer = 100;	-- Must have less than this % Mana to use
+		self.MinManaPer = 0;	-- Must have more then this % Mana to use
 		self.Toggleable = false;
 		self.Toggled = false;
 		
@@ -51,7 +52,6 @@ CSkill = class(
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
 			self.Mana = copyfrom.Mana;
-			self.ManaPer = copyfrom.ManaPer;
 			self.Rage = copyfrom.Rage;
 			self.Energy = copyfrom.Energy;
 			self.Concentration = copyfrom.Concentration;
@@ -64,6 +64,8 @@ CSkill = class(
 			self.InBattle = copyfrom.InBattle;
 			self.ManaInc = copyfrom.ManaInc;
 			self.MaxHpPer = copyfrom.MaxHpPer;
+			self.MaxManaPer = copyfrom.MaxManaPer;
+			self.MinManaPer = copyfrom.MinManaPer;
 			self.Toggleable = copyfrom.Toggleable;
 			self.priority = copyfrom.priority;
 			self.pullonly = copyfrom.pullonly;
@@ -98,8 +100,13 @@ function CSkill:canUse(_only_friendly)
 		return false;
 	end
 
-	-- Not enough mana percent
-	if( (player.Mana/player.MaxMana*100) < self.ManaPer ) then
+	-- You are not below the maximum Mana Percent
+	if( (player.Mana/player.MaxMana*100) > self.MaxManaPer ) then
+		return false;
+	end
+
+	-- You are not above the minimum Mana Percent
+	if( (player.Mana/player.MaxMana*100) < self.MinManaPer ) then
 		return false;
 	end
 
@@ -190,8 +197,8 @@ end
 
 function CSkill:use()
 	local estimatedMana;
-	if( self.ManaPer > 0 ) then
-		estimatedMana = math.ceil((self.ManaPer/100)*player.MaxMana);
+	if( self.MinManaPer > 0 ) then
+		estimatedMana = math.ceil((self.MinManaPer/100)*player.MaxMana);
 	else
 		estimatedMana = math.ceil(self.Mana + (self.Level-1)*self.ManaInc);
 	end

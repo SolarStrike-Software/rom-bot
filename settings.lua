@@ -598,9 +598,10 @@ function settings.loadProfile(_name)
 			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
-			local priority, maxhpper, inbattle, pullonly, maxuse, autouse;
+			local priority, maxhpper, maxmanaper, inbattle, pullonly, maxuse, autouse;
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
+			maxmanaper = tonumber(v:getAttribute("manaper"));
 			inbattle = v:getAttribute("inbattle");
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
@@ -680,6 +681,7 @@ function settings.loadProfile(_name)
 			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
+			if( maxmanaper ) then tmp.MaxManaPer = maxmanaper; end;
 			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
 			if( pullonly == true ) then tmp.pullonly = pullonly; end;
 			if( maxuse ) then tmp.maxuse = maxuse; end;
