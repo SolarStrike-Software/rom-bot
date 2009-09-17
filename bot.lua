@@ -393,28 +393,6 @@ function main()
 				-- try mouseclick to reanimate
 				cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
 				yrest(10000);
-				
-				-- try resurrect at the place, click button far right
-				if ( foregroundWindow() == getWin() ) then
-					cprintf(cli.green, language[105]);  -- resurrect at the place of death
-					player:mouseclickL(1276, 272, 1920, 1180);	-- mouseclick to resurrec
-					yrest(3000);		-- wait time after resurrec ( no load screen)
-					player:update();
-				end
-
-				if( player.Alive ) then		-- if allready alive it must be from the priest/buff
-					hf_res_from_priest = true;
-				end;
-				
-				-- if still dead, click button more left, normal resurrect at spawnpoint
-				if ( not player.Alive  and
-				     foregroundWindow() == getWin() ) then
-					cprintf(cli.green, language[106]);  -- resurrect at the spawnpoint
-					player:mouseclickL(875, 272, 1920, 1180);	-- mouseclick to resurrec
-					-- wait time after resurrec (loading screen), needs more time on slow PC's
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
-					player:update();
-				end;
 
 				-- if still dead, try macro if one defined
 				if( not player.Alive and settings.profile.hotkeys.MACRO ) then
@@ -423,17 +401,6 @@ function main()
 					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 					player:update();
 				end
-
-				-- DEPRECATED
-				if ( not player.Alive  and settings.profile.hotkeys.RES_MACRO ) then
-					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro 
-					keyboardPress(settings.profile.hotkeys.RES_MACRO.key);
-					-- wait time after resurrec (loading screen), needs more time on slow PC's
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
-					player:update();
-				end;
-				-- END DEPRECATED
-				
 
 				if( not player.Alive ) then
 					local hf_keyname ;
