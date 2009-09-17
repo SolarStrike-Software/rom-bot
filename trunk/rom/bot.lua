@@ -524,6 +524,40 @@ function main()
 		end;	-- go sleeping if sleeping flag is set
 
 
+		-- trigger timed inventory update
+		if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+			settings.profile.options.INV_UPDATE_INTERVAL ) then
+			player.InventoryDoUpdate = true;
+		end
+
+		-- update inventory if update flag is set
+		-- TODO: rolling update while resting?
+		if(player.InventoryDoUpdate == true) then
+			player.InventoryDoUpdate = false;
+			player.InventoryLastUpdate = os.time();		-- remember update time
+			inventory:update();
+		end;
+
+
+		-- check if levelup happens / execute after aggro is gone
+		-- we do it here , to be sure, aggro flag is gone
+		--  aggro flag would needs a wait (if no loot), so we don't check it
+		if(player.Level > player.level_detect_levelup   and
+		   not player.Battling )  then
+		
+			player.level_detect_levelup = player.Level;
+
+			-- check if onLevelup event is used in profile
+			if( type(settings.profile.events.onLevelup) == "function" ) then
+				local status,err = pcall(settings.profile.events.onLevelup);
+				if( status == false ) then
+					local msg = sprintf(language[85], err);
+					error(msg);
+				end
+			end
+		end
+
+
 		-- rest after getting new target and before starting fight
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
 		if( player:haveTarget()  and

@@ -151,8 +151,14 @@ function CInventory:bestAvailableConsumable(type)
 		for num,consumable in pairs(database.consumables) do
 			if consumable.Type == type and 
 			   consumable.Level <= player.Level  then
+
+
+--	TODO / update item count for ALL bagslots of one item
+	local hf_itemcount = inventory:getItemCount(item.Id);	-- read qty from client/bags instead of bagslots
+
 				if item.Id == consumable.Id and
-				   item.ItemCount > 0 then			-- use only if some available
+				   hf_itemcount > 0 then			-- use only if some available
+--				   item.ItemCount > 0 then			-- use only if some available
 					if consumable.Level > bestLevel then
 						bestLevel = consumable.Level;
 						bestItem = item;
@@ -165,6 +171,7 @@ function CInventory:bestAvailableConsumable(type)
 	if (bestFound) then
 		return bestItem;
 	else
+		player.InventoryDoUpdate = true; 	-- trigger inventory update
 		return false;
 	end
 end
