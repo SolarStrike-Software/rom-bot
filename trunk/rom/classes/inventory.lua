@@ -46,8 +46,10 @@ function CInventory:reloadAmmunition(type)
 		item = self:bestAvailableConsumable(type);
 	end
 	
-	-- use it
-	item:use();
+	if item then
+		-- use it
+		item:use();
+	end
 end
 
 function CInventory:getMainHandDurability()
