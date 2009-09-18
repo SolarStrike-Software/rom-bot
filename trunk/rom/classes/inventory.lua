@@ -3,7 +3,13 @@ include("item.lua");
 
 CInventory = class(
 	function (self)
-		self.BagSlot = {}
+		self.BagSlot = {} 
+		for slotNumber = 1, 60, 1 do
+			self.BagSlot[slotNumber] = CItem(slotNumber);
+		end
+		
+		self.NextItemToUpdate = 1;
+		
 	end
 )
 
@@ -49,57 +55,6 @@ function CInventory:getMainHandDurability()
 	return tonumber(durability)/tonumber(durabilityMax);
 end
 
--- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
--- hmm, i whonder if we could get more information out of it than id, color and name.
-function CInventory:parseItemLink(itemLink)
-	if itemLink == "" or itemLink == nil then
-		return;
- 	end
-	id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
-	color = string.sub(itemLink, 19, 24);
-	-- this is causing some problems so lets be safe
-	name_parse_from = string.find(itemLink, '[\[]');
-	name_parse_to = string.find(itemLink, '[\]]');
-	name = "Error parsing name";
-	if not name_parse_from == nil or not name_parse_to == nil then
-		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
-	end
-	return id, color, name;
-end
-
--- Update one slot, get item id, bagId, name, itemCount, color
-function CInventory:updateBagSlot(slotNumber)
-	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..slotNumber..")),GetBagItemInfo("..slotNumber..")");
-
-	self.BagSlot[slotNumber] = CItem();
-
-	if( settings.profile.options.DEBUG_INV) then	
-		local msg;
-		if(slotNumber) then msg = "DEBUG - "..slotNumber..": "; end;
-		if(itemLink) then msg = msg.."/"..itemLink; end;
-		if(name) then msg = msg.."/"..name.."/"; end;
-		cprintf(cli.lightblue, msg);				-- Open/eqipt item:
-	end;
-	
-	if (itemLink ~= "") then
-		local id, color = self:parseItemLink(itemLink);
-
-		if( settings.profile.options.DEBUG_INV) then	
-			if(id) then msg = id; end;
-			if(bagId) then msg = msg.."/"..bagId; end;
-			if(itemCount) then msg = msg.."/"..itemCount; end;
-			if(color) then msg = msg.."/"..color; end;
-			cprintf(cli.lightblue, msg.."\n");				-- Open/eqipt item:
-		end
-
-		self.BagSlot[slotNumber].Id = id			     -- The real item id
-		self.BagSlot[slotNumber].BagId = bagId;          -- GetBagItemLink and other RoM functins need this..
-    	self.BagSlot[slotNumber].Name = name;
-    	self.BagSlot[slotNumber].ItemCount = itemCount;  -- How many?
-    	self.BagSlot[slotNumber].Color = color; 		 -- Rarity
-	end
-end
-
 -- Make a full update
 -- or update slot 1 to _maxslot
 function CInventory:update(_maxslot)
@@ -108,7 +63,7 @@ function CInventory:update(_maxslot)
 	printf(language[1000], _maxslot);  -- Updating
 	
 	for slotNumber = 1, _maxslot, 1 do
-		self:updateBagSlot(slotNumber);
+		self.BagSlot[slotNumber]:update();
 		--printf(".");
 		displayProgressBar(slotNumber/_maxslot*100, 50);
 	end
@@ -117,16 +72,25 @@ function CInventory:update(_maxslot)
 	player.InventoryDoUpdate = false;			-- set back update trigger
 	player.InventoryLastUpdate = os.time();		-- remember update time
 
-	cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
+	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
 	
 end
 
--- uses romscript
-function CInventory:getItemCount(itemId)
+-- update only 1 slot
+function CInventory:updateNextSlot()
+	local item = self.BagSlot[self.NextItemToUpdate];
+	self.BagSlot[self.NextItemToUpdate]:update();
+	self.NextItemToUpdate = self.NextItemToUpdate + 1;
+	if (self.NextItemToUpdate > 60) then
+		self.NextItemToUpdate = 1;
+	end
+	return item;
+end
 
-	-- TODO: bug / look for the reason
+-- uses romscript, its 
+function CInventory:getItemCount(itemId)
 	if(itemId == nil) then
-		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please inform the developers.\n" );	
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );	
 		return 0;
 	end
 
@@ -158,35 +122,22 @@ end
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
  	local bestLevel = 0;
- 	local bestItem = CItem();
- 	local bestFound;
+ 	local bestItem = false;
  	for slot,item in pairs(self.BagSlot) do
 		for num,consumable in pairs(database.consumables) do
 			if consumable.Type == type and 
 			   consumable.Level <= player.Level  then
-
-
---	TODO / update item count for ALL bagslots of one item
-	local hf_itemcount = inventory:getItemCount(item.Id);	-- read qty from client/bags instead of bagslots
-
 				if item.Id == consumable.Id and
-				   hf_itemcount > 0 then			-- use only if some available
---				   item.ItemCount > 0 then			-- use only if some available
+				   item.ItemCount > 0 then			-- use only if some available
 					if consumable.Level > bestLevel then
 						bestLevel = consumable.Level;
 						bestItem = item;
-						bestFound = true;
 					end
 		        end
 			end
 		end
 	end
-	if (bestFound) then
-		return bestItem;
-	else
-		player.InventoryDoUpdate = true; 	-- trigger inventory update
-		return false;
-	end
+	return bestItem;
 end
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
@@ -201,7 +152,7 @@ function CInventory:storeBuyConsumable(type, quantity)
  	        break;
  	    end
  	    
- 	    storeItemId, storeItemColor, storeItemName = self:parseItemLink(storeItemLink);
+ 	    storeItemId, storeItemColor, storeItemName = CItem:parseItemLink(storeItemLink);
  		-- print(storeItemName);
  	    
 		for num,consumable in pairs(database.consumables) do
@@ -231,6 +182,8 @@ function CInventory:storeBuyConsumable(type, quantity)
 		end
 		printf("\n");
 	end
+	
+	return true;
 end
 
 function CInventory:deleteItemInSlot(slot)
