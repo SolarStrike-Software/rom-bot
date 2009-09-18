@@ -1,4 +1,4 @@
-BOT_VERSION = 2.46;
+BOT_VERSION = 3.00;
 
 include("database.lua");
 include("addresses.lua");
@@ -357,124 +357,8 @@ function main()
 		player:logoutCheck();
 
 		if( not player.Alive ) then
-			-- Make sure they aren't still trying to run off
-			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-			keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
-			keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
-			keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
-			keyboardRelease(settings.hotkeys.STRAFF_LEFT.key);
-			keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
-			player.Death_counter = player.Death_counter + 1;
-
-			-- Take a screenshot. Only works on MicroMacro 1.0 or newer
-			showWindow(getWin(), sw.show);
-			yrest(500);
-			local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
-			saveScreenshot(getWin(), sfn);
-			printf(language[2], sfn);
-
-			if( type(settings.profile.events.onDeath) == "function" ) then
-				local status,err = pcall(settings.profile.events.onDeath);
-				if( status == false ) then
-					local msg = sprintf("onDeath error: %s", err);
-					error(msg);
-				end
-			end
-
-			-- msg how to activate automatic resurrection
-			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
-				cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection
-			end;
-
-			local hf_res_from_priest; 		-- for check if priest resurrect
-			if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
-				cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
-				
-				-- try mouseclick to reanimate
-				cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
-				yrest(10000);
-
-				-- if still dead, try macro if one defined
-				if( not player.Alive and settings.profile.hotkeys.MACRO ) then
-					cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
-					RoMScript("AcceptResurrect();");
-					yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
-					player:update();
-				end
-
-				if( not player.Alive ) then
-					local hf_keyname ;
-					if( settings.profile.hotkeys.MACRO ) then
-						hf_keyname = getKeyName(settings.profile.hotkeys.MACRO.key)
-					else
-						hf_keyname = "";
-					end
-					cprintf(cli.yellow, language[108], -- still death, did you set your macro?
-					  hf_keyname);
-					if( hf_keyname == "")  then
-						cprintf(cli.yellow, language[166]); -- Please set new profile option MACRO
-					end
-
-				end;
-
-				-- death counter message
-				cprintf(cli.green, language[109],	-- You have died %s times 
-				   player.Death_counter, settings.profile.options.MAX_DEATHS);
-				
-				-- check maximal death if automatic mode
-				if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
-					cprintf(cli.yellow, language[54], player.Death_counter, 
-					  settings.profile.options.MAX_DEATHS );	-- to much deaths
-					player:logout();
-				end
-
-				if( player.Level > 9  and 
-				    player.Alive      and
-				    hf_res_from_priest ~= true ) then	-- no wait if resurrect at the place of death / priest / buff
-					cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
-					player:rest(60); -- wait 1 minute before going about your path.
-				end;
-
-			end
-
-			player:update();
-			-- pause if still death
-			if( not player.Alive ) then
-				pauseOnDeath();
-			end;
-
-			-- use/compare return path if defined, if not use normal one and give a warning
-			-- wen need to search the closest, hence we also accept resurrection at the death place
-			player:rest(10); -- give some time to be really sure that loadscreen is gone
-			-- if not it could result in loading NOT the returnpath, becaus we dont hat the new position
-			player.Returning = nil;
-			if( __RPL ) then
-				-- compare closest waypoint with closest returnpath point
-				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
-				local hf_wp = __WPL:getNextWaypoint();
-				local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
-
-				__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
-				local hf_wp = __RPL:getNextWaypoint();
-				local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
-
-				if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
-					player.Returning = true;	-- then use return path first
-					cprintf(cli.yellow, language[12]);	-- Starting with return path
-				end;
-			else
-				cprintf(cli.yellow, language[111], __WPL:getFileName() ); -- don't have a defined return path
-			end;
-			
-			-- not using returnpath, so we use the normal waypoint path
-			if( player.Returning == nil) then
-				player.Returning = false;
-				__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
-				cprintf(cli.green, language[112], 	-- using normal waypoint file
-				   __WPL:getFileName() );
-			end
-
-		end	-- end of: if( not player.Alive ) then
+			resurrect();
+		end
 
 		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
 			player:clearTarget();
@@ -684,5 +568,133 @@ function main()
 		end
 	end
 	
+end
+
+function resurrect()
+	-- Make sure they aren't still trying to run off
+	keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+	keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
+	keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
+	keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
+	keyboardRelease(settings.hotkeys.STRAFF_LEFT.key);
+	keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
+	player.Death_counter = player.Death_counter + 1;
+
+	-- Take a screenshot. Only works on MicroMacro 1.0 or newer
+	showWindow(getWin(), sw.show);
+	yrest(500);
+	local sfn = getExecutionPath() .. "/profiles/" .. player.Name .. ".bmp";
+	saveScreenshot(getWin(), sfn);
+	printf(language[2], sfn);
+
+	if( type(settings.profile.events.onDeath) == "function" ) then
+		local status,err = pcall(settings.profile.events.onDeath);
+		if( status == false ) then
+			local msg = sprintf("onDeath error: %s", err);
+			error(msg);
+		end
+	end
+
+	-- msg how to activate automatic resurrection
+	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
+		cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection
+	end
+
+	local hf_res_from_priest; 		-- for check if priest resurrect
+	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
+		cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
+				
+		-- try mouseclick to reanimate
+		cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
+		yrest(10000);
+
+		-- if still dead, try macro if one defined
+		if( not player.Alive and settings.profile.hotkeys.MACRO ) then
+			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
+			RoMScript("AcceptResurrect();");
+			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
+			player:update();
+		end
+
+		if( not player.Alive ) then
+			local hf_keyname ;
+			if( settings.profile.hotkeys.MACRO ) then
+				hf_keyname = getKeyName(settings.profile.hotkeys.MACRO.key)
+			else
+				hf_keyname = "";
+			end
+			cprintf(cli.yellow, language[108], -- still death, did you set your macro?
+				hf_keyname);
+			if( hf_keyname == "")  then
+				cprintf(cli.yellow, language[166]); -- Please set new profile option MACRO
+			end
+
+		end
+
+		-- death counter message
+		cprintf(cli.green, language[109],	-- You have died %s times 
+		   player.Death_counter, settings.profile.options.MAX_DEATHS);
+				
+		-- check maximal death if automatic mode
+		if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
+			cprintf(cli.yellow, language[54], player.Death_counter, 
+			  settings.profile.options.MAX_DEATHS );	-- to much deaths
+			player:logout();
+		end
+-- TODO: check for buff.
+		if( player.Level > 9  and 
+		    player.Alive      and
+		    hf_res_from_priest ~= true ) then	-- no wait if resurrect at the place of death / priest / buff
+			cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
+			
+			-- check the first debuff that player has. (it has to be the weakness!)
+			local debuff = RoMScript("GetPlayerBuffLeftTime(GetPlayerBuff(1,'HARMFUL'))");
+			debuff = tonumber(debuff);
+			if (debuff == 0) then
+				print("this was a PK, or no xp debt, and it will not be counted as a death");
+				player.Death_counter = player.Death_counter + 1;
+			end
+			
+			player:rest(debuff); -- wait off the debuff before going about your path.
+		end
+
+	end
+
+	player:update();
+	-- pause if still death
+	if( not player.Alive ) then
+		pauseOnDeath();
+	end
+
+	-- use/compare return path if defined, if not use normal one and give a warning
+	-- wen need to search the closest, hence we also accept resurrection at the death place
+	player:rest(10); -- give some time to be really sure that loadscreen is gone
+	-- if not it could result in loading NOT the returnpath, becaus we dont hat the new position
+	player.Returning = nil;
+	if( __RPL ) then
+		-- compare closest waypoint with closest returnpath point
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		local hf_wp = __WPL:getNextWaypoint();
+		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+
+		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
+		local hf_wp = __RPL:getNextWaypoint();
+		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+
+		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
+			player.Returning = true;	-- then use return path first
+			cprintf(cli.yellow, language[12]);	-- Starting with return path
+		end
+	else
+		cprintf(cli.yellow, language[111], __WPL:getFileName() ); -- don't have a defined return path
+	end
+			
+	-- not using returnpath, so we use the normal waypoint path
+	if( player.Returning == nil) then
+		player.Returning = false;
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		cprintf(cli.green, language[112], 	-- using normal waypoint file
+		__WPL:getFileName() );
+	end
 end
 startMacro(main);
