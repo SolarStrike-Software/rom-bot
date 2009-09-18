@@ -606,29 +606,14 @@ function resurrect()
 				
 		-- try mouseclick to reanimate
 		cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
-		yrest(10000);
+		yrest(5000);
 
 		-- if still dead, try macro if one defined
-		if( not player.Alive and settings.profile.hotkeys.MACRO ) then
+		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
 			RoMScript("AcceptResurrect();");
 			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 			player:update();
-		end
-
-		if( not player.Alive ) then
-			local hf_keyname ;
-			if( settings.profile.hotkeys.MACRO ) then
-				hf_keyname = getKeyName(settings.profile.hotkeys.MACRO.key)
-			else
-				hf_keyname = "";
-			end
-			cprintf(cli.yellow, language[108], -- still death, did you set your macro?
-				hf_keyname);
-			if( hf_keyname == "")  then
-				cprintf(cli.yellow, language[166]); -- Please set new profile option MACRO
-			end
-
 		end
 
 		-- death counter message
