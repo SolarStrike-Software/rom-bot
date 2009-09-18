@@ -153,6 +153,7 @@ language = {
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
 	[175] = "Sturobold",
 	[176] = "Fernkampff\132higkeit gefunden: %s\n",	
+	[177] = "Aktueller Kampf abgebrochen.\n",
 
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 

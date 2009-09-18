@@ -150,7 +150,7 @@ language = {
 	[174] = "Item couldn't be found: %s\n",
 	[175] = "Snoop",
 	[176] = "Ranged skill found: %s\n",
-	[177] = "...\n",
+	[177] = "Current fight aborted.\n",
 	[178] = "...\n",
 	[179] = "...\n",
 
