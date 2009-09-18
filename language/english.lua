@@ -151,7 +151,7 @@ language = {
 	[175] = "Snoop",
 	[176] = "Ranged skill found: %s\n",
 	[177] = "Current fight aborted.\n",
-	[178] = "...\n",
+	[178] = "Loot skiped because of aggro.\n",
 	[179] = "...\n",
 
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",

@@ -738,30 +738,40 @@ function CPlayer:fight()
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
-	if( self.TargetPtr ~= 0 ) then
-		local target = CPawn(self.TargetPtr);
+	if( settings.profile.options.LOOT_IN_COMBAT == true ) then
+		self:loot();
+	elseif( not self.Battling ) then
+		-- Skip looting when under attack
+		self:loot();
+	else
+		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
+	end
 
-		if( settings.profile.options.LOOT == true ) then
-			if( settings.profile.options.LOOT_IN_COMBAT == true ) then
-				self:loot();
-			else
-				if( not self.Battling ) then
-					-- Skip looting when under attack
-					self:loot();
-				end
-			end
-		end
-
-		self:clearTarget();
-	end;
-
+	self:clearTarget();
 	self.Fighting = false;
 end
 
 function CPlayer:loot()
+
+	if( settings.profile.options.LOOT ~= true ) then
+		if( settings.profile.options.DEBUG_LOOT) then	
+			cprintf(cli.green, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true\n");
+		end;
+		return
+	end
+	if( self.TargetPtr == 0 ) then
+		if( settings.profile.options.DEBUG_LOOT) then	
+			cprintf(cli.green, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
+		end;
+		return
+	end
+
 	local target = self:getTarget();
 
 	if( target == nil or target.Address == 0 ) then
+		if( settings.profile.options.DEBUG_LOOT) then	
+			cprintf(cli.green, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
+		end;
 		return;
 	end
 
