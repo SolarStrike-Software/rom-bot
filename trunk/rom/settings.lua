@@ -778,13 +778,15 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	-- Check if the player has any ranged skills
+	-- Check if the player has any ranged damage skills
 	local rangedSkills = false;
 	for i,v in pairs(settings.profile.skills) do
 
-		if( v.Range > 100 ) then
+		if( v.Range > 100  and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) ) then
 			rangedSkills = true;
-			printf("Ranged skill found: %s\n", v.Name);
+			printf(language[176], v.Name);		-- Ranged skill found
 			break;
 		end
 	end

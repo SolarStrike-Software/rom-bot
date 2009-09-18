@@ -152,6 +152,7 @@ language = {
 	[173] = "Unbekannte Option \'%s\'. Wir k\148nnen den Wert nicht ver\132ndern. Bitte Einstellungen pr\129fen.\n",
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
 	[175] = "Sturobold",
+	[176] = "Fernkampff\132higkeit gefunden: %s\n",	
 
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 
