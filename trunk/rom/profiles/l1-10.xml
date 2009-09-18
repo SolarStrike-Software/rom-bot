@@ -15,7 +15,6 @@
 		<option name="MANA_POTION"		value="0" />
 		<option name="ARROW_QUIVER"		value="0" />
 		<option name="THROWN_BAG"		value="0" />
-		<option name="INV_MAX_SLOTS"	value="18" />	<!-- max slots for inventory scan -->
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"			value="" />		<!-- leave empty or choose ranged/melee if not using class default -->

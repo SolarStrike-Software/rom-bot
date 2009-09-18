@@ -924,7 +924,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
-	lastDistImprove = os.time();	-- global, because we reset it whil skill use
+	lastDistImprove = os.time();	-- global, because we reset it while skill use
 	local movingForward = false;
 	while( dist > 20.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
@@ -1611,29 +1611,12 @@ function CPlayer:sleep()
 
 		local hf_key_pressed = false;
 
---		if( keyPressedLocal(settings.hotkeys.STOP_BOT.key) ) then	-- sleep/pause key pressed
---			hf_key_pressed = true;
---			hf_key = "STOP";
---		end;
 		if( keyPressedLocal(settings.hotkeys.START_BOT.key) ) then	-- start key pressed
 			hf_key_pressed = true;
 			hf_key = "AWAKE";
 		end;
 
 		if( hf_key_pressed == false ) then	-- key released, do the work
-
-			-- STOP Key: stop the bot really
-			-- does not work proper becaus auf the pausecallback assigned to the
-			-- top key
---			if( hf_key == "STOP" ) then
---				hf_key = " ";	-- clear last pressed key
---
---				-- now the stop work is done by the function pauseCallback()
---				-- but we clear the flag to be awake after restart
---				self.Sleeping = false;	-- we are awake
---				stopPE();		-- we now really stop the bot
---				return;			-- after stop, now go back
---			end;
 
 			-- START Key: wake up
 			if( hf_key == "AWAKE" ) then
