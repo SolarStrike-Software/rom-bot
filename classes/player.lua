@@ -497,6 +497,7 @@ function CPlayer:fight()
 		timedAttack();
 	end
 
+	local break_fight = false;	-- flag to avoid kill counts for breaked fights
 	while( self:haveTarget() ) do
 		-- If we die, break
 		if( self.HP < 1 or self.Alive == false ) then
@@ -515,6 +516,7 @@ function CPlayer:fight()
 			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
 			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
 			self:clearTarget();
+			break_fight = true;
 			break;
 		end
 
@@ -563,11 +565,12 @@ function CPlayer:fight()
 		end
 
 		-- check if aggro before attacking
-		if( self.Battling == true  and			-- we have aggro
+		if( self.Battling == true  and				-- we have aggro
 		    target.HP/target.MaxHP*100 > 90 and		-- target is alive and no attacking us
 		    target.TargetPtr ~= self.Address ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);	
 			self:clearTarget();
+			break_fight = true;
 			break;
 		end;
 
@@ -580,6 +583,7 @@ function CPlayer:fight()
 			  self.ranged_pull == true) ) then
 				cprintf(cli.green, language[84]);	-- To much tries to come closer
 				self:clearTarget();
+				break_fight = true;
 				break;
 			end
 			
@@ -666,9 +670,14 @@ function CPlayer:fight()
 		yrest(100);
 		target:update();
 		self:update();
-		if( not self:haveTarget() ) then
-			break;
-		end
+
+
+		-- do we need that? Because the DO statement is allready a 
+		-- while( self:haveTarget() statement / I will comment it out and see 
+		-- what happens (d003232, 18.9.09)
+--		if( not self:haveTarget() ) then
+--			break;
+--		end
 	end
 
 	self:resetSkills();
@@ -690,13 +699,24 @@ function CPlayer:fight()
 	-- edit: too tired to fix this now..
 	
 
-	-- count kills per target name
-	local target_Name = target.Name;
-	if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
-	if(self.mobs[target_Name] == nil) then  self.mobs[target_Name] = 0; end;
-	self.mobs[target_Name] = self.mobs[target_Name] + 1;
-	
-	self.Fights = self.Fights + 1;		-- count our fights
+	if( not break_fight) then
+		-- count kills per target name
+		local target_Name = target.Name;
+		if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
+		if(self.mobs[target_Name] == nil) then  self.mobs[target_Name] = 0; end;
+		self.mobs[target_Name] = self.mobs[target_Name] + 1;
+
+		self.Fights = self.Fights + 1;		-- count our fights
+
+		cprintf(cli.green, language[27], 	-- Fight finished. Target dead/lost
+		  self.mobs[target_Name],
+		  target_Name,
+		  self.Fights, 
+		  os.difftime(os.time(), 
+		  self.BotStartTime_nr)/60);
+	else
+		cprintf(cli.green, language[177]); 	-- Fight aborted
+	end
 
 
 	-- check if onLeaveCombat event is used in profile
@@ -714,13 +734,6 @@ function CPlayer:fight()
 	if( settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 		yrest(800);
 	end;
-
-	cprintf(cli.green, language[27], 	-- Fight finished. Target dead/lost
-	  self.mobs[target_Name],
-	  target_Name,
-	  self.Fights, 
-	  os.difftime(os.time(), 
-	  self.BotStartTime_nr)/60);
 
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
