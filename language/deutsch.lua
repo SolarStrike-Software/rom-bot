@@ -83,7 +83,7 @@ language = {
 	[97] = "Heranziehen des Gegners beendet. Der Gegner ist im Nahkampfbereich.\n",
 	[98] = "Heranziehen des Gegners nach 3 Sekunden Wartezeit beendet.\n",
 	[99] = "Heranziehen des Gegners beendet. Der Gegner scheint sich nicht zu bewegen.\n",
-	[100] = "Wir haben uns nicht zum Pl\129ndern bewegt!? Pr\129fen Sie ob im Spiel die Standardattacke der Taste %s zugeordnet ist und die Option \'zum Bewegen klicken\' aktiviert wurde.\n",
+	[100] = "Wir haben uns nicht zum Pl\129ndern bewegt!? Festgewurzelt? Option \'zum Bewegen klicken\' aktiviert?\n",
 	[101] = "Aus technischen Gr\129nden k\148nnen wir den Charakter-/Profilname \'%s\' nicht benutzen. Bitte benutzen Sie statt dessen den Profilnamen  \'%s.xml\' oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[102] = "Wir k\148nnen das Profile \'%s.xml'\ nicht finden. Bitte legen Sie ein entsprechendes Profil im Ordner \'rom\\profiles\' an oder starten Sie den Bot mit einem erzwungenen Profile: \'rom\\bot.lua profile:xyz\'\nDer Bot wurde wegen den vorgenannten Fehlern beendet.",
 	[103] = "Wenn Sie die automatische Wiederbelebung benutzen m\148chten, m\129ssen Sie die Option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' in Ihrem Profil setzen.\n",

@@ -193,7 +193,7 @@ function resumeCallback()
 	-- Re-set our bot start time to now
 	if( player ) then
 		player.BotStartTime = os.time();
-		lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
+		player.LastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 
 		if( settings.profile.options.LOGOUT_TIME > 0 ) then
 			printf("Bot start time reset\n");

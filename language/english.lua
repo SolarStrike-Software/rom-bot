@@ -80,7 +80,7 @@ language = {
 	[97] = "Ranged pulling finished, mob in melee distance.\n",
 	[98] = "Ranged pulling after 3 sec wait finished.\n",
 	[99] = "Ranged pulling finished. Mob not really moving.\n",
-	[100] = "We didn't move to the loot!? Please be sure you set ingame the standard attack to hotkey %s and the \'click to move\' option.\n",
+	[100] = "We didn't move to the loot!? Root buff? Missing \'click to move\' option?\n",
 	[101] = "Due to technical reasons, we can't use the character/profile name \'%s\' as a profile name. Please use profile name \'%s.xml\' instead or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
 	[102] = "We can't find your profile \'%s.xml'\. Please create a valid profile within the folder \'rom\\profiles\' or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
 	[103] = "If you want to use automatic resurrection then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' within your profile.\n",

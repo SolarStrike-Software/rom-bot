@@ -320,7 +320,7 @@ function CPlayer:checkSkills(_only_friendly)
 			end;
 
 			self:cast(v);
-			--lastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
+			--self.LastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 			used = true;
 		end
 	end
@@ -693,7 +693,9 @@ function CPlayer:fight()
 		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
 	end
 
-	self:clearTarget();
+	if( self.TargetPtr ~= 0 ) then
+		self:clearTarget();
+	end
 	self.Fighting = false;
 end
 
@@ -764,8 +766,7 @@ function CPlayer:loot()
 	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
 	    dist > 25 )  then
-		cprintf(cli.yellow, language[100], -- We didn't move to the loot!? 
-		hf_attack_key );	
+		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
 	end;
 
 	-- rnd pause from 3-6 sec after loot to look more human
@@ -893,7 +894,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
-	lastDistImprove = os.time();	-- global, because we reset it while skill use
+	self.LastDistImprove = os.time();	-- global, because we reset it while skill use
 	local movingForward = false;
 	while( dist > 20.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
@@ -932,7 +933,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		-- We're still making progress
 		if( dist < lastDist ) then
-			lastDistImprove = os.time();
+			self.LastDistImprove = os.time();
 			lastDist = dist;
 		elseif(  dist > lastDist + 40 ) then
 			-- Make sure we didn't pass it up
@@ -942,7 +943,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end;
 
-		if( os.difftime(os.time(), lastDistImprove) > 3 ) then
+		if( os.difftime(os.time(), self.LastDistImprove) > 3 ) then
 			-- We haven't improved for 3 seconds, assume stuck
 			success = false;
 			failreason = WF_STUCK;
@@ -957,7 +958,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			-- If we used a skill or potion, reset our
 			-- distance improvement time to prevent
 			-- unsticking when not necessary
-			lastDistImprove = os.time();
+			self.LastDistImprove = os.time();
 		end
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
