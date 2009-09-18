@@ -491,20 +491,25 @@ function main()
 		end;	-- go sleeping if sleeping flag is set
 
 
+		-- update one slot at a time, or next 3
+		inventory:updateNextSlot();
+		inventory:updateNextSlot();
+		inventory:updateNextSlot();
+
 		-- trigger timed inventory update
-		if( os.difftime(os.time(), player.InventoryLastUpdate) > 
-			settings.profile.options.INV_UPDATE_INTERVAL ) then
-			player.InventoryDoUpdate = true;
-		end
+		--if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+			--settings.profile.options.INV_UPDATE_INTERVAL ) then
+			--player.InventoryDoUpdate = true;
+		--end
 
 		-- update inventory if update flag is set
 		-- TODO: rolling update while resting?
-		if(player.InventoryDoUpdate == true and
-		   not player.Battling ) then
+		--if(player.InventoryDoUpdate == true and
+		   --not player.Battling ) then
 --			player.InventoryDoUpdate = false;
 --			player.InventoryLastUpdate = os.time();		-- remember update time
-			inventory:update();
-		end;
+			--inventory:update();
+		--end;
 
 
 		-- check if levelup happens / execute after aggro is gone
