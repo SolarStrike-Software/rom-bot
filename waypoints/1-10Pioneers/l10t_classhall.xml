@@ -92,6 +92,7 @@
 	yrest(2000);
 	sendMacro("CompleteQuest();");
 	yrest(2000);
+	player:sleep();
 	loadPaths("1-10Pioneers/l10t_postbox");
 	</waypoint>
 </waypoints>
