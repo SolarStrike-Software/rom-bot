@@ -4,7 +4,7 @@ include("item.lua");
 CInventory = class(
 	function (self)
 		self.BagSlot = {} 
-		for slotNumber = 1, 60, 1 do
+		for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
 			self.BagSlot[slotNumber] = CItem(slotNumber);
 		end
 		
@@ -83,7 +83,7 @@ function CInventory:updateNextSlot()
 	local item = self.BagSlot[self.NextItemToUpdate];
 	self.BagSlot[self.NextItemToUpdate]:update();
 	self.NextItemToUpdate = self.NextItemToUpdate + 1;
-	if (self.NextItemToUpdate > 60) then
+	if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
 		self.NextItemToUpdate = 1;
 	end
 	return item;
