@@ -82,7 +82,16 @@
 	<!-- #71 --><waypoint x="5529" z="-4428">
 	player:target_NPC("Lehman");
 	player:rest(4);
-	player:sleep();
+	sendMacro("SpeakFrame_LoadQuestDetail(1);");
+	yrest(2000);
+	sendMacro("AcceptQuest();");
+	yrest(2000);
+	player:target_NPC("Lehman");
+	yrest(2000);
+	sendMacro("SpeakFrame_LoadQuestDetail(2);");
+	yrest(2000);
+	sendMacro("CompleteQuest();");
+	yrest(2000);
 	loadPaths("1-10Pioneers/l10t_postbox");
 	</waypoint>
 </waypoints>
