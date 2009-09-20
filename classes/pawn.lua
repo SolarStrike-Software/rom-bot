@@ -106,6 +106,7 @@ CPawn = class(
 		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
 		self.lastHitTime = 0;				-- last time the HP of the target changed
 		self.ranged_pull = false;			-- ranged pull phase active
+		self.free_debug1 = 0;				-- free field for debug use
 		self.free_field1 = nil;				-- free field for user use
 		self.free_field2 = nil;				-- free field for user use
 		self.free_field3 = nil;				-- free field for user use
