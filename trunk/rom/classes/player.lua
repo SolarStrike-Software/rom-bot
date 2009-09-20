@@ -799,6 +799,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	if( waypoint.Type == WPT_TRAVEL or
 	    waypoint.Type == WPT_RUN ) then
+		if( settings.profile.options.DEBUG_TARGET ) then
+			cprintf(cli.green, "[DEBUG] waypoint type RUN or TRAVEL. We don't target mobs.\n");
+		end
 		ignoreCycleTargets = true;	-- don't target mobs
 	end;
 
