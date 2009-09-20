@@ -1152,6 +1152,16 @@ end
 
 function CPlayer:haveTarget()
 	if( CPawn.haveTarget(self) ) then
+	
+		local function debug_target(_place)
+			if( settings.profile.options.DEBUG_TARGET and
+				self.TargetPtr ~= self.free_debug1 ) then
+				cprintf(cli.green, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
+				self.free_debug1 = self.TargetPtr;		-- remeber target address to avoid msg spam
+			end
+		end
+		
+	
 		local target = self:getTarget();
 
 		if( target == nil ) then
@@ -1162,11 +1172,13 @@ function CPlayer:haveTarget()
 		if( ( target.Level - self.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
 		( self.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
+				debug_target("target lvl above/below profile settings without battling")
 				return false;			-- he is not a valid target
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+				debug_target("target lvl above/below profile settings with battling from other mob")
 				return false;         
 			end;
 		end;
@@ -1177,11 +1189,13 @@ function CPlayer:haveTarget()
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 				cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
 				   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
+				debug_target("ignore that target for 10 sec (e.g. after doing no damage")
 				return false;			-- he is not a valid target
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+				debug_target("we have aggro from another mob")
 				return false;         
 			end;
 		end
@@ -1189,11 +1203,13 @@ function CPlayer:haveTarget()
 		-- PK protect
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 			if ( self.Battling == false ) then   -- if we don't have aggro then
+				debug_target("PK player, but noone fighting us")
 				return false;         -- he is not a valid target
 			end;
 
 			if( self.Battling == true  and         -- we have aggro
 				target.TargetPtr ~= self.Address ) then   -- but not from the PK player
+				debug_target("PK player, aggro, but he don't target us")
 				return false;
 			end;
 		end;
@@ -1201,11 +1217,13 @@ function CPlayer:haveTarget()
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
 			if ( self.Battling == false ) then   -- if we don't have aggro then
+				debug_target("target is in friends")
 				return false;         -- he is not a valid target
 			end;
 
 			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
 				target.TargetPtr ~= self.Address ) then   -- but not from that target
+				debug_target("target is in friends, aggro, but not from that target")
 				return false;         
 			end;
 		end;
@@ -1214,6 +1232,7 @@ function CPlayer:haveTarget()
 			-- Not a valid enemy
 			if( not target.Attackable ) then
 				printf(language[30], target.Name);
+				debug_target("anti kill steal: target not attackable")
 				return false;
 			end
 
@@ -1228,6 +1247,7 @@ function CPlayer:haveTarget()
 				-- have a target (game bug, not a bug in the bot)
 				if( target.TargetPtr == 0 ) then
 					if( target.HP < target.MaxHP ) then
+						debug_target("anti kill steal: target not fighting us: target not targeting us")
 						return false;
 					end
 				else
@@ -1238,6 +1258,7 @@ function CPlayer:haveTarget()
 					local targetOfTarget = CPawn(target.TargetPtr);
 
 					if( not self:isFriend(targetOfTarget) ) then
+						debug_target("anti kill steal: target not fighting us: target don't targeting a friend")
 						return false;
 					end
 				end

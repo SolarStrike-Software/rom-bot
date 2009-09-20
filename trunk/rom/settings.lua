@@ -76,6 +76,7 @@ settings_default = {
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			DEBUG_LOOT = false,	 			-- debug loot issues
+			DEBUG_TARGET = false, 			-- debug targeting issues
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
 			INV_UPDATE_INTERVAL = 300,	 		-- full inventory update every x seconds
 
