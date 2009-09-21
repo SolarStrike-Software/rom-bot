@@ -174,7 +174,7 @@ function database.load()
 		if (level) then tmp.Level = level; end;
 		if (id) then tmp.Id = id; end;
 
-		database.consumables[i] = tmp;
+		database.consumables[id] = tmp;
 	end
 
 	-- import giftbag contents

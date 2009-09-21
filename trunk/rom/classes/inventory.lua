@@ -125,19 +125,22 @@ end
 function CInventory:bestAvailableConsumable(type)
  	local bestLevel = 0;
  	local bestItem = false;
+ 	
  	for slot,item in pairs(self.BagSlot) do
-		for num,consumable in pairs(database.consumables) do
-			if consumable.Type == type and 
-			   consumable.Level <= player.Level  then
-				if item.Id == consumable.Id and
-				   item.ItemCount > 0 then			-- use only if some available
-					if consumable.Level > bestLevel then
-						bestLevel = consumable.Level;
-						bestItem = item;
-					end
-		        end
+		local consumable = database.consumables[item.Id];		
+
+		if( consumable  and							-- item in database
+		    consumable.Type == type and	 			-- right type (mana, arrow, ...)
+		 	consumable.Level <= player.Level and	-- level ok
+		 	item.ItemCount > 0 ) then				-- use only if some available
+
+			-- select best available consumable
+			if consumable.Level > bestLevel then
+				bestLevel = consumable.Level;
+				bestItem = item;
 			end
 		end
+
 	end
 	return bestItem;
 end

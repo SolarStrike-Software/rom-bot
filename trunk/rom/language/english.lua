@@ -9,12 +9,15 @@ language = {
 	[7] = "Completed return path. Resuming normal waypoints.\n",
 	[8] = "Waypoint movement failed!\n",
 	[9] = "Unsticking player... at position %d,%d. Trial %d from maximal %d trials\n",
-	[10] = "Use %s: Using HP potion %d/%d (%d%%): %s (qty %s)\n",
-	[11] = "Use %s: Using MP potion %d/%d (%d%%): %s (qty %s)\n",
+	[10] = "MACRO: Using HP potion %s/%s (%d%%): %s (qty %s)\n",
+	[11] = "MACRO: Using MP potion %s/%s (%d%%): %s (qty %s)\n",
 	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
 	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",
-	[15] = "Waypoint #%d is closer then #1. Hence we start with waypoint #%d.\n",	
+	[15] = "Waypoint #%d is closer then #1. Hence we start with waypoint #%d.\n",
+	[16] = "No more (usable) mana potions available\n",
+	[17] = "No more (usable) hp potions available\n",		
+	
 
 	[20] = "Finished casting\n",
 	[21] = "Use %s: %s",
