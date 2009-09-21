@@ -4,11 +4,11 @@ CItem = class(
 	function(self,slotNumber)
 		self.Id = 0;
 		self.BagId = 0;
-    	self.Name = "Empty";
-    	self.ItemCount = 0;
-    	self.Color = "ffffff";
-    	self.SlotNumber = slotNumber;
-    	self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
+		self.Name = "Empty";
+		self.ItemCount = 0;
+		self.Color = "ffffff";
+		self.SlotNumber = slotNumber;
+		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 	end
 )
 
@@ -18,6 +18,13 @@ function CItem:use()
 	-- after we use it / we will have to check that if we also use other things
 	-- that are not consumable like mounts, armor
 	self:update();
+	
+	-- TODO: avoid some unclear bug / should be solved if we really clear empty slots
+	-- or if we update fast enough?
+	if( self.BagId == nil ) then
+		cprintf(cli.yellow, "Empty BagId, that should not happen!\n" );
+		return 0;
+	end
 
 	RoMScript("UseBagItem("..self.BagId..");");
 
@@ -60,17 +67,17 @@ function CItem:update()
 	end
 
 -- TODO: clear empty bag slot values
--- seems not to disturb at the moment, but names on empty slots are still set after used
--- except you detroy items
+-- seems not to disturb at the moment, but names on empty slots are still set after used?
+-- shouldn't it be cleared by the nil return valus from above?
 
 	if( settings.profile.options.DEBUG_INV) then	
 		local msg = "\nDEBUG item:update(): ";
-		if(self.SlotNumber) then msg = msg.."slotNumber: "..self.SlotNumber; end;
-		if(id) then msg = msg.." itemId: "..id; end;
-		if(bagId) then msg = msg.." bagId: "..bagId; end;
+		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
+		if(id) then msg = msg.." Id "..id; end;
+		if(bagId) then msg = msg.." bagId "..bagId; end;
 --		if(itemLink) then msg = msg.."/"..itemLink; end;
-		if(name) then msg = msg.." name: "..name.."/"; end;
-		if(itemCount) then msg = msg.." itemCount "..itemCount; end;
+		if(name) then msg = msg.." name "..name; end;
+		if(itemCount) then msg = msg.." qyt "..itemCount; end;
 		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
 	end;
 	
