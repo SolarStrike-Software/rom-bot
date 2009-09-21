@@ -128,7 +128,7 @@ function CInventory:bestAvailableConsumable(type)
 	local bestSmallStack = 999;
 	local select_strategy;
 	local select_strategy_best = "best";
-	local select_strategy_minstack = minstack";
+	local select_strategy_minstack = "minstack";
 	local select_strategy_default = "best";
 
 
