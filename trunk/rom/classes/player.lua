@@ -917,6 +917,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it while skill use
 	local movingForward = false;
+	local lastForegroundWindow = lastForegroundWindow or foregroundWindow();
 	while( dist > 20.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
@@ -924,6 +925,22 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
 			canTarget = true;
+		end
+
+		if( lastForegroundWindow == getAttachedHwnd() and foregroundWindow() ~= lastForegroundWindow ) then
+			lastForegroundWindow = foregroundWindow();
+
+			yrest(100);
+
+			if( movingForward ) then
+				keyboardHold( settings.hotkeys.MOVE_BACKWARD.key );
+				yrest(50);
+				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
+
+				yrest(100);
+
+				keyboardHold( settings.hotkeys.MOVE_FORWARD.key )
+			end
 		end
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
