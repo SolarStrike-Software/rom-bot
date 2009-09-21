@@ -123,10 +123,35 @@ end
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
- 	local bestLevel = 0;
- 	local bestItem = false;
- 	
- 	for slot,item in pairs(self.BagSlot) do
+	local bestLevel = 0;
+	local bestItem = false;
+	local bestSmallStack = 999;
+	local select_strategy;
+	local select_strategy_best = "best";
+	local select_strategy_minstack = minstack";
+	local select_strategy_default = "best";
+
+
+	-- set select strategy
+	if( type == "mana" ) then
+		if( settings.profile.options.USE_MANA_POTION == select_strategy_minstack ) then
+			select_strategy = select_strategy_minstack;
+		else
+			select_strategy = select_strategy_default;
+		end
+	elseif(type == "healing" ) then
+		if( settings.profile.options.USE_HP_POTION == select_strategy_minstack ) then
+			select_strategy = select_strategy_minstack;
+		else
+			select_strategy = select_strategy_default;
+		end
+	else
+		select_strategy = select_strategy_default;	-- default = 'best'
+	end
+
+
+	-- check item slots slot by slot
+	for slot,item in pairs(self.BagSlot) do
 		local consumable = database.consumables[item.Id];		
 
 		if( consumable  and							-- item in database
@@ -134,11 +159,22 @@ function CInventory:bestAvailableConsumable(type)
 		 	consumable.Level <= player.Level and	-- level ok
 		 	item.ItemCount > 0 ) then				-- use only if some available
 
-			-- select best available consumable
-			if consumable.Level > bestLevel then
-				bestLevel = consumable.Level;
-				bestItem = item;
+			if( select_strategy == select_strategy_minstack ) then
+				-- select smallest stack
+				if item.ItemCount < bestSmallStack then
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				end
+			else
+				-- select best available consumable (& smallest stack by default)
+				if( consumable.Level > bestLevel and
+					item.ItemCount < bestSmallStack ) then
+					bestLevel = consumable.Level;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				end
 			end
+
 		end
 
 	end

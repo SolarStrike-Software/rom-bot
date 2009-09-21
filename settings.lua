@@ -60,6 +60,8 @@ settings_default = {
 
 			
 			-- expert options
+			USE_MANA_POTION = "best",	-- which mana potion type to use: best | minstack
+			USE_HP_POTION = "best",		-- which HP potion type to use: best | minstack 			
 			WAYPOINTS_REVERSE = false,	-- use the waypoint file in reverse order
 			MAX_DEATHS = 10,		-- maximal death if automatic resurrect befor logout
 			WAIT_TIME_AFTER_RES = 8000,	-- time to wait after resurrection, needs more on slow PCs
@@ -77,6 +79,8 @@ settings_default = {
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			DEBUG_LOOT = false,	 			-- debug loot issues
 			DEBUG_TARGET = false, 			-- debug targeting issues
+			
+			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
 			INV_UPDATE_INTERVAL = 300,	 		-- full inventory update every x seconds
 

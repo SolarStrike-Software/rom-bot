@@ -2,9 +2,11 @@
 	<options>
 		<!-- Try the bot with a new char mage                   -->
 		<!-- At the pioneer village. Use demo.xml waypoint file -->
-		<option name="HP_LOW"        value="85" />
-		<option name="MP_LOW_POTION" value="50" />
-		<option name="HP_LOW_POTION" value="40" />
+		<option name="HP_LOW"			value="85" />
+		<option name="MP_LOW_POTION"	value="50" />
+		<option name="HP_LOW_POTION"	value="40" />
+		<option name="USE_HP_POTION"	value="best" />	<!-- potion select strategy: best|minstack -->
+		<option name="USE_MANA_POTION"	value="best" />	<!-- potion select strategy: best|minstack -->
 
 		<!-- Rest if HP or Mana is below that level -->
 		<option name="HP_REST" value="15" />
