@@ -339,6 +339,30 @@ function CPlayer:checkPotions()
 		return false;
 	end 
 
+	-- If we need to use a health potion
+	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
+		item = inventory:bestAvailableConsumable("healing");
+		if( item ) then
+			item:use();
+			
+			cprintf(cli.green, language[10], 		-- Using HP potion
+			   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+			   item.Name, item.ItemCount);
+			if( self.Fighting ) then
+				yrest(1000);
+			end 
+			  
+			self.PotionLastUseTime = os.time();
+--			used = true;
+			return true;
+		else		-- potions empty
+			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
+				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
+				self.PotionLastHpEmptyTime = os.time();
+			end;
+		end 
+	end
+
 	-- If we need to use a mana potion(if we even have mana)
 	if( self.MaxMana > 0 ) then 
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
@@ -363,30 +387,6 @@ function CPlayer:checkPotions()
 				end;
 			end;
 		end
-	end
-
-	-- If we need to use a health potion
-	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
-		item = inventory:bestAvailableConsumable("healing");
-		if( item ) then
-			item:use();
-			
-			cprintf(cli.green, language[10], 		-- Using HP potion
-			   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
-			   item.Name, item.ItemCount);
-			if( self.Fighting ) then
-				yrest(1000);
-			end 
-			  
-			self.PotionLastUseTime = os.time();
---			used = true;
-			return true;
-		else		-- potions empty
-			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
-				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
-				self.PotionLastHpEmptyTime = os.time();
-			end;
-		end 
 	end
 
 --	return used;
