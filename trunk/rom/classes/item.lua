@@ -21,12 +21,12 @@ function CItem:use()
 
 	RoMScript("UseBagItem("..self.BagId..");");
 
-	if (database.consumables[item.Id]) then 	-- is in consumable database? / could be reduced
+	if (database.consumables[self.Id]) then 	-- is in consumable database? / could be reduced
 		self.ItemCount = self.ItemCount - 1;
 	end;
 
 	if( settings.profile.options.DEBUG_INV) then	
-		cprintf(cli.lightblue, "DEBUG - UseBagItem: %s count %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
+		cprintf(cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
 	end;
 
 	return self.ItemCount;
@@ -46,26 +46,10 @@ end
 
 function CItem:update()
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
+	local id, color;
 
-	if( settings.profile.options.DEBUG_INV) then	
-		local msg = "";
-		if(slotNumber) then msg = "DEBUG - "..slotNumber..": "; end;
-		if(itemLink) then msg = msg.."/"..itemLink; end;
-		if(name) then msg = msg.."/"..name.."/"; end;
-		cprintf(cli.lightblue, msg);				-- Open/eqipt item:
-	end;
-	
 	if (itemLink ~= "") then
-		local id, color = self:parseItemLink(itemLink);
-
-		if( settings.profile.options.DEBUG_INV) then
-			local msg = "";
-			if(id) then msg = id; end;
-			if(bagId) then msg = msg.."/"..bagId; end;
-			if(itemCount) then msg = msg.."/"..itemCount; end;
-			if(color) then msg = msg.."/"..color; end;
-			cprintf(cli.lightblue, msg.."\n");				-- Open/eqipt item:
-		end
+		id, color = self:parseItemLink(itemLink);
 
 		self.Id = id			     -- The real item id
 		self.BagId = bagId;          -- GetBagItemLink and other RoM functions need this..
@@ -74,6 +58,23 @@ function CItem:update()
     	self.Color = color; 		 -- Rarity
     	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
 	end
+
+-- TODO: clear empty bag slot values
+-- seems not to disturb at the moment, but names on empty slots are still set after used
+-- except you detroy items
+
+	if( settings.profile.options.DEBUG_INV) then	
+		local msg = "\nDEBUG item:update(): ";
+		if(self.SlotNumber) then msg = msg.."slotNumber: "..self.SlotNumber; end;
+		if(id) then msg = msg.." itemId: "..id; end;
+		if(bagId) then msg = msg.." bagId: "..bagId; end;
+--		if(itemLink) then msg = msg.."/"..itemLink; end;
+		if(name) then msg = msg.." name: "..name.."/"; end;
+		if(itemCount) then msg = msg.." itemCount "..itemCount; end;
+		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
+	end;
+	
+
 end
 
 -- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
@@ -82,8 +83,9 @@ function CItem:parseItemLink(itemLink)
 	if itemLink == "" or itemLink == nil then
 		return;
  	end
-	id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
-	color = string.sub(itemLink, 19, 24);
+ 	
+	local id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
+	local color = string.sub(itemLink, 19, 24);
 	-- this is causing some problems so lets be safe
 	name_parse_from = string.find(itemLink, '[\[]');
 	name_parse_to = string.find(itemLink, '[\]]');

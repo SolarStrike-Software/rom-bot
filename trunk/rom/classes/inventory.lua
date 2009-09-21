@@ -66,7 +66,6 @@ function CInventory:update(_maxslot)
 	
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
-		--printf(".");
 		displayProgressBar(slotNumber/_maxslot*100, 50);
 	end
 	printf("\n");
@@ -78,15 +77,46 @@ function CInventory:update(_maxslot)
 	
 end
 
--- update only 1 slot
-function CInventory:updateNextSlot()
-	local item = self.BagSlot[self.NextItemToUpdate];
-	self.BagSlot[self.NextItemToUpdate]:update();
-	self.NextItemToUpdate = self.NextItemToUpdate + 1;
-	if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
-		self.NextItemToUpdate = 1;
+
+-- update x slots until given time in ms is gone
+function CInventory:updateSlotsByTime(_ms)
+local start_update = getTime();
+
+	while ( deltaTime(getTime(), start_update ) < _ms ) do
+		self:updateNextSlot();
 	end
-	return item;
+
+end
+
+-- update x slots
+function CInventory:updateNextSlot(_times)
+
+	if(not _times) then _times = 1; end
+	
+	for i = 1, _times do
+		local item = self.BagSlot[self.NextItemToUpdate];
+
+		if( settings.profile.options.DEBUG_INV) then	
+			local msg = "";
+			msg = "DEBUG updateNextSlot(): Slot #"..self.NextItemToUpdate..": ";
+			if(item.Name) then 
+				msg = msg.." name "..item.Name; 
+			else
+				msg = msg.." name ".." <Slot Empty>"; 
+			end;
+			if(item.ItemCount) then msg = msg.." ItemCount:"..item.ItemCount; end;
+			cprintf(cli.lightblue, "%s\n", msg);				
+		end;
+
+		self.BagSlot[self.NextItemToUpdate]:update();
+		self.NextItemToUpdate = self.NextItemToUpdate + 1;
+		if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
+			player.InventoryLastUpdate = os.time();		-- remember last completed round time
+			self.NextItemToUpdate = 1;
+		end
+
+	end
+	
 end
 
 -- uses romscript, its 

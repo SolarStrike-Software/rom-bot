@@ -688,7 +688,8 @@ function CPlayer:fight()
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
 	if( settings.profile.options.LOOT_IN_COMBAT ~= true ) then
-		yrest(800);
+--		yrest(800);
+		inventory:updateSlotsByTime(800);
 	end;
 
 	-- Monster is dead (0 HP) but still targeted.
@@ -709,9 +710,7 @@ function CPlayer:fight()
 	self.Fighting = false;
 
 	-- update one slot at a time, or next 3
-	inventory:updateNextSlot();
-	inventory:updateNextSlot();
-	inventory:updateNextSlot();
+	inventory:updateSlotsByTime(200);
 
 end
 
