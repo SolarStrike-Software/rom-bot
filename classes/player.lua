@@ -343,10 +343,10 @@ function CPlayer:checkPotions()
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
-				hf_itemcount = item:use();
+				item:use();
 					
 				cprintf(cli.green, language[11], 		-- Using MP potion
-				   	settings.profile.hotkeys.MACRO.key, self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
+				   	self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
 				   	item.Name, item.ItemCount); 
 				if( self.Fighting ) then
 					yrest(1000);
@@ -354,6 +354,11 @@ function CPlayer:checkPotions()
 				
 				self.PotionLastUseTime = os.time();
 				used = true;
+			else	-- potions empty
+				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
+					cprintf(cli.yellow, language[16]); 		-- No more (usable) mana potions
+					self.PotionLastManaEmptyTime = os.time();
+				end;
 			end;
 		end
 	end
@@ -362,10 +367,10 @@ function CPlayer:checkPotions()
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
-			hf_itemcount = item:use();
+			item:use();
 			
 			cprintf(cli.green, language[10], 		-- Using HP potion
-			   settings.profile.hotkeys.MACRO.key, self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+			   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
 			   item.Name, item.ItemCount);
 			if( self.Fighting ) then
 				yrest(1000);
@@ -373,6 +378,11 @@ function CPlayer:checkPotions()
 			  
 			self.PotionLastUseTime = os.time();
 			used = true;
+		else		-- potions empty
+			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
+				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
+				self.PotionLastHpEmptyTime = os.time();
+			end;
 		end 
 	end
 
@@ -697,6 +707,12 @@ function CPlayer:fight()
 		self:clearTarget();
 	end
 	self.Fighting = false;
+
+	-- update one slot at a time, or next 3
+	inventory:updateNextSlot();
+	inventory:updateNextSlot();
+	inventory:updateNextSlot();
+
 end
 
 function CPlayer:loot()

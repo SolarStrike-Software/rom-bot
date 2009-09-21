@@ -11,12 +11,15 @@ language = {
 	[7] = "R\129ckkehrpfad absolviert. Wiederhole normale Wegpunkte.\n",
 	[8] = "Bewegung zu Wegpunkt fehlgeschlagen!\n",
 	[9] = "Versuche Spieler frei zu bekommen ... an Position %d,%d. Versuch #%d von maximal %d Versuchen.\n",
-	[10] = "Dr\129cke %s: Benutze Heiltrank %d/%d (%d%%): %s (Anz %s)\n",
-	[11] = "Dr\129cke %s: Benutze Manatrank %d/%d (%d%%): %s (Anz %s)\n",
+	[10] = "MACRO: Benutze Heiltrank %s/%s (%d%%): %s (Anz %s)\n",
+	[11] = "MACRO: Benutze Manatrank %s/%s (%d%%): %s (Anz %s)\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
-	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",	
+	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",
+	[16] = "Keine (benutzbaren) Manatr\132nke mehr vorhanden.\n",
+	[17] = "Keine (benutzbaren) Heiltr\132nke mehr vorhanden.\n",
+	
 
 	[20] = "Aus\129bung abgeschlossen\n",
 	[21] = "Dr\129cke %s: %s",

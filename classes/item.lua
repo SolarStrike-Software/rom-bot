@@ -13,14 +13,22 @@ CItem = class(
 )
 
 function CItem:use()
+
+	-- TODO: because client is to slow to notice the use in time, we reduce it by hand
+	-- after we use it / we will have to check that if we also use other things
+	-- that are not consumable like mounts, armor
+	self:update();
+
 	RoMScript("UseBagItem("..self.BagId..");");
 
-	if( settings.profile.options.DEBUG_INV) then	
-		cprintf(cli.lightblue, "DEBUG - UseBagItem: %s\n", self.BagId );				-- Open/eqipt item:
+	if (database.consumables[item.Id]) then 	-- is in consumable database? / could be reduced
+		self.ItemCount = self.ItemCount - 1;
 	end;
 
-	self:update();
-	
+	if( settings.profile.options.DEBUG_INV) then	
+		cprintf(cli.lightblue, "DEBUG - UseBagItem: %s count %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
+	end;
+
 	return self.ItemCount;
 end
 
@@ -40,7 +48,7 @@ function CItem:update()
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 
 	if( settings.profile.options.DEBUG_INV) then	
-		local msg;
+		local msg = "";
 		if(slotNumber) then msg = "DEBUG - "..slotNumber..": "; end;
 		if(itemLink) then msg = msg.."/"..itemLink; end;
 		if(name) then msg = msg.."/"..name.."/"; end;
@@ -50,7 +58,8 @@ function CItem:update()
 	if (itemLink ~= "") then
 		local id, color = self:parseItemLink(itemLink);
 
-		if( settings.profile.options.DEBUG_INV) then	
+		if( settings.profile.options.DEBUG_INV) then
+			local msg = "";
 			if(id) then msg = id; end;
 			if(bagId) then msg = msg.."/"..bagId; end;
 			if(itemCount) then msg = msg.."/"..itemCount; end;
@@ -59,7 +68,7 @@ function CItem:update()
 		end
 
 		self.Id = id			     -- The real item id
-		self.BagId = bagId;          -- GetBagItemLink and other RoM functins need this..
+		self.BagId = bagId;          -- GetBagItemLink and other RoM functions need this..
     	self.Name = name;
     	self.ItemCount = itemCount;  -- How many?
     	self.Color = color; 		 -- Rarity
