@@ -96,17 +96,17 @@ function CInventory:updateNextSlot(_times)
 	for i = 1, _times do
 		local item = self.BagSlot[self.NextItemToUpdate];
 
-		if( settings.profile.options.DEBUG_INV) then	
-			local msg = "";
-			msg = "DEBUG updateNextSlot(): Slot #"..self.NextItemToUpdate..": ";
-			if(item.Name) then 
-				msg = msg.." name "..item.Name; 
-			else
-				msg = msg.." name ".." <Slot Empty>"; 
-			end;
-			if(item.ItemCount) then msg = msg.." ItemCount:"..item.ItemCount; end;
-			cprintf(cli.lightblue, "%s\n", msg);				
-		end;
+--		if( settings.profile.options.DEBUG_INV) then	
+--			local msg = "";
+--			msg = "DEBUG updateNextSlot(): Slot #"..self.NextItemToUpdate..": ";
+--			if(item.Name) then 
+--				msg = msg.." name "..item.Name; 
+--			else
+--				msg = msg.." name ".." <Slot Empty>"; 
+--			end;
+--			if(item.ItemCount) then msg = msg.." ItemCount:"..item.ItemCount; end;
+--			cprintf(cli.lightblue, "%s\n", msg);				
+--		end;
 
 		self.BagSlot[self.NextItemToUpdate]:update();
 		self.NextItemToUpdate = self.NextItemToUpdate + 1;

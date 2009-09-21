@@ -687,7 +687,8 @@ function CPlayer:fight()
 
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
-	if( settings.profile.options.LOOT_IN_COMBAT ~= true ) then
+	if( settings.profile.options.LOOT == true  and
+		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 --		yrest(800);
 		inventory:updateSlotsByTime(800);
 	end;
@@ -695,21 +696,14 @@ function CPlayer:fight()
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
-	if( settings.profile.options.LOOT_IN_COMBAT == true ) then
-		self:loot();
-	elseif( not self.Battling ) then
-		-- Skip looting when under attack
-		self:loot();
-	else
-		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
-	end
+	self:loot();
 
 	if( self.TargetPtr ~= 0 ) then
 		self:clearTarget();
 	end
 	self.Fighting = false;
 
-	-- update one slot at a time, or next 3
+	-- update ~ 3-4 slots (about 50 ms each)
 	inventory:updateSlotsByTime(200);
 
 end
@@ -722,12 +716,20 @@ function CPlayer:loot()
 		end;
 		return
 	end
+	
 	if( self.TargetPtr == 0 ) then
 		if( settings.profile.options.DEBUG_LOOT) then	
 			cprintf(cli.green, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
 		end;
 		return
 	end
+
+	-- aggro and not loot in combat
+	if( self.Battling  and
+		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
+		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
+	end
+
 
 	local target = self:getTarget();
 
@@ -758,7 +760,7 @@ function CPlayer:loot()
 		return false
 	end
 
-	yrest(500);	-- ?? 
+--	yrest(500);	-- ?? 
 
 	-- "attack" is also the hotkey to loot, strangely.
 	local hf_attack_key;
@@ -774,7 +776,8 @@ function CPlayer:loot()
 		keyboardPress(settings.profile.hotkeys.ATTACK.key);
 	end
 	
-	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 
 	-- check for loot problems to give a noob mesassage
 	self:update();
