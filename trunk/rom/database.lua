@@ -56,6 +56,8 @@ function database.load()
 				priority = 100;
 			elseif( type == "buff" ) then
 				priority = 90;
+			elseif( type == "summon" ) then
+				priority = 95;
 			elseif( type == "dot" ) then
 				priority = 80;
 			end;
@@ -70,6 +72,8 @@ function database.load()
 			type = STYPE_HEAL;
 		elseif( type == "buff" ) then
 			type = STYPE_BUFF;
+		elseif( type == "summon" ) then
+			type = STYPE_SUMMON;
 		elseif( type == "dot" ) then
 			type = STYPE_DOT;
 		end;
