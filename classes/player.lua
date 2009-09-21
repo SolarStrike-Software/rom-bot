@@ -330,7 +330,8 @@ end
 
 -- Check if you need to use any potions, and use them.
 function CPlayer:checkPotions()
-	local used = false;
+--	local used = false;
+-- only one potion type could be used, so we return after using one type
 
 	-- Still cooling down, don't use.
 	-- if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
@@ -353,7 +354,8 @@ function CPlayer:checkPotions()
 				end
 				
 				self.PotionLastUseTime = os.time();
-				used = true;
+--				used = true;
+				return true;		-- avoid invalid/use count of 
 			else	-- potions empty
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
 					cprintf(cli.yellow, language[16]); 		-- No more (usable) mana potions
@@ -377,7 +379,8 @@ function CPlayer:checkPotions()
 			end 
 			  
 			self.PotionLastUseTime = os.time();
-			used = true;
+--			used = true;
+			return true;
 		else		-- potions empty
 			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
 				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
@@ -386,7 +389,7 @@ function CPlayer:checkPotions()
 		end 
 	end
 
-	return used;
+--	return used;
 end
 
 function CPlayer:fight()
