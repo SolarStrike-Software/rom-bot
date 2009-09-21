@@ -18,6 +18,7 @@ chardirYUVec_offset = 0x40;
 charAlive_offset = 0x228;
 castbar_offset = 0x25C;
 charTargetPtr_offset = 0x278;
+charPetPtr_offset = 0x284;
 charName_offset = 0x294;
 charHP_offset = 0x2B0;
 charMaxHP_offset = 0x2B8;

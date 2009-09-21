@@ -75,6 +75,7 @@ function rewriteAddresses()
 		sprintf("charAlive_offset = 0x%X;\n", charAlive_offset) ..
 		sprintf("castbar_offset = 0x%X;\n", castbar_offset) ..
 		sprintf("charTargetPtr_offset = 0x%X;\n", charTargetPtr_offset) ..
+		sprintf("charPetPtr_offset = 0x%X;\n", charPetPtr_offset) ..
 		sprintf("charName_offset = 0x%X;\n", charName_offset) ..
 		sprintf("charHP_offset = 0x%X;\n", charHP_offset) ..
 		sprintf("charMaxHP_offset = 0x%X;\n", charMaxHP_offset) ..

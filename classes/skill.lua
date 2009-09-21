@@ -4,11 +4,13 @@ STYPE_HEAL = 1
 STYPE_BUFF = 2
 STYPE_DOT = 3
 STYPE_HOT = 4
+STYPE_SUMMON = 5
 
 -- Target types
 STARGET_ENEMY = 0
 STARGET_SELF = 1
 STARGET_FRIENDLY = 2
+STARGET_PET = 3
 
 CSkill = class(
 	function (self, copyfrom)
@@ -90,6 +92,7 @@ function CSkill:canUse(_only_friendly)
 	if( _only_friendly ) then
 		if( self.Type ~= STYPE_HEAL  and
 		    self.Type ~= STYPE_BUFF  and
+			self.Type ~= STYPE_SUMMON and
 		    self.Type ~= STYPE_HOT ) then
 			return false;
 		end;
@@ -125,6 +128,11 @@ function CSkill:canUse(_only_friendly)
 	if( not player.Battling and self.InBattle == true ) then
 		return false;
 	end   
+
+	-- Already have a pet out
+	if( self.Type == STYPE_SUMMON and player.PetPtr ~= 0 ) then
+		return false;
+	end
 
 	-- check pullonly skills
 	if( self.pullonly == true and

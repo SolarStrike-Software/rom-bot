@@ -1346,6 +1346,16 @@ function CPlayer:update()
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
 		error("Error reading memory in CPlayer:update()");
 	end
+
+	self.PetPtr = debugAssert(memoryReadUInt(getProc(), self.Address + charPetPtr_offset), language[41]);
+	if( self.Pet == nil ) then
+		self.Pet = CPawn(self.PetPtr);
+	else
+		self.Pet.Address = self.PetPtr;
+		if( self.Pet.Address ~= 0 ) then
+			self.Pet:update();
+		end
+	end
 end
 
 function CPlayer:clearTarget()
@@ -1359,6 +1369,11 @@ function CPlayer:isFriend(pawn)
 	if( not pawn ) then
 		error("CPlayer:isFriend() received nil\n", 2);
 	end;
+
+	-- Pets are friends
+	if( pawn.Address == self.PetPtr ) then
+		return true;
+	end
 
 	if( not settings ) then
 		return false;
