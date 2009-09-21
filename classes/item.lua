@@ -4,7 +4,7 @@ CItem = class(
 	function(self,slotNumber)
 		self.Id = 0;
 		self.BagId = 0;
-		self.Name = "Empty";
+		self.Name = "";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
 		self.SlotNumber = slotNumber;
@@ -55,7 +55,12 @@ function CItem:update()
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 	local id, color;
 
-	if (itemLink ~= "") then
+	if (itemLink == "") then		-- no item in slot
+		self.BagId = bagId;			-- always there
+		self.ItemCount = 0;			-- 0 if no item at the slot
+		self.Name = "";				
+		self.Id	= 0;
+	else
 		id, color = self:parseItemLink(itemLink);
 
 		self.Id = id			     -- The real item id
@@ -73,11 +78,11 @@ function CItem:update()
 	if( settings.profile.options.DEBUG_INV) then	
 		local msg = "\nDEBUG item:update(): ";
 		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
-		if(id) then msg = msg.." Id "..id; end;
-		if(bagId) then msg = msg.." bagId "..bagId; end;
+		if(self.BagId) then msg = msg.." bagId "..self.BagId; end;
+		if(self.Id) then msg = msg.." Id "..self.Id; end;
 --		if(itemLink) then msg = msg.."/"..itemLink; end;
-		if(name) then msg = msg.." name "..name; end;
-		if(itemCount) then msg = msg.." qyt "..itemCount; end;
+		if(self.Name) then msg = msg.." name "..self.Name; end;
+		if(self.ItemCount) then msg = msg.." qty "..self.ItemCount; end;
 		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
 	end;
 	
