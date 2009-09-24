@@ -301,28 +301,28 @@
 
 	<!-- Druid skills -->
 	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
-	<skill name="DRUID_DETOXICATION" aslevel="4" skilltab="2" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
+	<skill name="DRUID_ANTIDOTE" aslevel="4" skilltab="2" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
 	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" cooldown="300" type="buff" target="friendly" />
-	<skill name="DRUID_ROCK_CANNON" aslevel="12" skilltab="2" skillnum="4" mana="40" manainc="4" range="180" cooldown="15" />
-	<skill name="DRUID_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
+	<skill name="DRUID_EARTH_PULSE" aslevel="12" skilltab="2" skillnum="4" mana="40" manainc="4" range="180" cooldown="15" />
+	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
 	<skill name="DRUID_EARTH_ARROW" aslevel="1" skilltab="4" skillnum="1" mana="12" manainc="1.1" range="200" casttime="2" />
-	<skill name="DRUID_BRIAR_TWISTING" aslevel="2" skilltab="4" skillnum="3" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
+	<skill name="DRUID_BRIAR_ENTWINEMENT" aslevel="2" skilltab="4" skillnum="3" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
 	<skill name="DRUID_DECURSE" aslevel="2" skilltab="4" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
 	<skill name="DRUID_RESTORE_LIFE" aslevel="6" skilltab="4" skillnum="4" mana="40" manainc="4" range="250" casttime="2" type="heal" target="friendly" />
-	<skill name="DRUID_FUSION_OF_THE_EARTH" aslevel="10" skilltab="4" skillnum="5" cooldown="300" type="buff" target="self" />
-	<skill name="DRUID_RELEASE_LIFE" aslevel="10" skilltab="4" skillnum="6" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
+	<skill name="DRUID_UNITY_WITH_MOTHER_EARTH" aslevel="10" skilltab="4" skillnum="5" cooldown="300" type="buff" target="self" />
+	<skill name="DRUID_BLOSSOMING_LIFE" aslevel="10" skilltab="4" skillnum="6" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
 	<skill name="DRUID_REBIRTH" mana="150" casttime="6" type="buff" target="friendly" />
 	<skill name="DRUID_WEAKENING_SEED" mana="50" manainc="5" nature="2" range="180" cooldown="20" type="dot" />
-	<skill name="DRUID_FALLING_STONE" mana="25" range="180" cooldown="8" />
+	<skill name="DRUID_ROCKSLIDE" mana="25" range="180" cooldown="8" />
 	<skill name="DRUID_BLINDING_SILENCE" mana="100" range="180" cooldown="30" />
 	<skill name="DRUID_CURING_SEED" mana="50" range="150" cooldown="30" type="buff" target="friendly" />
-	<skill name="DRUID_FANATIC_PRAYER" mana="35" cooldown="600" type="buff" target="self" />
+	<skill name="DRUID_CONCENTRATION_PRAYER" mana="35" cooldown="600" type="buff" target="self" />
 	<skill name="DRUID_ROCK_PROTECTION" mana="60" nature="2" cooldown="180" type="buff" target="self" hpper="10" />
 	<skill name="DRUID_SPIRIT_GUIDANCE" mana="200" nature="5" range="180" casttime="1" cooldown="30" target="enemy" />
-	<skill name="DRUID_BODY_ACTIVATION" mana="100" nature="1" range="160" cooldown="120" type="buff" target="friendly" />
-	<skill name="DRUID_EARTHS_FOUNTAIN" mana="60" nature="2" range="200" cooldown="5" type="heal" target="self" />
-	<skill name="DRUID_DEHYDRATION_SEED" mana="50" nature="2" range="180" cooldown="20" />
-	<skill name="DRUID_GREAT_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
+	<skill name="DRUID_BODY_VITALIZATION" mana="100" nature="1" range="160" cooldown="120" type="buff" target="friendly" />
+	<skill name="DRUID_MOTHER_EARTHS_FOUNTAIN" mana="60" nature="2" range="200" cooldown="5" type="heal" target="self" />
+	<skill name="DRUID_WITHERING_SEED" mana="50" nature="2" range="180" cooldown="20" />
+	<skill name="DRUID_MOTHER_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
 	<skill name="DRUID_SUMMON_SANDSTORM" mana="70" nature="4" range="180" cooldown="8" />
 
 	<!-- Warden skills -->
