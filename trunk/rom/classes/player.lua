@@ -623,8 +623,11 @@ function CPlayer:fight()
 			end
 		end
 
-		self:checkPotions();
-		self:checkSkills();
+		if( self:checkPotions() or self:checkSkills() ) then
+			-- If we used a potion or a skill, reset our last dist improvement
+			-- to prevent unsticking
+			self.LastDistImprove = os.time();
+		end
 
 		yrest(100);
 		target:update();
@@ -818,8 +821,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		ignoreCycleTargets = false;
 	end;
 
-	if( waypoint.Type == WPT_TRAVEL or
-	    waypoint.Type == WPT_RUN ) then
+	if( waypoint.Type == WPT_TRAVEL or waypoint.Type == WPT_RUN ) then
 		if( settings.profile.options.DEBUG_TARGET ) then
 			cprintf(cli.green, "[DEBUG] waypoint type RUN or TRAVEL. We don't target mobs.\n");
 		end
@@ -853,7 +855,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		camera:setRotation(angle);
 		self:update();
 		angleDif = angleDifference(angle, self.Direction);
-		yrest(50);
 	end
 
 	-- If more than X degrees off, correct before moving.
@@ -878,17 +879,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 			-- rotate left
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			yrest(50);
 			keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
-			yrest(50);
 
 			--self:faceDirection( angle );
 		else
 			-- rotate right
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-			yrest(50);
 			keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
-			yrest(50);
 
 			--self:faceDirection( angle );
 		end
@@ -900,7 +897,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-	yrest(50);
 
 	-- direction ok, now look for a target before start movig
 	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
@@ -913,37 +909,17 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end;
 	end;
 
-	yrest(50);
-
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
-	self.LastDistImprove = os.time();	-- global, because we reset it while skill use
-	local movingForward = false;
-	local lastForegroundWindow = lastForegroundWindow or foregroundWindow();
-	while( dist > 20.0 ) do
+	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
+	while( dist > 15.0 ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
 
 		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
 			canTarget = true;
-		end
-
-		if( lastForegroundWindow == getAttachedHwnd() and foregroundWindow() ~= lastForegroundWindow ) then
-			lastForegroundWindow = foregroundWindow();
-
-			yrest(100);
-
-			if( movingForward ) then
-				keyboardHold( settings.hotkeys.MOVE_BACKWARD.key );
-				yrest(50);
-				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
-
-				yrest(100);
-
-				keyboardHold( settings.hotkeys.MOVE_FORWARD.key )
-			end
 		end
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
@@ -955,7 +931,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			movingForward = false;
 			success = false;
 			failreason = WF_COMBAT;
 			break;
@@ -991,16 +966,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end
 
-		local usedPotion, usedSkill = false, false;
-		usedPotion = self:checkPotions();
-		usedSkill = self:checkSkills( ONLY_FRIENDLY ); -- only cast friendly spells to ourself
-
-		if( usedPotion or usedSkill ) then
-			-- If we used a skill or potion, reset our
-			-- distance improvement time to prevent
-			-- unsticking when not necessary
-			self.LastDistImprove = os.time();
-		end
+		self:checkPotions();
+		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
@@ -1010,7 +977,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle);
 			camera:setRotation(angle);
-			yrest(50);
 		end
 
 		if( angleDif > math.rad(15) ) then
@@ -1019,35 +985,24 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
 					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-					yrest(50);
 					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
 					yrest(100);
 			else
 					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-					yrest(50);
 					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
 					yrest(100);
 			end
 		elseif( angleDif > math.rad(1) ) then
 			if( settings.profile.options.QUICK_TURN ) then
 				camera:setRotation(angle);
-				yrest(50);
 			end
 
 			self:faceDirection(angle);
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-
-			yrest(50);
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
-			movingForward = true;
-			yrest(50);
 		else
-			if( not movingForward ) then
-				keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
-				movingForward = true;
-				yrest(50);
-			end
+			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		end
 
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
@@ -1057,7 +1012,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	end
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-	movingForward = false;
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 

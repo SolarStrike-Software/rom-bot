@@ -67,8 +67,6 @@ function main()
 	logMessage(versionMsg);
 
 	database.load();
-
-	keyboardSetDelay(0);
 	attach(getWin());
 
 	if( not checkExecutableCompatible() ) then
