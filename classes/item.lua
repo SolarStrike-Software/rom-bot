@@ -72,12 +72,16 @@ function CItem:update()
     	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
 	end
 
--- TODO: clear empty bag slot values
--- seems not to disturb at the moment, but names on empty slots are still set after used?
--- shouldn't it be cleared by the nil return valus from above?
+-- FIX: THERE SEEM TO BE A BUG IN THE ROM CLIENT COMMUNICATION
+-- in very rar cases, the client deliver an empty or wrong bagId
+-- could be the client or the RoMScript
+-- we force a full inventory update if that happens
+	if( self.SlotNumber+60 ~= bagId ) then
+		player.InventoryDoUpdate = true;
+	end
 
 	if( settings.profile.options.DEBUG_INV) then	
-		local msg = "\nDEBUG item:update(): ";
+		local msg = "DEBUG item:update(): ";
 		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
 		if(self.BagId) then msg = msg.." bagId "..self.BagId; end;
 		if(self.Id) then msg = msg.." Id "..self.Id; end;
