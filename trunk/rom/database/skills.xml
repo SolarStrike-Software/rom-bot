@@ -328,7 +328,7 @@
 	<!-- Warden skills -->
 	<skill name="WARDEN_CHARGED_CHOP" mana="20" range="50" casttime="2" cooldown="3" />
 	<skill name="WARDEN_BRIAR_SHIELD" mana="30" type="buff" target="self" cooldown="300" />
-	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" mana="15" range="50" type="buff" target="self" />
+	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" mana="15" range="50" type="damage" target="enemy" />
 	<skill name="WARDEN_ELVEN_AMULET" mana="150" cooldown="60" type="buff" target="self" hpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" mana="150" cooldown="120" type="buff" target="self" inbattle="true" />
 

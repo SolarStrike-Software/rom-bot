@@ -23,6 +23,7 @@
 	<potion type="mana" id="201046" name="Magic Potion" level="11" />
 	<potion type="mana" id="201043" name="Basic Magic Potion" level="6" />
 	<potion type="mana" id="201042" name="Simple Magic Potion" level="1" />
+	<potion type="mana" id="204890" name="Elemental Spirit Stone" level="51" />
 
 	<!-- Arrow quivers -->
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />

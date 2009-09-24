@@ -621,7 +621,7 @@ function resurrect()
 			  settings.profile.options.MAX_DEATHS );	-- to much deaths
 			player:logout();
 		end
--- TODO: check for buff.
+
 		if( player.Level > 9  and 
 		    player.Alive      and
 		    hf_res_from_priest ~= true ) then	-- no wait if resurrect at the place of death / priest / buff
@@ -631,11 +631,11 @@ function resurrect()
 			local debuff = RoMScript("GetPlayerBuffLeftTime(GetPlayerBuff(1,'HARMFUL'))");
 			debuff = tonumber(debuff);
 			if (debuff == 0) then
-				print("this was a PK, or no xp debt, and it will not be counted as a death");
-				player.Death_counter = player.Death_counter + 1;
+				print("This was a PK or no xp debt death.");
+--				player.Death_counter = player.Death_counter + 1;
 			end
 			
-			player:rest(debuff); -- wait off the debuff before going about your path.
+			player:rest(debuff,debuff+15); -- wait off the debuff before going about your path.
 		end
 
 	end
