@@ -20,6 +20,7 @@
 		player:target_NPC(language[175]);
 		player:rest(2);
 		sendMacro("ChoiceOption(4);");
+		player:rest(2);
 		</waypoint>
 	<!-- #19 --><waypoint x="2459" z="1138"></waypoint>
 	<!-- #20 --><waypoint x="2578" z="1011"></waypoint>

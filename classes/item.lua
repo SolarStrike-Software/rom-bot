@@ -56,10 +56,11 @@ function CItem:update()
 	local id, color;
 
 	if (itemLink == "") then		-- no item in slot
+		self = CItem(self.SlotNumber);
 		self.BagId = bagId;			-- always there
-		self.ItemCount = 0;			-- 0 if no item at the slot
-		self.Name = "";				
-		self.Id	= 0;
+--		self.ItemCount = 0;			-- 0 if no item at the slot
+--		self.Name = "";				
+--		self.Id	= 0;
 	else
 		id, color = self:parseItemLink(itemLink);
 
