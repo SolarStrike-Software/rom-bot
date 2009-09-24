@@ -84,9 +84,11 @@ end
 function CInventory:updateSlotsByTime(_ms)
 local start_update = getTime();
 
+	keyboardSetDelay(0);
 	while ( deltaTime(getTime(), start_update ) < _ms ) do
 		self:updateNextSlot();
 	end
+	keyboardSetDelay(50);
 
 end
 
