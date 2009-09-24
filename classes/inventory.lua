@@ -64,11 +64,13 @@ function CInventory:update(_maxslot)
 
 	printf(language[1000], _maxslot);  -- Updating
 	
+	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
 		displayProgressBar(slotNumber/_maxslot*100, 50);
 	end
 	printf("\n");
+	keyboardSetDelay(50);
 	
 	player.InventoryDoUpdate = false;			-- set back update trigger
 	player.InventoryLastUpdate = os.time();		-- remember update time
