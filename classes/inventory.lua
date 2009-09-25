@@ -115,7 +115,6 @@ function CInventory:updateNextSlot(_times)
 		self.BagSlot[self.NextItemToUpdate]:update();
 		self.NextItemToUpdate = self.NextItemToUpdate + 1;
 		if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
-			player.InventoryLastUpdate = os.time();		-- remember last completed round time
 			self.NextItemToUpdate = 1;
 		end
 
