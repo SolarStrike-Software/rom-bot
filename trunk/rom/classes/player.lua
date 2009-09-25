@@ -359,6 +359,11 @@ function CPlayer:checkPotions()
 			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
 				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
 				self.PotionLastHpEmptyTime = os.time();
+				-- full inventory update if potions empty
+				if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+				  settings.profile.options.INV_UPDATE_INTERVAL ) then
+					player.InventoryDoUpdate = true;
+				end
 			end;
 		end 
 	end
@@ -384,6 +389,11 @@ function CPlayer:checkPotions()
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
 					cprintf(cli.yellow, language[16]); 		-- No more (usable) mana potions
 					self.PotionLastManaEmptyTime = os.time();
+					-- full inventory update if potions empty
+					if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+					  settings.profile.options.INV_UPDATE_INTERVAL ) then
+						player.InventoryDoUpdate = true;
+					end
 				end;
 			end;
 		end
@@ -966,8 +976,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			break;
 		end
 
-		self:checkPotions();
-		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
+		-- while moving without target: check potions / friendly skills
+		if( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
+			-- If we used a potion or a skill, reset our last dist improvement
+			-- to prevent unsticking
+			self.LastDistImprove = os.time();
+		end
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);

@@ -55,6 +55,16 @@ function CItem:update()
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 	local id, color;
 
+
+-- FIX: THERE SEEM TO BE A BUG IN THE ROM CLIENT COMMUNICATION
+-- in very rar cases, the client deliver an empty or wrong bagId
+-- could be the client or the RoMScript
+-- we force a full inventory update if that happens
+	if( self.SlotNumber+60 ~= bagId ) then
+		return;		-- dont' change the values, the new ones are wrong
+--		player.InventoryDoUpdate = true;
+	end
+
 	if (itemLink == "") then		-- no item in slot
 		self = CItem(self.SlotNumber);
 		self.BagId = bagId;			-- always there
@@ -70,14 +80,6 @@ function CItem:update()
     	self.ItemCount = itemCount;  -- How many?
     	self.Color = color; 		 -- Rarity
     	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
-	end
-
--- FIX: THERE SEEM TO BE A BUG IN THE ROM CLIENT COMMUNICATION
--- in very rar cases, the client deliver an empty or wrong bagId
--- could be the client or the RoMScript
--- we force a full inventory update if that happens
-	if( self.SlotNumber+60 ~= bagId ) then
-		player.InventoryDoUpdate = true;
 	end
 
 	if( settings.profile.options.DEBUG_INV) then	
