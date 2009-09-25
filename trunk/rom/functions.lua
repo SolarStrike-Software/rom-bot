@@ -235,7 +235,7 @@ end
 
 function load_paths( _wp_path, _rp_path)
 
-	cprintf("Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
+	cprintf(cli.yellow, "Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
 	loadPaths( _wp_path, _rp_path);
 	
 end
