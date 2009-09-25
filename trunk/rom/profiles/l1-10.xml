@@ -124,6 +124,10 @@
 			levelupSkills1To10("loadonly");
 		end;
 
+		if(player.Class1 == CLASS_SCOUT ) then
+			changeProfileOption("ARROW_QUIVER", 2);
+		end;
+
 	</onLoad>
 
 	<onDeath>
@@ -133,9 +137,6 @@
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after a target is finished
-		if(player.Class1 == CLASS_SCOUT) then
-			inventory:reloadAmmunition("arrow");
-		end;
 	</onLeaveCombat>
 
 	<onLevelup>

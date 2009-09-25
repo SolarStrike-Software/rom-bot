@@ -55,13 +55,12 @@ function CItem:update()
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 	local id, color;
 
-
 -- FIX: THERE SEEM TO BE A BUG IN THE ROM CLIENT COMMUNICATION
 -- in very rar cases, the client deliver an empty or wrong bagId
 -- could be the client or the RoMScript
 -- sometimes slot 1-10 don't have bagid 61-70? I don't know the rule :-(
 -- so we can only check missing bagIds, but not wrong bagIds
-	if( bagId == "" ) then
+	if( bagId == "" or bagId == nil) then
 		cprintf(cli.yellow, "Item:update(): empty bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
 		return;		-- dont' change the values, the new ones are wrong
 --		player.InventoryDoUpdate = true;
