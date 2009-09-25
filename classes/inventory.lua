@@ -156,7 +156,8 @@ end
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
-	local bestLevel = 0;
+	local bestLevel = 0;		-- required player level of a potion
+	local bestPotency = 0;		-- power of a potion
 	local bestItem = false;
 	local bestSmallStack = 999;
 	local select_strategy;
@@ -198,11 +199,26 @@ function CInventory:bestAvailableConsumable(type)
 					bestSmallStack = item.ItemCount;
 					bestItem = item;
 				end
-			else
-				-- select best available consumable (& smallest stack by default)
-				if( consumable.Level > bestLevel and
-					item.ItemCount < bestSmallStack ) then
+			else	-- select best available consumable (& smallest stack by default)
+				-- select better level
+				if( consumable.Level > bestLevel  ) then
 					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				-- same level but select better potency
+				elseif( consumable.Level == bestLevel  and
+				  		consumable.Potency > bestPotency) then
+					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				-- same/same but select smaller stack
+				elseif( consumable.Level == bestLevel  and
+						consumable.Potency == bestPotency  and
+						item.ItemCount < bestSmallStack ) then
+					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
 					bestSmallStack = item.ItemCount;
 					bestItem = item;
 				end

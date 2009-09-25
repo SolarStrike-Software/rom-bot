@@ -22,8 +22,10 @@
 	<!-- #21 --><waypoint x="-284" z="-6354"></waypoint>
 	<!-- #22 --><waypoint x="-538" z="-6196">
 		if(player.Class1 == CLASS_SCOUT ) then
-			changeProfileOption("ARROW_QUIVER", 4);
 			player:merchant("Dimar");
+			for i=1, settings.profile.options.ARROW_QUIVER do
+				inventory:reloadAmmunition("arrow");
+			end
 		end;
 	</waypoint>
 	<!-- #23 --><waypoint x="-448" z="-6107"></waypoint>

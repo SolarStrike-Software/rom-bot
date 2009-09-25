@@ -165,17 +165,23 @@ function database.load()
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
-	    local type, name, level, id;
+	    local type, name, level, potency, id;
 		local tmp = {};
 
 		type = v:getAttribute("type");
 		name = v:getAttribute("name");
 		level = v:getAttribute("level");
+		potency = v:getAttribute("potency");
 		id = v:getAttribute("id");
 
 		if (type) then tmp.Type = type; end;
 		if (name) then tmp.Name = name; end;
 		if (level) then tmp.Level = level; end;
+		if (potency) then 
+			tmp.Potency = potency; 
+		else
+			tmp.Potency = 0; 
+		end;
 		if (id) then tmp.Id = id; end;
 
 		database.consumables[id] = tmp;
