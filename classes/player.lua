@@ -344,6 +344,7 @@ function CPlayer:checkPotions()
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
 			item:use();
+			self.PotionHpUsed = self.PotionHpUsed + 1;			-- counts use of HP potions
 			
 			cprintf(cli.green, language[10], 		-- Using HP potion
 			   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
@@ -374,6 +375,7 @@ function CPlayer:checkPotions()
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
 				item:use();
+				self.PotionManaUsed = self.PotionManaUsed + 1;		-- counts use of mana potions
 					
 				cprintf(cli.green, language[11], 		-- Using MP potion
 				   	self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
