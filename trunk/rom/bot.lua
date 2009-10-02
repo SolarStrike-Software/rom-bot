@@ -627,11 +627,12 @@ function resurrect()
 			
 			-- check the first debuff that player has. (it has to be the weakness!)
 			local debuff = RoMScript("GetPlayerBuffLeftTime(GetPlayerBuff(1,'HARMFUL'))");
-			debuff = tonumber(debuff);
-			if (debuff == 0) then
-				print("This was a PK or no xp debt death.");
+			if(debuff == nil) then debuff = 0; end;
+--			debuff = tonumber(debuff);
+--			if (debuff == 0) then
+--				print("This was a PK or no xp debt death.");
 --				player.Death_counter = player.Death_counter + 1;
-			end
+--			end
 			
 			player:rest(debuff,debuff+15); -- wait off the debuff before going about your path.
 		end
