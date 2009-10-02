@@ -134,16 +134,29 @@
 	<onDeath>
 		-- Additional Lua code to execute on death
 		-- pauseOnDeath(); -- Stop the script
+		-- player:logout();	-- logout
 	</onDeath>
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after killing an enemy
-
 	</onLeaveCombat>
+
+	<onLevelup>
+		-- Additional Lua code to execute after having a levelup
+		-- and levelup the skills for a new character (mage or priest recommended)
+		-- e.g. sendMacro("SetSpellPoint(_tabnr, _skillnr);"); would levelup a skill
+	</onLevelup>
 
 	<onSkillCast>
 		-- Additional Lua code to execute when casting a skill
 		-- Note: arg1 contains the skill being used.
-		-- i.e. arg1.Name will be the name of the skill being cast.
+		-- i.e. arg1.Name will be the name of the skill being cast
+		-- e.g.:
+		--if( 15 > player.HP/player.MaxHP*100 ) then
+		--    player:cast("PRIEST_SOUL_SOURCE");
+		--elseif( 25 > player.HP/player.MaxHP*100 ) then
+		--    player:cast("PRIEST_HOLY_AURA");
+		--    player:cast("PRIEST_URGENT_HEAL");
+		--    player:cast("PRIEST_URGENT_HEAL");
 	</onSkillCast>
 </profile>

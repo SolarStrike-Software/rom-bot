@@ -107,9 +107,9 @@ function CItem:parseItemLink(itemLink)
 	local id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
 	local color = string.sub(itemLink, 19, 24);
 	-- this is causing some problems so lets be safe
-	name_parse_from = string.find(itemLink, '[\[]');
-	name_parse_to = string.find(itemLink, '[\]]');
-	name = "Error parsing name";
+	local name_parse_from = string.find(itemLink, '[\[]');
+	local name_parse_to = string.find(itemLink, '[\]]');
+	local name = "Error parsing name";
 	if not name_parse_from == nil or not name_parse_to == nil then
 		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
 	end

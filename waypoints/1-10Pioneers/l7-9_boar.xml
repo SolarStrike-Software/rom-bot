@@ -2,7 +2,10 @@
 	<!-- # 1 --><waypoint x="-1450" z="-4736">player:restrnd(20, 2, 10);</waypoint>
 	<!-- # 2 --><waypoint x="-1352" z="-4764">player:restrnd(20, 2, 10);</waypoint>
 	<!-- # 3 --><waypoint x="-1162" z="-4500">player:restrnd(10, 2, 10);</waypoint>
-	<!-- # 4 --><waypoint x="-973" z="-4255">player:restrnd(10, 2, 10);</waypoint>
+	<!-- # 4 --><waypoint x="-973" z="-4255">
+		if( player.Level > 8 ) then
+			loadPaths("1-10Pioneers/l9t_9-10_bugs");
+	  	end</waypoint>
 	<!-- # 5 --><waypoint x="-1110" z="-4111">player:restrnd(20, 2, 10);</waypoint>
 	<!-- # 6 --><waypoint x="-1322" z="-4132">player:restrnd(10, 2, 10);</waypoint>
 	<!-- # 7 --><waypoint x="-1499" z="-4248">player:restrnd(20, 2, 10);</waypoint>
