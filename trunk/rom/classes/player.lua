@@ -746,6 +746,7 @@ function CPlayer:loot()
 	if( self.Battling  and
 		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
+		return
 	end
 
 
@@ -1451,6 +1452,11 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 
 	-- check if the target is attacking us, if not we can break and take the other mob
 	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
+	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
+	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
+	-- to prevent from skipping him while he is still attacking us, we do that special fix
+		target.Name ~= "Tatus"	and		
+		-- even he is attacking us
 	    target.HP/target.MaxHP*100 > 90 ) then			-- target is alive and no attacking us
 -- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
 -- and at the same time the target HP are above 0
