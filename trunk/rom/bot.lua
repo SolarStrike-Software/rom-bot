@@ -604,7 +604,7 @@ function resurrect()
 		-- if still dead, try macro if one defined
 		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
-			RoMScript("AcceptResurrect();");
+			RoMScript("BrithRevive();");
 			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 			player:update();
 		end

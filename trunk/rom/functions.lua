@@ -331,7 +331,7 @@ function sendMacro(_script)
 end
 
 
---- Run rom scripts, usage: RoMScript("AcceptResurrect();");
+--- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script)
 
 	--- Get the real offset of the address
