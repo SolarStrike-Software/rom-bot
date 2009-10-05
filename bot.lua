@@ -363,6 +363,20 @@ function main()
 		end
 
 
+		-- reloading ammunition
+		if ( settings.profile.options.RELOAD_AMMUNITION ) then
+			local ammo = string.lower(settings.profile.options.RELOAD_AMMUNITION);
+			if ammo == "arrow" or ammo == "thrown" then
+		print("Hello"..inventory:getAmmunitionCount());
+				if inventory:getAmmunitionCount() == 0 then
+					inventory:reloadAmmunition(ammo);
+				end
+			else
+			    print("RELOAD_AMMUNITION can only be false, arrow or thrown!");
+			end
+		end
+
+
 		-- go back to sleep, if in sleep mode
 		if( player.Sleeping == true ) then
 			yrest(800);	-- wait a little for the aggro flag
