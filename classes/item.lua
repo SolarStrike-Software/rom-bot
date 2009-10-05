@@ -53,7 +53,7 @@ end
 
 function CItem:update()
 
-	local old_BagId = self.BagId;	-- remember bagId before update
+--	local old_BagId = self.BagId;	-- remember bagId before update
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 	local id, color;
 
@@ -62,9 +62,12 @@ function CItem:update()
 -- e.g. if we press a modifier while running the bot in background
 -- sometimes slot 1-10 don't have bagid 61-70? I don't know the rule :-(
 -- so we can only check missing bagIds, but not wrong bagIds
-	if( old_BagId ~= nil  and				-- not the default value
-		old_BagId ~= 0	  and
-		old_BagId ~= bagId ) then			-- but a wrong value back, so we skip that item update
+--	if( old_BagId ~= nil  and				-- not the default value
+--		old_BagId ~= 0	  and
+--		old_BagId ~= bagId ) then			-- but a wrong value back, so we skip that item update
+	if( type(bagId) ~= "number" or			-- no valid bagId return
+		bagId < 1	or
+		bagId > 180 ) then
 		cprintf(cli.yellow, "Item:update(): empty or wrong bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
 		return;		-- dont' change the values, the new ones are wrong
 	end
