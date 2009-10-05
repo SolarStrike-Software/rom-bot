@@ -60,11 +60,14 @@ function CItem:update()
 -- could be the client or the RoMScript
 -- sometimes slot 1-10 don't have bagid 61-70? I don't know the rule :-(
 -- so we can only check missing bagIds, but not wrong bagIds
-	if( bagId == "" or bagId == nil) then
-		cprintf(cli.yellow, "Item:update(): empty bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
-		return;		-- dont' change the values, the new ones are wrong
+
+-- UNFIX: this fix breaks the bestAvailableConsumable function, because item HAS TO HAVE default values.
+
+--	if( bagId == "" or bagId == nil) then
+--		cprintf(cli.yellow, "Item:update(): empty bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
+--		return;		-- dont' change the values, the new ones are wrong
 --		player.InventoryDoUpdate = true;
-	end
+--	end
 
 	if (itemLink == "") then		-- no item in slot
 		self = CItem(self.SlotNumber);

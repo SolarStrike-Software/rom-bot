@@ -57,6 +57,7 @@ settings_default = {
 			MANA_POTION = 0,
 			ARRAY_QUIVER = 0,
 			THROWN_BAG = 0,
+			RELOAD_AMMUNITION = false,
 
 			
 			-- expert options
