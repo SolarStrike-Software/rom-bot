@@ -538,6 +538,10 @@ function CPlayer:fight()
 		-- check if aggro before attacking
 		if( self.Battling == true  and				-- we have aggro
 		    target.HP/target.MaxHP*100 > 90 and		-- target is alive and no attacking us
+	-- Fix: there is a special dog mob 'Tatus', he switch from red to green at about 90%
+	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
+	-- to prevent from skipping him while he is still attacking us, we do that special fix
+			target.Name ~= "Tatus"	and		
 		    target.TargetPtr ~= self.Address ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);	
 			self:clearTarget();
