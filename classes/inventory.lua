@@ -54,6 +54,14 @@ end
 
 function CInventory:getMainHandDurability()
     local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player', 15);");
+
+	-- prevent aritmetic on a nil value if RoMScript failed/wrong values come back
+	if( type(durability) ~= "number" or  
+		type(durabilityMax) ~= "number" 
+		or durabilityMax == 0) then
+		return 1
+	end
+
 	return tonumber(durability)/tonumber(durabilityMax);
 end
 
