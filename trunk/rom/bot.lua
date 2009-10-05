@@ -367,7 +367,6 @@ function main()
 		if ( settings.profile.options.RELOAD_AMMUNITION ) then
 			local ammo = string.lower(settings.profile.options.RELOAD_AMMUNITION);
 			if ammo == "arrow" or ammo == "thrown" then
-		print("Hello"..inventory:getAmmunitionCount());
 				if inventory:getAmmunitionCount() == 0 then
 					inventory:reloadAmmunition(ammo);
 				end
