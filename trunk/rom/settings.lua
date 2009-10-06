@@ -63,6 +63,7 @@ settings_default = {
 			POTION_COOLDOWN = 15,	-- allways 15
 			POTION_COOLDOWN_HP = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			POTION_COOLDOWN_MANA = 0,	-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
+			SIT_WHILE_RESTING = false,	-- sit while using the rest function
 			USE_MANA_POTION = "best",	-- which mana potion type to use: best | minstack
 			USE_HP_POTION = "best",		-- which HP potion type to use: best | minstack 			
 			WAYPOINTS_REVERSE = false,	-- use the waypoint file in reverse order
@@ -82,6 +83,7 @@ settings_default = {
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			DEBUG_LOOT = false,	 			-- debug loot issues
 			DEBUG_TARGET = false, 			-- debug targeting issues
+			DEBUG_SKILLUSE = false, 		-- debug skill use issues
 			
 			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
