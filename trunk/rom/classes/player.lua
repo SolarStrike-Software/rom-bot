@@ -1573,6 +1573,20 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		cprintf(cli.green, language[71], ( hf_resttime ) );		-- Resting for %s seconds.
 	end;
 
+	-- check before we perhaps sit down
+	self:checkPotions();   
+	self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
+
+	-- sit option is false as default and the option is not promoted
+	-- simply because if you misconfigure the rest option / don't use potions you will 
+	-- rest and sit after every fight and that looks really bottish
+	local we_sit = false;
+	if( _resttype == "full" and			-- only sit for full rest, not for times restings
+		settings.profile.options.SIT_WHILE_RESTING ) then
+		RoMScript("SitOrStand()");
+		we_sit = true;
+	end;
+
 	while ( true ) do
 
 		self:update();
@@ -1580,13 +1594,13 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
 			cprintf(cli.green, language[39] );   -- get aggro 
-			return;
+			break;
 		end;
 		
 		-- check if resttime finished
 		if( os.difftime(os.time(), restStart ) > ( hf_resttime ) ) then
 			cprintf(cli.green, language[70], ( hf_resttime ) );   -- Resting finished after %s seconds
-			return;
+			break;
 		end;
 
 		-- check if HP/Mana full
@@ -1602,7 +1616,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 				if( self.Battling ) then          -- we get aggro,
 					self:clearTarget();       -- get rid of mob to be able to target attackers
 					cprintf(cli.green, language[39] );   -- Stop resting because of aggro
-					return;
+					break;
 				end;
 				self:checkPotions();   
 				self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
@@ -1610,15 +1624,24 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 			end;
 
 			cprintf(cli.green, language[70], os.difftime(os.time(), restStart ) );   -- full after x sec
-			return;
+			break;
 		end;
 
-		self:checkPotions();   
-		self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
+		if( we_sit == false) then		-- can't cast while sitting
+			self:checkPotions();   
+			self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
+		end
 
 		yrest(100);
 
 	end;			-- end of while
+
+	if( we_sit == true  and
+		not self.Battling ) then	-- if aggro the char will standup automaticly
+		RoMScript("SitOrStand()");
+		yrest(1500);					-- give time to standup
+	end;
+
 
 end
 
