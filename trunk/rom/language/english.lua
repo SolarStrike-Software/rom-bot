@@ -58,7 +58,7 @@ language = {
 	[55] = "Unstick tries %d greater then maximal allowed untick tries %d. We will logout.\n",		
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
-	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforced the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforced the use of return waypoint path \'retname.xml\'\n",
+	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:profname] [path:pathname] [retpath:retname]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforce the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforce the use of return waypoint file \'retname.xml\'\n",
 	
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",

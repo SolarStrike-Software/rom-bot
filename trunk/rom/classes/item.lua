@@ -66,8 +66,8 @@ function CItem:update()
 --		old_BagId ~= 0	  and
 --		old_BagId ~= bagId ) then			-- but a wrong value back, so we skip that item update
 	if( type(bagId) ~= "number" or			-- no valid bagId return
-		bagId < 1	or
-		bagId > 180 ) then
+		bagId < 1	or						-- bag I-VI are from 61-240 / itemshop bag from 1-50 / arcaner transmutor from 51-55
+		bagId > 240 ) then
 		cprintf(cli.yellow, "Item:update(): empty or wrong bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
 		return;		-- dont' change the values, the new ones are wrong
 	end
