@@ -83,11 +83,6 @@ CSkill = class(
 function CSkill:canUse(_only_friendly)
 	if( hotkey == 0 ) then return false; end; --hotkey must be set!
 
-	-- Still cooling down...
-	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
-		return false;
-	end
-
 	-- only friendly skill types?
 	if( _only_friendly ) then
 		if( self.Type ~= STYPE_HEAL  and
@@ -98,8 +93,9 @@ function CSkill:canUse(_only_friendly)
 		end;
 	end
 
-	-- Not enough mana
-	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then
+	-- You don't meet the maximum HP percent requirement
+	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
+	if( player.HP / player.MaxHP * 100 > self.MaxHpPer ) then
 		return false;
 	end
 
@@ -129,17 +125,27 @@ function CSkill:canUse(_only_friendly)
 		return false;
 	end   
 
-	-- Already have a pet out
-	if( self.Type == STYPE_SUMMON and player.PetPtr ~= 0 ) then
+	-- Still cooling down...
+--	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
+	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
+
+		if( settings.profile.options.DEBUG_SKILLUSE) then	
+			cprintf(cli.yellow, "[DEBUG] skill at cooldown %s %s\n",
+			  self.Cooldown - os.difftime(os.time(), self.LastCastTime),
+			  self.Name);
+		end;
+
 		return false;
+	else
+
+		if( settings.profile.options.DEBUG_SKILLUSE) then	
+			cprintf(cli.yellow, "[DEBUG] skill can be used since %s %s\n",
+			  os.difftime(os.time(), self.LastCastTime) - self.Cooldown,
+			  self.Name);
+		end;
+
 	end
 
-	-- check pullonly skills
-	if( self.pullonly == true and
-	    not player.ranged_pull ) then
-		return false
-	end
-	
 	-- skill with maximum use per fight
 	if( self.maxuse > 0 and
 	    self.used >= self.maxuse ) then
@@ -174,9 +180,19 @@ function CSkill:canUse(_only_friendly)
 		return false;
 	end
 
-	-- You don't meet the maximum HP percent requirement
-	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
-	if( player.HP / player.MaxHP * 100 > self.MaxHpPer ) then
+	-- check pullonly skills
+	if( self.pullonly == true and
+	    not player.ranged_pull ) then
+		return false
+	end
+	
+	-- Not enough mana
+	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then
+		return false;
+	end
+
+	-- Already have a pet out
+	if( self.Type == STYPE_SUMMON and player.PetPtr ~= 0 ) then
 		return false;
 	end
 
