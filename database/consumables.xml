@@ -2,28 +2,39 @@
 	<!-- Healing potions -->
 	<potion type="healing" id="204889" level="51" name="Spirit Herb" />
 	<potion type="healing" id="200820" level="46" name="Ancestral Spirit Herbs" />
-	<potion type="healing" id="200819" level="41" name="Military Regeneration Formula" />
+	<potion type="healing" id="200274" level="41" potency="1500" name="Strong Healing Potion" />
+	<potion type="healing" id="200229" level="41" potency="1200" name="Strong medicine" />
+	<potion type="healing" id="200819" level="41" potency="1000" name="Military Regeneration Formula" />
 	<potion type="healing" id="200816" level="36" name="Potent Regeneration Formula" />
 	<potion type="healing" id="200815" level="31" name="Regeneration Mixture" />
 	<potion type="healing" id="200812" level="26" name="Healer's First Aid Potion" />
-	<potion type="healing" id="200811" level="21" name="Barbarian Herbs" />
+	<potion type="healing" id="200178" level="21" potency="800" name="Healing Potion" />
+	<potion type="healing" id="200811" level="21" potency="600" name="Barbarian Herbs" />
+	<potion type="healing" id="200174" level="21" potency="600" name="Salve" />
 	<potion type="healing" id="200808" level="16" name="Major First Aid Potion" />
 	<potion type="healing" id="200807" level="11" potency="400" name="First Aid Potion" />
 	<potion type="healing" id="200664" level="6" name="Basic First Aid Potion" />
+	<potion type="healing" id="200154" level="1" potency="300" name="Heiltrank" />
 	<potion type="healing" id="200151" level="1" potency="220" name="Basic Medicine" />
 	<potion type="healing" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
 
 	<!-- Mana potions -->
-	<potion type="mana" id="204890" name="Elemental Spirit Stone" level="51" />
-	<potion type="mana" id="201061" name="Elemental Spirit Stone" level="46" />
-	<potion type="mana" id="201060" name="Refined Crystal Mana Medicine" level="41" />
-	<potion type="mana" id="201057" name="Potent Crystal Mana Medicine" level="36" />
-	<potion type="mana" id="201056" name="Crystal Mana Medicine" level="31" />
-	<potion type="mana" id="201053" name="Condensed Magic Potion" level="26" />
-	<potion type="mana" id="201052" name="Elemental Mana Stone" level="21" />
-	<potion type="mana" id="201047" name="Major Magic Potion" level="16" />
-	<potion type="mana" id="201046" name="Magic Potion" level="11" />
-	<potion type="mana" id="201043" name="Basic Magic Potion" level="6" />
+	<potion type="mana" id="204890" level="51" name="Elemental Spirit Stone" />
+	<potion type="mana" id="201061" level="46" name="Elemental Spirit Stone" />
+	<potion type="mana" id="200275" level="43" potency="1500" name="Strong Mana Potion" />
+	<potion type="mana" id="200270" level="43" potency="1200" name="Powerful Spirit Potion" />
+	<potion type="mana" id="201060" level="41" name="Refined Crystal Mana Medicine" />
+	<potion type="mana" id="201057" level="36" name="Potent Crystal Mana Medicine" />
+	<potion type="mana" id="201056" level="31" name="Crystal Mana Medicine" />
+	<potion type="mana" id="201053" level="26" name="Condensed Magic Potion" />
+	<potion type="mana" id="200179" level="23" potency="800" name="Mana Potion green" />
+	<potion type="mana" id="200175" level="23" potency="600" name="Mana Potion" />
+	<potion type="mana" id="201052" level="21" name="Elemental Mana Stone" />
+	<potion type="mana" id="201047" level="16" name="Major Magic Potion" />
+	<potion type="mana" id="201046" level="11" name="Magic Potion" />
+	<potion type="mana" id="201043" level="6" name="Basic Magic Potion" />
+	<potion type="mana" id="200155" level="3" potency="300" name="Basic Mana Potion" />
+	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />
 	<potion type="mana" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
 	<!-- Arrow quivers -->

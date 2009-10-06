@@ -332,13 +332,21 @@ end
 function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
 
-	-- Still cooling down, don't use.
-	if( os.difftime(os.time(), self.PotionLastUseTime) < settings.profile.options.POTION_COOLDOWN+1 ) then
-		return false;
-	end 
+	-- set general potion cooldown time	
+	local cooldown_hp = settings.profile.options.POTION_COOLDOWN
+	local cooldown_mana = settings.profile.options.POTION_COOLDOWN
+	
+	-- copy special mp/hp cooldowns if defined
+	if( settings.profile.options.POTION_COOLDOWN_HP ~= 0 ) then	
+		cooldown_hp = settings.profile.options.POTION_COOLDOWN_HP
+	end
+	if( settings.profile.options.POTION_COOLDOWN_MANA ~= 0 ) then	
+		cooldown_mana = settings.profile.options.POTION_COOLDOWN_MANA
+	end
 
 	-- If we need to use a health potion
-	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION ) then
+	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION  and
+		os.difftime(os.time(), self.PotionLastUseTime) > cooldown_hp )  then
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
 			item:use();
@@ -368,7 +376,8 @@ function CPlayer:checkPotions()
 
 	-- If we need to use a mana potion(if we even have mana)
 	if( self.MaxMana > 0 ) then 
-		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION ) then  
+		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION  and
+			os.difftime(os.time(), self.PotionLastUseTime) > cooldown_mana )  then
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
 				item:use();
@@ -397,6 +406,8 @@ function CPlayer:checkPotions()
 		end
 	end
 
+	return false
+	
 end
 
 function CPlayer:fight()
