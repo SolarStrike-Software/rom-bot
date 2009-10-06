@@ -40,9 +40,6 @@ settings_default = {
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
 			LOOT_PAUSE_AFTER = 10,	-- probability for short pause after loot to look more human
-			POTION_COOLDOWN = 15,	-- allways 15
-			POTION_COOLDOWN_HP = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
-			POTION_COOLDOWN_MANA = 0,	-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			MAX_FIGHT_TIME = 12,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
@@ -63,6 +60,9 @@ settings_default = {
 
 			
 			-- expert options
+			POTION_COOLDOWN = 15,	-- allways 15
+			POTION_COOLDOWN_HP = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
+			POTION_COOLDOWN_MANA = 0,	-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			USE_MANA_POTION = "best",	-- which mana potion type to use: best | minstack
 			USE_HP_POTION = "best",		-- which HP potion type to use: best | minstack 			
 			WAYPOINTS_REVERSE = false,	-- use the waypoint file in reverse order
