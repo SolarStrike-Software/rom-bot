@@ -18,6 +18,9 @@
 		<option name="ARROW_QUIVER" value="2" />
 		<option name="THROWN_BAG" value="2" />
 
+		<!-- either false or arrow or thrown -->
+		<option name="RELOAD_AMMUNITION" value="false" />
+
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        value="" />	<!-- leave empty or choose ranged/melee if not using class default -->
 		<option name="COMBAT_RANGED_PULL" value="true" /> <!-- only important for melees -->
@@ -49,9 +52,6 @@
 		<option name="LOGOUT_SHUTDOWN"		value="false" />
 		<option name="LOGOUT_WHEN_STUCK"	value="true" />
 		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
-
-		<!-- either false or arrow or thrown --!>
-		<option name="RELOAD_AMMUNITION" value="false" />
 
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
