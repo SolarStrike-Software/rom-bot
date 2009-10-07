@@ -16,7 +16,7 @@
 	<options>
 		<option name="ENABLE_FIGHT_SLOW_TURN" value="false" />
 		<option name="MELEE_DISTANCE" value="45" />
-		<option name="LANGUAGE" value="english" />	<!-- english|deutsch|french -->
+		<option name="LANGUAGE" value="english" />	<!-- english|deutsch|french|russian -->
 		<option name="DEBUGGING" value="false" />
 
 		<!--

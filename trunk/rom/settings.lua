@@ -27,7 +27,7 @@ settings_default = {
 			MP_LOW_POTION = 50,
 			HP_LOW_POTION = 40,
 			COMBAT_TYPE = "melee",
-			COMBAT_RANGED_PULL = "true",	-- only for melee classes 
+			COMBAT_RANGED_PULL = "true",	-- only for melee classes , use ranged skill to pull
 			COMBAT_DISTANCE = 200,
 			ANTI_KS = true,
 			WAYPOINTS = "demo.xml",
@@ -52,31 +52,31 @@ settings_default = {
 			MP_REST = 15,
 			HP_REST = 15,
 			RES_AUTOMATIC_AFTER_DEATH = false,	-- automatic resurrect after death true|false,
-			HEALING_POTION = 0,			-- shopping options
-			MANA_POTION = 0,
-			ARRAY_QUIVER = 0,
-			THROWN_BAG = 0,
-			RELOAD_AMMUNITION = false,
+			HEALING_POTION = 0,				-- shopping options, how many to buy/have in inventory
+			MANA_POTION = 0,				-- shopping options, how many to buy/have in inventory
+			ARRAY_QUIVER = 0,				-- shopping options, how many to buy/have in inventory
+			THROWN_BAG = 0,					-- shopping options, how many to buy/have in inventory
+			RELOAD_AMMUNITION = false,		-- false|arrow|thrown
 
 			
 			-- expert options
-			POTION_COOLDOWN = 15,	-- allways 15
-			POTION_COOLDOWN_HP = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
-			POTION_COOLDOWN_MANA = 0,	-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
-			SIT_WHILE_RESTING = false,	-- sit while using the rest function
-			USE_MANA_POTION = "best",	-- which mana potion type to use: best | minstack
-			USE_HP_POTION = "best",		-- which HP potion type to use: best | minstack 			
-			WAYPOINTS_REVERSE = false,	-- use the waypoint file in reverse order
-			MAX_DEATHS = 10,		-- maximal death if automatic resurrect befor logout
-			WAIT_TIME_AFTER_RES = 8000,	-- time to wait after resurrection, needs more on slow PCs
+			POTION_COOLDOWN = 15,			-- normaly 15
+			POTION_COOLDOWN_HP = 0,			-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
+			POTION_COOLDOWN_MANA = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
+			SIT_WHILE_RESTING = false,		-- sit while using the rest function
+			USE_MANA_POTION = "best",		-- which mana potion type to use: best | minstack
+			USE_HP_POTION = "best",			-- which HP potion type to use: best | minstack 			
+			WAYPOINTS_REVERSE = false,		-- use the waypoint file in reverse order
+			MAX_DEATHS = 10,				-- maximal death if automatic resurrect befor logout
+			WAIT_TIME_AFTER_RES = 8000,		-- time to wait after resurrection, needs more on slow PCs
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
-			HARVEST_SCAN_WIDTH = 10,	-- steps horizontal
-			HARVEST_SCAN_HEIGHT = 8,	-- steps vertical
-			HARVEST_SCAN_STEPSIZE = 35,	-- wide of every step
+			HARVEST_SCAN_WIDTH = 10,		-- steps horizontal
+			HARVEST_SCAN_HEIGHT = 8,		-- steps vertical
+			HARVEST_SCAN_STEPSIZE = 35,		-- wide of every step
 			HARVEST_SCAN_TOPDOWN = false,	-- true = top->down  false = botton->up
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
-			HARVEST_SCAN_YREST = 10,	-- scanspeed
+			HARVEST_SCAN_YREST = 10,		-- scanspeed
 			HARVEST_SCAN_YMOVE = 1.1,		-- move scan area top/down ( 1=middle of screen )
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
@@ -87,7 +87,7 @@ settings_default = {
 			
 			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
-			INV_UPDATE_INTERVAL = 300,	 		-- full inventory update every x seconds
+			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
 
 			
 		},	
@@ -299,7 +299,6 @@ function settings.load()
 			if( fileExists(filename) ) then
 				file = io.open(filename, "r");
 				local tmp = filename;
-				-- no language variables, because to early
 				cprintf(cli.green, language[123], filename);	-- read the hotkey settings from your bindings.txt
 			end
 		end
