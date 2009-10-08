@@ -94,6 +94,7 @@ function main()
 	if( settings.options.DEBUGGING ) then
 		-- Player debugging info
 		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
+		printf("[DEBUG] player pet: 0x%X\n", player.PetPtr);
 		printf("[DEBUG] Player target: 0x%X\n", player.TargetPtr);
 
 		if( player.TargetPtr ~= 0 ) then
