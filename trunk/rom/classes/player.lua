@@ -362,6 +362,7 @@ function CPlayer:checkPotions()
 		os.difftime(os.time(), self.PotionLastUseTime) > cooldown_hp )  then
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
+			yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
 			item:use();
 			self.PotionHpUsed = self.PotionHpUsed + 1;			-- counts use of HP potions
 			
@@ -393,6 +394,7 @@ function CPlayer:checkPotions()
 			os.difftime(os.time(), self.PotionLastUseTime) > cooldown_mana )  then
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
+				yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
 				item:use();
 				self.PotionManaUsed = self.PotionManaUsed + 1;		-- counts use of mana potions
 					
