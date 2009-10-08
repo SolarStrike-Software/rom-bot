@@ -138,13 +138,14 @@ function database.load()
 		database.nodes[id] = tmp;
 	end
 
+
 	-- UTF-8 -> ASCII translation
 	root = xml.open(getExecutionPath() .. "/database/utf8_ascii.xml");
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
 		local utf8_1, utf8_2, ascii, dos_replace;
-		local tmp = CNode();
+		local tmp = {};
 
 		utf8_1 = v:getAttribute("utf8_1");
 		utf8_2 = v:getAttribute("utf8_2");
@@ -159,6 +160,7 @@ function database.load()
 
 		database.utf8_ascii[ascii] = tmp;
 	end
+	
 	
 	-- import consumables (potions, arrows, stones, ...)
 	root = xml.open(getExecutionPath() .. "/database/consumables.xml");

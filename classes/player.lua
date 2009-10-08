@@ -219,7 +219,8 @@ function CPlayer:cast(skill)
 
 	-- Wait for casting to start (if it has a decent cast time)
 	if( skill.CastTime > 0 ) then
-		local startTime = os.time();
+--		local startTime = os.time();
+		local startTime = getTime();
 		while( not self.Casting ) do
 			-- break cast with jump if aggro before casting finished
 			if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
@@ -230,7 +231,8 @@ function CPlayer:cast(skill)
 			end;
 			yrest(50);
 			self:update();
-			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
+--			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
+			if( deltaTime(getTime(), startTime) > skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
 				self.Casting = true; -- force it.
 				break;
 			end
@@ -247,6 +249,15 @@ function CPlayer:cast(skill)
 			-- Waiting for casting to finish...
 			yrest(10);
 			self:update();
+
+			-- leave before Casting flag is gone, so we can cast faster
+			if( deltaTime(getTime(), startTime) > 
+			  skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
+				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
+				break;
+			end
+
+
 		end
 --				printf(language[20]);		-- finished casting
 	else
@@ -258,11 +269,13 @@ function CPlayer:cast(skill)
 		self.Cast_to_target = self.Cast_to_target + 1;
 	end;
 
-	if( skill.CastTime == 0 ) then
-		yrest(500);
-	else
-		yrest(100);
-	end;
+-- ??? why wait?
+-- we have above a 500 wait if no CastTime or the self.Casting flag
+--	if( skill.CastTime == 0 ) then
+--		yrest(500);
+--	else
+--		yrest(100);
+--	end;
 
 	-- print HP of our target
 	-- we do it later, because the client needs some time to change the values
@@ -1890,6 +1903,9 @@ function CPlayer:merchant(_npcname)
 	
 end
 
+-- trys to target a friendly NPC/player with the ingame targetnearestfriend key
+-- if after some tries we don't find the target, the character will turn around 
+-- in steps and tries again to find the target
 function CPlayer:target_NPC(_npcname)
 
 	if( not _npcname ) then
@@ -1935,9 +1951,9 @@ function CPlayer:target_NPC(_npcname)
 
 				if( string.find(string.lower(target.Name), string.lower(_npcname), 1, true ) ) then
 
-					cprintf(cli.green, language[136], _npcname);	-- We successfully target NPC
+					cprintf(cli.green, language[136], _npcname);	-- we successfully target NPC
 					if( settings.profile.hotkeys.MACRO ) then
-						RoMScript("UseSkill(1,1);");
+						RoMScript("UseSkill(1,1);");				-- general attack key = open dialog window
 					else
 						if( settings.profile.hotkeys.ATTACK.modifier ) then
 							keyboardHold(settings.hotkeys.ATTACK.modifier);

@@ -60,8 +60,9 @@ settings_default = {
 
 			
 			-- expert options
+			SKILL_USE_PRIOR = 300,			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
-			POTION_COOLDOWN = 15,			-- normaly 15
+			POTION_COOLDOWN = 15,			-- always 15
 			POTION_COOLDOWN_HP = 0,			-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			POTION_COOLDOWN_MANA = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			SIT_WHILE_RESTING = false,		-- sit while using the rest function
@@ -84,7 +85,15 @@ settings_default = {
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			DEBUG_LOOT = false,	 			-- debug loot issues
 			DEBUG_TARGET = false, 			-- debug targeting issues
-			DEBUG_SKILLUSE = false, 		-- debug skill use issues
+			
+			-- debug skill use issues
+			DEBUG_SKILLUSE = {
+				ENABLE 		= false,
+				TIMEGAP		= true,		-- show the time gap between cast starts
+				ONCOOLDOWN	= true,		-- show the time in ms that we are before the cooldown
+				NOCOOLDOWN	= true,		-- show the time in ms that we are over the cooldown
+				HPLOW		= true 
+				},
 			
 			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()

@@ -438,7 +438,7 @@ function replaceAscii( _str, _ascii )
 	return _str
 end
 
--- we only replace umlaute, hence only that are importent for mob names
+-- we only replace umlaute, hence only that are important for mob names
 -- player names are at the moment not importent for the MM protocol
 -- player names will be handled while loading the profile
 function utf8ToAscii(_str)
@@ -452,7 +452,7 @@ function utf8ToAscii(_str)
 	return _str;
 end
 
--- we only replace umlaute, hence only that are importent for
+-- we only replace umlaute, hence only that are important for
 -- printing ingame messages
 function asciiToUtf8(_str)
 	_str = replaceAscii(_str, 132);		-- ä

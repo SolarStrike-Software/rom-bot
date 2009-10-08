@@ -26,7 +26,7 @@ CSkill = class(
 		self.MinRange = 0; -- Must be at least this far away to cast
 		self.CastTime = 0;
 		self.Cooldown = 0;
-		self.LastCastTime = 0; --os.time();
+		self.LastCastTime = { low = 0, high = 0 }; 	-- getTime() in ms
 		self.Type = STYPE_DAMAGE;
 		self.Target = STARGET_ENEMY;
 		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
@@ -83,6 +83,54 @@ CSkill = class(
 function CSkill:canUse(_only_friendly)
 	if( hotkey == 0 ) then return false; end; --hotkey must be set!
 
+	-- a local function to make it more easy to insert debuging lines
+	-- you have to insert the correspointing options into your profile
+	-- at the <onLoad> event to set the right values
+	-- 	settings.profile.options.DEBUG_SKILLUSE.ENABLE = true;
+	--	settings.profile.options.DEBUG_SKILLUSE.TIMEGAP = true;
+
+	local function debug_skilluse(_reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
+		
+		-- return if debugging / detail  is disabled
+		if( not settings.profile.options.DEBUG_SKILLUSE.ENABLE ) then return; end
+		if( settings.profile.options.DEBUG_SKILLUSE[_reason] == false ) 	then  return; end;
+--		if( _reason == "ONCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.ONCOOLDOWN ) 	then  return; end;
+--		if( _reason == "NOCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.NOCOOLDOWN ) 	then  return; end;
+--		if( _reason == "HPLOW" 		and  not settings.profile.options.DEBUG_SKILLUSE.HPLOW ) 		then  return; end;
+	
+		local function make_printable(_v)
+			if(_v == true) then
+				_v = "<true>";
+			end
+			if(_v == false) then
+				_v = "<false>";
+			end
+			if( type(_v) == "table" ) then
+				_v = "<table>";
+			end
+			if( type(_v) == "number" ) then
+				_v = sprintf("%d", _v);
+			end
+			return _v
+		end
+	
+		local hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 = "", "", "", "", "", "";
+		if(_arg1) then hf_arg1 = make_printable(_arg1); end;
+		if(_arg2) then hf_arg2 = make_printable(_arg2); end;
+		if(_arg3) then hf_arg3 = make_printable(_arg3); end;
+		if(_arg4) then hf_arg4 = make_printable(_arg4); end;
+		if(_arg5) then hf_arg5 = make_printable(_arg5); end;
+		if(_arg6) then hf_arg6 = make_printable(_arg6); end;
+
+
+		local msg = sprintf("[DEBUG] %s %s %s %s %s %s %s %s\n", _reason, self.Name, hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 ) ;
+		
+		cprintf(cli.yellow, msg);
+		
+	end
+
+
+
 	-- only friendly skill types?
 	if( _only_friendly ) then
 		if( self.Type ~= STYPE_HEAL  and
@@ -125,25 +173,34 @@ function CSkill:canUse(_only_friendly)
 		return false;
 	end   
 
+	-- check if hp below our HP_LOW level
+	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
+		local hpper = (player.HP/player.MaxHP * 100);
+
+		if( self.MaxHpPer ~= 100 ) then
+			if( hpper > self.MaxHpPer ) then
+				return false;
+			end
+		else
+			-- Inherit from settings' HP_LOW
+			if( hpper > settings.profile.options.HP_LOW ) then
+				debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
+				return false;
+			end
+		end
+	end
+
+
 	-- Still cooling down...
 --	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
-	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
+--	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
+	if( deltaTime(getTime(), self.LastCastTime) < 
+	  self.Cooldown*1000 - settings.profile.options.SKILL_USE_PRIOR ) then	-- Cooldown is in sec
 
-		if( settings.profile.options.DEBUG_SKILLUSE) then	
-			cprintf(cli.yellow, "[DEBUG] skill at cooldown %s %s\n",
-			  self.Cooldown - os.difftime(os.time(), self.LastCastTime),
-			  self.Name);
-		end;
-
+		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;
 	else
-
-		if( settings.profile.options.DEBUG_SKILLUSE) then	
-			cprintf(cli.yellow, "[DEBUG] skill can be used since %s %s\n",
-			  os.difftime(os.time(), self.LastCastTime) - self.Cooldown,
-			  self.Name);
-		end;
-
+		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000 );
 	end
 
 	-- skill with maximum use per fight
@@ -196,21 +253,6 @@ function CSkill:canUse(_only_friendly)
 		return false;
 	end
 
-	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
-		local hpper = (player.HP/player.MaxHP * 100);
-
-		if( self.MaxHpPer ~= 100 ) then
-			if( hpper > self.MaxHpPer ) then
-				return false;
-			end
-		else
-			-- Inherit from settings' HP_LOW
-			if( hpper > settings.profile.options.HP_LOW ) then
-				return false;
-			end
-		end
-	end
-
 	if( self.Toggleable and self.Toggled == true ) then
 		return false;
 	end
@@ -235,7 +277,27 @@ function CSkill:use()
 	end
 
 	self.used = self.used + 1;	-- count use of skill per fight
-	self.LastCastTime = os.time() + self.CastTime;
+--	self.LastCastTime = os.time() + self.CastTime;
+
+	-- set LastCastTime, thats the current key press time plus the casting time (if there is some)
+	-- self.CastTime is in sec, hence * 1000
+	-- every 1 ms in self.LastCastTime.low ( from getTime() ) is about 14320 units
+	self.LastCastTime = getTime();
+	self.LastCastTime.low = self.LastCastTime.low + self.CastTime*1000*14320;
+	
+	-- debug time gap between casts
+	if( settings.profile.options.DEBUG_SKILLUSE.ENABLE  and
+		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP and
+		debug_LastCastTime ~= nil and
+		debug_LastCastTime.low > 0 ) then 
+		
+		local msg = sprintf("[DEBUG] time-gap between skill use %d\n", 
+		  deltaTime(getTime(), debug_LastCastTime) );
+		cprintf(cli.yellow, msg);
+	end
+	debug_LastCastTime = getTime();		-- remember time to check time-lag between casts
+
+	
 	if(self.hotkey == "MACRO") then
 		if( self.skilltab == nil  or  self.skillnum == nil ) then
 			cprintf(cli.yellow, "missing skilltab/skillnum in skills.xml for %s. "..
