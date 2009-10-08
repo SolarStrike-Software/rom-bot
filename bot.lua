@@ -141,6 +141,11 @@ function main()
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
+	player.ClientLanguage = string.lower( RoMScript("GetLanguage();") );	-- read clients language
+	if( player.ClientLanguage == "eneu" or 	-- hopefully skillnames for eneu and enus are the same?
+	  player.ClientLanguage == "enus" ) then 	-- if not, we will have to change that
+		player.ClientLanguage = "en"; 
+	end
 	
 	-- Register and update inventory
 	inventory = CInventory();
@@ -618,6 +623,8 @@ function resurrect()
 		-- if still dead, try macro if one defined
 		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
+			RoMScript("UseSelfRevive();");	-- first try self revive 
+			yrest(500);
 			RoMScript("BrithRevive();");
 			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
 			player:update();

@@ -111,6 +111,24 @@ function database.load()
 	end
 
 
+	-- import local skill file
+	-- used to use skills by name with RoMScript and CastSpellByName()
+	local root = xml.open(getExecutionPath() .. "/database/skills_local.xml");
+	local elements = root:getElements();
+
+	for i,v in pairs(elements) do
+	  local skill_name = v:getName(); -- This is the TAG name; ie. MAGE_FIREBALL
+
+	  -- Make sure the skill is in the database (and that the database is loaded)
+	  if( database.skills[skill_name] ) then
+		database.skills[skill_name].en = v:getAttribute("en");
+		database.skills[skill_name].de = v:getAttribute("de");
+		database.skills[skill_name].fr = v:getAttribute("fr");
+		database.skills[skill_name].ru = v:getAttribute("ru");		
+	  end
+	end
+
+
 	-- import nodes/ressouces 
 	root = xml.open(getExecutionPath() .. "/database/nodes.xml");
 	elements = root:getElements();
@@ -152,13 +170,14 @@ function database.load()
 		ascii = v:getAttribute("ascii");
 		dos_replace = v:getAttribute("dos_replace");
 
-		tmp.Name = name;
+--		tmp.Name = name;
 		tmp.utf8_1 = utf8_1;
 		tmp.utf8_2 = utf8_2;
 		tmp.ascii = ascii;
 		tmp.dos_replace = dos_replace;		
 
-		database.utf8_ascii[ascii] = tmp;
+		local key = utf8_1*1000 + utf8_2;
+		database.utf8_ascii[key] = tmp;
 	end
 	
 	

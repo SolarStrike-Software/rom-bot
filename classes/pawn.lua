@@ -92,6 +92,7 @@ CPawn = class(
 		self.Returning = false;		-- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
 		self.BotStartTime_nr = 0;	-- Records when the bot was started, will not return at pause
+		self.ClientLanguage	= "en";	-- client language
 		self.InventoryLastUpdate = os.time(); -- time of the last full inventory updata
 		self.InventoryDoUpdate = false;	-- flag to 'force' inventory update
 		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
@@ -155,15 +156,21 @@ function CPawn:update()
 	end
 	showWarnings(true); -- Re-enable warnings after reading
 
+
 	-- UTF8 -> ASCII translation not for player names
 	-- because that would need the whole table and there we normaly
 	-- don't need it, we don't print player names in the MM window or so
 	if( tmp == nil ) then
 		self.Name = "<UNKNOW>";
-	elseif(self.Type == PT_PLAYER ) then
-		self.Name = tmp;
+--	elseif(self.Type == PT_PLAYER ) then
+--		self.Name = tmp;
 	else
-		self.Name = utf8ToAscii(tmp);
+--		local hf_before = getTime(); 
+		-- time for only convert 8 characters is 0 ms
+		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
+--		self.Name = utf8ToAscii(tmp);			-- only convert umlauts
+		self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
+--		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) ); 
 	end
 
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);

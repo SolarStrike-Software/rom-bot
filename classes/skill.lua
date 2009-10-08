@@ -298,14 +298,16 @@ function CSkill:use()
 	debug_LastCastTime = getTime();		-- remember time to check time-lag between casts
 
 	
-	if(self.hotkey == "MACRO") then
-		if( self.skilltab == nil  or  self.skillnum == nil ) then
-			cprintf(cli.yellow, "missing skilltab/skillnum in skills.xml for %s. "..
-			  "Can't use that skill via MACRO\n", self.Name);	
-		else
+	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
+		if( database.skills[self.Name][player.ClientLanguage] ) then	-- skill in locals
+			RoMScript("CastSpellByName("..database.skills[self.Name][player.ClientLanguage]..");");
+		elseif( self.skilltab ~= nil  and  self.skillnum ~= nil ) then
 			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
+		else
+			cprintf(cli.yellow, "No local skillname in skills_local.xml. Please maintenance the file and send it to the developers.\n", self.Name);	
 		end;
 	else
+		-- use the normal hotkeys
 		if( self.modifier ) then
 			keyboardHold(self.modifier);
 		end

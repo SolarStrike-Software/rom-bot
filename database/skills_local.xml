@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<skillslocal>
+	<MAGE_FIREBALL en="Fireball" de="Feuerball" />
+	<MAGE_LIGHTNING de="Blitzschlag" />
+	<MAGE_INTENSIFICATION  de="Intensivierung" />
+	<MAGE_SILENCE  de="Stille" />
+	<MAGE_FIRE_WARD de="Brandschutz" />
+	<MAGE_ELEMENTAL_CATALYST de="Elementarkatalyse"  />
+	<MAGE_FLAME de="Flammenstoss" />
+	<MAGE_ELECTROSTATIC_CHARGE de="Statische Aufladung" />
+	<MAGE_PLASMA_ARROW de="Plasmapfeil" />
+	<MAGE_ELECTRIC_BOLT de="Elektrischer Bolzen" />
+</skillslocal>
