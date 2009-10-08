@@ -14,7 +14,7 @@ CLASS_KNIGHT = 6;
 CLASS_WARDEN = 7;
 CLASS_DRUID = 8;
 
-ATTACKABLE_MASK_PLAYER = 0x4000;
+ATTACKABLE_MASK_PLAYER = 0x10000;
 ATTACKABLE_MASK_MONSTER = 0xA0000;
 
 -- used in function.lua for openGiftbag()
@@ -176,6 +176,8 @@ function CPawn:update()
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
 
 	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + pawnAttackable_offset), memerrmsg);
+	--printf("attackable flag: 0x%X\n", attackableFlag);
+	--printf("check(player): %s\n", tostring( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ));
 
 	if( self.Type == PT_MONSTER ) then
 		self.Attackable = true;
