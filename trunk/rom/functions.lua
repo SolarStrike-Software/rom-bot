@@ -421,11 +421,31 @@ function addMessage(message)
 	message = string.gsub(message, "\n", "\\n")
 	message = string.gsub(message, "\"", "\\\"")
 
-	message = asciiToUtf8(message);	-- for ingame umlauts
+	message = asciiToUtf8_umlauts(message);	-- for ingame umlauts
 
 	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
 end
 
+
+-- UTF8 -> DOS(OEM) conversation for the russian client
+-- we use it for the player names & mob names conversion in pawn.lua
+function utf82oem_russian(txt)
+  txt = string.gsub(txt, string.char(0xD0, 0x81), string.char(0xA8) );	-- 0xA8 / 168 E with dots
+  txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xB8) );	-- 0xB8 /184 e with dots 
+  -- lower case
+  local patt = string.char(0xD1) .. "([" .. string.char(0x80, 0x2D, 0x8F) .. "])";
+  txt = string.gsub(txt, patt, function (s)
+            return string.char(string.byte(s,1,1)+0x60);
+          end
+  );
+  -- upper case
+  patt = string.char(0xD0) .. "([" .. string.char(0x90, 0x2D, 0xBF) .. "])";
+  txt = string.gsub(txt, patt, function (s)
+            return string.char(string.byte(s,1,1)-0x10);
+          end
+  );
+  return txt;
+end
 
 -- convert the ingame UTF8 strings to ASCII
 -- we use the complete utf8 table, that means for all languages we have
@@ -457,7 +477,7 @@ end
 -- we only replace umlaute, hence only that are important for mob names
 -- player names are at the moment not importent for the MM protocol
 -- player names will be handled while loading the profile
-function utf8ToAscii(_str)
+function utf8ToAscii_umlauts(_str)
 
 	-- convert one UTF8 character to his ASCII code
 	-- key is the combined UTF8 code 
@@ -480,7 +500,7 @@ end
 
 -- we only replace umlaute, hence only that are important for
 -- printing ingame messages
-function asciiToUtf8(_str)
+function asciiToUtf8_umlauts(_str)
 
 	-- convert one ASCII code to his UTF8 character 
 	-- key is the combined UTF8 code 

@@ -165,11 +165,16 @@ function CPawn:update()
 --	elseif(self.Type == PT_PLAYER ) then
 --		self.Name = tmp;
 	else
---		local hf_before = getTime(); 
 		-- time for only convert 8 characters is 0 ms
 		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
---		self.Name = utf8ToAscii(tmp);			-- only convert umlauts
-		self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
+--		local hf_before = getTime(); 
+
+		if( bot.ClientLanguage == "ru" ) then
+			self.Name = utf82oem_russian(tmp);
+		else
+			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
+--			self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
+		end
 --		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) ); 
 	end
 
