@@ -114,6 +114,11 @@ settings_default = {
 	},
 };
 
+bot =	{ 		-- global bot values
+		ClientLanguage,		-- ingame language of the game [ de|ru|fr| en (for enus and eneu) ]
+		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
+		};		
+
 settings = settings_default;
 
 check_keys = { name = { } };

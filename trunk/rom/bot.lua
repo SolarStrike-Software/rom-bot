@@ -21,10 +21,6 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
-bot =	{ 		-- gloabal bot values
-		ClientLanguage,		-- ingame language of the game [ de|ru|fr| en (for enus and eneu) ]
-		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
-		};		
 
 
 print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
