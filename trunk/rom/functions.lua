@@ -434,7 +434,6 @@ function convert_utf8_ascii( _str )
 	-- local function to convert string (e.g. mob name / player name) from UTF-8 to ASCII
 	local function convert_utf8_ascii_character( _str, _v )
 		local found;
---		local tmp = database.utf8_ascii[_ascii];
 		_str, found = string.gsub(_str, string.char(_v.utf8_1, _v.utf8_2), string.char(_v.ascii) );
 		return _str, found;
 	end
