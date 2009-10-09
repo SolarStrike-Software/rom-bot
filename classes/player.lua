@@ -123,7 +123,7 @@ function CPlayer:harvest( _second_try )
 			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
 			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
 			yrest(50);
-			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticbase_char, addresses.mousePtr_offset));
+			mousePawn = CPawn(memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
 			yrest(50);
 
 			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
@@ -194,6 +194,13 @@ function CPlayer:resetSkills()
 		if( v.used ) then
 			v.used = 0;
 		end
+	end
+end
+
+-- Resets skill cooldowns / used after death
+function CPlayer:resetSkillLastCastTime()
+	for i,v in pairs(settings.profile.skills) do
+		v.LastCastTime = { low = 0, high = 0 }; 	
 	end
 end
 

@@ -361,6 +361,7 @@ function main()
 		player:logoutCheck();
 
 		if( not player.Alive ) then
+			player:resetSkillLastCastTime();	-- set last use back, so we can rebuff
 			resurrect();
 		end
 
