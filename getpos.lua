@@ -19,7 +19,7 @@ end
 atExit(exitCallback);
 
 function main()
-	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	player = CPlayer(playerAddress);
 
 	while(true) do

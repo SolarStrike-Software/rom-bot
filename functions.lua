@@ -39,12 +39,12 @@ end
 
 function checkExecutableCompatible()
 	if( findPatternInProcess(getProc(), charUpdatePattern, charUpdateMask,
-	charpatternstart_address, 1) == 0 ) then
+	addresses.staticpattern_char, 1) == 0 ) then
 		return false;
 	end
 
 	if( findPatternInProcess(getProc(), macroUpdatePattern, macroUpdateMask,
-	macropatternstart_address, 1) == 0 ) then
+	addresses.staticpattern_macro, 1) == 0 ) then
 		return false;
 	end
 
@@ -335,7 +335,7 @@ end
 function RoMScript(script)
 
 	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), staticmacrobase_address);
+	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
 
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
@@ -357,19 +357,19 @@ function RoMScript(script)
 		byte = string.byte(text, i + 1);
 		if( byte == nil or byte == 0 ) then
 			byte = 0;
-			memoryWriteByte(getProc(), macro_address + macro1_offset + i, 0);
+			memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, 0);
 			break;
 		end
-		memoryWriteByte(getProc(), macro_address + macro1_offset + i, byte);
+		memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, byte);
 	end
 
 	-- Make sure we write out the NULL terminator
 	if( byte ~= 0 ) then
-		memoryWriteByte(getProc(), macro_address + macro1_offset + i, 0);
+		memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, 0);
 	end
 
    -- Write something on the first address, to see when its over written
-   memoryWriteByte(getProc(), macro_address + macro2_offset, 6);
+   memoryWriteByte(getProc(), macro_address + addresses.macro2_offset, 6);
 
 	--- Execute it
 	if( settings.profile.hotkeys.MACRO ) then
@@ -379,7 +379,7 @@ function RoMScript(script)
 	-- A cheap version of a Mutex... wait till it is "released"
 	-- Use high-res timers to find out when to time-out
 	local startWaitTime = getTime();
-	while( memoryReadByte(getProc(), macro_address + macro2_offset) == 6 ) do
+	while( memoryReadByte(getProc(), macro_address + addresses.macro2_offset) == 6 ) do
 		if( deltaTime(getTime(), startWaitTime) > 500 ) then
 			if( settings.options.DEBUGGING_MACRO ) then
 				cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
@@ -394,7 +394,7 @@ function RoMScript(script)
 	ret = {};
 	cnt = 0;
 	for i = 0, 254, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + macro2_offset + i);
+		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro2_offset + i);
 
 		if( byte == 0 ) then -- Break on NULL terminator
 			break;

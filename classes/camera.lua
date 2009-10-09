@@ -19,13 +19,13 @@ function CCamera:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";
 
-	self.XUVec = debugAssert(memoryReadFloat(proc, self.Address + camXUVec_offset), memerrmsg);
-	self.YUVec = debugAssert(memoryReadFloat(proc, self.Address + camYUVec_offset), memerrmsg);
-	self.ZUVec = debugAssert(memoryReadFloat(proc, self.Address + camZUVec_offset), memerrmsg);
+	self.XUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camXUVec_offset), memerrmsg);
+	self.YUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camYUVec_offset), memerrmsg);
+	self.ZUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camZUVec_offset), memerrmsg);
 
-	self.X = debugAssert(memoryReadFloat(proc, self.Address + camX_offset), memerrmsg);
-	self.Y = debugAssert(memoryReadFloat(proc, self.Address + camY_offset), memerrmsg);
-	self.Z = debugAssert(memoryReadFloat(proc, self.Address + camZ_offset), memerrmsg);
+	self.X = debugAssert(memoryReadFloat(proc, self.Address + addresses.camX_offset), memerrmsg);
+	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.camY_offset), memerrmsg);
+	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.camZ_offset), memerrmsg);
 
 	if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
 	self.X == nil or self.Y == nil or self.Z == nil ) then
@@ -40,9 +40,9 @@ function CCamera:setPosition(x, y, z)
 	self.YUVec = y;
 	--self.ZUVec = z;
 
-	memoryWriteFloat(proc, self.Address + camXUVec_offset, x);
-	memoryWriteFloat(proc, self.Address + camYUVec_offset, y);
-	--memoryWriteFloat(proc, self.Address + camZUVec_offset, z);
+	memoryWriteFloat(proc, self.Address + addresses.camXUVec_offset, x);
+	memoryWriteFloat(proc, self.Address + addresses.camYUVec_offset, y);
+	--memoryWriteFloat(proc, self.Address + addresses.camZUVec_offset, z);
 end
 
 function CCamera:setRotation(angle)
@@ -53,6 +53,6 @@ function CCamera:setRotation(angle)
 	local nx = px + math.cos(angle + math.pi) * maxViewDistance;
 	local nz = pz + math.sin(angle + math.pi) * maxViewDistance;
 
-	memoryWriteFloat(proc, self.Address + camX_offset, nx);
-	memoryWriteFloat(proc, self.Address + camZ_offset, nz);
+	memoryWriteFloat(proc, self.Address + addresses.camX_offset, nx);
+	memoryWriteFloat(proc, self.Address + addresses.camZ_offset, nz);
 end

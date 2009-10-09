@@ -76,7 +76,7 @@ end
 
 local wpList = {};
 
-local playerPtr = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+local playerPtr = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 player = CPlayer(playerPtr);
 player:update();
 

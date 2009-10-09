@@ -3,7 +3,7 @@ database =  {
 	nodes = {},
 	utf8_ascii = {},
 	consumables = {},
-	giftbags = {}	
+	giftbags = {}
 };
 
 function database.load()
