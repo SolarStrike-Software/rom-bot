@@ -62,7 +62,8 @@ function CPlayer:harvest( _second_try )
 
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST);
-				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+				mousePawn = CPawn(memoryReadIntPtr(getProc(),
+				addresses.staticbase_char, addresses.mousePtr_offset));
 
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
@@ -122,7 +123,7 @@ function CPlayer:harvest( _second_try )
 			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
 			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
 			yrest(50);
-			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+			mousePawn = CPawn(memoryReadIntPtr(getProc(), staticbase_char, addresses.mousePtr_offset));
 			yrest(50);
 
 			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
@@ -143,7 +144,9 @@ function CPlayer:harvest( _second_try )
 					self:update();
 
 					-- Make sure it didn't disapear
-					mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+					mousePawn = CPawn(memoryReadIntPtr(getProc(),
+					addresses.staticbase_char, addresses.mousePtr_offset));
+
 					if( mousePawn.Address == 0 ) then
 						break;
 					end;
@@ -179,7 +182,7 @@ end
 
 
 function CPlayer:initialize()
-	memoryWriteInt(getProc(), self.Address + castbar_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.castbar_offset, 0);
 end
 
 -- Resets "toggled" skills to off & used counter to 0
@@ -1078,8 +1081,8 @@ function CPlayer:faceDirection(dir)
 	local Vec1 = math.cos(dir);
 	local Vec2 = math.sin(dir);
 
-	memoryWriteFloat(getProc(), self.Address + chardirXUVec_offset, Vec1);
-	memoryWriteFloat(getProc(), self.Address + chardirYUVec_offset, Vec2);
+	memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
+	memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec2);
 end
 
 -- turns the player at a given angel in grad
@@ -1312,7 +1315,7 @@ end
 
 function CPlayer:update()
 	-- Ensure that our address hasn't changed. If it has, fix it.
-	local tmpAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+	local tmpAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
@@ -1320,9 +1323,10 @@ function CPlayer:update()
 
 
 	CPawn.update(self); -- run base function
-	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + castbar_offset), language[41]) ~= 0);
+	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + addresses.castbar_offset), language[41]) ~= 0);
 
-	self.Battling = debugAssert(memoryReadBytePtr(getProc(), staticcharbase_address, inBattle_offset), language[41]) == 1;
+	self.Battling = debugAssert(memoryReadBytePtr(getProc(), addresses.staticbase_char,
+	addresses.charBattle_offset), language[41]) == 1;
 	
 	-- remember aggro start time, used for timed ranged pull
 	if( self.Battling == true ) then
@@ -1333,8 +1337,8 @@ function CPlayer:update()
 		self.aggro_start_time = 0;
 	end
 
-	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirXUVec_offset), language[41]);
-	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + chardirYUVec_offset), language[41]);
+	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset), language[41]);
+	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset), language[41]);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
@@ -1346,7 +1350,7 @@ function CPlayer:update()
 		error("Error reading memory in CPlayer:update()");
 	end
 
-	self.PetPtr = debugAssert(memoryReadUInt(getProc(), self.Address + charPetPtr_offset), language[41]);
+	self.PetPtr = debugAssert(memoryReadUInt(getProc(), self.Address + addresses.pawnPetPtr_offset), language[41]);
 	if( self.Pet == nil ) then
 		self.Pet = CPawn(self.PetPtr);
 	else
@@ -1359,7 +1363,7 @@ end
 
 function CPlayer:clearTarget()
 	cprintf(cli.green, language[33]);
-	memoryWriteInt(getProc(), self.Address + charTargetPtr_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, 0);
 	self.TargetPtr = 0;
 end
 
@@ -1765,7 +1769,9 @@ function CPlayer:scan_for_NPC(_npcname)
 
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
-				mousePawn = CPawn(memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset));
+				mousePawn = CPawn(memoryReadIntPtr(getProc(),
+				addresses.staticbase_char, addresses.mousePtr_offset));
+
 				-- id 110504 Waffenhersteller Dimar
 				-- id 110502 Dan (Gemischtwarenhändler
 				-- id 1000, 1001 Player

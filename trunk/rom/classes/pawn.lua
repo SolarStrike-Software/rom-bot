@@ -132,22 +132,22 @@ function CPawn:update()
 	local memerrmsg = "Failed to read memory";
 	local tmp;
 
-	tmp = debugAssert(memoryReadByte(proc, self.Address + charAlive_offset), memerrmsg);
+	tmp = debugAssert(memoryReadByte(proc, self.Address + addresses.charAlive_offset), memerrmsg);
 	self.Alive = not(tmp == 9 or tmp == 8);
-	self.HP = debugAssert(memoryReadInt(proc, self.Address + charHP_offset), memerrmsg);
+	self.HP = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnHP_offset), memerrmsg);
 
-	self.MaxHP = debugAssert(memoryReadInt(proc, self.Address + charMaxHP_offset), memerrmsg);
-	self.MP = debugAssert(memoryReadInt(proc, self.Address + charMP_offset), memerrmsg);
-	self.MaxMP = debugAssert(memoryReadInt(proc, self.Address + charMaxMP_offset), memerrmsg);
-	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + charMP2_offset), memerrmsg);
-	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + charMaxMP2_offset), memerrmsg);
+	self.MaxHP = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMaxHP_offset), memerrmsg);
+	self.MP = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMP_offset), memerrmsg);
+	self.MaxMP = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMaxMP_offset), memerrmsg);
+	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMP2_offset), memerrmsg);
+	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMaxMP2_offset), memerrmsg);
 
-	self.Id = debugAssert(memoryReadUInt(proc, self.Address + pawnId_offset), memerrmsg);
-	self.Type = debugAssert(memoryReadInt(proc, self.Address + pawnType_offset), memerrmsg);
+	self.Id = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnId_offset), memerrmsg);
+	self.Type = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnType_offset), memerrmsg);
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
-	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + charName_offset), memerrmsg);
+	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnName_offset), memerrmsg);
 --	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
 	if( namePtr == nil or namePtr == 0 ) then
 		tmp = nil;
@@ -173,16 +173,16 @@ function CPawn:update()
 --		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) ); 
 	end
 
-	self.Level = debugAssert(memoryReadInt(proc, self.Address + charLevel_offset), memerrmsg);
-	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + charLevel2_offset), memerrmsg);
+	self.Level = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnLevel_offset), memerrmsg);
+	self.Level2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnLevel2_offset), memerrmsg);
 
-	self.TargetPtr = debugAssert(memoryReadInt(proc, self.Address + charTargetPtr_offset), memerrmsg);
+	self.TargetPtr = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnTargetPtr_offset), memerrmsg);
 
-	self.X = debugAssert(memoryReadFloat(proc, self.Address + charX_offset), memerrmsg);
-	self.Y = debugAssert(memoryReadFloat(proc, self.Address + charY_offset), memerrmsg);
-	self.Z = debugAssert(memoryReadFloat(proc, self.Address + charZ_offset), memerrmsg);
+	self.X = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnX_offset), memerrmsg);
+	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnY_offset), memerrmsg);
+	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnZ_offset), memerrmsg);
 
-	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + pawnAttackable_offset), memerrmsg);
+	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnAttackable_offset), memerrmsg);
 	--printf("attackable flag: 0x%X\n", attackableFlag);
 	--printf("check(player): %s\n", tostring( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ));
 
@@ -196,8 +196,8 @@ function CPawn:update()
 		end
 	end
 
-	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + charClass1_offset), memerrmsg);
-	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + charClass2_offset), memerrmsg);
+	self.Class1 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnClass1_offset), memerrmsg);
+	self.Class2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnClass2_offset), memerrmsg);
 
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana
@@ -293,7 +293,7 @@ end
 
 function CPawn:haveTarget()
 	local proc = getProc();
-	self.TargetPtr = memoryReadInt(proc, self.Address + charTargetPtr_offset);
+	self.TargetPtr = memoryReadInt(proc, self.Address + addresses.pawnTargetPtr_offset);
 	if( self.TargetPtr == nil ) then self.TargetPtr = 0; end;
 
 	if( self.TargetPtr == 0 ) then

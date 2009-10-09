@@ -76,7 +76,7 @@ function main()
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
-	local playerAddress = memoryReadIntPtr(getProc(), staticcharbase_address, charPtr_offset);
+	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
@@ -86,7 +86,7 @@ function main()
 		error(msg, 0);
 	end;
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
-		tonumber(staticcharbase_address), tonumber(playerAddress)));
+		tonumber(addresses.staticbase_char), tonumber(playerAddress)));
 
 	player = CPlayer(playerAddress);
 	player:initialize();
@@ -104,7 +104,7 @@ function main()
 		end
 	end
 
-	mousePawn = CPawn( memoryReadIntPtr(getProc(), staticcharbase_address, mousePtr_offset) );
+	mousePawn = CPawn( memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) );
 
 	if( settings.options.DEBUGGING ) then
 		-- Mouse pawn debugging info
@@ -112,7 +112,7 @@ function main()
 		printf("[DEBUG] mousePawn id: %d\n", mousePawn.Id);
 	end
 
-	local cameraAddress = memoryReadIntPtr(getProc(), staticcharbase_address, camPtr_offset);
+	local cameraAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset);
 	if( cameraAddress == nil ) then cameraAddress = 0; end;
 
 	camera = CCamera(cameraAddress);
