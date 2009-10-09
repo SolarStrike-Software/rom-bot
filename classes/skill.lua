@@ -281,9 +281,10 @@ function CSkill:use()
 
 	-- set LastCastTime, thats the current key press time plus the casting time (if there is some)
 	-- self.CastTime is in sec, hence * 1000
-	-- every 1 ms in self.LastCastTime.low ( from getTime() ) is about 14320 units
+	-- every 1 ms in self.LastCastTime.low ( from getTime() ) is about getTimerFrequency().low
+	-- but we calculate the value at bot start time
 	self.LastCastTime = getTime();
-	self.LastCastTime.low = self.LastCastTime.low + self.CastTime*1000*14320;
+	self.LastCastTime.low = self.LastCastTime.low + self.CastTime*1000 * bot.GetTimeFrequency;
 	
 	-- debug time gap between casts
 	if( settings.profile.options.DEBUG_SKILLUSE.ENABLE  and

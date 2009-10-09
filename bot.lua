@@ -19,8 +19,12 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 
 
 
-__WPL = nil; -- Way Point List
-__RPL = nil; -- Return Point List
+__WPL = nil;	-- Way Point List
+__RPL = nil;	-- Return Point List
+bot =	{ 		-- gloabal bot values
+		ClientLanguage,		-- ingame language of the game [ de|ru|fr| en (for enus and eneu) ]
+		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
+		};		
 
 
 print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
@@ -141,11 +145,20 @@ function main()
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
-	player.ClientLanguage = string.lower( RoMScript("GetLanguage();") );	-- read clients language
-	if( player.ClientLanguage == "eneu" or 	-- hopefully skillnames for eneu and enus are the same?
-	  player.ClientLanguage == "enus" ) then 	-- if not, we will have to change that
-		player.ClientLanguage = "en"; 
+	
+	-- remember game client language
+	bot.ClientLanguage = string.lower( RoMScript("GetLanguage();") );	-- read clients language
+	if( bot.ClientLanguage == "eneu" or 	-- hopefully skillnames for eneu and enus are the same?
+	  bot.ClientLanguage == "enus" ) then 	-- if not, we will have to change that
+		bot.ClientLanguage = "en"; 
 	end
+	
+	-- calculate the CPU Frequency / used for manipulation the GetTime() values
+	local calc_start = getTime();
+	yrest(3000);
+	local calc_end = getTime();
+	bot.GetTimeFrequency = (calc_end.low - calc_start.low) / 3000;
+	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 	
 	-- Register and update inventory
 	inventory = CInventory();
