@@ -29,7 +29,7 @@ charMaxMP2_offset = 0x2E4;
 charClass1_offset = 0x300;
 charLevel_offset = 0x304;
 charClass2_offset = 0x308;
-charLevel2_offset = 0xE0C;
+charLevel2_offset = 0x30C;
 pawnAttackable_offset = 0x388;
 inBattle_offset = 0x6D2;
 
