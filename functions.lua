@@ -427,8 +427,9 @@ function addMessage(message)
 end
 
 
--- UTF8 -> DOS(OEM) conversation for the russian client
+-- UTF8 -> DOS(OEM) Code page 866 conversation for the russian client
 -- we use it for the player names & mob names conversion in pawn.lua
+-- http://en.wikipedia.org/wiki/Code_page_866
 function utf82oem_russian(txt)
   txt = string.gsub(txt, string.char(0xD0, 0x81), string.char(0xA8) );	-- 0xA8 / 168 E with dots
   txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xB8) );	-- 0xB8 /184 e with dots 

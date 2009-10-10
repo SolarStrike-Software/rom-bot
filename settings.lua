@@ -72,9 +72,9 @@ settings_default = {
 			MAX_DEATHS = 10,				-- maximal death if automatic resurrect befor logout
 			WAIT_TIME_AFTER_RES = 8000,		-- time to wait after resurrection, needs more on slow PCs
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
-			HARVEST_SCAN_WIDTH = 10,		-- steps horizontal
-			HARVEST_SCAN_HEIGHT = 8,		-- steps vertical
-			HARVEST_SCAN_STEPSIZE = 35,		-- wide of every step
+			HARVEST_SCAN_WIDTH = 5,		-- steps horizontal
+			HARVEST_SCAN_HEIGHT = 5,		-- steps vertical
+			HARVEST_SCAN_STEPSIZE = 60,		-- wide of every step
 			HARVEST_SCAN_TOPDOWN = false,	-- true = top->down  false = botton->up
 			HARVEST_SCAN_XMULTIPLIER = 1.0,	-- multiplier for scan width
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
@@ -85,6 +85,7 @@ settings_default = {
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
 			DEBUG_LOOT = false,	 			-- debug loot issues
 			DEBUG_TARGET = false, 			-- debug targeting issues
+			DEBUG_HARVEST = false, 			-- debug harvesting issues
 			
 			-- debug skill use issues
 			DEBUG_SKILLUSE = {
