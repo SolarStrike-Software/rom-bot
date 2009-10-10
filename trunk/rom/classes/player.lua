@@ -32,6 +32,18 @@ function CPlayer:harvest( _second_try )
 		local scanXMultiplier = settings.profile.options.HARVEST_SCAN_XMULTIPLIER;	-- multiplier for scan width
 		local scanYMultiplier = settings.profile.options.HARVEST_SCAN_YMULTIPLIER;	-- multiplier for scan line height
 		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
+		local scan_yrest = settings.profile.options.HARVEST_SCAN_YREST;	-- yrest between mouse movements
+		
+		-- readaption stepsize to games client size
+		-- node width at 975 screen width is about 66 (for moxa)
+		scanStepSize = scanStepSize * ww / 1024;
+		if (settings.profile.options.DEBUG_HARVEST) then
+			cprintf(cli.yellow, "Your original stepsize is %d for 1024 screen width. We recalutate it to %d by %d screen width.\n",
+			  settings.profile.options.HARVEST_SCAN_STEPSIZE, scanStepSize, ww);
+			scan_yrest = scan_yrest + 200;
+			cprintf(cli.yellow, "Your rest between scan movements: %d ms, we add 200 ms for debugging resons.\n", 
+			  settings.profile.options.HARVEST_SCAN_YREST);
+		end
 
 		local mx, my; -- Mouse x/y temp values
 
@@ -59,9 +71,11 @@ function CPlayer:harvest( _second_try )
 
 			for x = 0,scanWidth-1 do
 				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
-
+				if (settings.profile.options.DEBUG_HARVEST) then
+					cprintf(cli.yellow, " %d.%d", wx + mx, wy + my);
+				end
 				mouseSet(wx + mx, wy + my);
-				yrest(settings.profile.options.HARVEST_SCAN_YREST);
+				yrest(scan_yrest);
 				mousePawn = CPawn(memoryReadIntPtr(getProc(),
 				addresses.staticbase_char, addresses.mousePtr_offset));
 
@@ -70,6 +84,9 @@ function CPlayer:harvest( _second_try )
 					and database.nodes[mousePawn.Id] ) then
 					return mousePawn.Address, mx, my, mousePawn.Id;
 				end
+			end
+			if (settings.profile.options.DEBUG_HARVEST) then
+				printf("\n");
 			end
 		end
 		keyboardRelease(key.VK_SHIFT);
@@ -140,7 +157,10 @@ function CPlayer:harvest( _second_try )
 				-- Wait for a few seconds... constantly check for aggro
 				local startWaitTime = os.time();
 				while( os.difftime(os.time(), startWaitTime) < 2 ) do
-					yrest(100);
+					
+--					yrest(100);
+					inventory:updateSlotsByTime(100);	-- use time to update inventory
+					
 					self:update();
 
 					-- Make sure it didn't disapear
@@ -200,7 +220,9 @@ end
 -- Resets skill cooldowns / used after death
 function CPlayer:resetSkillLastCastTime()
 	for i,v in pairs(settings.profile.skills) do
-		v.LastCastTime = { low = 0, high = 0 }; 	
+		if( v.Name ~= "PRIEST_SOUL_BOND" ) then		-- real cooldown of 1800 sec
+			v.LastCastTime = { low = 0, high = 0 };
+		end;
 	end
 end
 
