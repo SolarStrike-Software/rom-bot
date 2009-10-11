@@ -67,6 +67,14 @@
 		<friend name="Elite_Mob_Name2" />
 	</friends>
 
+	<mobs>
+		<!-- names of mobs we want to attack 				-->
+		<!-- if no names defined we will attack all mobs	-->
+		<mob name="" />
+		<mob name="" />
+		<mob name="" />
+	</mobs>
+
 	<hotkeys>
     	<!-- to communicate with the RoM API / define ingame dummy macro at place 1 -->
 		<hotkey name="MACRO"        key="VK_0" />
