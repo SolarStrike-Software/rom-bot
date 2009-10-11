@@ -1287,13 +1287,27 @@ function CPlayer:haveTarget()
 		if( self:isFriend(target) ) then
 			if ( self.Battling == false ) then   -- if we don't have aggro then
 				debug_target("target is in friends")
-				return false;         -- he is not a valid target
+				return false;		-- he is not a valid target
 			end;
 
 			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
 				target.TargetPtr ~= self.Address ) then   -- but not from that target
 				debug_target("target is in friends, aggro, but not from that target")
-				return false;         
+				return false;
+			end;
+		end;
+
+		-- target is to strong for us
+		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
+			if ( self.Battling == false ) then	-- if we don't have aggro then
+				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+				return false;		-- he is not a valid target
+			end;
+
+			if( self.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
+				target.TargetPtr ~= self.Address ) then		-- but not from that target
+				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+				return false;
 			end;
 		end;
 
