@@ -279,6 +279,12 @@ function CSkill:use()
 	self.used = self.used + 1;	-- count use of skill per fight
 --	self.LastCastTime = os.time() + self.CastTime;
 
+	-- be sure to don't miss a buff true casting to fast, so we cast a little slower for
+	-- our own buffs
+	if( self.Type == STYPE_BUFF ) then
+		yrest(settings.profile.options.SKILL_USE_PRIOR);
+	end
+
 	-- set LastCastTime, thats the current key press time plus the casting time (if there is some)
 	-- self.CastTime is in sec, hence * 1000
 	-- every 1 ms in self.LastCastTime.low ( from getTime() ) is about getTimerFrequency().low
@@ -300,8 +306,16 @@ function CSkill:use()
 
 	
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
-		if( database.skills[self.Name][player.ClientLanguage] ) then	-- skill in locals
-			RoMScript("CastSpellByName("..database.skills[self.Name][player.ClientLanguage]..");");
+	
+		-- hopefully skillnames in enus and eneu are the same
+		if(bot.ClientLanguage == "enus" or bot.ClientLanguage == "eneu") then
+			local hf_langu = "en";
+		else
+			local hf_langu = bot.ClientLanguage;
+		end
+	
+		if( database.skills[self.Name][hf_langu] ) then		-- is local skill name available?
+			RoMScript("CastSpellByName("..database.skills[self.Name][hf_langu]..");");
 		elseif( self.skilltab ~= nil  and  self.skillnum ~= nil ) then
 			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
 		else

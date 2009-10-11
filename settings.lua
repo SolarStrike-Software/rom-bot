@@ -16,6 +16,7 @@ settings_default = {
 		ENABLE_FIGHT_SLOW_TURN = false,
 		MELEE_DISTANCE = 45,
 		LANGUAGE = "english",
+		USE_CLIENT_LANGUAGE = true,		-- automatic use client language after loading the bot
 		DEBUGGING = false,
 		DEBUGGING_MACRO = false,		
 		ROMDATA_PATH = nil,
@@ -624,10 +625,11 @@ function settings.loadProfile(_name)
 			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
-			local priority, maxhpper, maxmanaper, inbattle, pullonly, maxuse, autouse;
+			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse;
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			maxmanaper = tonumber(v:getAttribute("manaper"));
+			cooldown = tonumber(v:getAttribute("cooldown"));
 			inbattle = v:getAttribute("inbattle");
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
@@ -645,7 +647,7 @@ function settings.loadProfile(_name)
 			    v:getAttribute("energy")    or
 			    v:getAttribute("concentration")      or
 			    v:getAttribute("range")     or
-			    v:getAttribute("cooldown")  or
+--			    v:getAttribute("cooldown")  or
 			    v:getAttribute("minrange")  or
 			    v:getAttribute("type")      or
 			    v:getAttribute("target")    or
@@ -708,6 +710,7 @@ function settings.loadProfile(_name)
 			if( priority ) then tmp.priority = priority; end
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
 			if( maxmanaper ) then tmp.MaxManaPer = maxmanaper; end;
+			if( cooldown ) then tmp.Cooldown = cooldown; end;
 			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
 			if( pullonly == true ) then tmp.pullonly = pullonly; end;
 			if( maxuse ) then tmp.maxuse = maxuse; end;
