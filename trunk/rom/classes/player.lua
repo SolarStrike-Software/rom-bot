@@ -1297,6 +1297,22 @@ function CPlayer:haveTarget()
 			end;
 		end;
 
+		-- Mob limitations defined?
+		if( #settings.profile.mobs > 0 ) then
+			if( self:isInMobs(target) == false ) then
+				if ( self.Battling == false ) then   -- if we don't have aggro then
+					debug_target("mob limitation is set, mob is not a valid target")
+					return false;		-- he is not a valid target
+				end;
+
+				if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
+					target.TargetPtr ~= self.Address ) then   -- but not from that target
+					debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
+					return false;
+				end;
+			end;
+		end;
+
 		-- target is to strong for us
 		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
@@ -1436,6 +1452,24 @@ function CPlayer:isFriend(pawn)
 
 	return false;
 end
+
+
+-- returns true if target is in mobs
+function CPlayer:isInMobs(pawn)
+	if( not pawn ) then
+		error("CPlayer:isInMobs() received nil\n", 2);
+	end;
+
+	for i,v in pairs(settings.profile.mobs) do
+		mobs_defined = true;
+		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 
 function CPlayer:logoutCheck()
 -- timed logout check

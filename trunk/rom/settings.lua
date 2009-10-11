@@ -107,6 +107,7 @@ settings_default = {
 		hotkeys = {  }, 
 		skills = {}, 
 		friends = {},
+		mobs = {},
 		events = {
 			onDeath = nil,
 			onLoad = nil,
@@ -727,8 +728,15 @@ function settings.loadProfile(_name)
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
+
+			local function trim(_s)
+			  return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
+			end
+
 			local name = v:getAttribute("name");
 			
+			if( name ) then name = trim(name); end;
+
 			if( name ) then 
 		
 				-- fix, because getAttribute seems not to recognize the escape characters
@@ -746,6 +754,36 @@ function settings.loadProfile(_name)
 		end
 	end
 
+	local loadMobs = function(node)
+		local elements = node:getElements();
+
+		for i,v in pairs(elements) do
+		
+			local function trim(_s)
+			  return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
+			end
+
+			local name = v:getAttribute("name");
+
+			if( name ) then name = trim(name); end;
+
+			if( name ) then 
+				
+				-- fix, because getAttribute seems not to recognize the escape characters
+				-- for special ASCII characters
+				name = string.gsub (name, "\\132", string.char(132));	-- ä
+				name = string.gsub (name, "\\142", string.char(142));	-- Ä
+				name = string.gsub (name, "\\148", string.char(148));	-- ö
+				name = string.gsub (name, "\\153", string.char(153));	-- Ö
+				name = string.gsub (name, "\\129", string.char(129));	-- ü
+				name = string.gsub (name, "\\154", string.char(154));	-- Ü
+				name = string.gsub (name, "\\225", string.char(225));	-- ß
+
+				table.insert(settings.profile.mobs, name);
+			end
+		end
+	end
+
 	local hf_temp = _name;	-- remember profile name shortly
 
 	for i,v in pairs(elements) do
@@ -759,6 +797,8 @@ function settings.loadProfile(_name)
 			loadSkills(v);
 		elseif( string.lower(name) == "friends" ) then
 			loadFriends(v);
+		elseif( string.lower(name) == "mobs" ) then
+			loadMobs(v);
 		elseif( string.lower(name) == "onload" ) then
 			loadOnLoadEvent(v);
 		elseif( string.lower(name) == "ondeath" ) then
