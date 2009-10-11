@@ -13,7 +13,7 @@ JUMP_TRUE = true		-- jump to break cast
 
 CPlayer = class(CPawn);
 
-function CPlayer:harvest( _second_try )
+function CPlayer:harvest( _id, _second_try )
 	if( foregroundWindow() ~= getWin() ) then
 		cprintf(cli.yellow, language[94]);
 		return;
@@ -79,6 +79,21 @@ function CPlayer:harvest( _second_try )
 				mousePawn = CPawn(memoryReadIntPtr(getProc(),
 				addresses.staticbase_char, addresses.mousePtr_offset));
 
+				-- list found ids if id "test" was given
+				if( mousePawn.Address ~= 0
+					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
+					and _id == "test" ) then
+					cprintf(cli.yellow, "Object found id %d %s\n", mousePawn.Id, mousePawn.Name);
+				end
+
+				-- id was given, return them if found
+				if( mousePawn.Address ~= 0 
+					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
+					and _id == mousePawn.Id ) then
+					return mousePawn.Address, mx, my, mousePawn.Id;
+				end
+
+				-- normal harvesting
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
 					and database.nodes[mousePawn.Id] ) then
@@ -103,13 +118,14 @@ function CPlayer:harvest( _second_try )
 	local startHarvestTime = os.time();
 
 	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
-		-- We found something. Lets harvest it.
-		hf_found = true;
-		cprintf(cli.green, language[95], database.nodes[hf_node_id].Name);		-- we found ...
 		
 		-- If out of distance, move and rescan
 		local mousePawn = CPawn(foundHarvestNode);
 		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
+
+		-- We found something. Lets harvest it.
+		hf_found = true;
+		cprintf(cli.green, language[95], mousePawn.Name);		-- we found ...
 
 		if( dist > 35 and dist < 150 ) then
 			printf(language[80]);		-- Move in
@@ -143,9 +159,8 @@ function CPlayer:harvest( _second_try )
 			mousePawn = CPawn(memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
 			yrest(50);
 
-			if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
-			and database.nodes[mousePawn.Id] ~= nil ) then
-				-- Node is still here
+			if( mousePawn.Address ~= 0 and mousePawn.Id == hf_node_id ) then
+				-- Node/Object is still here
 
 				-- Begin gathering
 				keyboardHold(key.VK_SHIFT);
@@ -179,7 +194,7 @@ function CPlayer:harvest( _second_try )
 				self:update();
 
 			else
-				-- Node is gone
+				-- Node/Object is gone
 				break;
 			end
 		end
@@ -195,7 +210,7 @@ function CPlayer:harvest( _second_try )
 	    os.difftime(os.time(), startHarvestTime) < 5 ) then
 		cprintf(cli.green, language[81]);		-- Unexpected interruption at harvesting begin
 			yrest(5000);
-		player:harvest( true );
+		player:harvest( _id, true );
 	end
 
 end
@@ -1800,6 +1815,10 @@ function CPlayer:sleep()
 end
 
 function CPlayer:scan_for_NPC(_npcname)
+
+	local msg = "Function player:scan_for_NPC() is not anymore available. Use function player:target_NPC(_npcname) instead. That function will also work in background mode.";
+	error(msg, 0);
+
 	if( foregroundWindow() ~= getWin() ) then
 		return;
 	end

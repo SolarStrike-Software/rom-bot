@@ -43,6 +43,7 @@ CSkill = class(
 		
 		self.pullonly = false;	-- use only in pull phase (only for melees with ranged pull attacks)
 		self.maxuse = 0;	-- use that skill only x-times per fight
+		self.rebuffcut = 0;	-- reduce cooldown for x seconds to rebuff earlier
 		self.used = 0;		-- how often we used that skill in current fight
 
 		self.hotkey = 0;
@@ -72,6 +73,7 @@ CSkill = class(
 			self.priority = copyfrom.priority;
 			self.pullonly = copyfrom.pullonly;
 			self.maxuse = copyfrom.maxuse;
+			self.rebuffcut = copyfrom.rebuffcut;
 			self.aslevel = copyfrom.aslevel;
 			self.skilltab = copyfrom.skilltab;
 			self.skillnum = copyfrom.skillnum;
@@ -165,11 +167,13 @@ function CSkill:canUse(_only_friendly)
 
 	-- This skill cannot be used in battle
 	if( (player.Battling or player.Fighting) and self.InBattle == false ) then
+		debug_skilluse("NOTINBATTLE");
 		return false;
 	end
 
 	-- This skill can only be used in battle
 	if( not player.Battling and self.InBattle == true ) then
+		debug_skilluse("ONLYINBATTLE");
 		return false;
 	end   
 
@@ -195,12 +199,12 @@ function CSkill:canUse(_only_friendly)
 --	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
 --	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
 	if( deltaTime(getTime(), self.LastCastTime) < 
-	  self.Cooldown*1000 - settings.profile.options.SKILL_USE_PRIOR ) then	-- Cooldown is in sec
+	  self.Cooldown*1000-self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR ) then	-- Cooldown is in sec
 
-		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000 - deltaTime(getTime(), self.LastCastTime) );
+		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;
 	else
-		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000 );
+		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000-self.rebuffcut*1000 );
 	end
 
 	-- skill with maximum use per fight

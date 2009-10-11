@@ -627,7 +627,7 @@ function settings.loadProfile(_name)
 			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
-			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse;
+			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			maxmanaper = tonumber(v:getAttribute("manaper"));
@@ -635,6 +635,7 @@ function settings.loadProfile(_name)
 			inbattle = v:getAttribute("inbattle");
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
+			rebuffcut = tonumber(v:getAttribute("rebuffcut"));
 			autouse = v:getAttribute("autouse");
 		-- Ensure that autouse is a proper type.
 			if( not (autouse == true or autouse == false) ) then
@@ -716,6 +717,7 @@ function settings.loadProfile(_name)
 			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
 			if( pullonly == true ) then tmp.pullonly = pullonly; end;
 			if( maxuse ) then tmp.maxuse = maxuse; end;
+			if( rebuffcut ) then tmp.rebuffcut = rebuffcut; end;
 			if( autouse == false ) then tmp.AutoUse = false; end;
 
 			table.insert(settings.profile.skills, tmp);
