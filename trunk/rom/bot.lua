@@ -144,10 +144,55 @@ function main()
 	
 	-- remember game client language
 	bot.ClientLanguage = string.lower( RoMScript("GetLanguage();") );	-- read clients language
-	if( bot.ClientLanguage == "eneu" or 	-- hopefully skillnames for eneu and enus are the same?
-	  bot.ClientLanguage == "enus" ) then 	-- if not, we will have to change that
-		bot.ClientLanguage = "en"; 
+
+	if( settings.options.USE_CLIENT_LANGUAGE ) then
+		local hf_language;
+		if( bot.ClientLanguage == "de" ) then
+			hf_language = "deutsch";
+		elseif(bot.ClientLanguage  == "fr" ) then
+			hf_language = "french";
+		elseif(bot.ClientLanguage  == "ru" ) then
+			hf_language = "russian";
+		else
+			hf_language = "english";		
+		end
+
+		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
+
+			local function setLanguage(_name)
+				include(getExecutionPath() .. "/language/" .. _name .. ".lua");
+			end
+
+			local lang_base = {};
+			
+			for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
+
+			setLanguage(hf_language);
+			for i,v in pairs(lang_base) do
+				if( language[i] == nil ) then
+					language[i] = v;
+				end
+			end;
+			lang_base = nil; -- Not needed anymore, destroy it.
+			logMessage("Load Language according to client language: " .. hf_language);
+
+		end
+
 	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	-- calculate the CPU Frequency / used for manipulation the GetTime() values
 	local calc_start = getTime();
