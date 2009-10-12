@@ -94,7 +94,7 @@
 		<skill name="MAGE_FIREBALL"        hotkey="VK_8" priority="70" />
 		<skill name="PRIEST_WAVE_ARMOR"    hotkey="VK_5" priority="40"  inbattle="true" />
 		<!--skill name="PRIEST_SOUL_BOND"     hotkey="VK_T" priority="30" /> -->
-		<!--skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_F" priority="20" /> -->
+		<!--skill name="PRIEST_MAGIC_BARRIER" hotkey="VK_F" priority="20" rebuffcut="60" inbattle="false" /> -->
 	</skills_priest>
 
 	<skills_warrior>
