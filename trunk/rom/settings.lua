@@ -57,6 +57,7 @@ settings_default = {
 			MANA_POTION = 0,				-- shopping options, how many to buy/have in inventory
 			ARRAY_QUIVER = 0,				-- shopping options, how many to buy/have in inventory
 			THROWN_BAG = 0,					-- shopping options, how many to buy/have in inventory
+			POISON = 0,						-- shopping options, how many to buy/have in inventory
 			RELOAD_AMMUNITION = false,		-- false|arrow|thrown
 
 			
