@@ -675,6 +675,7 @@ function CPlayer:fight()
 
 			while( angleDif > math.rad(15) ) do
 				if( self.HP < 1 or self.Alive == false ) then
+					self.Fighting = false;
 					return;
 				end;
 

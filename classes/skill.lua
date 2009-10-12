@@ -166,14 +166,15 @@ function CSkill:canUse(_only_friendly)
 	end
 
 	-- This skill cannot be used in battle
-	if( (player.Battling or player.Fighting) and self.InBattle == false ) then
-		debug_skilluse("NOTINBATTLE");
+--	if( (player.Battling or player.Fighting) and self.InBattle == false ) then
+	if( player.Battling  and self.InBattle == false ) then
+		debug_skilluse("NOTINBATTLE", player.Battling, player.Fighting);
 		return false;
 	end
 
 	-- This skill can only be used in battle
 	if( not player.Battling and self.InBattle == true ) then
-		debug_skilluse("ONLYINBATTLE");
+		debug_skilluse("ONLYINBATTLE", player.Battling);
 		return false;
 	end   
 
@@ -199,7 +200,14 @@ function CSkill:canUse(_only_friendly)
 --	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
 --	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
 	if( deltaTime(getTime(), self.LastCastTime) < 
-	  self.Cooldown*1000-self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR ) then	-- Cooldown is in sec
+		  (self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR) ) then	-- Cooldown is in sec
+
+--printf("deltaTime(getTime(), self.LastCastTime) %d\n", deltaTime(getTime(), self.LastCastTime));
+--printf("diff oncool %d\n", self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR);
+--printf("self.Cooldown %d\n", self.Cooldown);
+--printf("self.rebuffcut %d\n", self.rebuffcut);
+--printf(" self.Cooldown*1000-self.rebuffcut*1000 %d\n",  self.Cooldown*1000-self.rebuffcut*1000);
+--printf("settings.profile.options.SKILL_USE_PRIOR %d\n", settings.profile.options.SKILL_USE_PRIOR);
 
 		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;

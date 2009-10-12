@@ -180,19 +180,6 @@ function main()
 
 	end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 	-- calculate the CPU Frequency / used for manipulation the GetTime() values
 	local calc_start = getTime();
@@ -413,6 +400,7 @@ function main()
 	while(true) do
 		player:update();
 		player:logoutCheck();
+		player.Fighting = false;		-- we are now not in the fight routines
 
 		if( not player.Alive ) then
 			player:resetSkillLastCastTime();	-- set last use back, so we can rebuff
