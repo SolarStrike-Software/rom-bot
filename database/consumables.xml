@@ -82,4 +82,9 @@
 	<potion type="thrown" id="210296" name="Throwing Axe" level="14" />
 	<potion type="thrown" id="210295" name="Throwing Knife" level="7" />
 	<potion type="thrown" id="210294" name="Stone" level="1" />
+
+	<!-- Poison -->
+	<potion type="poison" id="200563" name="Poison Powder" level="1" />
+	<!--potion type="poison" id="200762" name="Poison Bottle" level="1" -->
+
 </potions>

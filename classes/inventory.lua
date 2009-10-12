@@ -241,27 +241,28 @@ end
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
 -- quantity is how many of them do we need, for example, for potions its 99 or 198
 -- but for arraws it might be 1 or 2
+-- type: healing|mana|arrow_quiver|thrown_bag|poison
 function CInventory:storeBuyConsumable(type, quantity)
- 	local bestLevel = 0;
- 	for storeSlot = 1, 20, 1 do
- 	    local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
+	local bestLevel = 0;
+	for storeSlot = 1, 20, 1 do
+		local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
 
 		if (storeItemLink == "" or storeItemLink == nil) then
- 	        break;
- 	    end
- 	    
- 	    storeItemId, storeItemColor, storeItemName = CItem:parseItemLink(storeItemLink);
- 		-- print(storeItemName);
- 	    
-		for num,consumable in pairs(database.consumables) do
-		    if consumable.Type == type and consumable.Level <= player.Level then
-		        if consumable.Id == storeItemId then
-		            if consumable.Level > bestLevel then
-		                bestLevel = consumable.Level;
-		                bestItem = storeItemId;
-		                bestItemSlot = storeSlot;
-					end
-		        end
+			break;
+		end
+		
+		storeItemId, storeItemColor, storeItemName = CItem:parseItemLink(storeItemLink);
+--		printf("%s %s\n", storeItemId, storeItemName);
+
+		local consumable = database.consumables[storeItemId];
+
+		if( consumable 
+		  and consumable.Type == type 
+		  and consumable.Level <= player.Level ) then
+			if consumable.Level > bestLevel then
+				bestLevel = consumable.Level;
+				bestItem = storeItemId;
+				bestItemSlot = storeSlot;
 			end
 		end
 	end

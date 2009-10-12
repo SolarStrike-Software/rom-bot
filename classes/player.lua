@@ -2003,6 +2003,7 @@ function CPlayer:merchant(_npcname)
 		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
 		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
 		inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
+		inventory:storeBuyConsumable("poison", settings.profile.options.POISON);
 		inventory:update();
 	end
 	

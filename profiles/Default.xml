@@ -17,6 +17,7 @@
 		<option name="MANA_POTION" value="99" />
 		<option name="ARROW_QUIVER" value="2" />
 		<option name="THROWN_BAG" value="2" />
+		<option name="POISON" value="30" />
 
 		<!-- either false or arrow or thrown -->
 		<option name="RELOAD_AMMUNITION" value="false" />
