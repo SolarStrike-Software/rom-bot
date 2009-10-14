@@ -17,8 +17,8 @@ language = {
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
 	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
 	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",
-	[16] = "Keine (benutzbaren) Manatr\132nke mehr vorhanden.\n",
-	[17] = "Keine (benutzbaren) Heiltr\132nke mehr vorhanden.\n",
+	[16] = "Keine (benutzbaren) Manatr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
+	[17] = "Keine (benutzbaren) Heiltr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
 	
 
 	[20] = "Aus\129bung abgeschlossen\n",

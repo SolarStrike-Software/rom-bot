@@ -782,3 +782,29 @@ function displayProgressBar(percent, size)
 		lastDisplayBlocks = blocksFilled;
 	end
 end
+
+function trim(_s)
+	return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
+end
+
+
+function stringExplode(separator,text)
+	if( not text) then return false; end;
+-- Autor: bumuckl
+-- http://lua.bumuckl.com/index.php?page=platformindependent_functions&code=string_explode&id=43
+
+	local function trim(_s)
+	  return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
+	end
+
+	local position = 0
+	local _table = {}
+	for a, b in function() return string.find(text,separator,position,true) end do
+			table.insert(_table,trim(string.sub(text,position,a-1)))
+			position = b + 1
+	end
+	table.insert(_table,trim(string.sub(text,position)))
+	return _table
+
+-- ende string_explode
+end

@@ -290,6 +290,87 @@ function CInventory:deleteItemInSlot(slot)
 end
 
 
+function CInventory:autoSell()
+
+	if( settings.profile.options.INV_AUTOSELL_ENABLE ~= true ) then
+		return false
+	end
+
+	-- move color settings into table
+	local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
+	local hf_quality_table = stringExplode( "\n", hf_quality );	-- move colors to table
+
+	-- move ignore list into table
+	local hf_ignore = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
+	local hf_ignore_table = stringExplode( "\n", hf_ignore );	-- move ignore list
+
+	--	ITEMCOLORS table is defined in item.lua
+	local function sellColor(_itemcolor)
+		
+		for i,v in pairs(hf_quality_table) do
+		
+			if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
+				return true
+			end
+		end
+		
+		return false
+		
+	end
+
+	-- check if itemname or itemid is in the ignorelist
+	local function isInIgnorelist(_item)
+	
+		for i,ignorelistitem in pairs(hf_ignore_table) do
+
+			if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
+				_item.ItemId == ignorelistitem ) then
+				return true
+			end
+
+		end
+		
+		return false
+		
+	end
+	
+	local hf_wesell = false;
+	-- check the given slot numbers to autosell
+	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT, settings.profile.options.INV_AUTOSELL_TOSLOT, 1 do
+		local sell_item = true
+		local slotitem = self.BagSlot[slotNumber];
+
+		if( slotitem.Id == 0  or  slotitem.Id == nil) then
+			sell_item = false;
+		end
+
+		-- check item quality color
+		if( sellColor(slotitem.Color) == false ) then
+			sell_item = false;
+		end
+		
+		-- check itemname against ignore list
+		if( isInIgnorelist(slotitem) == true ) then
+			sell_item = false;
+		end
+		
+		-- sell the item
+		if( sell_item == true ) then
+			hf_wesell = true;
+			slotitem:use();
+		end
+
+	end
+	
+	if( he_wesell == true ) then
+		return true;
+	else
+		return false;
+	end
+	
+end
+
+
 -- TODO: banking functions
 -- TODO: loot filter functions
 -- TODO: keeping inventory slots open
