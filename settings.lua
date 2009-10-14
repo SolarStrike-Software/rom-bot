@@ -62,6 +62,7 @@ settings_default = {
 
 			
 			-- expert options
+			MAX_TARGET_DIST = 999,			-- miximum distance to select a target (helpfull to limit at small places)
 			AUTO_ELITE_FACTOR = 4,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			SKILL_USE_PRIOR = 300,			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
@@ -102,6 +103,11 @@ settings_default = {
 			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
 			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
+			INV_AUTOSELL_ENABLE = false,	-- autosell items at merchant true|false
+			INV_AUTOSELL_FROMSLOT = 0,		-- autosell from slot #
+			INV_AUTOSELL_TOSLOT = 0,		-- autosell to slot #
+			INV_AUTOSELL_QUALITY = "white, green",	-- itemcolors to sell
+			INV_AUTOSELL_IGNORE = nil,		-- itemnames never so sell
 
 			
 		},	
@@ -732,10 +738,6 @@ function settings.loadProfile(_name)
 
 		for i,v in pairs(elements) do
 
-			local function trim(_s)
-			  return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
-			end
-
 			local name = v:getAttribute("name");
 			
 			if( name ) then name = trim(name); end;
@@ -762,10 +764,6 @@ function settings.loadProfile(_name)
 
 		for i,v in pairs(elements) do
 		
-			local function trim(_s)
-			  return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
-			end
-
 			local name = v:getAttribute("name");
 
 			if( name ) then name = trim(name); end;

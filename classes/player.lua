@@ -424,7 +424,7 @@ function CPlayer:checkPotions()
 			return true;
 		else		-- potions empty
 			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
-				cprintf(cli.yellow, language[17]); 		-- No more (usable) hp potions
+				cprintf(cli.yellow, language[17], settings.profile.options.INV_MAX_SLOTS); 		-- No more (usable) hp potions
 				self.PotionLastHpEmptyTime = os.time();
 				-- full inventory update if potions empty
 				if( os.difftime(os.time(), player.InventoryLastUpdate) > 
@@ -456,7 +456,7 @@ function CPlayer:checkPotions()
 				return true;		-- avoid invalid/use count of 
 			else	-- potions empty
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
-					cprintf(cli.yellow, language[16]); 		-- No more (usable) mana potions
+					cprintf(cli.yellow, language[16], settings.profile.options.INV_MAX_SLOTS); 		-- No more (usable) mana potions
 					self.PotionLastManaEmptyTime = os.time();
 					-- full inventory update if potions empty
 					if( os.difftime(os.time(), player.InventoryLastUpdate) > 
@@ -1241,7 +1241,7 @@ function CPlayer:haveTarget()
 		local function debug_target(_place)
 			if( settings.profile.options.DEBUG_TARGET and
 				self.TargetPtr ~= self.free_debug1 ) then
-				cprintf(cli.green, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
+				cprintf(cli.yellow, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
 				self.free_debug1 = self.TargetPtr;		-- remeber target address to avoid msg spam
 			end
 		end
@@ -1285,10 +1285,25 @@ function CPlayer:haveTarget()
 			end;
 		end
 
+		-- check distance to target against MAX_TARGET_DIST
+		if( distance(self.X, self.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
+			if ( self.Battling == false ) then	-- if we don't have aggro then
+				debug_target("target dist > MAX_TARGET_DIST")
+				return false;			-- he is not a valid target
+			end;
+
+			if( self.Battling == true  and		-- we have aggro
+			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
+				return false;         
+			end;
+		end;
+
+
 		-- PK protect
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 			if ( self.Battling == false ) then   -- if we don't have aggro then
-				debug_target("PK player, but noone fighting us")
+				debug_target("PK player, but not fighting us")
 				return false;         -- he is not a valid target
 			end;
 
@@ -1999,6 +2014,9 @@ function CPlayer:merchant(_npcname)
 		RoMScript("ClickRepairAllButton()");
 		yrest(1000);
 		inventory:update();
+		if ( inventory:autoSell() ) then
+			inventory:update();
+		end
 		inventory:storeBuyConsumable("healing", settings.profile.options.HEALING_POTION);
 		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
 		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);

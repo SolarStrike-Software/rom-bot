@@ -1,5 +1,15 @@
 -- A little class
 
+-- itemquality -> color code
+ITEMCOLOR = { 
+	WHITE = "ffffff",
+	GREEN = "00ff00",
+	BLUE = "00ff00",
+	PURPLE = "00ff00",
+	ORANGE = "00ff00",
+	GOLD = "00ff00",
+	}
+
 CItem = class(
 	function(self,slotNumber)
 		self.Id = 0;
