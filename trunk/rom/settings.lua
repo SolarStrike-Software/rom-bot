@@ -62,8 +62,8 @@ settings_default = {
 
 			
 			-- expert options
-			MAX_TARGET_DIST = 999,			-- miximum distance to select a target (helpfull to limit at small places)
-			AUTO_ELITE_FACTOR = 4,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
+			MAX_TARGET_DIST = 999,			-- maximum distance to select a target (helpfull to limit at small places)
+			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			SKILL_USE_PRIOR = 300,			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
 			POTION_COOLDOWN = 15,			-- always 15

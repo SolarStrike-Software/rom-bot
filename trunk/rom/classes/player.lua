@@ -803,14 +803,14 @@ function CPlayer:loot()
 
 	if( settings.profile.options.LOOT ~= true ) then
 		if( settings.profile.options.DEBUG_LOOT) then	
-			cprintf(cli.green, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true\n");
+			cprintf(cli.yellow, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true\n");
 		end;
 		return
 	end
 	
 	if( self.TargetPtr == 0 ) then
 		if( settings.profile.options.DEBUG_LOOT) then	
-			cprintf(cli.green, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
+			cprintf(cli.yellow, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
 		end;
 		return
 	end
@@ -827,7 +827,7 @@ function CPlayer:loot()
 
 	if( target == nil or target.Address == 0 ) then
 		if( settings.profile.options.DEBUG_LOOT) then	
-			cprintf(cli.green, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
+			cprintf(cli.yellow, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
 		end;
 		return;
 	end
@@ -909,7 +909,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	if( waypoint.Type == WPT_TRAVEL or waypoint.Type == WPT_RUN ) then
 		if( settings.profile.options.DEBUG_TARGET ) then
-			cprintf(cli.green, "[DEBUG] waypoint type RUN or TRAVEL. We don't target mobs.\n");
+			cprintf(cli.yellow, "[DEBUG] waypoint type RUN or TRAVEL. We don't target mobs.\n");
 		end
 		ignoreCycleTargets = true;	-- don't target mobs
 	end;
