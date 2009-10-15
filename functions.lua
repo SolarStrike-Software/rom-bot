@@ -421,7 +421,12 @@ function addMessage(message)
 	message = string.gsub(message, "\n", "\\n")
 	message = string.gsub(message, "\"", "\\\"")
 
-	message = asciiToUtf8_umlauts(message);	-- for ingame umlauts
+	-- language conversations
+	if( bot.ClientLanguage == "ru" ) then
+		message = oem2utf8_russian(message);
+	else
+		message = asciiToUtf8_umlauts(message);	-- for ingame umlauts
+	end
 
 	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
 end
@@ -431,8 +436,8 @@ end
 -- we use it for the player names & mob names conversion in pawn.lua
 -- http://en.wikipedia.org/wiki/Code_page_866
 function utf82oem_russian(txt)
-  txt = string.gsub(txt, string.char(0xD0, 0x81), string.char(0xA8) );	-- 0xA8 / 168 E with dots
-  txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xB8) );	-- 0xB8 /184 e with dots 
+  txt = string.gsub(txt, string.char(0xD0, 0x81), string.char(0xF0) );	-- 0xF0 / E with dots
+  txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xF1) );	-- 0xF1 / e with dots 
   -- lower case
   local patt = string.char(0xD1) .. "([" .. string.char(0x80, 0x2D, 0x8F) .. "])";
   txt = string.gsub(txt, patt, function (s)
@@ -447,6 +452,36 @@ function utf82oem_russian(txt)
   );
   return txt;
 end
+
+
+-- DOS(OEM) -> UTF8 conversation for the russian client
+-- we use it within addMessage in functions.lua
+function oem2utf8_russian(txt)
+  local function translate(code)
+         -- upper case and lower case part 1
+          if(code>=0x80)and(code<=0xAF)then
+              return string.char(0xD0, code+0x10);
+          end
+         -- lower case part 2
+          if(code>=0xE0)and(code<=0xEF)then
+              return string.char(0xD1, code-0x60);
+          end
+          if(code==0xF0)then
+              return string.char(0xD0, 0x81); -- E with dots
+          end
+          if(code==0xF1)then
+              return string.char(0xD1, 0x91); -- e with dots
+          end
+         return string.char(code);
+  end
+ 
+  local result = '';
+  for i=1,string.len(txt) do
+      result = result .. translate( string.byte(txt,i) );
+  end
+  return result;
+end
+
 
 -- convert the ingame UTF8 strings to ASCII
 -- we use the complete utf8 table, that means for all languages we have
