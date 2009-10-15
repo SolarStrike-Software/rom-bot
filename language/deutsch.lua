@@ -158,6 +158,7 @@ language = {
 	[176] = "Fernkampff\132higkeit gefunden: %s\n",	
 	[177] = "Aktueller Kampf abgebrochen.\n",
 	[178] = "Looten wegen Aggro \129bersprungen.\n",
+	[179] = "Maximale Reichweite der Fernkampff\132higkeiten ist kleiner als die Einstellung COMBAT_DISTANCE=%d. Bitte die COMBAT_DISTANCE Einstellung reduzieren.\n",
 
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 

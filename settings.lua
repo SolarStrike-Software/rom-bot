@@ -852,7 +852,6 @@ function settings.loadProfile(_name)
 	-- Check if the player has any ranged damage skills
 	local rangedSkills = false;
 	for i,v in pairs(settings.profile.skills) do
-
 		if( v.Range > 100  and
 			( v.Type == STYPE_DAMAGE or
 			  v.Type == STYPE_DOT ) ) then
@@ -863,7 +862,7 @@ function settings.loadProfile(_name)
 	end
 
 	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
-		printf(language[200]);
+		cprintf(cli.yellow, language[200]);
 		settings.profile.options.COMBAT_RANGED_PULL = false;
 	end
 
@@ -874,9 +873,6 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	-- Check to make sure everything important is set
---	checkProfileHotkeys("ATTACK");
--- no more needed because of using RoMScript("UseSkill(1,1);"); instead
 
 	-- default combat type if not in profile defined
 	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and 
@@ -896,6 +892,25 @@ function settings.loadProfile(_name)
 			error("undefined player.Class1 in settings.lua", 0);
 		end;
 	end
+
+
+	-- check if range attack range and combat distance fit together
+	local best_range = 0;
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Range > best_range and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) ) then
+			best_range = v.Range;
+		end
+	end
+
+	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
+		(settings.profile.options.COMBAT_TYPE == "ranged" or
+		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
+		local msg = sprintf(language[179], settings.profile.options.COMBAT_DISTANCE);	-- Maximum range of range attack skills is lesser
+		error(msg, 0);
+	end
+
 
 	-- print error if new macro option isn't defined
 	if( not settings.profile.hotkeys.MACRO ) then
