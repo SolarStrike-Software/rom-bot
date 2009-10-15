@@ -155,7 +155,7 @@ language = {
 	[176] = "Ranged skill found: %s\n",
 	[177] = "Current fight aborted.\n",
 	[178] = "Loot skiped because of aggro.\n",
-	[179] = "...\n",
+	[179] = "Maximum range of range attack skills is lesser then COMBAT_DISTANCE=%d. Please reduce your combat distances settings.\n",
 
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 	
