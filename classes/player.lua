@@ -2099,7 +2099,7 @@ function CPlayer:target_NPC(_npcname)
 				end
 			end;
 
-			yrest(500);
+			yrest(100);
 		end
 		
 	end
