@@ -1,7 +1,7 @@
 BOT_VERSION = 3.00;
 
-include("database.lua");
 include("addresses.lua");
+include("database.lua");
 include("classes/player.lua");
 include("classes/inventory.lua");
 include("classes/camera.lua");
@@ -23,9 +23,13 @@ __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
 
-print("\n\169\83\111\108\97\114\83\116\114\105\107\101\32" ..
-"\83\111\102\116\119\97\114\101\44\32\119\119\119\46\115" ..
-"\111\108\97\114\115\116\114\105\107\101\46\110\101\116\n");
+-- start message
+text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+.. "Wellcome to rom bot! press END to quit\n"
+.. "RoM Bot Version %0.2f\n",BOT_VERSION);
+
+printPicture("logo", text, 4);
+
 function main()
 	local forcedProfile = nil;
 	local forcedPath = nil;
@@ -62,9 +66,7 @@ function main()
 
 	end
 
-	local versionMsg = sprintf("RoM Bot Version %0.2f", BOT_VERSION);
-	cprintf(cli.lightblue, versionMsg .. "\n");
-	logMessage(versionMsg);
+
 
 	database.load();
 	attach(getWin());
@@ -741,4 +743,4 @@ function resurrect()
 		__WPL:getFileName() );
 	end
 end
-startMacro(main);
+main();

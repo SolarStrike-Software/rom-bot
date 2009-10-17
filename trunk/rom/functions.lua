@@ -64,36 +64,187 @@ function debugAssert(args)
 	end
 end
 
+-- Ask witch character does the user want to be, from the open windows.
+function selectGame()
+	-- Get list of windows in an array
+	local windowList = findWindowList("Runes of Magic", "Radiant Arcana");
+
+	if( #windowList == 0 ) then
+		print("You need to run rom first!");
+		return 0;
+	end
+
+	charToUse = {};
+	for i = 1, #windowList, 1 do
+	    -- open first window
+		process = openProcess(findProcessByWindow(windowList[i]));
+		-- read player address
+		playerAddress = memoryReadIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
+		-- read player name
+		nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
+		-- store the player name, with window number
+		if nameAddress == nil then
+		    charToUse[i] = "(RoM window "..i..")";
+  		else
+			charToUse[i] = memoryReadString(process, nameAddress);
+		end
+		closeProcess(process);
+	end
+
+	windowChoice = 1;
+	-- wait until enter is released
+    while keyPressed(key.VK_RETURN) do
+    	yrest(200);
+    end
+
+    notShown = true;
+	if (#windowList > 1) then  -- if theres more than 1 window, ask the player witch character to use
+		while not keyPressed(key.VK_RETURN) do
+	    	if keyPressed(key.VK_UP) or keyPressed(key.VK_DOWN) or notShown then
+	        	notShown = false;
+	    		if keyPressed(key.VK_DOWN) then
+	        		windowChoice = windowChoice + 1;
+	        		if windowChoice > #charToUse then
+	        	    	windowChoice = #charToUse;
+					end
+	    		end
+	    		if keyPressed(key.VK_UP) then
+	        		windowChoice = windowChoice - 1;
+	        		if windowChoice < 1 then
+	        	    	windowChoice = 1;
+					end
+	    		end
+
+				if keyPressed(key.VK_UP) or keyPressed(key.VK_DOWN) then
+					print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+				end
+
+				-- start message
+	    		printf("Choose your character that you want to play on:\n");
+
+
+	    		for i = 1, #charToUse, 1 do
+	        		if i == windowChoice then
+	    				cprintf(240, "\n"..charToUse[i]);
+					else
+	    				printf("\n"..charToUse[i]);
+					end
+				end
+				printf("\n");
+				yrest(200);
+	    	end
+	    	if keyPressed(settings.hotkeys.STOP_BOT.key) then
+	        	error("User quit");
+			end
+		end
+		yrest(200)
+	end
+	return windowList[windowChoice];
+end
+
+
+function printPicture(pic, text, textColor)
+	if not textColor then
+	    textColor = 0;
+	end
+	
+	local readfile = io.open("scripts/rom/database/img/"..pic..".bmp", "r");
+	if not readfile then
+	    print(pic);
+	    return 0;
+	end
+	
+	file = readfile:read("*all");
+	local height = string.byte(file, 23);
+	local width = string.byte(file, 19);
+	-- color data starts from 118 ends in -4
+	--for i = 0, 200,1 do
+	    --printf(i..":");
+		--print(string.byte(file, i));
+		--printf("\n");
+	--end
+	colorData = string.sub(file, 119, -4);
+	dataLength = string.len(colorData);
+	--colorData = string.reverse(colorData);
+	color = {};
+	for i = 1, dataLength, 1 do
+		data = string.byte(colorData, i);
+		first = math.floor(data/16);
+		second = data - (first*16);
+
+		position = (dataLength * 2) - (i * 2);
+		color[position] = second;
+		color[position + 1] = first;
+	end
+	i = 0;
+	a = 1;
+	newline = false;
+	for y = 1, height, 1 do
+		for x = 1, width, 1 do
+		    nextchar = "¤";
+		    if not newline and not (a > string.len(text)) then
+		    	nextchar = string.char(string.byte(text, a));
+				a = a + 1;
+			end
+		    
+		    if nextchar == "\n" then
+		        nextchar = "¤";
+		        newline = true;
+			end
+
+			pixel = i+width-x;
+			col = color[pixel];
+			
+			-- repair colors from an unknown bug
+			if col == 9 then
+			    col = 12
+      		elseif col == 12 then
+      		    col = 9
+      		elseif col == 1 then
+      		    col = 4
+      		elseif col == 4 then
+      		    col = 1
+      		elseif col == 3 then
+      		    col = 6
+      		elseif col == 6 then
+      		    col = 3
+      		elseif col == 7 then
+      		    col = 8
+      		elseif col == 8 then
+      		    col = 7
+      		elseif col == 11 then
+      		    col = 14
+      		elseif col == 14 then
+      		    col = 11
+			end
+			
+			if nextchar == "¤" then
+				cprintf(col*16+col, nextchar);
+				--cprintf(col*16, col);
+   			else
+				cprintf(col*16+textColor, nextchar);
+			end
+			--printf(color[i]);
+		end
+		newline = false;
+		i = i + 6 + width;
+		printf("\n")
+	end
+end
+
+-- get current directory (theres gotho be an easier way)
+function currDir()
+  os.execute("cd > cd.tmp")
+  local f = io.open("cd.tmp", r)
+  local cwd = f:read("*a")
+  f:close()
+  os.remove("cd.tmp")
+  return cwd
+end
 
 function getWin()
-	local skey = getStartKey();
-
 	if( __WIN == nil ) then
-		local winlist = findWindowList("Runes of Magic", "Radiant Arcana");
-
-		if( #winlist == 0 ) then
-			error(language[47], 0);	-- RoM window not found
-		end
-
-		if( #winlist > 1 ) then
-			cprintf(cli.yellow, language[45],	-- Multiple RoM windows found
-				getKeyName(skey));
-
-			while( not keyPressed(skey) ) do
-				yrest(10);
-			end
-			while( keyPressed(skey) ) do
-				yrest(10);
-			end
-
-			__WIN = foregroundWindow();
-		else
-			__WIN = winlist[1];
-		end
-	else
-		if( not windowValid(__WIN) ) then
-			error(language[52], 0);
-		end
+  		__WIN = selectGame();
 	end
 
 	return __WIN;
