@@ -148,7 +148,7 @@ function CPlayer:harvest( _id, _second_try )
 				break;
 			end;
 
-			if( os.difftime(os.time(), startHarvestTime) > 45 ) then
+			if( os.difftime(os.time(), startHarvestTime) > settings.profile.options.HARVEST_TIME ) then
 				break;
 			end
 
