@@ -107,6 +107,7 @@ CPawn = class(
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
 		self.Last_ignore_target_ptr = 0;		-- last target to ignore address
+		self.LastTargetPtr = 0;		-- last invalid target
 		self.Last_ignore_target_time = 0;		-- last target to ignore time
 		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
 		self.lastHitTime = 0;				-- last time the HP of the target changed
