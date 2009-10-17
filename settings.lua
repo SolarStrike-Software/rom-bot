@@ -526,6 +526,7 @@ function settings.loadProfile(_name)
 
 		for i,v in pairs(elements) do
 			settings.profile.hotkeys[v:getAttribute("name")] = {};
+			settings.profile.hotkeys[v:getAttribute("name")].name = v:getAttribute("name");
 			settings.profile.hotkeys[v:getAttribute("name")].key = key[v:getAttribute("key")];
 			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
 
@@ -929,9 +930,9 @@ function settings.loadProfile(_name)
 
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
-	settings.options.DEBUGGING_MACRO = true;
-	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
-	if( hf_return ~= 1234 ) then	-- return values not found
+	if (settings.options.DEBUGGING_MACRO) then
+		local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
+		if( hf_return ~= 1234 ) then	-- return values not found
 		 	RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
 			cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
 
@@ -948,8 +949,9 @@ function settings.loadProfile(_name)
 			else							-- ignore MACRO error
 				error(msg, 0);
 			end
-	else								-- return values found, clear it and send message
-		RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
+		else								-- return values found, clear it and send message
+			RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
+		end
 	end
 	settings.options.DEBUGGING_MACRO = false;
 
