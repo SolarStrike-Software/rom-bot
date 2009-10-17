@@ -77,7 +77,7 @@ settings_default = {
 			MAX_DEATHS = 10,				-- maximal death if automatic resurrect befor logout
 			WAIT_TIME_AFTER_RES = 8000,		-- time to wait after resurrection, needs more on slow PCs
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
-			HARVEST_SCAN_WIDTH = 5,		-- steps horizontal
+			HARVEST_SCAN_WIDTH = 5,			-- steps horizontal
 			HARVEST_SCAN_HEIGHT = 5,		-- steps vertical
 			HARVEST_SCAN_STEPSIZE = 60,		-- wide of every step
 			HARVEST_SCAN_TOPDOWN = false,	-- true = top->down  false = botton->up
@@ -85,6 +85,7 @@ settings_default = {
 			HARVEST_SCAN_YMULTIPLIER = 1.1,	-- multiplier for scan line height
 			HARVEST_SCAN_YREST = 10,		-- scanspeed
 			HARVEST_SCAN_YMOVE = 1.1,		-- move scan area top/down ( 1=middle of screen )
+			HARVEST_TIME = 45,				-- how long we maximum harvest a node
 			USE_SLEEP_AFTER_RESUME = false, -- enter sleep mode after pressing pause/resume key
 			IGNORE_MACRO_ERROR = false, 	-- ignore missing MACRO hotkey error (only temporary option while beta)
 			DEBUG_INV = false,	 			-- to help to find the item use error (only temporary option while beta)
