@@ -253,7 +253,7 @@ function CPlayer:cast(skill)
 	end
 
 	local hf_temp;
-	if( skill.hotkey == "MACRO" ) then
+	if( skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil) then
 		hf_temp = "MACRO";
 	else
 		hf_temp = getKeyName(skill.hotkey);
@@ -312,7 +312,7 @@ function CPlayer:cast(skill)
 	end
 
 	-- count cast to enemy targets
-	if( skill.Target == 0 ) then	-- target is unfriendly
+	if( skill.Target == STARGET_ENEMY ) then	-- target is unfriendly
 		self.Cast_to_target = self.Cast_to_target + 1;
 	end;
 
@@ -360,6 +360,23 @@ function CPlayer:checkSkills(_only_friendly)
 
 	for i,v in pairs(settings.profile.skills) do
 		if( v.AutoUse and v:canUse(_only_friendly) ) then
+
+
+			-- additional potion check while working at a 'casting round'
+			self:checkPotions();
+
+			-- Short time break target: after x casts without damaging
+			local target = player:getTarget();
+			if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
+				target.HP == target.MaxHP ) then
+				printf(language[83]);			-- Taking too long to damage target
+				player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
+				player.Last_ignore_target_time = os.time();		-- and the time we break the fight
+				self:clearTarget();
+				break_fight = true;
+				break;
+			end
+
 			if( v.CastTime > 0 ) then
 				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 				yrest(200); -- Wait to stop only if not an instant cast spell
@@ -380,7 +397,6 @@ function CPlayer:checkSkills(_only_friendly)
 			end;
 
 			self:cast(v);
-			--self.LastDistImprove = os.time();	-- reset unstick timer (dist improvement timer)
 			used = true;
 		end
 	end
@@ -544,12 +560,14 @@ function CPlayer:fight()
 				unregisterTimer("timedAttack");
 			end
 			self.Fighting = false;
-			return;
+			break_fight = true;
+--			return;
+			break;
 		end;
 
 		target = self:getTarget();
 
-		-- Exceeded max fight time (without hurting enemy) so break fighting
+		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), self.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf(language[83]);			-- Taking too long to damage target
 			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
@@ -728,6 +746,7 @@ function CPlayer:fight()
 	end
 
 	self:resetSkills();
+	self.Cast_to_target = 0;	-- reset cast to target counter
 
 	if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 		unregisterTimer("timedAttack");
@@ -854,22 +873,26 @@ function CPlayer:loot()
 
 --	yrest(500);	-- ?? 
 
-	-- "attack" is also the hotkey to loot, strangely.
-	local hf_attack_key;
-	if( settings.profile.hotkeys.MACRO ) then
-		hf_attack_key = "MACRO";
-		cprintf(cli.green, language[31], 
-		   hf_attack_key , dist);	-- looting target.
-		RoMScript("UseSkill(1,1);");
-	else
-		hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
-		cprintf(cli.green, language[31], 
-		   hf_attack_key , dist);	-- looting target.
-		keyboardPress(settings.profile.hotkeys.ATTACK.key);
+	local function looten()
+		-- "attack" is also the hotkey to loot, strangely.
+		local hf_attack_key;
+		if( settings.profile.hotkeys.MACRO ) then
+			hf_attack_key = "MACRO";
+			cprintf(cli.green, language[31], 
+			   hf_attack_key , dist);	-- looting target.
+			RoMScript("UseSkill(1,1);");
+		else
+			hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
+			cprintf(cli.green, language[31], 
+			   hf_attack_key , dist);	-- looting target.
+			keyboardPress(settings.profile.hotkeys.ATTACK.key);
+		end
+
+	--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 	end
-	
---	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
+
+	looten();
 
 	-- check for loot problems to give a noob mesassage
 	self:update();
@@ -877,6 +900,8 @@ function CPlayer:loot()
 	    self.Z == hf_z  and
 	    dist > 25 )  then
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
+		yrest(2000);
+		looten();	-- try it again
 	end;
 
 	-- rnd pause from 3-6 sec after loot to look more human
@@ -1240,9 +1265,16 @@ function CPlayer:haveTarget()
 	
 		local function debug_target(_place)
 			if( settings.profile.options.DEBUG_TARGET and
-				self.TargetPtr ~= self.free_debug1 ) then
+				self.TargetPtr ~= self.LastTargetPtr ) then
 				cprintf(cli.yellow, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
-				self.free_debug1 = self.TargetPtr;		-- remeber target address to avoid msg spam
+				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
+			end
+		end
+		
+		local function printNotTargetReason(_reason)
+			if( self.TargetPtr ~= self.LastTargetPtr ) then
+				cprintf(cli.yellow, "%s\n", _reason);
+				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
 			end
 		end
 		
@@ -1347,24 +1379,30 @@ function CPlayer:haveTarget()
 		-- target is to strong for us
 		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
-				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
 				return false;		-- he is not a valid target
 			end;
 
 			if( self.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
 				target.TargetPtr ~= self.Address ) then		-- but not from that target
-				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 				return false;
 			end;
 		end;
 
 		if( settings.profile.options.ANTI_KS ) then
+		
+		
+-- why do we check the attackable flag only within the ANTI_KS?
+-- I delete it because of the PK player bug (not attackable) / d003232 17.10.09
 			-- Not a valid enemy
-			if( not target.Attackable ) then
-				printf(language[30], target.Name);
-				debug_target("anti kill steal: target not attackable")
-				return false;
-			end
+--			if( not target.Attackable ) then
+--				printf(language[30], target.Name);
+--				debug_target("anti kill steal: target not attackable")
+--				return false;
+--			end
 
 
 			-- If they aren't targeting us, and they have less than full HP
@@ -1455,6 +1493,7 @@ function CPlayer:clearTarget()
 	cprintf(cli.green, language[33]);
 	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, 0);
 	self.TargetPtr = 0;
+	self.Cast_to_target = 0;
 end
 
 -- returns true if this CPawn is registered as a friend
@@ -1701,7 +1740,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	end;
 
 	-- check before we perhaps sit down
-	self:checkPotions();   
+	self:checkPotions();
 	self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 	-- sit option is false as default and the option is not promoted
