@@ -190,9 +190,7 @@ function main()
 	bot.GetTimeFrequency = (calc_end.low - calc_start.low) / 3000;
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 	
-	-- Register and update inventory
-	inventory = CInventory();
-	inventory:update();
+
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings
@@ -397,7 +395,11 @@ function main()
 			player.Returning = false;	-- use normale waypoint path
 		end;
 	end;
-	
+
+	-- Register and update inventory
+	inventory = CInventory();
+	inventory:update();
+
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
 		player:update();
