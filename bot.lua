@@ -21,7 +21,7 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
-
+inventory = CInventory();
 
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
@@ -396,8 +396,7 @@ function main()
 		end;
 	end;
 
-	-- Register and update inventory
-	inventory = CInventory();
+	-- Update inventory
 	inventory:update();
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
