@@ -1012,7 +1012,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	-- direction ok, now look for a target before start movig
 	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
 		if( self:findTarget() ) then			-- find a new target
---			cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
 			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
 			success = false;
 			failreason = WF_TARGET;

@@ -21,7 +21,6 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
-inventory = CInventory();
 
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
@@ -190,7 +189,7 @@ function main()
 	bot.GetTimeFrequency = (calc_end.low - calc_start.low) / 3000;
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 	
-
+	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
 
 	-- onLoad event
 	-- possibility for users to overwrite profile settings
