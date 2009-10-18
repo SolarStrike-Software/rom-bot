@@ -117,6 +117,7 @@
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here
 		-- like: changeProfileOption("HP_REST", 60);
+		inventory:update();
 
 		if(player.Level == 1) then
 			openGiftbags1To10(player.Level);
