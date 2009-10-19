@@ -640,6 +640,8 @@ function settings.loadProfile(_name)
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
+			targetmaxhpper = tonumber(v:getAttribute("targethpper"));
+			targetmaxhp = tonumber(v:getAttribute("targethp"));
 			maxmanaper = tonumber(v:getAttribute("manaper"));
 			cooldown = tonumber(v:getAttribute("cooldown"));
 			inbattle = v:getAttribute("inbattle");
@@ -660,7 +662,6 @@ function settings.loadProfile(_name)
 			    v:getAttribute("energy")    or
 			    v:getAttribute("concentration")      or
 			    v:getAttribute("range")     or
---			    v:getAttribute("cooldown")  or
 			    v:getAttribute("minrange")  or
 			    v:getAttribute("type")      or
 			    v:getAttribute("target")    or
@@ -721,6 +722,8 @@ function settings.loadProfile(_name)
 
 			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
+			if( targetmaxhpper ) then tmp.TargetMaxHpPer = targetmaxhpper; end;
+			if( targetmaxhp ) then tmp.TargetMaxHp = targetmaxhp; end;
 			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
 			if( maxmanaper ) then tmp.MaxManaPer = maxmanaper; end;
 			if( cooldown ) then tmp.Cooldown = cooldown; end;
@@ -950,6 +953,7 @@ function settings.loadProfile(_name)
 				error(msg, 0);
 			end
 		else								-- return values found, clear it and send message
+			cprintf(cli.green, "MACRO Test: ok\n" );	
 			RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 		end
 	end

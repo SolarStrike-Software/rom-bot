@@ -35,7 +35,9 @@ CSkill = class(
 
 		self.AutoUse = true; -- Can be used automatically by the bot
 
-		self.MaxHpPer = 100; -- Must have less than this % HP to use
+		self.TargetMaxHpPer = 100;	-- Must have less than this % HP to use
+		self.TargetMaxHp = 9999999;	-- Must have less than this HP to use
+		self.MaxHpPer = 100;	-- Must have less than this % HP to use
 		self.MaxManaPer = 100;	-- Must have less than this % Mana to use
 		self.MinManaPer = 0;	-- Must have more then this % Mana to use
 		self.Toggleable = false;
@@ -66,6 +68,8 @@ CSkill = class(
 			self.Target = copyfrom.Target;
 			self.InBattle = copyfrom.InBattle;
 			self.ManaInc = copyfrom.ManaInc;
+			self.TargetMaxHpPer = copyfrom.TargetMaxHpPer;
+			self.TargetMaxHp = copyfrom.TargetMaxHp;
 			self.MaxHpPer = copyfrom.MaxHpPer;
 			self.MaxManaPer = copyfrom.MaxManaPer;
 			self.MinManaPer = copyfrom.MinManaPer;
@@ -131,7 +135,7 @@ function CSkill:canUse(_only_friendly)
 		
 	end
 
-
+	local target = player:getTarget();	-- get target fields
 
 	-- only friendly skill types?
 	if( _only_friendly ) then
@@ -230,11 +234,20 @@ function CSkill:canUse(_only_friendly)
 
 	-- DOTs require the enemy to have > X% hp
 	if( self.Type == STYPE_DOT ) then
-		local enemy = player:getTarget();
-		local hpper = (enemy.HP / enemy.MaxHP) * 100;
+		local hpper = (target.HP / target.MaxHP) * 100;
 		if( hpper < settings.profile.options.DOT_PERCENT ) then
 			return false;
 		end;
+	end
+
+	-- only if target HP % is below given level
+	if( target  and  target.HP/target.MaxHP*100 > self.TargetMaxHpPer ) then
+		return false;
+	end
+
+	-- only if target HP points is below given level
+	if( target  and  target.MaxHP > self.TargetMaxHp ) then
+		return false;
 	end
 
 	-- Out of range
