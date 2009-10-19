@@ -353,10 +353,11 @@ function main()
 	end
 	
 	-- if we don't have a wp file to load, list them
-	while(wp_to_load == nil	or
+	while( (wp_to_load == nil or
 	  wp_to_load == ""		or
 	  wp_to_load == false	or		  
-	  wp_to_load == " ") do
+	  wp_to_load == " " )  and
+	  __WPL == nil ) do			-- path in <onLoad> event created ?
 		wp_to_load = list_waypoint_files();
 	end;
 		
