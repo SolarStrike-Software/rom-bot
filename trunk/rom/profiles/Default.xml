@@ -20,7 +20,7 @@
 		<option name="POISON" value="30" />
 
 		<!-- either false or arrow or thrown -->
-		<option name="RELOAD_AMMUNITION" value="false" />
+		<option name="RELOAD_AMMUNITION" value="false" />	<!-- false|arrow|thrown -->
 
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        value="" />	<!-- leave empty or choose ranged/melee if not using class default -->

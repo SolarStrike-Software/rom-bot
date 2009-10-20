@@ -143,6 +143,7 @@ function CSkill:canUse(_only_friendly)
 		    self.Type ~= STYPE_BUFF  and
 			self.Type ~= STYPE_SUMMON and
 		    self.Type ~= STYPE_HOT ) then
+		    debug_skilluse("ONLYFRIENDLY", self.Type);
 			return false;
 		end;
 	end
@@ -150,22 +151,26 @@ function CSkill:canUse(_only_friendly)
 	-- You don't meet the maximum HP percent requirement
 	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
 	if( player.HP / player.MaxHP * 100 > self.MaxHpPer ) then
+		debug_skilluse("MAXHPPER", player.HP/player.MaxHP*100, self.MaxHpPer);
 		return false;
 	end
 
 	-- You are not below the maximum Mana Percent
 	if( (player.Mana/player.MaxMana*100) > self.MaxManaPer ) then
+		debug_skilluse("MAXMANAPER", (player.Mana/player.MaxMana*100), self.MaxManaPer);
 		return false;
 	end
 
 	-- You are not above the minimum Mana Percent
 	if( (player.Mana/player.MaxMana*100) < self.MinManaPer ) then
+		debug_skilluse("MINMANAPER", (player.Mana/player.MaxMana*100), self.MinManaPer);
 		return false;
 	end
 
 	-- Not enough rage/energy/concentration
 	if(  player.Rage < self.Rage or player.Energy < self.Energy
 		or player.Concentration < self.Concentration ) then
+		debug_skilluse("NORAGEENERGYCONCEN");
 		return false;
 	end
 
@@ -222,12 +227,14 @@ function CSkill:canUse(_only_friendly)
 	-- skill with maximum use per fight
 	if( self.maxuse > 0 and
 	    self.used >= self.maxuse ) then
+	    debug_skilluse("MAXUSE", self.used, self.maxuse);
 		return false
 	end
 
 	-- Needs an enemy target
 	if( self.Target == STARGET_ENEMY ) then
 		if( not player:haveTarget() ) then
+			debug_skilluse("TARGETNOENEMY");
 			return false;
 		end
 	end
@@ -236,6 +243,7 @@ function CSkill:canUse(_only_friendly)
 	if( self.Type == STYPE_DOT ) then
 		local hpper = (target.HP / target.MaxHP) * 100;
 		if( hpper < settings.profile.options.DOT_PERCENT ) then
+			debug_skilluse("DOTHPPER", hpper, settings.profile.options.DOT_PERCENT);
 			return false;
 		end;
 	end
@@ -255,32 +263,38 @@ function CSkill:canUse(_only_friendly)
 	-- Out of range
 	if( player:distanceToTarget() > self.Range  and
 	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill
+	    debug_skilluse("OUTOFRANGE", player:distanceToTarget(), self.Range );
 		return false;
 	end
 
 	-- Too close
 	if( player:distanceToTarget() < self.MinRange  and
-	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill 
+	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill
+	    debug_skilluse("MINRANGE", player:distanceToTarget(), self.MinRange );
 		return false;
 	end
 
 	-- check pullonly skills
 	if( self.pullonly == true and
 	    not player.ranged_pull ) then
+	    debug_skilluse("PULLONLY");
 		return false
 	end
 	
 	-- Not enough mana
 	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then
+		debug_skilluse("NOTENOUGHMANA", player.Mana, math.ceil(self.Mana + (self.Level-1)*self.ManaInc));
 		return false;
 	end
 
 	-- Already have a pet out
 	if( self.Type == STYPE_SUMMON and player.PetPtr ~= 0 ) then
+		debug_skilluse("PETALREAYDOUT");
 		return false;
 	end
 
 	if( self.Toggleable and self.Toggled == true ) then
+		debug_skilluse("TOGGLED");
 		return false;
 	end
 
