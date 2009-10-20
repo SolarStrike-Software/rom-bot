@@ -332,6 +332,7 @@ function main()
 
 	-- This logic prevents files from being loaded if wandering was forced
 	local wp_to_load, rp_to_load;
+	-- get wp filename to load
 	if( forcedPath ) then			-- waypointfile or 'wander'
 		wp_to_load = forcedPath;
 	else
@@ -340,6 +341,7 @@ function main()
 		end
 	end
 
+	-- get rp filename to load
 	if( forcedRetPath ) then
 		rp_to_load = forcedRetPath;
 	else
@@ -348,27 +350,27 @@ function main()
 		end
 	end
 
+	-- set wander if defined in profile
 	if( settings.profile.options.PATH_TYPE == "wander") then
 	    wp_to_load = "wander";
 	end
 	
+	-- list the path list?
 	-- if we don't have a wp file to load, list them
-	while( (wp_to_load == nil or
-	  wp_to_load == ""		or
-	  wp_to_load == false	or		  
-	  wp_to_load == " " )  and
-	  __WPL == nil ) do			-- path in <onLoad> event created ?
-		wp_to_load = list_waypoint_files();
-	end;
-		
-	if( wp_to_load == "wander" ) then
-		__WPL = CWaypointListWander();
-		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
-		__WPL:setMode("wander");
-	    cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
-	else
-		__WPL = CWaypointList();
-		loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
+	if( __WPL == nil ) then		-- not allready loaded (in onLoad event)
+
+		while( wp_to_load == nil or wp_to_load == "" or wp_to_load == false	or wp_to_load == " " ) do	
+			wp_to_load = list_waypoint_files();
+		end;
+
+		if( wp_to_load == "wander" ) then
+			__WPL = CWaypointListWander();
+			__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
+			__WPL:setMode("wander");
+			cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
+		else
+			loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
+		end;
 	end;
 
 	-- special option for use waypoint file from profile in a reverse order / not if forced path
