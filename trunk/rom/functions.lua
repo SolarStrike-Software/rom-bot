@@ -148,7 +148,7 @@ function printPicture(pic, text, textColor)
 	    textColor = 0;
 	end
 	
-	local readfile = io.open("scripts/rom/database/img/"..pic..".bmp", "r");
+	local readfile = io.open(getExecutionPath() .. "/database/img/"..pic..".bmp", "r");
 	if not readfile then
 	    print(pic);
 	    return 0;
