@@ -301,8 +301,10 @@ function CInventory:autoSell()
 	local hf_quality_table = stringExplode( "\n", hf_quality );	-- move colors to table
 
 	-- move ignore list into table
-	local hf_ignore = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-	local hf_ignore_table = stringExplode( "\n", hf_ignore );	-- move ignore list
+	if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
+		local hf_ignore = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
+		local hf_ignore_table = stringExplode( "\n", hf_ignore );	-- move ignore list
+	end
 
 	--	ITEMCOLORS table is defined in item.lua
 	local function sellColor(_itemcolor)
@@ -320,6 +322,10 @@ function CInventory:autoSell()
 
 	-- check if itemname or itemid is in the ignorelist
 	local function isInIgnorelist(_item)
+	
+		if ( not hf_ignore_table ) then
+			return false
+		end
 	
 		for i,ignorelistitem in pairs(hf_ignore_table) do
 
@@ -362,7 +368,7 @@ function CInventory:autoSell()
 
 	end
 	
-	if( he_wesell == true ) then
+	if( hf_wesell == true ) then
 		return true;
 	else
 		return false;
