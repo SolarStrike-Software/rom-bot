@@ -18,6 +18,7 @@ CItem = class(
 		self.ItemCount = 0;
 		self.Color = "ffffff";
 		self.SlotNumber = slotNumber;
+		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 	end
 )
@@ -94,6 +95,7 @@ function CItem:update()
 		self.Id = id			     -- The real item id
 		self.BagId = bagId;          -- GetBagItemLink and other RoM functions need this..
     	self.Name = name;
+    	self.Icon = icon;
     	self.ItemCount = itemCount;  -- How many?
     	self.Color = color; 		 -- Rarity
     	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
