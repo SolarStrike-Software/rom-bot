@@ -918,6 +918,12 @@ function settings.loadProfile(_name)
 	end
 
 
+	-- warning if not all inventory slots are updated
+	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
+		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
+	end
+
+
 	-- print error if new macro option isn't defined
 	if( not settings.profile.hotkeys.MACRO ) then
 		cprintf(cli.yellow, language[900]);
