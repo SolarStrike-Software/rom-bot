@@ -245,10 +245,17 @@ function CPlayer:cast(skill)
 	-- If given a string, look it up.
 	-- If given a skill object, use it natively.
 	if( type(skill) == "string" ) then
+		local skill_found = false;
 		for i,v in pairs(settings.profile.skills) do
 			if( v.Name == skill ) then
+				skill_found = true;
 				skill = v; break;
 			end
+		end
+		if( skill_found == false ) then
+			cprintf(cli.yellow, "Unknown profile skill %s. Check your manual castings "..
+			  "(e.g. in the events or waypoint files). Be sure the skill is in the "..
+			  "skills section of your profile.\n", skill);
 		end
 	end
 
@@ -300,7 +307,7 @@ function CPlayer:cast(skill)
 			-- leave before Casting flag is gone, so we can cast faster
 			if( deltaTime(getTime(), startTime) > 
 			  skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
-				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
+--				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
 				break;
 			end
 
@@ -383,11 +390,11 @@ function CPlayer:checkSkills(_only_friendly)
 			end
 
 			-- Make sure we aren't already busy casting something else
-			while(self.Casting) do
-				-- Waiting for casting to finish...
-				yrest(100);
-				self:update();
-			end
+--			while(self.Casting) do
+--				-- Waiting for casting to finish...
+--				yrest(100);
+--				self:update();
+--			end
 
 			-- break cast if aggro before casting
 			if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and

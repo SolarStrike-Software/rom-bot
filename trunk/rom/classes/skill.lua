@@ -148,6 +148,17 @@ function CSkill:canUse(_only_friendly)
 		end;
 	end
 
+
+	-- Still cooling down...
+	if( deltaTime(getTime(), self.LastCastTime) < 
+		  (self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR) ) then	-- Cooldown is in sec
+		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
+		return false;
+--	else
+--		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000-self.rebuffcut*1000 );
+	end
+
+
 	-- You don't meet the maximum HP percent requirement
 	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
 	if( player.HP / player.MaxHP * 100 > self.MaxHpPer ) then
@@ -204,25 +215,6 @@ function CSkill:canUse(_only_friendly)
 		end
 	end
 
-
-	-- Still cooling down...
---	if( os.difftime(os.time(), self.LastCastTime) <= self.Cooldown ) then
---	if( os.difftime(os.time(), self.LastCastTime) < self.Cooldown ) then
-	if( deltaTime(getTime(), self.LastCastTime) < 
-		  (self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR) ) then	-- Cooldown is in sec
-
---printf("deltaTime(getTime(), self.LastCastTime) %d\n", deltaTime(getTime(), self.LastCastTime));
---printf("diff oncool %d\n", self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR);
---printf("self.Cooldown %d\n", self.Cooldown);
---printf("self.rebuffcut %d\n", self.rebuffcut);
---printf(" self.Cooldown*1000-self.rebuffcut*1000 %d\n",  self.Cooldown*1000-self.rebuffcut*1000);
---printf("settings.profile.options.SKILL_USE_PRIOR %d\n", settings.profile.options.SKILL_USE_PRIOR);
-
-		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
-		return false;
-	else
-		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000-self.rebuffcut*1000 );
-	end
 
 	-- skill with maximum use per fight
 	if( self.maxuse > 0 and
@@ -320,30 +312,44 @@ function CSkill:use()
 	self.used = self.used + 1;	-- count use of skill per fight
 --	self.LastCastTime = os.time() + self.CastTime;
 
-	-- be sure to don't miss a buff true casting to fast, so we cast a little slower for
-	-- our own buffs
-	if( self.Type == STYPE_BUFF ) then
-		yrest(settings.profile.options.SKILL_USE_PRIOR);
-	end
 
 	-- set LastCastTime, thats the current key press time plus the casting time (if there is some)
 	-- self.CastTime is in sec, hence * 1000
 	-- every 1 ms in self.LastCastTime.low ( from getTime() ) is about getTimerFrequency().low
-	-- but we calculate the value at bot start time
+	-- we calculate the value at bot start time
 	self.LastCastTime = getTime();
 	self.LastCastTime.low = self.LastCastTime.low + self.CastTime*1000 * bot.GetTimeFrequency;
 	
+	-- wait for global cooldown gap (1000ms) between skill use
+	-- there are different 'waits' in the bot:
+	-- at CPlayer:cast(skill): for the casting flag gone
+	-- at CPlayer:checkSkills(): for the casting flag gone
+	-- and here to have a minimum delay between the keypresses
+	-- 850/900 will work after skills without casting time, but will result in misses 
+	-- after skills that have a casting time
+	while( deltaTime(getTime(), bot.LastSkillKeypressTime) < 1000-settings.profile.options.SKILL_USE_PRIOR ) do
+		yrest(10);
+	end
+
 	-- debug time gap between casts
 	if( settings.profile.options.DEBUG_SKILLUSE.ENABLE  and
-		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP and
-		debug_LastCastTime ~= nil and
-		debug_LastCastTime.low > 0 ) then 
-		
-		local msg = sprintf("[DEBUG] time-gap between skill use %d\n", 
-		  deltaTime(getTime(), debug_LastCastTime) );
+		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP ) then 
+		local hf_casting = "false";
+		if(player.Casting) then hf_casting = "true"; end;
+		local msg = sprintf("[DEBUG] gap between skilluse %d, pcasting=%s\n", 
+		  deltaTime(getTime(), bot.LastSkillKeypressTime), hf_casting );
 		cprintf(cli.yellow, msg);
 	end
-	debug_LastCastTime = getTime();		-- remember time to check time-lag between casts
+
+	-- Make sure we aren't already busy casting something else, thats only neccessary after
+	-- skills with a casting timess
+	while(player.Casting) do
+		-- Waiting for casting to finish...
+		yrest(50);
+		player:update();
+	end
+
+	bot.LastSkillKeypressTime = getTime();		-- remember time to check time-lag between casts
 
 	
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
