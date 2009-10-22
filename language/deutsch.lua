@@ -194,5 +194,7 @@ language = {
 	[1000] = "Aktualisierung Inventar (Taschenplatz 1 bis %d)...\n",
 	[1001] = "Einkaufen",
 	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
+	[1003] = "INV_MAX_SLOTS (%d) ist kleiner als INV_AUTOSELL_TOSLOT (%d). Sie k\148nnen nur Gegenstände verkaufen, die sich im Bereich des aktualisierten Inventars befinden. Bitte Option INV_MAX_SLOTS entsprechend anpa\225en.\n",
+	
 	
 };

@@ -296,6 +296,11 @@ function CInventory:autoSell()
 		return false
 	end
 
+	-- warning if not all inventory slots are updated
+	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
+		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
+	end
+
 	-- move color settings into table
 	local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
 	local hf_quality_table = stringExplode( "\n", hf_quality );	-- move colors to table
@@ -346,7 +351,7 @@ function CInventory:autoSell()
 		local sell_item = true
 		local slotitem = self.BagSlot[slotNumber];
 
-		if( slotitem.Id == 0  or  slotitem.Id == nil) then
+		if( not slotitem  or  slotitem.Id == 0  or  slotitem.Id == nil) then
 			sell_item = false;
 		end
 

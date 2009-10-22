@@ -192,5 +192,6 @@ language = {
 	[1000] = "Mapping inventory (bagslot 1 to %d)...\n",
 	[1001] = "Shopping",
 	[1002] = "Next full inventory update not later then %d seconds.\n",
+	[1003] = "INV_MAX_SLOTS (%d) is lower then INV_AUTOSELL_TOSLOT (%d). You can only sell items, that are within the inventory update range. Please adjust the option INV_MAX_SLOTS.\n",
 	
 };
