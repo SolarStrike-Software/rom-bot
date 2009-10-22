@@ -343,7 +343,9 @@ function CSkill:use()
 
 	-- Make sure we aren't already busy casting something else, thats only neccessary after
 	-- skills with a casting timess
+	local start_wait = getTime();
 	while(player.Casting) do
+		if( deltaTime(getTime(), start_wait ) > 6000 ) then break; end;	-- in case there is a client update bug
 		-- Waiting for casting to finish...
 		yrest(50);
 		player:update();
