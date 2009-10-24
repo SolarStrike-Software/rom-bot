@@ -310,8 +310,8 @@ function main()
 		io.stdin:flush();
 		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path 
 		local hf_choose_path_nr = tonumber(io.stdin:read() );
-		if( hf_choose_path_nr == nil) then hf_choose_path_nr = 0; end;
-		if( hf_choose_path_nr >= 0 and
+		if( hf_choose_path_nr and
+			hf_choose_path_nr >= 0 and
 			hf_choose_path_nr <= #pathlist ) then 
 			printf(language[146], hf_choose_path_nr );	-- You choose %s\n
 			if( pathlist[hf_choose_path_nr].folder ) then
@@ -523,6 +523,11 @@ function main()
 		if( player:haveTarget()  and
 		    player.Current_waypoint_type ~= WPT_RUN ) then	-- only fight back if it's not a runnig waypoint
 		-- fight the mob / target
+		
+			-- remember players position
+			player.FightStartX = player.X;
+			player.FightStartZ = player.Z;
+		
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and 
@@ -535,6 +540,29 @@ function main()
 			else
 				player:fight();
 			end
+			
+			
+			-- check if we as melee can skip a waypoint because we touched it while moving to the fight place
+			--
+			local nextWaypoint;
+			if( player.Returning ) then
+				nextWaypoint = __RPL.Waypoints[__RPL.CurrentWaypoint]
+			else
+				nextWaypoint = __WPL.Waypoints[__WPL.CurrentWaypoint]
+			end;
+			
+			-- calculate direction in rad for: fight start postition -> next waypoint
+			local dir_fightstart_to_waypoint = math.atan2(nextWaypoint.Z - player.FightStartZ, nextWaypoint.X - player.FightStartX);
+			-- calculate direction in rad for: fight start postition -> fight end postition
+			local dir_fightstart_to_fightend = math.atan2(nextWaypoint.Z - player.Z, nextWaypoint.X - player.X);
+			local angleDif = angleDifference(dir_fightstart_to_waypoint, dir_fightstart_to_fightend);
+
+			if( math.deg(angleDif) < 45 ) then
+				player.WpTouched = true;
+			else
+				player.WpTouched = false;
+			end
+			
 		else
 		-- don't fight, move to wp
 			local wp = nil; local wpnum = nil;
