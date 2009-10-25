@@ -62,6 +62,7 @@ language = {
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berpr\129fen Sie Ihr Profil!\n",
 	[61] = "Fehlerhafte Option \'%s\' f\129r bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tBenutze Profil \'profname.xml\'\npath:pathname\t\tBenutze Wegepunkt Datei \'pathname.xml\'\nretpath:retname\t\tBenutze R\129ckkehrpfad \'retname.xml\'\n",
+	[62] = "Fehler beim Lesen der Spracheinstellung des Spiels. Haben Sie Ihr leeres MACRO im Spiel richtig zugeordnet? Bitte den Bot und gegebenenfalls das Spiel nochmal starten.",
 	
 	[70] = "Pausieren nach %s Sekunden beendet.\n",	
 	[71] = "Pausiere f\129r %s Sekunden.\n",

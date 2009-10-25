@@ -144,7 +144,14 @@ function main()
 	player.level_detect_levelup = player.Level;	-- remember actual player level
 	
 	-- remember game client language
-	bot.ClientLanguage = string.lower( RoMScript("GetLanguage();") );	-- read clients language
+	local hf_langu = RoMScript("GetLanguage();");
+	if( not hf_langu ) then
+		local msg = sprintf(language[62]);	-- Error while reading the language settings
+--		error(msg, 0);
+		cprintf(cli.yellow, msg);
+		hf_langu = "eneu";
+	end
+	bot.ClientLanguage = string.lower( hf_langu );	-- remember clients language
 
 	if( settings.options.USE_CLIENT_LANGUAGE ) then
 		local hf_language;
@@ -323,6 +330,7 @@ function main()
 			return wp_to_load;
 		else
 			cprintf(cli.yellow, language[147]);	-- Wrong selection
+			yrest(3000);
 			return false;
 		end
 
@@ -540,28 +548,43 @@ function main()
 			else
 				player:fight();
 			end
+
 			
-			
+--[[ not finished yet / d003232 25.10.09		
 			-- check if we as melee can skip a waypoint because we touched it while moving to the fight place
 			--
-			local nextWaypoint;
+			local currentWp;	-- current WP we want to reach next
 			if( player.Returning ) then
-				nextWaypoint = __RPL.Waypoints[__RPL.CurrentWaypoint]
+				currentWp = __RPL.Waypoints[__RPL.CurrentWaypoint]
 			else
-				nextWaypoint = __WPL.Waypoints[__WPL.CurrentWaypoint]
+				currentWp = __WPL.Waypoints[__WPL.CurrentWaypoint]
 			end;
 			
 			-- calculate direction in rad for: fight start postition -> next waypoint
-			local dir_fightstart_to_waypoint = math.atan2(nextWaypoint.Z - player.FightStartZ, nextWaypoint.X - player.FightStartX);
+			local dir_fightstart_to_waypoint = math.atan2(currentWp.Z - player.FightStartZ, currentWp.X - player.FightStartX);
+			local dist_fightstart_to_waypoint = distance(player.FightStartX, player.FightStartZ, currentWp.X, currentWp.Z);
 			-- calculate direction in rad for: fight start postition -> fight end postition
-			local dir_fightstart_to_fightend = math.atan2(nextWaypoint.Z - player.Z, nextWaypoint.X - player.X);
+			local dir_fightstart_to_fightend = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X);
+			local dist_fightstart_to_fightend = distance(player.X, player.Z, player.FightStartX, player.FightStartZ);
 			local angleDif = angleDifference(dir_fightstart_to_waypoint, dir_fightstart_to_fightend);
 
-			if( math.deg(angleDif) < 45 ) then
+			if( math.deg(angleDif) < 45  and
+				dist_fightstart_to_fightend >= dist_fightstart_to_waypoint - 50 ) then
 				player.WpTouched = true;
 			else
 				player.WpTouched = false;
 			end
+			
+			-- check position of the waypoint after the current waypoint we want to reach
+			local nextWp;	-- current WP we want to reach next
+			if( player.Returning ) then
+				nextWp = __RPL.Waypoints[__RPL.CurrentWaypoint+1]
+			else
+				nextWp = __WPL.Waypoints[__WPL.CurrentWaypoint+1]
+			end;
+			-- TODO: function, die auch Überlauf behandelt
+--]]			
+			
 			
 		else
 		-- don't fight, move to wp
