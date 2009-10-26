@@ -1398,9 +1398,13 @@ function CPlayer:haveTarget()
 			end;
 		end;
 
+		-- don't target NPCs 
+		if( target.Type == PT_NPC ) then      -- NPCs are type == 4
+			debug_target("thats a NPC, he should be friendly and not attackable")
+			return false;         -- he is not a valid target
+		end;
+
 		if( settings.profile.options.ANTI_KS ) then
-		
-		
 -- why do we check the attackable flag only within the ANTI_KS?
 -- I delete it because of the PK player bug (not attackable) / d003232 17.10.09
 			-- Not a valid enemy
