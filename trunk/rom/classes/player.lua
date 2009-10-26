@@ -956,7 +956,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	-- no active turning if wander and radius = 0
 	-- self direction has values from 0 til Pi and -Pi til 0
-	-- angel has values from 0 til 2*Pi
+	-- angle has values from 0 til 2*Pi
 	if(__WPL:getMode()   == "wander"  and
 	   __WPL:getRadius() == 0     )   then
 	   	self:restrnd(100, 1, 4);	-- wait 3 sec
@@ -1142,7 +1142,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		if( waypoint.Action and type(waypoint.Action) == "string" ) then
 			local actionchunk = loadstring(waypoint.Action);
-			assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );
+			assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );	-- little bug, could also be __RPL ?
 			actionchunk();
 		end
 	end

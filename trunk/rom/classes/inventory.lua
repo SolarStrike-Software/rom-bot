@@ -52,17 +52,29 @@ function CInventory:reloadAmmunition(type)
 	end
 end
 
-function CInventory:getMainHandDurability()
-    local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player', 15);");
+function CInventory:getDurability(_slot)
+-- return item durability for a given slot in percent from 0 - 100
+
+	if( not _slot) then _slot = 15; end		-- 15=MainHand | 16=OffHand | 10=Ranged
+
+    local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player',".._slot..");");
 
 	-- prevent aritmetic on a nil value if RoMScript failed/wrong values come back
 	if( type(durability) ~= "number" or  
 		type(durabilityMax) ~= "number" 
 		or durabilityMax == 0) then
-		return 1
+		return 100;
 	end
 
-	return tonumber(durability)/tonumber(durabilityMax);
+	return tonumber(durability)/tonumber(durabilityMax)*100;
+	
+end
+
+function CInventory:getMainHandDurability()
+-- return values between 0 - 1 for combatibility reasons
+
+	return inventory:getDurability(15) / 100;		-- 15=Main Hand
+
 end
 
 -- Make a full update

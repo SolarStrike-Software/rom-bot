@@ -146,15 +146,25 @@ function CWaypointList:backward()
 	end
 end
 
-function CWaypointList:getNextWaypoint()
-	local tmp = CWaypoint(self.Waypoints[self.CurrentWaypoint]);
+function CWaypointList:getNextWaypoint(_num)
+	if( not _num ) then _num = 0; end;
 
--- no more needed, because self.Type is always define, if not it has the
--- default WPT_NORMAL / and it should never overwrite if any there
---	-- TYPE override
---	if( self.Type ~= 0 ) then
---		tmp.Type = self.Type;
---	end
+	local hf_wpnum;
+	if( self.Direction == WPT_FORWARD ) then
+		hf_wpnum = self.CurrentWaypoint + _num;
+		if( hf_wpnum > #self.Waypoints ) then
+			self.CurrentWaypoint = hf_wpnum - #self.Waypoints;
+		end
+	else
+		hf_wpnum = self.CurrentWaypoint - 1;
+		if( self.CurrentWaypoint < 1 ) then
+			self.CurrentWaypoint = hf_wpnum + #self.Waypoints;
+		end
+	end
+
+	
+	local tmp = CWaypoint(self.Waypoints[hf_wpnum]);
+	tmp.wpnum = hf_wpnum;
 
 	-- check if forced type is set, that could be done by users
 	-- within lua coding in the waypoint tags

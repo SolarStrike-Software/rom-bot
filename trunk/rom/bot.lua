@@ -532,9 +532,9 @@ function main()
 		    player.Current_waypoint_type ~= WPT_RUN ) then	-- only fight back if it's not a runnig waypoint
 		-- fight the mob / target
 		
-			-- remember players position
-			player.FightStartX = player.X;
-			player.FightStartZ = player.Z;
+			-- remember players position at fight start
+			local FightStartX = player.X;
+			local FightStartZ = player.Z;
 		
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
@@ -550,41 +550,84 @@ function main()
 			end
 
 			
---[[ not finished yet / d003232 25.10.09		
+if (settings.profile.options.DEBUG_WAYPOINT) then
 			-- check if we as melee can skip a waypoint because we touched it while moving to the fight place
-			--
-			local currentWp;	-- current WP we want to reach next
+			-- we do the check for all classes, even mostly only melees are touched by that, because only
+			-- they move within the fightstart/-end
+			local WpToReach;	-- current WP we want to reach next
 			if( player.Returning ) then
-				currentWp = __RPL.Waypoints[__RPL.CurrentWaypoint]
+				WpToReach = __RPL;	-- we are on a return path waypoint file
 			else
-				currentWp = __WPL.Waypoints[__WPL.CurrentWaypoint]
+				WpToReach = __WPL;	-- we are using a normal waypoint file
 			end;
+			local currentWp = WpToReach:getNextWaypoint();	-- get current wp we try to reach
 			
-			-- calculate direction in rad for: fight start postition -> next waypoint
-			local dir_fightstart_to_waypoint = math.atan2(currentWp.Z - player.FightStartZ, currentWp.X - player.FightStartX);
-			local dist_fightstart_to_waypoint = distance(player.FightStartX, player.FightStartZ, currentWp.X, currentWp.Z);
+			-- calculate direction in rad for: fight start postition -> current waypoint
+			local dir_fightstart_to_currentwp = math.atan2(currentWp.Z - FightStartZ, currentWp.X - FightStartX);
+			local dist_fightstart_to_currentwp = distance(FightStartX, FightStartZ, currentWp.X, currentWp.Z);
+			
 			-- calculate direction in rad for: fight start postition -> fight end postition
 			local dir_fightstart_to_fightend = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X);
-			local dist_fightstart_to_fightend = distance(player.X, player.Z, player.FightStartX, player.FightStartZ);
-			local angleDif = angleDifference(dir_fightstart_to_waypoint, dir_fightstart_to_fightend);
+			local dist_fightstart_to_fightend = distance(player.X, player.Z, FightStartX, FightStartZ);
 
-			if( math.deg(angleDif) < 45  and
-				dist_fightstart_to_fightend >= dist_fightstart_to_waypoint - 50 ) then
-				player.WpTouched = true;
-			else
-				player.WpTouched = false;
+			-- calculate how much  fighstart, wp and fightend are on a line, 0 = one line, 
+			local angleDif = angleDifference(dir_fightstart_to_currentwp, dir_fightstart_to_fightend);
+			if (settings.profile.options.DEBUG_WAYPOINT) then
+				cprintf(cli.yellow, "[DEBUG] FightStartX %s FightStartZ %s\n", FightStartX, FightStartZ );
+				cprintf(cli.yellow, "[DEBUG] dir_FS->WP rad %s dir_FS->FE rad %s\n", dir_fightstart_to_currentwp, dir_fightstart_to_fightend );
+				cprintf(cli.yellow, "[DEBUG] Line FS->WP / FS->FE: angleDif rad %s grad %d\n", angleDif, math.deg(angleDif) );
 			end
 			
-			-- check position of the waypoint after the current waypoint we want to reach
-			local nextWp;	-- current WP we want to reach next
-			if( player.Returning ) then
-				nextWp = __RPL.Waypoints[__RPL.CurrentWaypoint+1]
-			else
-				nextWp = __WPL.Waypoints[__WPL.CurrentWaypoint+1]
-			end;
-			-- TODO: function, die auch Überlauf behandelt
---]]			
+			-- c = Wurzel (a2 + b2 - 2 a b cos (ga))
+			local a = dist_fightstart_to_currentwp;
+			local b = dist_fightstart_to_currentwp;
+			local ga = angleDif;
+			local dist_to_passed_wp = math.sqrt( math.pow(a,2) + math.pow(b,2) - 2 * a * b * math.cos(ga) );
+			if (settings.profile.options.DEBUG_WAYPOINT) then
+				cprintf(cli.yellow, "[DEBUG] We (would) pass(ed) wp #%s in a distance of %d\n", currentWp.wpnum, dist_to_passed_wp );
+			end
 			
+--			if( math.deg(angleDif) < 45  and
+--				dist_fightstart_to_fightend >= dist_fightstart_to_currentwp - 50 ) then
+			if( dist_to_passed_wp < settings.profile.options.WAYPOINT_PASS  and		-- default is 100
+				dist_fightstart_to_fightend >= dist_fightstart_to_currentwp ) then
+			
+				-- check position of the waypoint after the current waypoint we want to reach
+				-- we don't check the closest wp, thats to much effort, we assume the distance between wp is
+				-- as far, that the next one is always the closest
+				local nextWp = WpToReach:getNextWaypoint(1);	-- get current wp we try to reach +1
+				local dir_fightend_to_nextwp = math.atan2(nextWp.Z - player.Z, nextWp.X - player.X);
+				local dir_fightend_to_currentwp = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X);
+				angleDif = angleDifference(dir_fightend_to_currentwp, dir_fightend_to_nextwp);
+				if (settings.profile.options.DEBUG_WAYPOINT) then
+					cprintf(cli.yellow, "[DEBUG] Next FE->wp #%s is in a angle of %d to FE->wp #%s\n", nextWp.wpnum, math.deg(angleDif), currentWp.wpnum );
+				end
+
+				-- if next waypoint if 'in front' of current waypoint
+				if( math.deg(angleDif) > settings.profile.options.WAYPOINT_PASS_DEGR ) then	-- default 90
+					if (settings.profile.options.DEBUG_WAYPOINT) then
+						cprintf(cli.yellow, "[DEBUG] We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
+					end
+					cprintf(cli.green, "We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
+					WpToReach:advance();	-- set next waypoint
+--					if( player.Returning ) then
+--							__RPL:advance();
+--					else
+--							__WPL:advance();			
+--					end;
+				
+					-- execute the action from the skiped wp
+					if( currentWp.Action and type(currentWp.Action) == "string" ) then
+						local actionchunk = loadstring(currentWp.Action);
+						assert( actionchunk,  sprintf(language[150], WpToReach.CurrentWaypoint) );
+						actionchunk();
+					end
+
+				end
+
+			end 	-- end of not check to skip a waypoint
+end			
+
 			
 		else
 		-- don't fight, move to wp

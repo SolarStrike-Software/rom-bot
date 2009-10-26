@@ -74,6 +74,8 @@ settings_default = {
 			USE_MANA_POTION = "best",		-- which mana potion type to use: best | minstack
 			USE_HP_POTION = "best",			-- which HP potion type to use: best | minstack 			
 			WAYPOINTS_REVERSE = false,		-- use the waypoint file in reverse order
+			WAYPOINT_PASS = 100,			-- skip a waypoint if we pass in distance x while fighting a mob (go to as melee)
+			WAYPOINT_PASS_DEGR = 90,		-- skip a waypoint if we touched one and the next is at least x degrees in front
 			MAX_DEATHS = 10,				-- maximal death if automatic resurrect befor logout
 			WAIT_TIME_AFTER_RES = 8000,		-- time to wait after resurrection, needs more on slow PCs
 			RETURNPATH_SUFFIX = "_return",	-- suffix for default naming of returnpath
@@ -92,6 +94,7 @@ settings_default = {
 			DEBUG_LOOT = false,	 			-- debug loot issues
 			DEBUG_TARGET = false, 			-- debug targeting issues
 			DEBUG_HARVEST = false, 			-- debug harvesting issues
+			DEBUG_WAYPOINT = false, 		-- debug waypoint issues
 			
 			-- debug skill use issues
 			DEBUG_SKILLUSE = {
