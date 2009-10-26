@@ -550,17 +550,17 @@ function main()
 			end
 
 			
-if (settings.profile.options.DEBUG_WAYPOINT) then
-			-- check if we as melee can skip a waypoint because we touched it while moving to the fight place
+--if (settings.profile.options.DEBUG_WAYPOINT) then
+			-- check if we (as melee) can skip a waypoint because we touched it while moving to the fight place
 			-- we do the check for all classes, even mostly only melees are touched by that, because only
 			-- they move within the fightstart/-end
-			local WpToReach;	-- current WP we want to reach next
+			local WPLorRPL;	-- current WP we want to reach next
 			if( player.Returning ) then
-				WpToReach = __RPL;	-- we are on a return path waypoint file
+				WPLorRPL = __RPL;	-- we are on a return path waypoint file
 			else
-				WpToReach = __WPL;	-- we are using a normal waypoint file
+				WPLorRPL = __WPL;	-- we are using a normal waypoint file
 			end;
-			local currentWp = WpToReach:getNextWaypoint();	-- get current wp we try to reach
+			local currentWp = WPLorRPL:getNextWaypoint();	-- get current wp we try to reach
 			
 			-- calculate direction in rad for: fight start postition -> current waypoint
 			local dir_fightstart_to_currentwp = math.atan2(currentWp.Z - FightStartZ, currentWp.X - FightStartX);
@@ -587,15 +587,13 @@ if (settings.profile.options.DEBUG_WAYPOINT) then
 				cprintf(cli.yellow, "[DEBUG] We (would) pass(ed) wp #%s (dist %.1f) in a dist of %d (skip at %d)\n", currentWp.wpnum, dist_fightstart_to_currentwp,  dist_to_passed_wp, settings.profile.options.WAYPOINT_PASS );
 			end
 			
---			if( math.deg(angleDif) < 45  and
---				dist_fightstart_to_fightend >= dist_fightstart_to_currentwp - 50 ) then
 			if( dist_to_passed_wp < settings.profile.options.WAYPOINT_PASS  and		-- default is 100
 				dist_fightstart_to_fightend >= dist_fightstart_to_currentwp ) then
 			
 				-- check position of the waypoint after the current waypoint we want to reach
 				-- we don't check the closest wp, thats to much effort, we assume the distance between wp is
 				-- as far, that the next one is always the closest
-				local nextWp = WpToReach:getNextWaypoint(1);	-- get current wp we try to reach +1
+				local nextWp = WPLorRPL:getNextWaypoint(1);	-- get current wp we try to reach +1
 				local dir_fightend_to_nextwp = math.atan2(nextWp.Z - player.Z, nextWp.X - player.X);
 				local dir_fightend_to_currentwp = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X );
 				angleDif = angleDifference(dir_fightend_to_currentwp, dir_fightend_to_nextwp);
@@ -605,30 +603,25 @@ if (settings.profile.options.DEBUG_WAYPOINT) then
 					cprintf(cli.yellow, "[DEBUG] FE->wp#%s to FE->wp#%s is in a angle of %d grad (skip at %d)\n", nextWp.wpnum,  currentWp.wpnum, math.deg(angleDif), settings.profile.options.WAYPOINT_PASS_DEGR );
 				end
 
-				-- if next waypoint if 'in front' of current waypoint
+				-- if next waypoint is 'in front' of current waypoint
 				if( math.deg(angleDif) > settings.profile.options.WAYPOINT_PASS_DEGR ) then	-- default 90
 					if (settings.profile.options.DEBUG_WAYPOINT) then
 						cprintf(cli.yellow, "[DEBUG] We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
 					end
 					cprintf(cli.green, "We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
-					WpToReach:advance();	-- set next waypoint
---					if( player.Returning ) then
---							__RPL:advance();
---					else
---							__WPL:advance();			
---					end;
+					WPLorRPL:advance();	-- set next waypoint
 				
 					-- execute the action from the skiped wp
 					if( currentWp.Action and type(currentWp.Action) == "string" ) then
 						local actionchunk = loadstring(currentWp.Action);
-						assert( actionchunk,  sprintf(language[150], WpToReach.CurrentWaypoint) );
+						assert( actionchunk,  sprintf(language[150], WPLorRPL.CurrentWaypoint) );
 						actionchunk();
 					end
 
 				end
 
-			end 	-- end of not check to skip a waypoint
-end			
+			end 	-- end of: check to skip a waypoint
+--end			
 
 			
 		else

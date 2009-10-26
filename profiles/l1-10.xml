@@ -138,6 +138,12 @@
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after a target is finished
+
+			if(player.Level == 10) then
+				__WPL:setForcedWaypointType("TRAVEL")
+			end;
+
+
 	</onLeaveCombat>
 
 	<onLevelup>

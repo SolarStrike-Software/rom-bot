@@ -84,14 +84,14 @@
 	player:rest(4);
 	sendMacro("OnClick_QuestListButton(1,1)");	yrest(1000);
 	sendMacro("AcceptQuest();");			yrest(1000);
-	player:target_NPC("Lehman");			yrest(1000);
-	sendMacro("SpeakFrame_Clear();");		yrest(1000);
-	sendMacro("SpeakFrame_LoadQuest();");	yrest(1000);
-	sendMacro("SpeakFrame_LoadQuestDetail(1);");	yrest(1000);
-	sendMacro("CompleteQuest();");			yrest(1000);
+	sendMacro("CloseWindows();"); yrest(1000);
+   player:target_NPC("Lehman"); yrest(1000);
+   <!-- the 3 is for completed quests -->
+   sendMacro("OnClick_QuestListButton(3,1);"); yrest(1000);
+   sendMacro("CompleteQuest();"); yrest(1000);
 	<!-- completing the quest didn't work because of problems loading the quest details  -->
 	<!-- that's the reason for the sleep() function. If you find a solution pls share it -->
-	player:sleep();
+	<!--  player:sleep();  -->
 	loadPaths("1-10Pioneers/l10t_postbox");
 	</waypoint>
 </waypoints>
