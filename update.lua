@@ -14,10 +14,10 @@ function findOffsets()
 		error("Unable to find static char base pointer in module.", 0);
 	end
 
-	staticpattern_char = found;
-	staticcharbase = memoryReadInt(getProc(), found + getCharUpdateOffset());
+	addresses.staticpattern_char = found;
+	addresses.staticbase_char = memoryReadInt(getProc(), found + getCharUpdateOffset());
 
-	if( staticcharbase == nil ) then
+	if( addresses.staticbase_char == nil ) then
 		error("Found char pattern, but unable to read memory.\n");
 	end
 
@@ -28,20 +28,17 @@ function findOffsets()
 		error("Unable to find static macro base pointer in module.", 0);
 	end
 
-	staticpattern_macro = found;
-	staticmacrobase = memoryReadInt(getProc(), found + getMacroUpdateOffset());
+	addresses.staticpattern_macro = found;
+	addresses.staticbase_macro = memoryReadInt(getProc(), found + getMacroUpdateOffset());
 
-	if( staticmacrobase == nil ) then
+	if( addresses.staticbase_macro == nil ) then
 		error("Found macro pattern, but unable to read memory.\n");
 	end
 
 
 
-	printf("staticcharbase: 0x%X\n", staticcharbase);
-	printf("staticmacrobase: 0x%X\n", staticmacrobase);
-
-	addresses.staticbase_char = staticcharbase;
-	addresses.staticbase_macro = staticmacrobase;
+	printf("addresses.staticbase_char: 0x%X\n", addresses.staticbase_char);
+	printf("addresses.staticbase_macro: 0x%X\n", addresses.staticbase_macro);
 end
 
 function rewriteAddresses()
