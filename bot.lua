@@ -556,7 +556,6 @@ function main()
 			end
 
 			
---if (settings.profile.options.DEBUG_WAYPOINT) then
 			-- check if we (as melee) can skip a waypoint because we touched it while moving to the fight place
 			-- we do the check for all classes, even mostly only melees are touched by that, because only
 			-- they move within the fightstart/-end
@@ -627,7 +626,6 @@ function main()
 				end
 
 			end 	-- end of: check to skip a waypoint
---end			
 
 			
 		else

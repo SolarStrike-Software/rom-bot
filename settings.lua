@@ -65,6 +65,7 @@ settings_default = {
 			MAX_SKILLUSE_NODMG = 3,				-- maximum casts without damaging the target before break it
 			MAX_TARGET_DIST = 999,			-- maximum distance to select a target (helpfull to limit at small places)
 			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
+			AUTO_TARGET = true,				-- bot will target mobs automaticly (set it to false if you want to use the bot only as fight support)
 			SKILL_USE_PRIOR = 10,			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
 			POTION_COOLDOWN = 15,			-- always 15
@@ -926,6 +927,13 @@ function settings.loadProfile(_name)
 	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
 		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
 	end
+
+
+	-- check if automatic targeting is active
+	if( settings.profile.options.AUTO_TARGET == false ) then
+		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");
+	end
+
 
 
 	-- print error if new macro option isn't defined
