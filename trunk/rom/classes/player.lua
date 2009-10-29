@@ -954,7 +954,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 	end
 
-	-- no active turning if wander and radius = 0
+	-- no active turning and moving if wander and radius = 0
 	-- self direction has values from 0 til Pi and -Pi til 0
 	-- angle has values from 0 til 2*Pi
 	if(__WPL:getMode()   == "wander"  and
@@ -965,6 +965,15 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		else
 			angle = self.Direction;
 		end;
+		
+		-- we will not move back to WP if wander and radius = 0
+		-- so one can move the character manual and use the bot only as fight support
+		-- there we set the WP to the actual player position
+		waypoint.Z = player.Z;
+		waypoint.X = player.X;
+--		__WLP.Waypoints.Z = player.Z;
+--		__WLP.Waypoints.X = player.X;
+		
 	end;
 
 	-- QUICK_TURN only
@@ -1660,6 +1669,11 @@ end
 -- find a target with the ingame target key
 -- is used while moving and could also used before moving or after fight
 function CPlayer:findTarget()
+
+	-- check if automatic targeting is active
+	if( settings.profile.options.AUTO_TARGET == false ) then
+		return false;
+	end
 
 	if(settings.hotkeys.TARGET.modifier) then
 		keyboardHold(settings.hotkeys.TARGET.modifier);

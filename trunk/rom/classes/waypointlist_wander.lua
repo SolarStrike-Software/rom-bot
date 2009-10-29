@@ -15,6 +15,13 @@ function CWaypointListWander:getNextWaypoint()
 	local X = self.OrigX + math.random(-halfrad, halfrad);
 	local Z = self.OrigZ + math.random(-halfrad, halfrad);
 
+	-- no active moving if radius=0, so player can move the character manuel to every position
+	-- that means also no moving back to fught start position for melees
+	if( self.Radius == 0 ) then
+		X = player.X;
+		Z = player.Z;
+	end
+
 	return CWaypoint(X, Z); -- TODO: Make sure this works
 end
 
