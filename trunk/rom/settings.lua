@@ -936,36 +936,29 @@ function settings.loadProfile(_name)
 		cprintf(cli.yellow, language[903]);
 		cprintf(cli.yellow, language[904], "VK_0"); -- TODO: Change VK_0 to the actual hotkey we should use
 		local msg = sprintf(language[905], _name);
-		if( not settings.profile.options.IGNORE_MACRO_ERROR) then -- only temporary, can be deleted later
-			error(msg, 0);
-		end
+		error(msg, 0);
 	end
 
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
-	if (settings.options.DEBUGGING_MACRO) then
-		local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
-		if( hf_return ~= 1234 ) then	-- return values not found
-		 	RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
-			cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
+	settings.options.DEBUGGING_MACRO = true;
+	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
+	if( hf_return ~= 1234 ) then	-- return values not found
+		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
+		cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
 
-			if ( settings.profile.hotkeys.MACRO.key) then
-				hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key);
-			else
-				local hf_temp ="<UNKNOWN>";	-- if ignore, key must not be set, so give value
-			end
-
-			local msg = sprintf(language[904], hf_temp );
-
-			if( settings.profile.options.IGNORE_MACRO_ERROR == true ) then	-- only temporary, can be deleted later
-				cprintf(cli.yellow, msg);		
-			else							-- ignore MACRO error
-				error(msg, 0);
-			end
-		else								-- return values found, clear it and send message
-			cprintf(cli.green, "MACRO Test: ok\n" );	
-			RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
+		if ( settings.profile.hotkeys.MACRO.key) then
+			hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key);
+		else
+			local hf_temp ="<UNKNOWN>";	-- if ignore, key must not be set, so give value
 		end
+
+		local msg = sprintf(language[904], hf_temp );
+
+		error(msg, 0);
+	else								-- return values found, clear it and send message
+		cprintf(cli.green, "MACRO Test: ok\n" );	
+		RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 	end
 	settings.options.DEBUGGING_MACRO = false;
 

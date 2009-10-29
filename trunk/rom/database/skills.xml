@@ -63,7 +63,7 @@
 	<skill name="PRIEST_BLESSING_OF_RAIN" aslevel="16" mana="120" type="buff" cooldown="600" target="self" />	<!-- name outdated new: BLESSED_SPRING_WATER -->
 	<skill name="PRIEST_BLESSED_SPRING_WATER" aslevel="16" skilltab="2" skillnum="6" mana="120" type="buff" cooldown="600" target="self" />
 	<skill name="PRIEST_SOUL_SOURCE" aslevel="1" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
-	<skill name="PRIEST_WAVE_ARMOR" aslevel="2" skilltab="4" skillnum="2" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" inbattle="true" />
+	<skill name="PRIEST_WAVE_ARMOR" aslevel="2" skilltab="4" skillnum="2" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" />
 	<skill name="PRIEST_HEAL" aslevel="6" skilltab="4" skillnum="3" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
 	<skill name="PRIEST_BONE_CHILL" aslevel="8" skilltab="4" skillnum="4" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
 	<skill name="PRIEST_ICE_FOG" aslevel="8" skilltab="4" skillnum="5" mana="44" range="240" casttime="3" cooldown="10" type="damage" target="enemy" />
