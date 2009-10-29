@@ -358,14 +358,15 @@ function CSkill:use()
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
 	
 		-- hopefully skillnames in enus and eneu are the same
+		local hf_langu;
 		if(bot.ClientLanguage == "enus" or bot.ClientLanguage == "eneu") then
-			local hf_langu = "en";
+			hf_langu = "en";
 		else
-			local hf_langu = bot.ClientLanguage;
+			hf_langu = bot.ClientLanguage;
 		end
-	
+
 		if( database.skills[self.Name][hf_langu] ) then		-- is local skill name available?
-			RoMScript("CastSpellByName("..database.skills[self.Name][hf_langu]..");");
+			RoMScript("CastSpellByName('"..database.skills[self.Name][hf_langu].."');");
 		elseif( self.skilltab ~= nil  and  self.skillnum ~= nil ) then
 			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
 		else
