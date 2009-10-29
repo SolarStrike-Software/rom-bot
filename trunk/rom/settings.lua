@@ -160,7 +160,8 @@ function checkKeySettings( _name, _key, _modifier)
 
 	-- check if all keys are valid virtual keys (VK)
 	if( _key ) then
-		if( key[_key]  == nil ) then
+		if( key[_key]  == nil  and
+			string.upper(_key) ~= "MACRO" ) then	-- hotekey MACRO is a special case / it's not a virtual key
 			msg = sprintf(language[116], _key, _name);	-- The hotkey ... is not a valid key
 			msg = msg .. hf_check_where;
 		end
@@ -176,7 +177,9 @@ function checkKeySettings( _name, _key, _modifier)
 
 	-- now we check for double key settings
 	-- we translate the strings "VK..." to the VK numbers
-	_key = key[_key];
+	if( string.upper(_key) ~= "MACRO" ) then
+		_key = key[_key];
+	end
 	_modifier = key[_modifier];
 
 	-- check the using of modifiers
@@ -201,6 +204,7 @@ function checkKeySettings( _name, _key, _modifier)
 	for i,v in pairs(check_keys) do
 		if( v.name ~= _nil and	-- empty entries from deleted settings.xml entries
 		    v.key == _key  and
+		    string.upper(_key) ~= "MACRO" and	-- hotkey MACRO is allowed to set more then once
 		    v.modifier == _modifier ) then
 			local modname;
 
@@ -255,7 +259,15 @@ function settingsPrintKeys()
 			else
 				modname = "";
 			end;
-			msg = msg..modname..getKeyName(v.key);	-- add key name
+			
+			local keyname;
+			if( string.upper(v.key) == "MACRO" ) then
+				keyname = "MACRO";
+			else
+				keyname = getKeyName(v.key);
+			end
+			
+			msg = msg..modname..keyname;	-- add key name
 --			printf(msg.."\n");			-- print line
 			logMessage(msg);			-- log keyboard settings
 		
@@ -634,9 +646,16 @@ function settings.loadProfile(_name)
 		for i,v in pairs(elements) do
 			local name, hotkey, modifier, level;
 			name = v:getAttribute("name");
-			hotkey = key[v:getAttribute("hotkey")];
+--			hotkey = key[v:getAttribute("hotkey")];
 			modifier = key[v:getAttribute("modifier")];
 			level = v:getAttribute("level");
+
+			-- using the MACRO key as hotkey is also a valid key
+			if( string.upper( v:getAttribute("hotkey") ) == "MACRO" ) then
+				hotkey = "MACRO";						-- set MACRO as hotkey
+			else
+				hotkey = key[v:getAttribute("hotkey")];	-- read the virtual key numer
+			end
 
 			checkKeySettings( v:getAttribute("name"),
 			  v:getAttribute("hotkey"), 
