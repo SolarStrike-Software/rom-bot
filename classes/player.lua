@@ -971,8 +971,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		-- there we set the WP to the actual player position
 		waypoint.Z = player.Z;
 		waypoint.X = player.X;
---		__WLP.Waypoints.Z = player.Z;
---		__WLP.Waypoints.X = player.X;
 		
 	end;
 
