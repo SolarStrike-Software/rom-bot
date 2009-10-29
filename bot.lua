@@ -565,67 +565,69 @@ function main()
 			else
 				WPLorRPL = __WPL;	-- we are using a normal waypoint file
 			end;
-			local currentWp = WPLorRPL:getNextWaypoint();	-- get current wp we try to reach
-			
-			-- calculate direction in rad for: fight start postition -> current waypoint
-			local dir_fightstart_to_currentwp = math.atan2(currentWp.Z - FightStartZ, currentWp.X - FightStartX);
-			local dist_fightstart_to_currentwp = distance(FightStartX, FightStartZ, currentWp.X, currentWp.Z);
-			
-			-- calculate direction in rad for: fight start postition -> fight end postition
-			local dir_fightstart_to_fightend = math.atan2(player.Z - FightStartZ, player.X - FightStartX);
-			local dist_fightstart_to_fightend = distance(player.X, player.Z, FightStartX, FightStartZ);
+			if( WPLorRPL:getMode() ~= "wander" ) then
+				local currentWp = WPLorRPL:getNextWaypoint();	-- get current wp we try to reach
 
-			-- calculate how much  fighstart, wp and fightend are on a line, 0 = one line, 
-			local angleDif = angleDifference(dir_fightstart_to_currentwp, dir_fightstart_to_fightend);
-			if (settings.profile.options.DEBUG_WAYPOINT) then
-				printf("[DEBUG] FightStartX %s FightStartZ %s\n", FightStartX, FightStartZ );
-				printf("[DEBUG] dir_FS->WP rad %.3f dir_FS->FE rad %.3f\n", dir_fightstart_to_currentwp, dir_fightstart_to_fightend );
-				cprintf(cli.yellow, "[DEBUG] Line FS->WP / FS->FE: angleDif rad %.3f grad %d\n", angleDif, math.deg(angleDif) );
-			end
-			
-			-- c = Wurzel (a2 + b2 - 2 a b cos (ga))
-			local a = dist_fightstart_to_currentwp;
-			local b = dist_fightstart_to_currentwp;
-			local ga = angleDif;
-			local dist_to_passed_wp = math.sqrt( math.pow(a,2) + math.pow(b,2) - 2 * a * b * math.cos(ga) );
-			if (settings.profile.options.DEBUG_WAYPOINT) then
-				cprintf(cli.yellow, "[DEBUG] We (would) pass(ed) wp #%s (dist %.1f) in a dist of %d (skip at %d)\n", currentWp.wpnum, dist_fightstart_to_currentwp,  dist_to_passed_wp, settings.profile.options.WAYPOINT_PASS );
-			end
-			
-			if( dist_to_passed_wp < settings.profile.options.WAYPOINT_PASS  and		-- default is 100
-				dist_fightstart_to_fightend >= dist_fightstart_to_currentwp ) then
-			
-				-- check position of the waypoint after the current waypoint we want to reach
-				-- we don't check the closest wp, thats to much effort, we assume the distance between wp is
-				-- as far, that the next one is always the closest
-				local nextWp = WPLorRPL:getNextWaypoint(1);	-- get current wp we try to reach +1
-				local dir_fightend_to_nextwp = math.atan2(nextWp.Z - player.Z, nextWp.X - player.X);
-				local dir_fightend_to_currentwp = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X );
-				angleDif = angleDifference(dir_fightend_to_currentwp, dir_fightend_to_nextwp);
+				-- calculate direction in rad for: fight start postition -> current waypoint
+				local dir_fightstart_to_currentwp = math.atan2(currentWp.Z - FightStartZ, currentWp.X - FightStartX);
+				local dist_fightstart_to_currentwp = distance(FightStartX, FightStartZ, currentWp.X, currentWp.Z);
+
+				-- calculate direction in rad for: fight start postition -> fight end postition
+				local dir_fightstart_to_fightend = math.atan2(player.Z - FightStartZ, player.X - FightStartX);
+				local dist_fightstart_to_fightend = distance(player.X, player.Z, FightStartX, FightStartZ);
+
+				-- calculate how much  fighstart, wp and fightend are on a line, 0 = one line, 
+				local angleDif = angleDifference(dir_fightstart_to_currentwp, dir_fightstart_to_fightend);
 				if (settings.profile.options.DEBUG_WAYPOINT) then
-					printf( "[DEBUG] currentWp #%s %s %s, FE->WP rad %.3f\n", currentWp.wpnum,currentWp.X,currentWp.Z,dir_fightend_to_currentwp);
-					printf( "[DEBUG] nextWp #%s %s %s, FE->WP rad %.3f\n", nextWp.wpnum,nextWp.X,nextWp.Z,dir_fightend_to_nextwp);
-					cprintf(cli.yellow, "[DEBUG] FE->wp#%s to FE->wp#%s is in a angle of %d grad (skip at %d)\n", nextWp.wpnum,  currentWp.wpnum, math.deg(angleDif), settings.profile.options.WAYPOINT_PASS_DEGR );
+					printf("[DEBUG] FightStartX %s FightStartZ %s\n", FightStartX, FightStartZ );
+					printf("[DEBUG] dir_FS->WP rad %.3f dir_FS->FE rad %.3f\n", dir_fightstart_to_currentwp, dir_fightstart_to_fightend );
+					cprintf(cli.yellow, "[DEBUG] Line FS->WP / FS->FE: angleDif rad %.3f grad %d\n", angleDif, math.deg(angleDif) );
 				end
 
-				-- if next waypoint is 'in front' of current waypoint
-				if( math.deg(angleDif) > settings.profile.options.WAYPOINT_PASS_DEGR ) then	-- default 90
+				-- c = Wurzel (a2 + b2 - 2 a b cos (ga))
+				local a = dist_fightstart_to_currentwp;
+				local b = dist_fightstart_to_currentwp;
+				local ga = angleDif;
+				local dist_to_passed_wp = math.sqrt( math.pow(a,2) + math.pow(b,2) - 2 * a * b * math.cos(ga) );
+				if (settings.profile.options.DEBUG_WAYPOINT) then
+					cprintf(cli.yellow, "[DEBUG] We (would) pass(ed) wp #%s (dist %.1f) in a dist of %d (skip at %d)\n", currentWp.wpnum, dist_fightstart_to_currentwp,  dist_to_passed_wp, settings.profile.options.WAYPOINT_PASS );
+				end
+
+				if( dist_to_passed_wp < settings.profile.options.WAYPOINT_PASS  and		-- default is 100
+					dist_fightstart_to_fightend >= dist_fightstart_to_currentwp ) then
+
+					-- check position of the waypoint after the current waypoint we want to reach
+					-- we don't check the closest wp, thats to much effort, we assume the distance between wp is
+					-- as far, that the next one is always the closest
+					local nextWp = WPLorRPL:getNextWaypoint(1);	-- get current wp we try to reach +1
+					local dir_fightend_to_nextwp = math.atan2(nextWp.Z - player.Z, nextWp.X - player.X);
+					local dir_fightend_to_currentwp = math.atan2(currentWp.Z - player.Z, currentWp.X - player.X );
+					angleDif = angleDifference(dir_fightend_to_currentwp, dir_fightend_to_nextwp);
 					if (settings.profile.options.DEBUG_WAYPOINT) then
-						cprintf(cli.yellow, "[DEBUG] We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
-					end
-					cprintf(cli.green, "We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
-					WPLorRPL:advance();	-- set next waypoint
-				
-					-- execute the action from the skiped wp
-					if( currentWp.Action and type(currentWp.Action) == "string" ) then
-						local actionchunk = loadstring(currentWp.Action);
-						assert( actionchunk,  sprintf(language[150], WPLorRPL.CurrentWaypoint) );
-						actionchunk();
+						printf( "[DEBUG] currentWp #%s %s %s, FE->WP rad %.3f\n", currentWp.wpnum,currentWp.X,currentWp.Z,dir_fightend_to_currentwp);
+						printf( "[DEBUG] nextWp #%s %s %s, FE->WP rad %.3f\n", nextWp.wpnum,nextWp.X,nextWp.Z,dir_fightend_to_nextwp);
+						cprintf(cli.yellow, "[DEBUG] FE->wp#%s to FE->wp#%s is in a angle of %d grad (skip at %d)\n", nextWp.wpnum,  currentWp.wpnum, math.deg(angleDif), settings.profile.options.WAYPOINT_PASS_DEGR );
 					end
 
-				end
+					-- if next waypoint is 'in front' of current waypoint
+					if( math.deg(angleDif) > settings.profile.options.WAYPOINT_PASS_DEGR ) then	-- default 90
+						if (settings.profile.options.DEBUG_WAYPOINT) then
+							cprintf(cli.yellow, "[DEBUG] We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
+						end
+						cprintf(cli.green, "We overrun waypoint #%d, skip it and move on to #%d\n",currentWp.wpnum, nextWp.wpnum);
+						WPLorRPL:advance();	-- set next waypoint
 
-			end 	-- end of: check to skip a waypoint
+						-- execute the action from the skiped wp
+						if( currentWp.Action and type(currentWp.Action) == "string" ) then
+							local actionchunk = loadstring(currentWp.Action);
+							assert( actionchunk,  sprintf(language[150], WPLorRPL.CurrentWaypoint) );
+							actionchunk();
+						end
+
+					end
+
+				end 	-- end of: check to skip a waypoint
+			end
 
 			
 		else
