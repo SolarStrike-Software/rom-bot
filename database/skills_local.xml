@@ -1,14 +1,337 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <skillslocal>
+	<!-- Mage Skills -->
 	<MAGE_FIREBALL en="Fireball" de="Feuerball" />
-	<MAGE_LIGHTNING de="Blitzschlag" />
-	<MAGE_INTENSIFICATION  de="Intensivierung" />
-	<MAGE_SILENCE  de="Stille" />
-	<MAGE_FIRE_WARD de="Brandschutz" />
-	<MAGE_ELEMENTAL_CATALYST de="Elementarkatalyse"  />
-	<MAGE_FLAME de="Flammenstoss" />
-	<MAGE_ELECTROSTATIC_CHARGE de="Statische Aufladung" />
-	<MAGE_PLASMA_ARROW de="Plasmapfeil" />
-	<MAGE_ELECTRIC_BOLT de="Elektrischer Bolzen" />
+	<MAGE_LIGHTNING en="Lightning" de="Blitzschlag" />
+	<MAGE_INTENSIFICATION en="Intensification" de="Intensivierung" />
+	<MAGE_SILENCE en="Silence" de="Stille" />
+	<MAGE_FIRE_WARD en="Fire Ward" de="Brandschutz" />
+	<MAGE_FLAME en="Flame" de="Flammenstoß" />
+	<MAGE_ELECTROSTATIC_CHARGE en="Electrostatic Charge" de="Statische Aufladung" />
+	<MAGE_PLASMA_ARROW en="Plasma Arrow" de="Plasmapfeil" />
+	<MAGE_ELECTRIC_BOLT en="Electric Bolt" de="Elektrischer Bolzen" />
+	<MAGE_ESSENCE_OF_MAGIC en="Essence of Magic" de="Magische Essenz" />
+
+		<!-- TODO: More info needed (mana increase per level) -->
+	<MAGE_DISCHARGE en="Discharge" de="Entladung" />
+	<MAGE_ELECTRIC_EXPLOSION en="Electric Explosion" de="Elektrische Explosion" />
+	<MAGE_PHOENIX en="Phoenix" de="Phönix" />
+	<MAGE_ELECTRIC_COMPRESSION en="Electric Compression" de="Elektrische Kompression" />
+	<MAGE_STATIC_FIELD en="Static Field" de="Statisches Feld" />
+	<MAGE_PURGATORY_FIRE en="Purgatory Fire" de="Fegefeuer" />
+	<MAGE_ENERGY_WELL en="Energy Well" de="Energiebrunnen" />
+	<MAGE_ELEMENTAL_WEAKNESS en="Elemental Weakness" de="Elementarschwäche" />
+	<MAGE_THUNDERSTORM en="Thunderstorm" de="Gewitter" />
+
+		<!-- Elite -->
+	<MAGE_MAGICAL_TALENT en="Magical Talent" de="Magisches Talent" />
+	<MAGE_MAGICAL_ENLIGHTENMENT en="Magical Enlightenment" de="Magische Erleuchtung" />
+	<MAGE_ELEMENTAL_EXPLOSION en="Elemental Explosion" de="Elementare Explosion" />
+	<MAGE_RAGE_MANA en="Rage Mana" de="Zornmana" />
+	<MAGE_ACTIVATE_MANA en="Activate Mana" de="Mana aktivieren" />
+	<MAGE_THUNDERCLAP en="Thunderclap" de="Donnerschlag" />
+	<MAGE_FIRE_ARROW en="Fire Arrow" de="Flammenpfeil" />
+	<MAGE_FIRE_ROSE en="Fire Rose" de="Feuerrose" />
+		<!-- TODO: Requires 3 fire rose seeds on target -->
+	<MAGE_FIRE_ROSE_EXPLOSION en="Fire Rose Explosion" de="Feuerrosen-Explosion" />
+	<MAGE_FLAME_SPIRIT en="Flame Spirit" de="Flammenseele" />
+	<MAGE_FLAME_OF_FIRE en="Flame of Fire" de="Flamme des Feuers" />
+		<!-- TODO: Cursed Fangs: cooldown? -->
+	<MAGE_CURSED_FANGS en="Cursed Fangs" de="Verfluchte Fangzähne" />
+	<MAGE_KISS_OF_THE_VAMPIRE en="Kiss of the Vampire" de="Kuss des Vampirs" />
+	<MAGE_DEMORALIZE en="Demoralize" de="Demoralisieren" />
+	<MAGE_FANG_RITUAL en="Fang Ritual" de="Ritual der Fangzähne" />
+	<MAGE_DISTRACT en="Distract" de="Ablenkung" />
+	<MAGE_ESSENCE_OF_MAGIC en="Essence of Magic" de="Magische Essenz" />
+		<!-- TODO: Purify: Requires curse -->
+	<MAGE_PURIFY en="Purify" de="Reinigen" />
+	<MAGE_HOLY_LIGHT_STRIKE en="Holy Light Strike" de="Heiliges Licht" />
+	<MAGE_STARS_OF_LIGHT en="Stars of Light" de="Lichtsterne" />
+	<MAGE_MESSENGER_OF_LIGHT en="Messenger of Light" de="Bote des Lichts" />
+	<MAGE_LIGHT_CHARGE en="Light Charge" de="Ansturm des Lichts" />
+
+
+
+		<!-- Priest Skills -->
+	<PRIEST_URGENT_HEAL en="Urgent Heal" de="Schnellheilung" />
+	<PRIEST_RISING_TIDE en="Rising Tide" de="Reißende Flut" />
+	<PRIEST_REGENERATE en="Regenerate" de="Regenerieren" />
+	<PRIEST_HOLY_AURA en="Holy Aura" de="Gesegnete Aura" />
+	<PRIEST_MAGIC_BARRIER en="Magic Barrier" de="Magischer Schutz" />
+	<PRIEST_BLESSED_SPRING_WATER en="Blessed Spring Water" de="Gesegnetes Quellwasser" />
+	<PRIEST_SOUL_SOURCE en="Soul Source" de="Seelenquell" />
+	<PRIEST_WAVE_ARMOR en="Wave Armor" de="Wellenpanzer" />
+	<PRIEST_HEAL en="Heal" de="Heilung" />
+	<PRIEST_BONE_CHILL en="Bone Chill" de="Knochenkälte" />
+	<PRIEST_ICE_FOG en="Ice Fog" de="Eisnebel" />
+	<PRIEST_RESURRECTION en="Resurrection" de="Ritual der Wiederbelebung" />
+	<PRIEST_SOUL_BOND en="Soul Bond" de="Seelenbund" />
+	<PRIEST_GROUP_HEAL en="Group Heal" de="Gruppenheilung" />
+	<PRIEST_GRACE_OF_LIFE en="Grace of Life" de="Gunst des Lebens" />
+		<!-- manainc? -->
+	<PRIEST_CLEANSE en="Cleanse" de="Reinigung" />
+	<PRIEST_CHAIN_OF_LIGHT en="Chain of Light" de="Kette des Lichts" />
+	<PRIEST_AMPLIFIED_ATTACK en="Amplified Attack" de="Verstärkter Angriff" />
+
+		<!-- Elite -->
+	<PRIEST_BATTLE_MONK_STANCE en="Battle Monk Stance" de="Kampfmönch-Haltung" />
+		<!-- TODO: Requires battle monk stance -->
+	<PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT en="Explosion of Fighting Spirit" de="Eruption des Kampfgeistes" />
+		<!-- TODO: Requires battle monk stance -->
+	<PRIEST_FIGHTING_SPIRIT_COMBINATION en="Fighting Spirit Combination" de="Kampfgeist-Kombination" />
+		<!-- TODO: Requires battle monk stance -->
+	<PRIEST_ASCENDING_DRAGON_STRIKE en="Ascending Dragon Strike" de="Angriff des aufsteigenden Drachen" />
+		<!-- TODO: Requires battle monk stance -->
+	<PRIEST_EMBRACE_OF_THE_WATER_SPIRIT en="Embrace of the Water Spirit" de="Umarmung des Wassergeistes" />
+	<PRIEST_CURING_SHOT en="Curing Shot" de="Pfeil der Genesung" />
+	<PRIEST_SNAKE_CURSE en="Snake Curse" de="Schlangenfluch" />
+	<PRIEST_INFECTIOUS_WOUND en="Infectious Wound" de="Infektiöse Wunde" />
+	<PRIEST_PURGE en="Purge" de="Läuterung" />
+	<PRIEST_LURE_OF_THE_SNAKE_WOMAN en="Lure of the Snake Woman" de="Verlockung der Schlangenfrau" />
+		<!-- TODO: don't attack while frozen -->
+	<PRIEST_FREEZE en="Freeze" de="Einfrieren" />
+		<!-- TODO: Requires curse -->
+	<PRIEST_REMOVE_CURSE en="Remove Curse" de="Fluch entfernen" />
+		<!-- TODO: Low mana only -->
+	<PRIEST_LAST_PRAYER en="Last Prayer" de="Letztes Gebet" />
+		<!-- TODO: Divine Incarnation: cooldown ? -->
+	<PRIEST_DIVINE_INCARNATION en="Divine Incarnation" de="Göttliche Inkarnation" />
+	<PRIEST_CALM_HEART en="Calm Heart" de="Gelassenheit" />
+	<PRIEST_ICEWIND_BLADE en="Icewind Blade" de="Eiswindklinge" />
+
+		<!-- Warrior skills -->
+	<WARRIOR_SLASH en="Slash" de="Hieb" />
+	<WARRIOR_ENRAGED en="Enraged" de="Wütend" />
+	<WARRIOR_WHIRLWIND en="Whirlwind" de="Wirbelwind" />
+	<WARRIOR_BERSERK en="Berserk" de="Berserker" />
+	<WARRIOR_DEFENSIVE_FORMATION en="Defensive Formation" de="Verteidigungshaltung" />
+	<WARRIOR_FRENZY en="Frenzy" de="Raserei" />
+	<WARRIOR_OPEN_FLANK en="Open Flank" de="Offene Flanke" />
+	<WARRIOR_PROBING_ATTACK en="Probing Attack" de="Eröffnungsangriff" />
+		<!-- TODO: Weak Spot requires cunning attack first! -->
+	<WARRIOR_TACTICAL_ATTACK en="Tactical Attack" de="Taktischer Angriff" />
+	<WARRIOR_THUNDER en="Thunder" de="Donner" />
+	<WARRIOR_TRAMPLE en="Trample" de="Trampeln" />
+	<WARRIOR_FEINT en="Feint" de="Finte" />
+		<!-- TODO: Feint can only be used after an enemy dodges an attack -->
+	<WARRIOR_SURPRISE_ATTACK en="Surprise Attack" de="Überraschungsangriff" />
+	<WARRIOR_SNEAK_ATTACK en="Sneak Attack" de="Hinterhalt" />
+	<WARRIOR_TAUNT en="Taunt" de="Spott" />
+	<WARRIOR_MOON_CLEAVE en="Moon Cleave" de="Mondspalter" />
+	<WARRIOR_SHOUT en="Shout" de="Schrei" />
+	<WARRIOR_AGGRESSIVENESS en="Aggressiveness" de="Aggressivität" />
+	<WARRIOR_SURVIVAL_INSTINCT en="Survival Instinct" de="Überlebenswille" />
+	<WARRIOR_GROUP_TAUNT en="Group Taunt" de="Gruppenspott" />
+	<WARRIOR_BLASTING_CYCLONE en="Blasting Cyclone" de="Zyklon" />
+	<KNIGHT_CHARGE en="Charge" de="Ansturm" />
+
+
+		<!-- Elite -->
+	<WARRIOR_SKULL_BREAKER en="Skull Breaker" de="Schädelbrecher" />
+	<WARRIOR_STUN_SHOT en="Stun Shot" de="Betäubungsschuss" />
+	<WARRIOR_AIM_FOR_THE_WOUND en="Aim for the Wound" de="Salz in die Wunde" />
+	<WARRIOR_SWORD_BREATH en="Sword Breath" de="Schwertatem" />
+	<WARRIOR_BLOOD_DANCE en="Blood Dance" de="Bluttanz" />
+	<WARRIOR_FRENZIED_ATTACK en="Frenzied Attack" de="Wütender Angriff" />
+	<WARRIOR_KEEN_ATTACK en="Keen Attack" de="Kühne Attacke" />
+	<WARRIOR_ELECTRICAL_RAGE en="Electrical Rage" de="Stromschlag" />
+	<WARRIOR_SENSE_OF_DANGER en="Sense of Danger" de="Gespür für Gefahr" />
+	<WARRIOR_THUNDER_SWORD en="Thunder Sword" de="Donnerschwert" />
+	<WARRIOR_ELECTRIC_ATTACK en="Electric Attack" de="Elektrischer Angriff" />
+	<WARRIOR_INTERRUPTING_STRIKE en="Interrupting Strike" de="Unterbrechungsschlag" />
+	<WARRIOR_BLOODLUST en="Bloodlust" de="Blutrausch" />
+	<WARRIOR_OPPORTUNITY en="Opportunity" de="Gelegenheit" />
+	<WARRIOR_WHIRLWIND_SHIELD en="Whirlwind Shield" de="Wirbelnder Schild" />
+	<WARRIOR_BLOCKING_STANCE en="Blocking Stance" de="Abwehrhaltung" />
+	<WARRIOR_IGNORE_PAIN en="Ignore Pain" de="Schmerz ignorieren" />
+	<WARRIOR_SHIELD_BASH en="Shield Bash" de="Schildschlag" />
+	<WARRIOR_SURPRISE_ATTACK en="Surprise Attack" de="Überraschungsangriff" />
+
+
+		<!-- Rogue skills -->
+	<ROGUE_SHADOWSTAB en="Shadowstab" de="Meucheln" />
+	<ROGUE_ASSASSINS_RAGE en="Assassins Rage" de="Mörderischer Zorn" />
+	<ROGUE_LOW_BLOW en="Low Blow" de="Gemeiner Schlag" />
+	<ROGUE_THROW en="Throw" de="Werfen" />
+	<ROGUE_WOUND_ATTACK en="Wound Attack" de="Wunden Angreifen" />
+	<ROGUE_HIDE en="Hide" de="Verbergen" />
+	<ROGUE_BLIND_STAB en="Blind Stab" de="Blendung" />
+		<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
+	<ROGUE_SHADOW_STEP en="Shadow Step" de="Schattenschritt" />
+	<ROGUE_BLIND_SPOT en="Blind Spot" de="Toter Winkel" />
+		<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target -->
+	<ROGUE_NUMBING_DAGGER en="Numbing Dagger" de="Betäubender Dolch" />
+		<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
+	<ROGUE_POISON en="Poison" de="Gift" />
+	<ROGUE_PREMEDITATION en="Premeditation" de="Vorsatz" />
+		<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
+		<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
+	<ROGUE_VANISH en="Vanish" de="Verschwinden" />
+	<ROGUE_SPRINT en="Sprint" de="Sprint" />
+	<ROGUE_EVASION en="Evasion" de="Ausweichen" />
+	<ROGUE_COMBO_THROW en="Combo Throw" de="Combo-Wurf" />
+	<ROGUE_SHADOW_PRISON en="Shadow Prison" de="Schattengefängnis" />
+	<ROGUE_INFORMER en="Informer" de="Spitzel" />
+	<ROGUE_FERVENT_ATTACK en="Fervent Attack" de="Wilder Angriff" />
+
+		<!-- Elite -->
+	<ROGUE_POISONOUS_INFECTION en="Poisonous Infection" de="Giftige Infektion" />
+	<ROGUE_ENERGY_THIEF en="Energy Thief" de="Energiedieb" />
+	<ROGUE_COMBAT_MASTER en="Combat Master" de="Kampfmeister" />
+	<ROGUE_POISON_TRAP en="Poison Trap" de="Giftfalle" />
+	<ROGUE_BOOBY_TRAP en="Booby Trap" de="Sprengfalle" />
+	<ROGUE_PARALYSING_TRAP en="Paralysing Trap" de="Lähmungsfalle" />
+	<ROGUE_MAGIC_BREAKER en="Magic Breaker" de="Magiebrecher" />
+		<!-- TODO: Poison Flame requires poisonous state -->
+	<ROGUE_POISON_FLAME en="Poison Flame" de="Giftige Flamme" />
+	<ROGUE_QUICKNESS_AURA en="Quickness Aura" de="Aura der Schnelligkeit" />
+		<!-- TODO: Can only use when behind the target -->
+	<ROGUE_SNEAK_ATTACK en="Sneak Attack" de="Hinterhalt" />
+	<ROGUE_FEARLESS en="Fearless" de="Furchtlos" />
+	<ROGUE_KICK en="Kick" de="Tritt" />
+	<ROGUE_POISON_PROTECTION en="Poison Protection" de="Schutz vor Giften" />
+	<ROGUE_HOLY_LIGHT_PROTECTION en="Holy Light Protection" de="Schutz des heiligen Lichts" />
+	<ROGUE_COURAGEOUS_GUARD en="Courageous Guard" de="Tapfere Wache" />
+
+
+		<!-- Knight skills -->
+	<KNIGHT_HOLY_STRIKE en="Holy Strike" de="Heiliger Schlag" />
+	<KNIGHT_HOLY_SHIELD en="Holy Shield" de="Heiliger Schild" />
+	<KNIGHT_ENHANCED_ARMOR en="Enhanced Armor" de="Rüstung Verstärken" />
+	<KNIGHT_SHACKLES_OF_LIGHT en="Shackles of Light" de="Lichtfesseln" />
+	<KNIGHT_RESOLUTION en="Resolution" de="Ruf der Pflicht" />
+	<KNIGHT_HOLY_SEAL en="Holy Seal" de="Heiliges Siegel - Effekt" />
+	<KNIGHT_DISARMAMENT en="Disarmament" de="Abrüstung" />
+	<KNIGHT_SHIELD_OF_ATONEMENT en="Shield of Atonement" de="Schild der Sühne" />
+	<KNIGHT_PUNISHMENT en="Punishment" de="Bestrafung" />
+	<KNIGHT_SHIELD_BASH en="Shield Bash" de="Schildschlag" />
+	<KNIGHT_SHIELD_OF_VALOR en="Shield of Valor" de="Schild des Heldenmuts" />
+	<KNIGHT_SHIELD_OF_TRUTH en="Shield of Truth" de="Schild der Wahrheit" />
+		<!-- TODO: Must have at least 1 light seal on target -->
+	<KNIGHT_SHOCK en="Shock" de="Schock" />
+	<KNIGHT_HATRED_STRIKE en="Hatred Strike" de="Verhasster Schlag" />
+	<KNIGHT_SHIELD_OF_DISCIPLINE en="Shield of Discipline" de="Schild der Disziplin" />
+	<KNIGHT_HALL_OF_DEAD_HEROES en="Hall of Dead Heroes" de="Halle der gefallenen Helden" />
+
+		<!-- Elite -->
+	<KNIGHT_WHIRLWIND_SHIELD en="Whirlwind Shield" de="Wirbelnder Schild" />
+	<KNIGHT_QUICK_REFLEXES en="Quick Reflexes" de="Schnelle Reflexe" />
+	<KNIGHT_FEARLESS en="Fearless" de="Furchtlos" />
+	<KNIGHT_ARROW_OF_VENGEANCE en="Arrow of Vengeance" de="Pfeil der Rache" />
+	<KNIGHT_HOLY_CHAINS en="Holy Chains" de="Heilige Ketten" />
+	<KNIGHT_HEAVENLY_ARROW en="Heavenly Arrow" de="Himmlischer Pfeil" />
+		<!-- TODO: Requires critical hit -->
+	<KNIGHT_SMASH en="Smash" de="Zerschmettern" />
+	<KNIGHT_CRAZY_BLADES en="Crazy Blades" de="Verrückte Klingen" />
+	<KNIGHT_DANCE_OF_TWO_BLADES en="Dance of Two Blades" de="Tanz der zwei Klingen" />
+		<!-- TODO: Holy Light Field: cooldown ? -->
+		<!-- TODO: Lightning Armor: cooldown ? -->
+	<KNIGHT_LIGHTNING_ARMOR en="Lightning Armor" de="Rüstung der Blitze" />
+	<KNIGHT_MANA_SHIELD en="Mana Shield" de="Manaschild" />
+		<!-- TODO: Requires 3 seals on target -->
+	<KNIGHT_MANA_RETURN en="Mana Return" de="Manarückfluss" />
+		<!-- TODO: Requires Holy Light's Fury -->
+	<KNIGHT_HOLY_SMITE en="Holy Smite" de="Heiliges Zerschmettern" />
+	<KNIGHT_HOLY_PROTECTION en="Holy Protection" de="Heiliger Schutz" />
+	<KNIGHT_FREE_WILL en="Free Will" de="Freier Wille" />
+	<KNIGHT_SHIELD_OF_VALOR en="Shield of Valor" de="Schild des Heldenmuts" />
+
+
+		<!-- Scout skills -->
+	<SCOUT_AUTOSHOT en="Autoshot" de="Automatischer Schuss" />
+	<SCOUT_SHOT en="Shot" de="Bogenschuss" />
+	<SCOUT_VAMPIRE_ARROWS en="Vampire Arrows" de="Vampirpfeil" />
+	<SCOUT_JOINT_BLOW en="Joint Blow" de="Gelenkschlag" />
+	<SCOUT_BLOOD_ARROW en="Blood Arrow" de="Blutpfeil" />
+	<SCOUT_THROAT_ATTACK en="Throat Attack" de="Kehlenschlag" />
+	<SCOUT_WRIST_ATTACK en="Wrist Attack" de="Handgelenksschlag" />
+	<SCOUT_ARROW_OF_ESSENCE en="Arrow of Essence" de="Essenzpfeil" />
+	<SCOUT_WIND_ARROWS en="Wind Arrows" de="Windpfeil" />
+	<SCOUT_RANGED_WEAPON_MASTERY en="Ranged Weapon Mastery" de="Fernkampfmeister" />
+	<SCOUT_FROST_ARROW en="Frost Arrow" de="Frostpfeil" />
+	<SCOUT_MANA_DRAIN_SHOT en="Mana Drain Shot" de="Manaraubender Pfeil" />
+	<SCOUT_LASSO en="Lasso" de="Lasso" />
+	<SCOUT_PIERCING_ARROW en="Piercing Arrow" de="Durchdringender Pfeil" />
+	<SCOUT_SNIPE en="Snipe" de="Gezielter Schuss" />
+	<SCOUT_DETECTION en="Detection" de="Entdeckung" />
+	<SCOUT_COMBO_SHOT en="Combo Shot" de="Salve" />
+	<SCOUT_REFLECTED_SHOT en="Reflected Shot" de="Querschläger" />
+	<SCOUT_SERENITY en="Serenity" de="Klarheit" />
+
+		<!-- Elite -->
+	<SCOUT_BATTLE_INSTINCT en="Battle Instinct" de="Kampfinstinkt" />
+	<SCOUT_MENTAL_FOCUS en="Mental Focus" de="Mentale Stärke" />
+	<SCOUT_TARGET_LOCK en="Target Lock" de="Festes Ziel" />
+	<SCOUT_WEAK_SPOT en="Weak Spot" de="Schwachstelle" />
+	<SCOUT_BLINDING_POWDER en="Blinding Powder" de="Blendpulver" />
+	<SCOUT_SAPPING_ARROW en="Sapping Arrow" de="Schwächungspfeil" />
+	<SCOUT_POISONOUS_BITE en="Poisonous Bite" de="Giftiger Biss" />
+	<SCOUT_PURIFYING_ARROW en="Purifying Arrow" de="Reinigender Schuss" />
+	<SCOUT_BLAZING_ENERGY en="Blazing Energy" de="Lodernde Flammen" />
+	<SCOUT_IGNITE en="Ignite" de="Entfachung" />
+	<SCOUT_GONE_WITH_THE_WIND en="Gone with the Wind" de="Vom Winde Verweht" />
+	<SCOUT_CURSED_ARROW en="Cursed Arrow" de="Verfluchter Pfeil" />
+	<SCOUT_PURIFYING_SHOT en="Purifying Shot" de="Reinigender Schuss" />
+	<SCOUT_MANA_ARROWS en="Mana Arrows" de="Manapfeile" />
+	<SCOUT_SPIRITUAL_LEADER en="Spiritual Leader" de="Geistiger Führer" />
+	<SCOUT_REPELLING_ARROW en="Repelling Arrow" de="Rückstoß-Pfeil" />
+	<SCOUT_HEALING_SHOT en="Healing Shot" de="Heilungsschuss" />
+	<SCOUT_MANA_CONVERSION en="Mana Conversion" de="Manakonversion" />
+	<SCOUT_HEALING_SHOT en="Healing Shot" de="Heilungsschuss" />
+
+
+		<!-- Druid skills -->
+	<DRUID_RECOVER en="Recover" de="Erholung" />
+	<DRUID_ANTIDOTE en="Antidote" de="Gegengift" />
+	<DRUID_SAVAGE_BLESSING en="Savage Blessing" de="Wilde Segnung" />
+	<DRUID_EARTH_PULSE en="Earth Pulse" de="Erdwelle" />
+	<DRUID_EARTH_ARROW en="Earth Arrow" de="Erdpfeil" />
+	<DRUID_BRIAR_ENTWINEMENT en="Briar Entwinement" de="Umschlingendes Gestrüpp" />
+	<DRUID_RESTORE_LIFE en="Restore Life" de="Leben wiederherstellen" />
+	<DRUID_UNITY_WITH_MOTHER_EARTH en="Unity with Mother Earth" de="Einheit mit Mutter Erde" />
+	<DRUID_BLOSSOMING_LIFE en="Blossoming Life" de="Blühendes Leben" />
+	<DRUID_REBIRTH en="Rebirth" de="Wiedergeburt" />
+	<DRUID_WEAKENING_SEED en="Weakening Seed" de="Samen der Schwächung" />
+	<DRUID_ROCKSLIDE en="Rockslide" de="Steinschlag" />
+	<DRUID_CURING_SEED en="Curing Seed" de="Samen der Heilung" />
+	<DRUID_CONCENTRATION_PRAYER en="Concentration Prayer" de="Konzentriertes Gebet" />
+	<DRUID_ROCK_PROTECTION en="Rock Protection" de="Felspanzer" />
+	<DRUID_SPIRIT_GUIDANCE en="Spirit Guidance" de="Geistige Führung" />
+	<DRUID_BODY_VITALIZATION en="Body Vitalization" de="Körpervitalisierung" />
+	<DRUID_WITHERING_SEED en="Withering Seed" de="Samen des Verwelkens" />
+	<DRUID_SUMMON_SANDSTORM en="Summon Sandstorm" de="Sandsturm" />
+
+		<!-- Warden skills -->
+	<WARDEN_CHARGED_CHOP en="Charged Chop" de="Geladener Hieb" />
+	<WARDEN_BRIAR_SHIELD en="Briar Shield" de="Gestrüppschild" />
+	<WARDEN_POWER_OF_THE_WOOD_SPIRIT en="Power of the Wood Spirit" de="Kraft des Baumgeistes" />
+	<WARDEN_ELVEN_AMULET en="Elven Amulet" de="Elfenamulett" />
+	<WARDEN_SAVAGE_POWER en="Savage Power" de="Wilde Kraft" />
+
+	<WARDEN_ENERGY_ABSORB en="Energy Absorb" de="Energieabsorption" />
+	<WARDEN_RECALL_PET en="Recall Pet" de="Begleiter zurückrufen" />
+		<!-- TODO: Summon Spirit of the Oak uses 15% mana -->
+	<WARDEN_SUMMON_SPIRIT_OF_THE_OAK en="Summon Spirit of the Oak" de="Beschwörung: Eichengeist" />
+	<WARDEN_THORNY_VINE en="Thorny Vine" de="Dornige Rebe" />
+		<!-- TODO: Elven Prayer Heals pet -->
+	<WARDEN_ELVEN_PRAYER en="Elven Prayer" de="Elfengebet" />
+	<WARDEN_MOVEMENT_RESTRICTION en="Movement Restriction" de="Bewegungseinschränkung" />
+		<!-- TODO: Summon Nature Crystal uses 15% mana -->
+	<WARDEN_SUMMON_NATURE_CRYSTAL en="Summon Nature Crystal" de="Beschwörung: Naturkristall" />
+		<!-- TODO: Damage Transfer requires pet -->
+	<WARDEN_DAMAGE_TRANSFER en="Damage Transfer" de="Schadenstransfer" />
+	<WARDEN_HEART_OF_THE_OAK en="Heart of the Oak" de="Herz der Eiche" />
+	<WARDEN_FRANTIC_BRIAR en="Frantic Briar" de="Rasendes Gestrüpp" />
+		<!-- TODO: Requires pet HP > 30% -->
+	<WARDEN_SOUL_ATTACK en="Soul Attack" de="Seelenangriff" />
+	<WARDEN_SUMMON_OAK_WALKER en="Summon Oak Walker" de="Beschwörung: Eichengänger" />
+	<WARDEN_PROTECTION_OF_NATURE en="Protection of Nature" de="Schutz der Natur" />
+	<WARDEN_BANISH en="Banish" de="Verbannen" />
+	<WARDEN_POWER_OF_THE_OAK en="Power of the Oak" de="Kraft der Eiche" />
+		<!-- TODO: Explosion of Power requires pet -->
+	<WARDEN_EXPLOSION_OF_POWER en="Explosion of Power" de="Explosion der Kraft" />
+		<!-- TODO: Elven Guidance requires pet -->
+	<WARDEN_ELVEN_GUIDANCE en="Elven Guidance" de="Elfische Führung" />
+	<WARDEN_CROSS_CHOP en="Cross Chop" de="Kreuzhieb" />
 </skillslocal>
