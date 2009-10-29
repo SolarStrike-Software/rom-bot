@@ -327,7 +327,8 @@ function CSkill:use()
 	-- and here to have a minimum delay between the keypresses
 	-- 850/900 will work after skills without casting time, but will result in misses 
 	-- after skills that have a casting time
-	while( deltaTime(getTime(), bot.LastSkillKeypressTime) < 1000-settings.profile.options.SKILL_USE_PRIOR ) do
+	while( deltaTime(getTime(), bot.LastSkillKeypressTime) < 
+		settings.profile.options.SKILL_GLOBALCOOLDOWN-settings.profile.options.SKILL_USE_PRIOR ) do
 		yrest(10);
 	end
 
