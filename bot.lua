@@ -189,11 +189,17 @@ function main()
 	end
 
 	
-	-- calculate the CPU Frequency / used for manipulation the GetTime() values
-	local calc_start = getTime();
-	yrest(3000);
-	local calc_end = getTime();
-	bot.GetTimeFrequency = (calc_end.low - calc_start.low) / 3000;
+	if( getTimerFrequency ) then
+		-- Grab the real frequency instead of calculating it, if available
+		bot.GetTimeFrequency = getTimerFrequency().low / 1000;
+	else
+		-- calculate the CPU Frequency / used for manipulation the GetTime() values
+		local calc_start = getTime();
+		yrest(1000);
+		local calc_end = getTime();
+		bot.GetTimeFrequency = (calc_end.low - calc_start.low) / 1000;
+	end
+
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 	
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
