@@ -700,21 +700,28 @@ function main()
 					player.Unstick_counter = player.Unstick_counter + 1;	-- count our unstick tries
 
 					-- Too many tries, logout
-					if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
-						if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
-						    player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
-							cprintf(cli.yellow, language[55], 
-							  player.Unstick_counter, 
-							  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
-							player:logout(); 
-						end;
+					if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
+						player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
+						cprintf(cli.yellow, language[55], 
+						  player.Unstick_counter, 
+						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
+						if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
+							player:logout();
+						else
+						-- pause or stop ?
+							player.Sleeping = true;		-- go to sleep
+							--stopPE();	-- pause the bot
+							-- we should play a sound !
+							player.Unstick_counter = 0;
+						end
+					end;
+					
+					if( player.Sleeping ~= true) then	-- not when to much trial and we go to sleep
+						-- unstick player und unstick message
 						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position
 						   player.Unstick_counter, settings.profile.options.MAX_UNSTICK_TRIALS);
-					else
-						cprintf(cli.red, language[114], 	-- unsticking player... at position
-						   player.X, player.Z, player.Unstick_counter);
+						player:unstick();
 					end
-					player:unstick();
 				end
 			end
 
@@ -755,7 +762,6 @@ function resurrect()
 		cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection
 	end
 
-	local hf_res_from_priest; 		-- for check if priest resurrect
 	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
 		cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 				
@@ -785,8 +791,7 @@ function resurrect()
 		end
 
 		if( player.Level > 9  and 
-		    player.Alive      and
-		    hf_res_from_priest ~= true ) then	-- no wait if resurrect at the place of death / priest / buff
+		    player.Alive      ) then	-- no wait if resurrect at the place of death / priest / buff
 			cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
 			
 			-- check the first debuff that player has. (it has to be the weakness!)

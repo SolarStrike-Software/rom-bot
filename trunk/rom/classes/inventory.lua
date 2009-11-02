@@ -315,13 +315,13 @@ function CInventory:autoSell()
 
 	-- move color settings into table
 	local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-	local hf_quality_table = stringExplode( "\n", hf_quality );	-- move colors to table
+	local hf_quality_table = explode( hf_quality, "\n" );	-- move colors to table
 
 	local hf_ignore_table;
 	-- move ignore list into table
 	if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
 		local hf_ignore = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-		hf_ignore_table = stringExplode( "\n", hf_ignore );	-- move ignore list
+		hf_ignore_table = explode( hf_ignore, "\n" );	-- move ignore list
 	end
 
 	--	ITEMCOLORS table is defined in item.lua
