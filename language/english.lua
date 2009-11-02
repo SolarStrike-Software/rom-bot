@@ -55,7 +55,7 @@ language = {
 	[52] = "Window lost (Client crashed or closed?). You must re-start the script.",
 	[53] = "Elapsed time %d greater then scheduled time %d. We will logout.\n",
 	[54] = "Counted deaths %d greater then maximal allowed deaths %d. We will logout.\n",	
-	[55] = "Unstick tries %d greater then maximal allowed untick tries %d. We will logout.\n",		
+	[55] = "Unstick tries %d greater then maximal allowed untick tries %d.\n",		
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:profname] [path:pathname] [retpath:retname]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforce the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforce the use of return waypoint file \'retname.xml\'\n",
@@ -97,7 +97,7 @@ language = {
 	[111] = "You don't have a defined return path!!! We use the normal waypoint file \'%s\' instead. Please check that.\n",
 	[112] = "Using normal waypoint file \'%s\' after resurrection.\n",
 	[113] = "Waypoint type RUN, we don't stop and don't fight back\n",
-	[114] = "Unsticking player... at position %d,%d. Trial %d.\n",
+	-- [114] = "",  -- emtpy
 	[115] = "Error: The key for \'%s\' is empty!\n",
 	[116] = "Error: The hotkey \'%s\' for \'%s\' is not a valid key!\n",
 	[117] = "Error: The modifier \'%s\' for \'%s\' is not a valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n",

@@ -760,18 +760,6 @@ function CPlayer:fight()
 	end
 
 
-	-- check if we need to reload ammunition
-	--if not settings.profile.options.RELOAD_AMMUNITION == nil then
-	--	if( string.lower(settings.profile.options.RELOAD_AMMUNITION) == "arrow" or string.lower(settings.profile.options.RELOAD_AMMUNITION) == "thrown" ) then
-	--		if inventory:getAmmunitionCount() == 0 then
-	--			inventory:reloadAmmunition(settings.profile.options.RELOAD_AMMUNITION);
-	--		end
-	--	end
-	--end
-	
-	-- edit: too tired to fix this now..
-	
-
 	if( not break_fight) then
 		-- count kills per target name
 		local target_Name = target.Name;

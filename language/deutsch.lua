@@ -58,7 +58,7 @@ language = {
 	[52] = "Verbindung zum Spiele Fenster verloren (Client abgestr\129rzt oder geschlossen?). Skript bitte neu starten.",
 	[53] = "Laufzeit %d gr\148\225er als maximale Laufzeit %d. Wir loggen uns aus.\n",	
 	[54] = "Anzahl Tode %d gr\148\225er als maximal erlaubte Tode %d. Wir loggen uns aus.\n",
-	[55] = "Anzahl Freikommversuche %d gr\148\225er als maximal erlaubte Anzahl %d. Wir loggen uns aus.\n",	
+	[55] = "Anzahl Freikommversuche %d gr\148\225er als maximal erlaubte Anzahl %d.\n",	
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berpr\129fen Sie Ihr Profil!\n",
 	[61] = "Fehlerhafte Option \'%s\' f\129r bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tBenutze Profil \'profname.xml\'\npath:pathname\t\tBenutze Wegepunkt Datei \'pathname.xml\'\nretpath:retname\t\tBenutze R\129ckkehrpfad \'retname.xml\'\n",
@@ -100,7 +100,7 @@ language = {
 	[111] = "Sie haben keinen R\129cklaufpfad angegeben!!! Wir benutzen daher die normale Wegepunktedatei \'%s\' . Bitte pr\129fen Sie das.\n",
 	[112] = "Wir benutzen die normale Wegepunktdatei \'%s\' nach der automatischen Wiederbelebung.\n",
 	[113] = "Wegepunkt Typ RUN: wir stoppen und k\132mpfen nicht.\n",
-	[114] = "Versuche Spieler frei zu bekommen ... an Position %d,%d. Versuch %d.\n",
+	-- [114] = "", empty
 	[115] = "Fehler: Die Taste f\129r \'%s\' ist leer!\n",
 	[116] = "Fehler: Die Taste \'%s\' f\129r \'%s\' ist ung\129ltig!\n",
 	[117] = "Fehler: Die Modifikatortaste \'%s\' f\129r \'%s\' ist ung\129ltig (VK_SHIFT, VK_ALT, VK_CONTROL)!\n",
