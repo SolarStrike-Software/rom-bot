@@ -1648,6 +1648,18 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end;
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
+		
+		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
+		if( self:findTarget() ) then	-- we found a target
+			target = self:getTarget();
+			if( target.TargetPtr == self.Address ) then	-- it is the right aggressor
+				cprintf(cli.green, "%s is attacking us, we take that target.\n", target.Name);	-- attacking us
+			else
+				cprintf(cli.green, "%s is not attacking us, we clear that target.\n", target.Name);	-- not attacking us
+				self:clearTarget();
+			end
+		end
+		
 		return true;
 	end;
 end
