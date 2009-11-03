@@ -418,7 +418,8 @@ function loadPaths( _wp_path, _rp_path)
 	if( _rp_path  and   not string.find(_rp_path,".",1,true) ) then _rp_path = _rp_path .. ".xml"; end;
 
 	-- waypoint path is defined ... load it
-	if( _wp_path ) then
+	if( _wp_path and
+		string.lower(_wp_path) ~= "wander" ) then
 		local filename = getExecutionPath() .. "/waypoints/" .. _wp_path;
 		if( not fileExists(filename) ) then 
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
@@ -434,6 +435,14 @@ function loadPaths( _wp_path, _rp_path)
 			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
 			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);
 		end;
+	end
+
+	-- set wander for WP	
+	if( string.lower(_wp_path) == "wander" ) then
+		__WPL = CWaypointListWander();
+		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
+		__WPL:setMode("wander");
+		cprintf(cli.green, "We will wander arround in a radius of %d\n", settings.profile.options.WANDER_RADIUS);	-- Loaded waypoint path
 	end
 
 	-- look for default return path with suffix '_return'
