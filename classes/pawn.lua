@@ -71,6 +71,16 @@ CPawn = class(
 		self.Buffs = {};
 		self.Debuffs = {};
 
+		-- Experience tracking variables
+		self.LastExpUpdateTime = os.time();
+		self.LastExp = 0;				-- The amount of exp we had last check
+		self.ExpUpdateInterval = 10;	-- Time in seconds to update exp
+		self.ExpTable = { };			-- Holder for past exp values
+		self.ExpTableMaxSize = 10;		-- How many values to track
+		self.ExpInsertPos = 0;			-- Pointer to current position to overwrite (do not change)
+		self.ExpPerMin = 0;				-- Calculated exp per minute
+		self.TimeTillLevel = 0;			-- Time in minutes until the player will level up
+
 
 		-- Directed more at player, but may be changed later.
 		self.Battling = false; -- The actual "in combat" flag.
