@@ -1492,6 +1492,49 @@ function CPlayer:update()
 			self.Pet:update();
 		end
 	end
+
+	-- Update our exp gain
+	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
+		local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
+		local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
+		self.LastExpUpdateTime = os.time();					-- Reset timer
+
+		-- If we have not begun tracking exp, start by gathering
+		-- our current value, but do not count it as a gain
+		if( self.ExpInsertPos == 0 ) then
+			self.ExpInsertPos = 1;
+			self.LastExp = newExp;
+		else
+			local gain = 0;
+			local expGainSum = 0;
+			local valueCount = 0;
+
+			if( newExp > self.LastExp ) then
+				gain = newExp - self.LastExp;
+			elseif( newExp < self.LastExp ) then
+				-- We probably just leveled up. Just get our current, new value and use that.
+				gain = newExp;
+			end
+
+			self.LastExp = newExp;
+			self.ExpTable[self.ExpInsertPos] = gain;
+			self.ExpInsertPos = self.ExpInsertPos + 1;
+			if( self.ExpInsertPos > self.ExpTableMaxSize ) then
+				self.ExpInsertPos = 1;
+			end;
+
+			for i,v in pairs(self.ExpTable) do
+				valueCount = valueCount + 1;
+				expGainSum = expGainSum + v;
+			end
+
+			self.ExpPerMin = expGainSum / ( valueCount * self.ExpUpdateInterval / 60 );
+			self.TimeTillLevel = (maxExp - newExp) / self.ExpPerMin;
+			if( self.TimeTillLevel > 9999 ) then
+				self.TimeTillLevel = 9999;
+			end
+		end
+	end
 end
 
 function CPlayer:clearTarget()

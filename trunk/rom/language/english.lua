@@ -181,6 +181,8 @@ language = {
 	[516] = "\'Choice Option(%d)\' command inserted.\n",
 	[517] = "  (%s)\tInsert \'ChoiceOption()\' command.\n",	
 	
+	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d minutes till level up",
+
 	[900] = "We now use a new macro function to communicate with the client.\n",
 	[901] = "Please define the new hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
 	[902] = "within your profile. You can delete the old hotkeys for:\n",	
