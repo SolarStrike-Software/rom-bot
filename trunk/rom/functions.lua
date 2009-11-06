@@ -585,7 +585,7 @@ function addMessage(message)
 	message = string.gsub(message, "\"", "\\\"")
 
 	-- language conversations
-	if( bot.ClientLanguage == "ru" ) then
+	if( bot.ClientLanguage == "RU" ) then
 		message = oem2utf8_russian(message);
 	else
 		message = asciiToUtf8_umlauts(message);	-- for ingame umlauts
@@ -983,4 +983,40 @@ end
 
 function trim(_s)
 	return (string.gsub(_s, "^%s*(.-)%s*$", "%1"))
+end
+
+function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
+
+	-- return if debugging / detail  is disabled
+	if( _debug ~= true ) then return; end
+
+	local function make_printable(_v)
+		if(_v == true) then
+			_v = "<true>";
+		end
+		if(_v == false) then
+			_v = "<false>";
+		end
+		if( type(_v) == "table" ) then
+			_v = "<table>";
+		end
+--		if( type(_v) == "number" ) then
+--			_v = sprintf("%d", _v);
+--		end
+		return _v
+	end
+
+	local hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 = "", "", "", "", "", "";
+	if(_arg1) then hf_arg1 = make_printable(_arg1); end;
+	if(_arg2) then hf_arg2 = make_printable(_arg2); end;
+	if(_arg3) then hf_arg3 = make_printable(_arg3); end;
+	if(_arg4) then hf_arg4 = make_printable(_arg4); end;
+	if(_arg5) then hf_arg5 = make_printable(_arg5); end;
+	if(_arg6) then hf_arg6 = make_printable(_arg6); end;
+
+
+	local msg = sprintf("[DEBUG] %s %s %s %s %s %s %s\n", _reason, hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 ) ;
+
+	cprintf(cli.yellow, msg);
+
 end

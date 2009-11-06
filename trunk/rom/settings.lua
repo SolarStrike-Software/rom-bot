@@ -38,9 +38,10 @@ settings_default = {
 			WAYPOINT_DEVIATION = 0,
 			LOOT = true,
 			LOOT_TIME = 2000,
+			LOOT_AGAIN = 2000,				-- second loot try if rooted after x ms
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
-			LOOT_PAUSE_AFTER = 10,	-- probability for short pause after loot to look more human
+			LOOT_PAUSE_AFTER = 10,			-- probability in % for short pause after loot to look more human
 			MAX_FIGHT_TIME = 12,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
@@ -66,7 +67,7 @@ settings_default = {
 			MAX_TARGET_DIST = 999,			-- maximum distance to select a target (helpfull to limit at small places)
 			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			AUTO_TARGET = true,				-- bot will target mobs automaticly (set it to false if you want to use the bot only as fight support)
-			SKILL_GLOBALCOOLDOWN = 1100,	-- Global Skill Use Cooldown (1000ms) we use a little more
+			SKILL_GLOBALCOOLDOWN = 1200,	-- Global Skill Use Cooldown (1000ms) we use a little more
 			SKILL_USE_PRIOR = 0,			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
 			POTION_COOLDOWN = 15,			-- always 15
@@ -97,6 +98,7 @@ settings_default = {
 			DEBUG_TARGET = false, 			-- debug targeting issues
 			DEBUG_HARVEST = false, 			-- debug harvesting issues
 			DEBUG_WAYPOINT = false, 		-- debug waypoint issues
+			DEBUG_AUTOSELL = false, 		-- debug autosell issues
 			
 			-- debug skill use issues
 			DEBUG_SKILLUSE = {
@@ -115,6 +117,9 @@ settings_default = {
 			INV_AUTOSELL_TOSLOT = 0,		-- autosell to slot #
 			INV_AUTOSELL_QUALITY = "white, green",	-- itemcolors to sell
 			INV_AUTOSELL_IGNORE = nil,		-- itemnames never so sell
+			INV_AUTOSELL_NOSELL_DURA = 0,	-- durability > x will not sell, 0=sell all
+			INV_AUTOSELL_STATS_NOSELL = nil,	-- stats (text search at right tooltip side) that will not be selled
+			INV_AUTOSELL_STATS_SELL = nil,		-- stats (text search at right tooltip side) that will be selled, even if in nosell
 
 			
 		},	
@@ -133,7 +138,7 @@ settings_default = {
 };
 
 bot =	{ 		-- global bot values
-		ClientLanguage,		-- ingame language of the game [ de|ru|fr| en (for enus and eneu) ]
+		ClientLanguage,		-- ingame language of the game [ DE|RU|FR|ENUS|ENEU 
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
 		};		

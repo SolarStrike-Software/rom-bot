@@ -149,17 +149,17 @@ function main()
 		local msg = sprintf(language[62]);	-- Error while reading the language settings
 --		error(msg, 0);
 		cprintf(cli.yellow, msg);
-		hf_langu = "eneu";
+		hf_langu = "ENEU";
 	end
-	bot.ClientLanguage = string.lower( hf_langu );	-- remember clients language
+	bot.ClientLanguage = hf_langu;	-- remember clients language
 
 	if( settings.options.USE_CLIENT_LANGUAGE ) then
 		local hf_language;
-		if( bot.ClientLanguage == "de" ) then
+		if( bot.ClientLanguage == "DE" ) then
 			hf_language = "deutsch";
-		elseif(bot.ClientLanguage  == "fr" ) then
+		elseif(bot.ClientLanguage  == "FR" ) then
 			hf_language = "french";
-		elseif(bot.ClientLanguage  == "ru" ) then
+		elseif(bot.ClientLanguage  == "RU" ) then
 			hf_language = "russian";
 		else
 			hf_language = "english";		
