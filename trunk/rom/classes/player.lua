@@ -1501,6 +1501,9 @@ function CPlayer:update()
 		local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
 		self.LastExpUpdateTime = os.time();					-- Reset timer
 
+		if( type(newExp) ~= "number" ) then newExp = 0; end;
+		if( type(maxExp) ~= "number" ) then maxExp = 1; end;
+
 		-- If we have not begun tracking exp, start by gathering
 		-- our current value, but do not count it as a gain
 		if( self.ExpInsertPos == 0 ) then
