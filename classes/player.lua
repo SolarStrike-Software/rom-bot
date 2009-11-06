@@ -891,11 +891,13 @@ function CPlayer:loot()
 
 	-- check for loot problems to give a noob mesassage
 	self:update();
+	target = self:getTarget();
 	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
-	    dist > 25 )  then
+	    dist > 25 and
+	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
-		yrest(2000);
+		yrest(settings.profile.options.LOOT_AGAIN);
 		looten();	-- try it again
 	end;
 
@@ -1508,6 +1510,8 @@ function CPlayer:update()
 			local gain = 0;
 			local expGainSum = 0;
 			local valueCount = 0;
+
+cprintf(cli.yellow, "Error newExp > self.LastExp, %s %s\n", newExp , self.LastExp);
 
 			if( newExp > self.LastExp ) then
 				gain = newExp - self.LastExp;

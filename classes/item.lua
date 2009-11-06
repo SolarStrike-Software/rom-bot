@@ -1,5 +1,13 @@
 -- A little class
 
+-- Tooltip parser keywords
+ITEM_TOOLTIP_DURABILITY = {
+	DE		= "Haltbarkeit", 
+	ENEU	= "Durability", 
+	ENUS	= "Durability"
+	};
+
+
 -- itemquality -> color code
 ITEMCOLOR = { 
 	WHITE = "ffffff",
@@ -132,4 +140,56 @@ function CItem:parseItemLink(itemLink)
 		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
 	end
 	return id, color, name;
+end
+
+function CItem:getGameTooltip(_place)
+-- _place = Left | Right
+--
+-- here the whole ingame function more clear:
+-- ------------------------------------------
+--	GameTooltip:SetBagItem(_bagid);
+--	local tooltip_right = {};
+--	for i=1,40,1 do
+--		local lineobj, text = _G["GameTooltipTextRight"..i];
+--		
+--		if(lineobj) then
+--			text = lineobj:GetText();
+--			lineobj:SetText("");
+--		end;
+--		
+--		if (text) then
+--			table.insert(tooltip_right, text);
+--		end;
+--	end;
+--
+--	return tooltip_right;
+-- ----------------------------------
+
+	local t = {};
+	
+	t[1],t[2],t[3],t[4],t[5],t[6],t[7],t[8],t[9],t[10],
+	t[11],t[12],t[13],t[14],t[15],t[16],t[17],t[18],t[19],t[20],
+	t[21],t[22],t[23],t[24],t[25],t[26],t[27],t[28],t[29],t[30],
+	t[31],t[32],t[33],t[34],t[35],t[36],t[37],t[38],t[39],t[40]
+	= RoMScript("igf_GetTooltip('Right',"..self.BagId..")");
+
+--cprintf(cli.yellow, "it %s\n", t[1]);
+--cprintf(cli.yellow, "it %s\n", t[2]);
+--cprintf(cli.yellow, "it %s\n", t[3]);
+--cprintf(cli.yellow, "it %s\n", t[4]);
+--cprintf(cli.yellow, "it %s\n", t[5]);
+--cprintf(cli.yellow, "it %s\n", t[6]);
+--
+--	local code1 = "GameTooltip:SetBagItem("..self.BagId..");";
+--	local code2 = "local t={};for i=1,40,1 do local l,t=_G[\"GameTooltipText".._place.."\"..i];x=l:GetText();l:SetText(\"\");t[i]=x;end;return t;";
+--	RoMScript(code1);	-- load the tooltip for the item
+--	local tooltip = RoMScript(code2);	-- read the tooltip
+
+	if( t[1]  and
+		t[1] ~= false ) then
+		return t;
+	else
+		return false
+	end
+	
 end

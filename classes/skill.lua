@@ -359,10 +359,10 @@ function CSkill:use()
 	
 		-- hopefully skillnames in enus and eneu are the same
 		local hf_langu;
-		if(bot.ClientLanguage == "enus" or bot.ClientLanguage == "eneu") then
+		if(bot.ClientLanguage == "ENUS" or bot.ClientLanguage == "ENEU") then
 			hf_langu = "en";
 		else
-			hf_langu = bot.ClientLanguage;
+			hf_langu = string.lower(bot.ClientLanguage);
 		end
 
 		if( database.skills[self.Name][hf_langu] ) then		-- is local skill name available?

@@ -102,7 +102,6 @@ CPawn = class(
 		self.Returning = false;		-- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
 		self.BotStartTime_nr = 0;	-- Records when the bot was started, will not return at pause
-		self.ClientLanguage	= "en";	-- client language
 		self.InventoryLastUpdate = os.time(); -- time of the last full inventory updata
 		self.InventoryDoUpdate = false;	-- flag to 'force' inventory update
 		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
@@ -180,7 +179,7 @@ function CPawn:update()
 		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
 --		local hf_before = getTime(); 
 
-		if( bot.ClientLanguage == "ru" ) then
+		if( bot.ClientLanguage == "RU" ) then
 			self.Name = utf82oem_russian(tmp);
 		else
 			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
