@@ -313,21 +313,20 @@ function CInventory:autoSell()
 		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
 	end
 	
-	local igf_installed;
-	-- check if igf addon is active
-	if ( RoMScript("IGF_INSTALLED") == true ) then
-		igf_installed = true; 
-	else
-		igf_installed = false;
-	end
+--	local igf_installed;
+--	-- check if igf addon is active
+--	if ( RoMScript("IGF_INSTALLED") == true ) then
+--		igf_installed = true; 
+--	else
+--		igf_installed = false;
+--	end
 
-	-- check if igf (ingamefunctions addon is installed if options are set
-	if( igf_installed == false	and
+--	-- check if igf (ingamefunctions addon is installed if options are set
+-- already checked in settings.lua
+	if( bot.IgfAddon == false	and
 		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or
 		  settings.profile.options.INV_AUTOSELL_STATS_NOSELL ~= nil ) ) then
-		cprintf(cli.yellow, "Ingamefunctions addon (igf) is not installed! You set options, that need igf. ".. 
-		  "We will not sell items! Please install igf or delete the autosell options "..
-		  "INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n");
+		cprintf(cli.yellow, language[1004]);	-- Ingamefunctions addon (igf) is not installed
 		 return false;
 	end
 

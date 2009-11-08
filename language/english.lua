@@ -196,5 +196,6 @@ language = {
 	[1001] = "Shopping",
 	[1002] = "Next full inventory update not later then %d seconds.\n",
 	[1003] = "INV_MAX_SLOTS (%d) is lower then INV_AUTOSELL_TOSLOT (%d). You can only sell items, that are within the inventory update range. Please adjust the option INV_MAX_SLOTS.\n",
+	[1004] = "The ingamefunctions addon (igf) is not installed! You set options, that need igf. We will not sell items! Please install igf (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ) or delete the autosell options INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n",
 	
 };

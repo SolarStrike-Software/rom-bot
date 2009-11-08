@@ -143,52 +143,6 @@ function main()
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
 	
-	-- remember game client language
-	local hf_langu = RoMScript("GetLanguage();");
-	if( not hf_langu ) then
-		local msg = sprintf(language[62]);	-- Error while reading the language settings
---		error(msg, 0);
-		cprintf(cli.yellow, msg);
-		hf_langu = "ENEU";
-	end
-	bot.ClientLanguage = hf_langu;	-- remember clients language
-
-	if( settings.options.USE_CLIENT_LANGUAGE ) then
-		local hf_language;
-		if( bot.ClientLanguage == "DE" ) then
-			hf_language = "deutsch";
-		elseif(bot.ClientLanguage  == "FR" ) then
-			hf_language = "french";
-		elseif(bot.ClientLanguage  == "RU" ) then
-			hf_language = "russian";
-		else
-			hf_language = "english";		
-		end
-
-		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
-
-			local function setLanguage(_name)
-				include(getExecutionPath() .. "/language/" .. _name .. ".lua");
-			end
-
-			local lang_base = {};
-			
-			for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
-
-			setLanguage(hf_language);
-			for i,v in pairs(lang_base) do
-				if( language[i] == nil ) then
-					language[i] = v;
-				end
-			end;
-			lang_base = nil; -- Not needed anymore, destroy it.
-			logMessage("Load Language according to client language: " .. hf_language);
-
-		end
-
-	end
-
-	
 	if( getTimerFrequency ) then
 		-- Grab the real frequency instead of calculating it, if available
 		bot.GetTimeFrequency = getTimerFrequency().low / 1000;
