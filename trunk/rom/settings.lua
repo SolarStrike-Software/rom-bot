@@ -141,6 +141,7 @@ bot =	{ 		-- global bot values
 		ClientLanguage,		-- ingame language of the game [ DE|RU|FR|ENUS|ENEU 
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
+		IgfAddon = false,	-- check if igf addon is active
 		};		
 
 settings = settings_default;
@@ -885,82 +886,8 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	-- Check if the player has any ranged damage skills
-	local rangedSkills = false;
-	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > 100  and
-			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) ) then
-			rangedSkills = true;
-			printf(language[176], v.Name);		-- Ranged skill found
-			break;
-		end
-	end
 
-	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
-		cprintf(cli.yellow, language[200]);
-		settings.profile.options.COMBAT_RANGED_PULL = false;
-	end
-
-
-	function checkProfileHotkeys(name)
-		if( not settings.profile.hotkeys[name] ) then
-			error("ERROR: Hotkey not set for this profile: " ..name, 0);
-		end
-	end
-
-
-	-- default combat type if not in profile defined
-	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and 
-	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
-		if( player.Class1 == CLASS_WARRIOR or
-		    player.Class1 == CLASS_ROGUE   or
-		    player.Class1 == CLASS_WARDEN  or
-		    player.Class1 == CLASS_KNIGHT  ) then
-			settings.profile.options.COMBAT_TYPE  = "melee";
-		elseif(
-		    player.Class1 == CLASS_PRIEST  or
-		    player.Class1 == CLASS_SCOUT   or
-		    player.Class1 == CLASS_DRUID   or
-		    player.Class1 == CLASS_MAGE    ) then
-			settings.profile.options.COMBAT_TYPE  = "ranged";
-		else
-			error("undefined player.Class1 in settings.lua", 0);
-		end;
-	end
-
-
-	-- check if range attack range and combat distance fit together
-	local best_range = 0;
-	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > best_range and
-			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) ) then
-			best_range = v.Range;
-		end
-	end
-
-	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
-		(settings.profile.options.COMBAT_TYPE == "ranged" or
-		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
-		local msg = sprintf(language[179], settings.profile.options.COMBAT_DISTANCE);	-- Maximum range of range attack skills is lesser
-		error(msg, 0);
-	end
-
-
-	-- warning if not all inventory slots are updated
-	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
-		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
-	end
-
-
-	-- check if automatic targeting is active
-	if( settings.profile.options.AUTO_TARGET == false ) then
-		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");
-	end
-
-
-
+	-- checks for MACRO hotkey
 	-- print error if new macro option isn't defined
 	if( not settings.profile.hotkeys.MACRO ) then
 		cprintf(cli.yellow, language[900]);
@@ -994,5 +921,147 @@ function settings.loadProfile(_name)
 		RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 	end
 	settings.options.DEBUGGING_MACRO = false;
+
+
+	-- MACRO is working, we can automaticly reset the langugae
+	-- remember game client language
+	local hf_langu = RoMScript("GetLanguage();");
+	if( not hf_langu ) then
+		local msg = sprintf(language[62]);	-- Error while reading the language settings
+--		error(msg, 0);
+		cprintf(cli.yellow, msg);
+		hf_langu = "ENEU";
+	end
+	bot.ClientLanguage = hf_langu;	-- remember clients language
+
+	-- reset bot language to clients language
+	if( settings.options.USE_CLIENT_LANGUAGE ) then
+		local hf_language;
+		if( bot.ClientLanguage == "DE" ) then
+			hf_language = "deutsch";
+		elseif(bot.ClientLanguage  == "FR" ) then
+			hf_language = "french";
+		elseif(bot.ClientLanguage  == "RU" ) then
+			hf_language = "russian";
+		else
+			hf_language = "english";		
+		end
+
+		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
+
+			local function setLanguage(_name)
+				include(getExecutionPath() .. "/language/" .. _name .. ".lua");
+			end
+
+			local lang_base = {};
+			
+			for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
+
+			setLanguage(hf_language);
+			for i,v in pairs(lang_base) do
+				if( language[i] == nil ) then
+					language[i] = v;
+				end
+			end;
+			lang_base = nil; -- Not needed anymore, destroy it.
+			logMessage("Load Language according to client language: " .. hf_language);
+
+		end
+
+	end
+
+
+	-- now we can do all other setting checks
+
+	
+	-- Check if the player has any ranged damage skills
+	local rangedSkills = false;
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Range > 100  and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) ) then
+			rangedSkills = true;
+			printf(language[176], v.Name);		-- Ranged skill found
+			break;
+		end
+	end
+
+	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
+		cprintf(cli.yellow, language[200]);
+		settings.profile.options.COMBAT_RANGED_PULL = false;
+	end
+
+
+--	function checkProfileHotkeys(name)
+--		if( not settings.profile.hotkeys[name] ) then
+--			error("ERROR: Hotkey not set for this profile: " ..name, 0);
+--		end
+--	end
+
+
+	-- default combat type if not in profile defined
+	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and 
+	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
+		if( player.Class1 == CLASS_WARRIOR or
+		    player.Class1 == CLASS_ROGUE   or
+		    player.Class1 == CLASS_WARDEN  or
+		    player.Class1 == CLASS_KNIGHT  ) then
+			settings.profile.options.COMBAT_TYPE  = "melee";
+		elseif(
+		    player.Class1 == CLASS_PRIEST  or
+		    player.Class1 == CLASS_SCOUT   or
+		    player.Class1 == CLASS_DRUID   or
+		    player.Class1 == CLASS_MAGE    ) then
+			settings.profile.options.COMBAT_TYPE  = "ranged";
+		else
+			error("undefined player.Class1 in settings.lua", 0);
+		end;
+	end
+
+
+	-- check if range attack range and combat distance fit together
+	local best_range = 0;
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Range > best_range and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) ) then
+			best_range = v.Range;
+		end
+	end
+
+	-- check is combat distance is greater then maximum ranged attack
+	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
+		(settings.profile.options.COMBAT_TYPE == "ranged" or
+		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
+		local msg = sprintf(language[179], settings.profile.options.COMBAT_DISTANCE);	-- Maximum range of range attack skills is lesser
+		error(msg, 0);
+	end
+
+
+	-- warning if not all inventory slots are updated
+	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
+		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
+	end
+
+
+	-- check if igf addon is active
+	if ( RoMScript("IGF_INSTALLED") == true ) then
+		bot.IgfAddon = true; 
+	else
+		bot.IgfAddon = false;
+	end
+
+	-- error if igf (ingamefunctions) addon isn't installed and options are set
+	if( bot.IgfAddon == false	and
+		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or
+		  settings.profile.options.INV_AUTOSELL_STATS_NOSELL ~= nil ) ) then
+		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
+	end
+
+	-- check if automatic targeting is active
+	if( settings.profile.options.AUTO_TARGET == false ) then
+		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");
+	end
+
 
 end

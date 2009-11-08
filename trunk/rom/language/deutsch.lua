@@ -197,7 +197,7 @@ language = {
 	[1000] = "Aktualisierung Inventar (Taschenplatz 1 bis %d)...\n",
 	[1001] = "Einkaufen",
 	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
-	[1003] = "INV_MAX_SLOTS (%d) ist kleiner als INV_AUTOSELL_TOSLOT (%d). Sie k\148nnen nur Gegenstände verkaufen, die sich im Bereich des aktualisierten Inventars befinden. Bitte Option INV_MAX_SLOTS entsprechend anpa\225en.\n",
-	
+	[1003] = "The ingamefunctions addon (igf) is not installed! You set options, that need igf. We will not sell items! Please install igf (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ) or delete the autosell options INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n",
+	[1004] = "Das Addon ingamefunctions ist nicht installiert! Wir k\148nnen keine Gegenst\132nde verkaufen! Bitte igf installieren (den Ordner 'ingamefunctions' aus 'rom/devtools' in die RoM Installation in '/interface/addons' kopieren) oder l\148schen Sie die Optionen INV_AUTOSELL_NOSELL_DURA und INV_AUTOSELL_STATS_NOSELL aus Ihrem Profil.\n",
 	
 };
