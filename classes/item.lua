@@ -7,15 +7,14 @@ ITEM_TOOLTIP_DURABILITY = {
 	ENUS	= "Durability"
 	};
 
-
 -- itemquality -> color code
 ITEMCOLOR = { 
 	WHITE = "ffffff",
 	GREEN = "00ff00",
-	BLUE = "00ff00",
-	PURPLE = "00ff00",
-	ORANGE = "00ff00",
-	GOLD = "00ff00",
+	BLUE = "0072bc",
+	PURPLE = "c805f8",
+	ORANGE = "f68e56",
+	GOLD = "a37d50",
 	}
 
 CItem = class(
@@ -30,6 +29,7 @@ CItem = class(
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 	end
 )
+
 
 function CItem:use()
 
@@ -192,4 +192,18 @@ function CItem:getGameTooltip(_place)
 		return false
 	end
 	
+end
+
+-- translate the hex color code into the color string
+function CItem:getColorString()
+
+	for i,v in pairs(ITEMCOLOR) do
+
+		if( v == self.Color ) then
+			return i;
+		end
+	end
+
+	return false
+
 end
