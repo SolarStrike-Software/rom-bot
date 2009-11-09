@@ -2,7 +2,8 @@
 
 -- Tooltip parser keywords
 ITEM_TOOLTIP_DURABILITY = {
-	DE		= "Haltbarkeit", 
+	DE		= "Haltbarkeit",
+	FR		= "Structure",
 	ENEU	= "Durability", 
 	ENUS	= "Durability"
 	};
