@@ -372,6 +372,8 @@ function CInventory:autoSell()
 
 			if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
 				_item.ItemId == ignorelistitem ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.ItemId, _item.Name, "=>", ignorelistitem);
 				return true
 			end
 
@@ -481,8 +483,6 @@ function CInventory:autoSell()
 
 			-- check itemname against ignore list
 			if( isInIgnorelist(slotitem) == true ) then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", slotitem.ItemId, slotitem.Name);
 				sell_item = false;
 			end
 

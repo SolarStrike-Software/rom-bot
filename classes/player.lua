@@ -2137,6 +2137,8 @@ function CPlayer:merchant(_npcname)
 		inventory:storeBuyConsumable("poison", settings.profile.options.POISON);
 		inventory:update();
 	end
+
+	RoMScript("CloseWindows()");
 	
 end
 
