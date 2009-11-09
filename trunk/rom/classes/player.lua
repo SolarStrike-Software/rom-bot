@@ -860,13 +860,11 @@ function CPlayer:loot()
 		lootdist = settings.profile.options.LOOT_DISTANCE;
 	end
 
-
 	if( dist > lootdist ) then 	-- only loot when close by
 		cprintf(cli.green, language[32]);	-- Target too far away; not looting.
 		return false
 	end
 
---	yrest(500);	-- ?? 
 
 	local function looten()
 		-- "attack" is also the hotkey to loot, strangely.
@@ -887,6 +885,7 @@ function CPlayer:loot()
 		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 	end
 
+
 	looten();
 
 	-- check for loot problems to give a noob mesassage
@@ -897,13 +896,18 @@ function CPlayer:loot()
 	    dist > 25 and
 	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
-		yrest(settings.profile.options.LOOT_AGAIN);
-		looten();	-- try it again
+		
+		-- second loot try?
+		if( settings.profile.options.LOOT_AGAIN > 0 ) then
+			yrest(settings.profile.options.LOOT_AGAIN);
+			looten();	-- try it again
+		end
+		
 	end;
 
-	-- rnd pause from 3-6 sec after loot to look more human
+	-- rnd pause from 2-6 sec after loot to look more human
 	if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
-		self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,3,6);
+		self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,2,6);
 	end;
 
 	-- Close the booty bag.
@@ -1513,8 +1517,6 @@ function CPlayer:update()
 			local gain = 0;
 			local expGainSum = 0;
 			local valueCount = 0;
-
-cprintf(cli.yellow, "Error newExp > self.LastExp, %s %s\n", newExp , self.LastExp);
 
 			if( newExp > self.LastExp ) then
 				gain = newExp - self.LastExp;

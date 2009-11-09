@@ -313,16 +313,7 @@ function CInventory:autoSell()
 		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
 	end
 	
---	local igf_installed;
---	-- check if igf addon is active
---	if ( RoMScript("IGF_INSTALLED") == true ) then
---		igf_installed = true; 
---	else
---		igf_installed = false;
---	end
-
---	-- check if igf (ingamefunctions addon is installed if options are set
--- already checked in settings.lua
+	-- warning if igf addon is missing
 	if( bot.IgfAddon == false	and
 		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or
 		  settings.profile.options.INV_AUTOSELL_STATS_NOSELL ~= nil ) ) then
@@ -484,7 +475,7 @@ function CInventory:autoSell()
 			-- check item quality color
 			if( sellColor(slotitem.Color) == false ) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem.Color);
+				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
 				sell_item = false;
 			end
 
@@ -497,7 +488,7 @@ function CInventory:autoSell()
 
 			-- read tooltip
 			local tooltip_right;
-			if( igf_installed == true ) then
+			if( bot.IgfAddon == true ) then
 				tooltip_right = slotitem:getGameTooltip("right");
 				if( tooltip_right == false ) then	-- error while reading tooltip
 					cprintf(cli.yellow, "Error reading tooltip for bagslot %s, %s %s\n", 
@@ -507,7 +498,7 @@ function CInventory:autoSell()
 			end
 
 			-- check max durability value
-			if( igf_installed == true	and
+			if( bot.IgfAddon == true	and
 				tooltip_right			and
 				isDuraIgnore(tooltip_right) == true ) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
@@ -517,7 +508,7 @@ function CInventory:autoSell()
 			end
 
 			-- check if stats / text strings are on the ingnore list
-			if( igf_installed == true	and
+			if( bot.IgfAddon == true	and
 				tooltip_right			and
 				isInStatsNoSell(tooltip_right) == true ) then
 

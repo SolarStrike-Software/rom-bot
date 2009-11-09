@@ -115,7 +115,7 @@ settings_default = {
 			INV_AUTOSELL_ENABLE = false,	-- autosell items at merchant true|false
 			INV_AUTOSELL_FROMSLOT = 0,		-- autosell from slot #
 			INV_AUTOSELL_TOSLOT = 0,		-- autosell to slot #
-			INV_AUTOSELL_QUALITY = "white, green",	-- itemcolors to sell
+			INV_AUTOSELL_QUALITY = "white",	-- itemcolors to sell
 			INV_AUTOSELL_IGNORE = nil,		-- itemnames never so sell
 			INV_AUTOSELL_NOSELL_DURA = 0,	-- durability > x will not sell, 0=sell all
 			INV_AUTOSELL_STATS_NOSELL = nil,	-- stats (text search at right tooltip side) that will not be selled
