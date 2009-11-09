@@ -904,7 +904,7 @@ function settings.loadProfile(_name)
 	settings.options.DEBUGGING_MACRO = true;
 	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
 	if( hf_return ~= 1234 ) then	-- return values not found
-		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
+--		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
 		cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
 
 		if ( settings.profile.hotkeys.MACRO.key) then
