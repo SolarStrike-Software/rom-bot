@@ -496,7 +496,7 @@ function settings.load()
 	-- Load language files
 	-- Load "english" first, to fill in any gaps in the users' set language.
 	local function setLanguage(name)
-		include(getExecutionPath() .. "/language/" .. name .. ".lua");
+		include("/language/" .. name .. ".lua");
 	end
 
 	local lang_base = {};
