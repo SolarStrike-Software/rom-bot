@@ -118,7 +118,7 @@ function database.load()
 
 	-- import local skill file
 	-- used to use skills by name with RoMScript and CastSpellByName()
-	cprintf_ex(cli.red, "OPENING LOCAL SKILLS DB!\n");
+	cprintf(cli.red, "OPENING LOCAL SKILLS DB!\n");
 	local root = xml.open(getExecutionPath() .. "/database/skills_local.xml");
 	local elements = root:getElements();
 

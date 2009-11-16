@@ -1148,9 +1148,30 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 	end
 
+	if( self.Battling ) then
+		self:waitForAggro();
+	end;
+
 	return success, failreason;
 end
 
+function CPlayer:waitForAggro()
+	local startTime = os.time();
+
+	while( self.Battling and self.TargetPtr == 0 ) do
+		yrest(100);
+		self:update();
+
+		if( os.difftime(os.time(), startTime) > 5 ) then
+			-- Wait no more than 5 seconds
+			break;
+		end
+	end
+
+	if( self.TargetPtr ) then
+		self:fight();
+	end
+end
 
 -- Forces the player to face a direction.
 -- 'dir' should be in radians
