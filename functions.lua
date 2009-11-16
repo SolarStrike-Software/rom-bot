@@ -1016,7 +1016,7 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 
 	local msg = sprintf("[DEBUG] %s %s %s %s %s %s %s\n", _reason, hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 ) ;
-
+	msg = string.gsub(msg, "%%", "%%%%");
 	cprintf(cli.yellow, msg);
 
 end
