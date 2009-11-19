@@ -76,18 +76,24 @@ function selectGame()
 
 	charToUse = {};
 	for i = 1, #windowList, 1 do
+		local process, playerAddress, nameAddress;
 	    -- open first window
 		process = openProcess(findProcessByWindow(windowList[i]));
 		-- read player address
+		showWarnings(false);
 		playerAddress = memoryReadIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
 		-- read player name
-		nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
+		if( playerAddress ) then
+			nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
+		end
+
 		-- store the player name, with window number
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")";
   		else
 			charToUse[i] = memoryReadString(process, nameAddress);
 		end
+		showWarnings(true);
 		closeProcess(process);
 	end
 
