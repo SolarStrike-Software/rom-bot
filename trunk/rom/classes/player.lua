@@ -898,7 +898,7 @@ function CPlayer:loot()
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
 		
 		-- second loot try?
-		if( settings.profile.options.LOOT_AGAIN > 0 ) then
+		if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 ) then
 			yrest(settings.profile.options.LOOT_AGAIN);
 			looten();	-- try it again
 		end

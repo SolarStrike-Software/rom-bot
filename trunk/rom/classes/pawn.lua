@@ -197,7 +197,7 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnZ_offset), memerrmsg);
 
-	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnAttackable_offset), memerrmsg);
+	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnAttackable_offset)) or 0;
 	--printf("attackable flag: 0x%X\n", attackableFlag);
 	--printf("check(player): %s\n", tostring( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ));
 
