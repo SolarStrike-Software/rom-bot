@@ -457,7 +457,8 @@ function main()
 		local msg_print = false;
 		while(player.Battling) do
 
-			if( player.Current_waypoint_type == WPT_RUN ) then	-- runing mode, don't wait for target
+			if( player.Current_waypoint_type == WPT_RUN or
+				player.Current_waypoint_type == WPT_TRAVEL ) then	-- runing mode, don't wait for target
 				cprintf(cli.green, language[113]);	-- we don't stop and don't fight back
 				break;
 			end;
@@ -489,9 +490,10 @@ function main()
 
 
 		if( player:haveTarget()  and
-		    player.Current_waypoint_type ~= WPT_RUN ) then	-- only fight back if it's not a runnig waypoint
+		    player.Current_waypoint_type ~= WPT_RUN and
+			player.Current_waypoint_type ~= WPT_TRAVEL ) then	-- only fight back if it's not a runnig waypoint
 		-- fight the mob / target
-		
+
 			-- remember players position at fight start
 			local FightStartX = player.X;
 			local FightStartZ = player.Z;
