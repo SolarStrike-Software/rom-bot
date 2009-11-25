@@ -1045,6 +1045,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	 	if( self.Battling and 				-- we have aggro
 	 	    self.Fighting == false  and		-- we are not coming from the fight routines (bec. as melee we should move in fight)
 	 	    waypoint.Type ~= WPT_RUN  and	-- only stop if not waypoint type RUN
+			waypoint.Type ~= WPT_TRAVEL and
 	 	    os.difftime(os.time(), player.LastAggroTimout ) > 10 ) then		-- dont stop 10sec after last aggro wait timeout
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
@@ -1148,9 +1149,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		end
 	end
 
-	if( self.Battling ) then
+	if( self.Battling and
+		 waypoint.Type ~= WPT_TRAVEL ) then
 		self:waitForAggro();
-	end;
+	else
+		self:clearTarget();
+	end
 
 	return success, failreason;
 end
