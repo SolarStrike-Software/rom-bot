@@ -137,29 +137,29 @@
 		<skill name="DRUID_EARTH_ARROW"    hotkey="VK_3" priority="80" />
 	</skills_druid>
 
-	<onLoad>
+	<onLoad><![CDATA[
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here
 		-- like: changeProfileOption("HP_REST", 60);
-	</onLoad>
+	]]></onLoad>
 
-	<onDeath>
+	<onDeath><![CDATA[
 		-- Additional Lua code to execute on death
 		-- pauseOnDeath(); -- Stop the script
 		-- player:logout();	-- logout
-	</onDeath>
+	]]></onDeath>
 
-	<onLeaveCombat>
+	<onLeaveCombat><![CDATA[
 		-- Additional Lua code to execute after killing an enemy
-	</onLeaveCombat>
+	]]></onLeaveCombat>
 
-	<onLevelup>
+	<onLevelup><![CDATA[
 		-- Additional Lua code to execute after having a levelup
 		-- and levelup the skills for a new character (mage or priest recommended)
 		-- e.g. sendMacro("SetSpellPoint(_tabnr, _skillnr);"); would levelup a skill
-	</onLevelup>
+	]]></onLevelup>
 
-	<onSkillCast>
+	<onSkillCast><![CDATA[
 		-- Additional Lua code to execute when casting a skill
 		-- Note: arg1 contains the skill being used.
 		-- i.e. arg1.Name will be the name of the skill being cast
@@ -170,5 +170,5 @@
 		--    player:cast("PRIEST_HOLY_AURA");
 		--    player:cast("PRIEST_URGENT_HEAL");
 		--    player:cast("PRIEST_URGENT_HEAL");
-	</onSkillCast>
+	]]></onSkillCast>
 </profile>

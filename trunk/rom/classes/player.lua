@@ -636,7 +636,7 @@ function CPlayer:fight()
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
 			target.Name ~= "Tatus"	and		
 		    target.TargetPtr ~= self.Address ) then	-- but not from that mob
-			cprintf(cli.green, language[36], target.Name);	
+			cprintf(cli.green, language[36], target.Name);
 			self:clearTarget();
 			break_fight = true;
 			break;
@@ -1152,8 +1152,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	if( self.Battling and
 		 waypoint.Type ~= WPT_TRAVEL ) then
 		self:waitForAggro();
-	else
-		self:clearTarget();
 	end
 
 	return success, failreason;
