@@ -38,5 +38,5 @@ addresses = {
 	staticbase_char = 0x901990,
 	staticbase_macro = 0x94FF00,
 	staticpattern_char = 0x5D7C2D,
-	staticpattern_macro = 0x70A6FF,
+	staticpattern_macro = 0x70A77F,
 }
