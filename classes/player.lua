@@ -1150,7 +1150,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	end
 
 	if( self.Battling and
-		 waypoint.Type ~= WPT_TRAVEL ) then
+		 waypoint.Type ~= WPT_RUN ) then
 		self:waitForAggro();
 	end
 
