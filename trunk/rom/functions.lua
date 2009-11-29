@@ -420,8 +420,13 @@ function loadPaths( _wp_path, _rp_path)
 			rp_default = _wp_path .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
 		end;
 	end;
-	if( _wp_path  and   not string.find(_wp_path,".",1,true) ) then _wp_path = _wp_path .. ".xml"; end;
-	if( _rp_path  and   not string.find(_rp_path,".",1,true) ) then _rp_path = _rp_path .. ".xml"; end;
+
+	if( _wp_path and not string.find(_wp_path,".", 1, true) and _wp_path ~= "wander" ) then
+		_wp_path = _wp_path .. ".xml";
+	end;
+	if( _rp_path  and   not string.find(_rp_path,".", 1, true) ) then
+		_rp_path = _rp_path .. ".xml";
+	end;
 
 	-- waypoint path is defined ... load it
 	if( _wp_path and
@@ -959,8 +964,7 @@ function convertProfileName(_profilename)
 			        load_profile_name, new_profile_name);
 			error(msg, 0);
 		end;
-	else				
-
+	else
 		-- check if profile exist
 		if( not fileExists(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" ) ) then
 			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile

@@ -23,9 +23,9 @@ __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
 -- start message
-text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-.. "Wellcome to rom bot! press END to quit\n"
-.. "RoM Bot Version %0.2f\n",BOT_VERSION);
+text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
+	"Welcome to rom bot! press END to quit\n" ..
+	"RoM Bot Version %0.2f\n", BOT_VERSION);
 
 printPicture("logo", text, 4);
 
@@ -332,7 +332,8 @@ function main()
 		end;
 
 		if( wp_to_load == "wander" ) then
-			__WPL = CWaypointListWander();
+			--__WPL = CWaypointListWander();
+			loadPaths("wander", rp_to_load);
 			__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
 			__WPL:setMode("wander");
 			cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
@@ -348,7 +349,7 @@ function main()
 	end;
 	
 	-- look for the closest waypoint / return path point to start
-	if( __RPL ) then	-- return path points available ?
+	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
@@ -491,7 +492,7 @@ function main()
 
 		if( player:haveTarget()  and
 		    player.Current_waypoint_type ~= WPT_RUN and
-			player.Current_waypoint_type ~= WPT_TRAVEL ) then	-- only fight back if it's not a runnig waypoint
+			player.Current_waypoint_type ~= WPT_TRAVEL ) then	-- only fight back if it's not a running waypoint
 		-- fight the mob / target
 
 			-- remember players position at fight start
@@ -623,6 +624,10 @@ function main()
 					-- Completed. Return to normal waypoints.
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
 						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+						if( __WPL.Mode == "wander" ) then
+							__WPL.OrigX = player.X;
+							__WPL.OrigZ = player.Z;
+						end
 						player.Returning = false;
 						cprintf(cli.yellow, language[7]);
 					else
@@ -776,7 +781,7 @@ function resurrect()
 	player:rest(10); -- give some time to be really sure that loadscreen is gone
 	-- if not it could result in loading NOT the returnpath, becaus we dont hat the new position
 	player.Returning = nil;
-	if( __RPL ) then
+	if( __RPL and __WPL.Mode ~= "wander" ) then
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
@@ -792,6 +797,12 @@ function resurrect()
 		end
 	else
 		cprintf(cli.yellow, language[111], __WPL:getFileName() ); -- don't have a defined return path
+	end
+
+	if( __RPL and __WPL.Mode == "wander" ) then
+		__RPL:setWaypointIndex(1);
+		player.Returning = true;
+		cprintf(cli.yellow, language[12]);
 	end
 			
 	-- not using returnpath, so we use the normal waypoint path
