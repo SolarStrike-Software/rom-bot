@@ -87,7 +87,9 @@ function CInventory:update(_maxslot)
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
-		displayProgressBar(slotNumber/_maxslot*100, 50);
+		if( not settings.profile.options.INV_MAX_SLOTS ) then
+			displayProgressBar(slotNumber/_maxslot*100, 50);
+		end
 	end
 	printf("\n");
 	keyboardSetDelay(50);
@@ -256,7 +258,7 @@ end
 -- type: healing|mana|arrow_quiver|thrown_bag|poison
 function CInventory:storeBuyConsumable(type, quantity)
 	local bestLevel = 0;
-	for storeSlot = 1, 20, 1 do
+	for storeSlot = 1, 28, 1 do
 		local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
 
 		if (storeItemLink == "" or storeItemLink == nil) then
