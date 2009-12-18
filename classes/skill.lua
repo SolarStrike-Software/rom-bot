@@ -374,13 +374,7 @@ function CSkill:use()
 		end;
 	else
 		-- use the normal hotkeys
-		if( self.modifier ) then
-			keyboardHold(self.modifier);
-		end
-		keyboardPress(self.hotkey);
-		if( self.modifier ) then
-			keyboardRelease(self.modifier);
-		end
+		keyboardPress(self.hotkey, self.modifier);
 	end
 
 	if( self.Toggleable ) then

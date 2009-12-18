@@ -87,7 +87,7 @@ function CInventory:update(_maxslot)
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
-		if( not settings.profile.options.INV_MAX_SLOTS ) then
+		if( not settings.profile.options.DEBUG_INV ) then
 			displayProgressBar(slotNumber/_maxslot*100, 50);
 		end
 	end
