@@ -190,11 +190,6 @@ function checkKeySettings( _name, _key, _modifier)
 
 	-- check the using of modifiers
 	-- they are not usable at the moment
-	if( _modifier ~= nil) then
-		msg = sprintf(language[118], -- we don't support modifiers
-		   getKeyName(_modifier), getKeyName(_key), _name);
-
-	end
 
 	-- error output
 	if( msg ~= nil) then
@@ -699,11 +694,6 @@ function settings.loadProfile(_name)
 			    v:getAttribute("casttime") ) then
 					local msg = sprintf(language[128], name, _name);	-- are no valid options for your skill
 					error(msg, 0);
-			end;
-			if( v:getAttribute("modifier") ) then
-				local msg = sprintf(language[129], name, _name);	-- modifier not supported
-
-				error(msg, 0);
 			end;
 
 			if( name == nil) then

@@ -1748,13 +1748,7 @@ function CPlayer:findTarget()
 		return false;
 	end
 
-	if(settings.hotkeys.TARGET.modifier) then
-		keyboardHold(settings.hotkeys.TARGET.modifier);
-	end
-	keyboardPress(settings.hotkeys.TARGET.key);
-	if(settings.hotkeys.TARGET.modifier) then
-		keyboardRelease(settings.hotkeys.TARGET.modifier);
-	end
+	keyboardPress(settings.hotkeys.TARGET.key, settings.hotkeys.TARGET.modifier);
 
 	yrest(10);
 
@@ -2217,13 +2211,7 @@ function CPlayer:target_NPC(_npcname)
 					if( settings.profile.hotkeys.MACRO ) then
 						RoMScript("UseSkill(1,1);");				-- general attack key = open dialog window
 					else
-						if( settings.profile.hotkeys.ATTACK.modifier ) then
-							keyboardHold(settings.hotkeys.ATTACK.modifier);
-						end
-						keyboardPress(settings.profile.hotkeys.ATTACK.key);
-						if( settings.profile.hotkeys.ATTACK.modifier ) then
-							keyboardRelease(settings.profile.hotkeys.ATTACK.modifier);
-						end
+						keyboardPress(settings.profile.hotkeys.ATTACK.key, settings.profile.hotkeys.ATTACK.modifier);
 					end
 
 					-- repair all with macro script
