@@ -130,16 +130,11 @@ function CItem:parseItemLink(itemLink)
 	if itemLink == "" or itemLink == nil then
 		return;
  	end
- 	
-	local id = tonumber(string.sub(itemLink, 8, 12), 16);  -- Convert to decimal
-	local color = string.sub(itemLink, 19, 24);
-	-- this is causing some problems so lets be safe
-	local name_parse_from = string.find(itemLink, '[\[]');
-	local name_parse_to = string.find(itemLink, '[\]]');
-	local name = "Error parsing name";
-	if not name_parse_from == nil or not name_parse_to == nil then
-		name = string.sub(itemLink, name_parse_from+1, name_parse_to-1);
-	end
+
+	local s,e, id, color, name = string.find(itemLink, "|Hitem:(%x+).*|h|c(%x+)%[([%w%p%s]+)");
+	id    = tonumber( "0x" .. tostring(id) );
+	color = tonumber( "0x" .. tostring(color) );
+
 	return id, color, name;
 end
 
