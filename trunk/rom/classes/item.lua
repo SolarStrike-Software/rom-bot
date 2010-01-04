@@ -10,12 +10,12 @@ ITEM_TOOLTIP_DURABILITY = {
 
 -- itemquality -> color code
 ITEMCOLOR = { 
-	WHITE = "ffffff",
-	GREEN = "00ff00",
-	BLUE = "0072bc",
-	PURPLE = "c805f8",
-	ORANGE = "f68e56",
-	GOLD = "a37d50",
+	WHITE =  tonumber("0xFFFFFFFF"),
+	GREEN =  tonumber("0xFF00FF00"),
+	BLUE =   tonumber("0xFF0072BC"),
+	PURPLE = tonumber("0xFFA864A8"),
+	ORANGE = tonumber("0xFFF68E56"),
+	GOLD =   tonumber("0xFFA37D50"),
 	}
 
 CItem = class(
