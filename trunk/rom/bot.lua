@@ -11,6 +11,9 @@ include("classes/waypointlist_wander.lua");
 include("classes/node.lua");
 include("settings.lua");
 include("functions.lua");
+if( fileExists("userfunctions.lua") ) then
+	include("userfunctions.lua");
+end
 
 
 settings.load();
