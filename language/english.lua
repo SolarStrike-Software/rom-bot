@@ -16,7 +16,8 @@ language = {
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",
 	[15] = "Waypoint #%d is closer then #1. Hence we start with waypoint #%d.\n",
 	[16] = "No more (usable) mana potions available at bagslot 1 to %d\n",
-	[17] = "No more (usable) hp potions available at bagslot 1 to %d\n",		
+	[17] = "No more (usable) hp potions available at bagslot 1 to %d\n",
+	[18] = "NOTICE: Item mismatch (%s~=%s); updating item info (don't panic).\n",
 	
 
 	[20] = "Finished casting\n",

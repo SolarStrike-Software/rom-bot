@@ -433,17 +433,25 @@ function CPlayer:checkPotions()
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
 			yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
-			item:use();
-			self.PotionHpUsed = self.PotionHpUsed + 1;			-- counts use of HP potions
+
+			local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+			if( checkItemName ~= item.Name ) then
+				cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+				item:update();
+			else
+				item:use();
+				self.PotionHpUsed = self.PotionHpUsed + 1;			-- counts use of HP potions
 			
-			cprintf(cli.green, language[10], 		-- Using HP potion
-			   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
-			   item.Name, item.ItemCount);
-			if( self.Fighting ) then
-				yrest(1000);
-			end 
+				cprintf(cli.green, language[10], 		-- Using HP potion
+				   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+				   item.Name, item.ItemCount);
+				if( self.Fighting ) then
+					yrest(1000);
+				end
 			  
-			self.PotionLastUseTime = os.time();
+				self.PotionLastUseTime = os.time();
+			end
+
 			return true;
 		else		-- potions empty
 			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
@@ -465,17 +473,25 @@ function CPlayer:checkPotions()
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
 				yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
-				item:use();
-				self.PotionManaUsed = self.PotionManaUsed + 1;		-- counts use of mana potions
+
+				local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+				if( checkItemName ~= item.Name ) then
+					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+					item:update();
+				else
+					item:use();
+					self.PotionManaUsed = self.PotionManaUsed + 1;		-- counts use of mana potions
+						
+					cprintf(cli.green, language[11], 		-- Using MP potion
+						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
+						item.Name, item.ItemCount); 
+					if( self.Fighting ) then
+						yrest(1000);
+					end
 					
-				cprintf(cli.green, language[11], 		-- Using MP potion
-				   	self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
-				   	item.Name, item.ItemCount); 
-				if( self.Fighting ) then
-					yrest(1000);
+					self.PotionLastUseTime = os.time();
 				end
-				
-				self.PotionLastUseTime = os.time();
+
 				return true;		-- avoid invalid/use count of 
 			else	-- potions empty
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
