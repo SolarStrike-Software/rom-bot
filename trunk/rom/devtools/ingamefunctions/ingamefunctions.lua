@@ -60,7 +60,7 @@ function igf_parseItemLink(_itemlink)
 	local name_parse_from = string.find(_itemlink, '[', 1, true);
 	local name_parse_to = string.find(_itemlink, ']', 1, true);
 	local name = "Error parsing name";
-	if not name_parse_from == nil or not name_parse_to == nil then
+	if name_parse_from ~= nil and name_parse_to ~= nil then
 		name = string.sub(_itemlink, name_parse_from+1, name_parse_to-1);
 	end
 	return id, color, name;

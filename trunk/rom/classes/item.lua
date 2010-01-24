@@ -5,8 +5,9 @@ ITEM_TOOLTIP_DURABILITY = {
 	DE		= "Haltbarkeit",
 	FR		= "Structure",
 	ENEU	= "Durability", 
-	ENUS	= "Durability"
-	};
+	ENUS	= "Durability",
+	PH = "Durability",
+};
 
 -- itemquality -> color code
 ITEMCOLOR = { 
@@ -16,7 +17,7 @@ ITEMCOLOR = {
 	PURPLE = tonumber("0xFFA864A8"),
 	ORANGE = tonumber("0xFFF68E56"),
 	GOLD =   tonumber("0xFFA37D50"),
-	}
+};
 
 CItem = class(
 	function(self,slotNumber)

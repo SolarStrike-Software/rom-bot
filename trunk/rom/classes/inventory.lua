@@ -37,8 +37,14 @@ function CInventory:reloadAmmunition(type)
 		if not openItem then
 			return false;
 		end
-		
-		openItem:use();
+
+		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+		if( checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+			openItem:update();
+		else
+			openItem:use();
+		end
 		
 		-- after opening, update the inventory (this takes about 10 sec)
 		self:update();
@@ -48,7 +54,13 @@ function CInventory:reloadAmmunition(type)
 	
 	if item then
 		-- use it
-		item:use();
+		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+		if( checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+			item:update();
+		else
+			item:use();
+		end
 	end
 end
 
@@ -471,7 +483,7 @@ function CInventory:autoSell()
 		local sell_item = true
 		local slotitem = self.BagSlot[slotNumber];
 
-		if( slotitem  and  slotitem.Id > 0 ) then
+		if( slotitem  and  tonumber(slotitem.Id) > 0 ) then
 
 			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 			  "Check item so sell:", slotnumber, slotitem.Id, slotitem.Name);
