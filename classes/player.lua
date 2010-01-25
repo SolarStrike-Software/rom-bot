@@ -2255,3 +2255,19 @@ function CPlayer:target_NPC(_npcname)
 	return false;
 
 end
+
+function CPlayer:mount()
+	if( not inventory ) then
+		return;
+	end
+
+	if( self.Mounted ) then
+		return;
+	end
+
+	local mount = inventory:getMount();
+	if( mount ) then
+		mount:use();
+		yrest(6000);
+	end
+end

@@ -28,6 +28,7 @@ addresses = {
 	pawnMaxHP_offset = 0x2D4,
 	pawnMaxMP2_offset = 0x2E4,
 	pawnMaxMP_offset = 0x2DC,
+	pawnMount_offset = 0xC8,
 	pawnName_offset = 0x294,
 	pawnPetPtr_offset = 0x284,
 	pawnTargetPtr_offset = 0x278,
