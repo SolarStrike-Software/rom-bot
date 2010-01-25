@@ -66,6 +66,7 @@ CPawn = class(
 		self.Direction = 0.0;
 		self.Attackable = false;
 		self.Alive = true;
+		self.Mounted = false;
 
 		self.LastBuffUpdateTime = getTime();
 		self.Buffs = {};
@@ -154,6 +155,8 @@ function CPawn:update()
 
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnType_offset), memerrmsg);
+
+	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 1;
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
