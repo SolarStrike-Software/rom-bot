@@ -115,7 +115,7 @@ function CItem:update()
 		local msg = "DEBUG item:update(): ";
 		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
 		if(self.BagId) then msg = msg.." bagId "..self.BagId; end;
-		if(self.Id) then msg = msg.." Id "..self.Id; end;
+		if(self.Id) then msg = msg.." Id "..self.Id; else msg = msg .. "<unable to parse Id> "; end;
 --		if(itemLink) then msg = msg.."/"..itemLink; end;
 		if(self.Name) then msg = msg.." name "..self.Name; end;
 		if(self.ItemCount) then msg = msg.." qty "..self.ItemCount; end;
@@ -132,9 +132,11 @@ function CItem:parseItemLink(itemLink)
 		return;
  	end
 
-	local s,e, id, color, name = string.find(itemLink, "|Hitem:(%x+).*|h|c(%x+)%[([%w%p%s]+)");
-	id    = tonumber( "0x" .. tostring(id) );
-	color = tonumber( "0x" .. tostring(color) );
+	local s,e, id, color, name = string.find(itemLink, "|Hitem:(%x+).*|h|c(%x+)%[(.+)%]|r|h");
+	id = id or "000000"; color = color or "000000";
+	id    = tonumber(tostring(id), 16) or 0;
+	color = tonumber(tostring(color), 16) or 0;
+	name = name or "<invalid>";
 
 	return id, color, name;
 end

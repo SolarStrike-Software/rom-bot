@@ -38,6 +38,6 @@ addresses = {
 	pawnZ_offset = 0x34,
 	staticbase_char = 0x95B350,
 	staticbase_macro = 0x9ABA10,
-	staticpattern_char = 0x5D7C5D,
-	staticpattern_macro = 0x7407F5,
+	staticpattern_char = 0x5D7BED,
+	staticpattern_macro = 0x7415F5,
 }
