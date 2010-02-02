@@ -590,6 +590,11 @@ function CPlayer:fight()
 
 		target = self:getTarget();
 
+		if( target.HP ~= lastTargetHP ) then
+			self.lastHitTime = os.time();
+			lastTargetHP = target.HP;
+		end
+
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), self.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf(language[83]);			-- Taking too long to damage target
@@ -651,7 +656,8 @@ function CPlayer:fight()
 	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
 			target.Name ~= "Tatus"	and		
-		    target.TargetPtr ~= self.Address ) then	-- but not from that mob
+		    target.TargetPtr ~= self.Address and
+			target.TargetPtr ~= self.Pet.Address ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
 			self:clearTarget();
 			break_fight = true;
@@ -1405,6 +1411,12 @@ function CPlayer:haveTarget()
 				return false;
 			end;
 		end;
+
+		-- Pets aren't enemies
+		if( target.Address == self.Pet.Address ) then
+			printf("Pet is not an enemy\n");
+			return false;
+		end
 
 		-- Mob limitations defined?
 		if( #settings.profile.mobs > 0 ) then
