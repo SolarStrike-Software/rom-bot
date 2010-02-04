@@ -1,4 +1,4 @@
-BOT_VERSION = 3.10;
+BOT_VERSION = 3.19;
 
 include("addresses.lua");
 include("database.lua");
@@ -95,6 +95,7 @@ function main()
 	player = CPlayer(playerAddress);
 	player:initialize();
 	player:update();
+
 	if( settings.options.DEBUGGING ) then
 		-- Player debugging info
 		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
