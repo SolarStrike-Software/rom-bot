@@ -38,8 +38,11 @@ function CInventory:reloadAmmunition(type)
 			return false;
 		end
 
-		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
-		if( checkItemName ~= item.Name ) then
+		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. openItem.SlotNumber .. ")");
+		yrest(200);
+		self:update();
+		item = self:bestAvailableConsumable("arrow");
+		if( item and checkItemName ~= item.Name ) then
 			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
 			openItem:update();
 		else
@@ -235,6 +238,7 @@ function CInventory:bestAvailableConsumable(type)
 				end
 			else	-- select best available consumable (& smallest stack by default)
 				-- select better level
+
 				if( consumable.Level > bestLevel  ) then
 					bestLevel = consumable.Level;
 					bestPotency = consumable.Potency;
@@ -257,9 +261,7 @@ function CInventory:bestAvailableConsumable(type)
 					bestItem = item;
 				end
 			end
-
 		end
-
 	end
 	return bestItem;
 end
