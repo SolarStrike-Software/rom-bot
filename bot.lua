@@ -308,7 +308,7 @@ function main()
 	if( forcedPath ) then			-- waypointfile or 'wander'
 		wp_to_load = forcedPath;
 	else
-		if( settings.profile.options.WAYPOINTS ) then
+		if( settings.profile.options.WAYPOINTS and __WPL == nil ) then
 			wp_to_load = settings.profile.options.WAYPOINTS;
 		end
 	end
@@ -317,7 +317,7 @@ function main()
 	if( forcedRetPath ) then
 		rp_to_load = forcedRetPath;
 	else
-		if( settings.profile.options.RETURNPATH ) then
+		if( settings.profile.options.RETURNPATH and __RPL == nil ) then
 			rp_to_load = settings.profile.options.RETURNPATH;
 		end
 	end
