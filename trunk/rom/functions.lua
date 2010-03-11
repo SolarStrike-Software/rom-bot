@@ -6,6 +6,10 @@ local charUpdatePattern = string.char(0x8B, 0x07, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 
 local charUpdateMask = "xxxx????xxx";
 local charUpdateOffset = 4;
 
+local charOffsetUpdatePattern = string.char(0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC0, 0x74, 0xFF, 0x8B, 0x80);
+local charOffsetUpdateMask = "xx????xxx?xx";
+local charOffsetUpdateOffset = 2;
+
 local macroUpdatePattern = string.char(0xFF, 0x15, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xE8);
 local macroUpdateMask = "xx????xx????x";
 local macroUpdateOffset = 8;
@@ -23,6 +27,18 @@ end
 
 function getCharUpdateOffset()
 	return charUpdateOffset;
+end
+
+function getCharOffsetUpdatePattern()
+	return charOffsetUpdatePattern;
+end
+
+function getCharOffsetUpdateMask()
+	return charOffsetUpdateMask;
+end
+
+function getCharOffsetUpdateOffset()
+	return charOffsetUpdateOffset;
 end
 
 function getMacroUpdatePattern()
