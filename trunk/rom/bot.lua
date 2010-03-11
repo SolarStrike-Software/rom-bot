@@ -1,4 +1,4 @@
-BOT_VERSION = 3.19;
+BOT_VERSION = 3.20;
 
 include("addresses.lua");
 include("database.lua");
@@ -119,6 +119,9 @@ function main()
 
 	local cameraAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset);
 	if( cameraAddress == nil ) then cameraAddress = 0; end;
+	if( settings.options.DEBUGGING ) then
+		printf("[DEBUG] camAddress: 0x%X\n", cameraAddress);
+	end
 
 	camera = CCamera(cameraAddress);
 	if( settings.options.DEBUGGING ) then
