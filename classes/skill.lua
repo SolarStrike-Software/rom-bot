@@ -33,6 +33,12 @@ CSkill = class(
 		self.ManaInc = 0; -- Increase in mana per level
 		self.Level = 1;
 
+		-- Information about required buffs/debuffs
+		self.ReqBuffType = ""; -- Either 'buff' or 'debuff'
+		self.ReqBuffCount = 0;
+		self.ReqBuffTarget = "player";
+		self.ReqBuffName = ""; -- Name of the buff/debuff
+
 		self.AutoUse = true; -- Can be used automatically by the bot
 
 		self.TargetMaxHpPer = 100;	-- Must have less than this % HP to use
@@ -81,12 +87,17 @@ CSkill = class(
 			self.aslevel = copyfrom.aslevel;
 			self.skilltab = copyfrom.skilltab;
 			self.skillnum = copyfrom.skillnum;
+			self.ReqBuffType = copyfrom.ReqBuffType;
+			self.ReqBuffCount = copyfrom.ReqBuffCount;
+			self.ReqBuffTarget = copyfrom.ReqBuffTarget;
+			self.ReqBuffName = copyfrom.ReqBuffName;
 		end
 	end
 );
 
 
-function CSkill:canUse(_only_friendly)
+function CSkill:canUse(_only_friendly, target)
+	target = target or player:getTarget();
 	if( hotkey == 0 ) then return false; end; --hotkey must be set!
 
 	-- a local function to make it more easy to insert debuging lines
@@ -135,7 +146,7 @@ function CSkill:canUse(_only_friendly)
 		
 	end
 
-	local target = player:getTarget();	-- get target fields
+	--local target = player:getTarget();	-- get target fields
 
 	-- only friendly skill types?
 	if( _only_friendly ) then
@@ -288,6 +299,29 @@ function CSkill:canUse(_only_friendly)
 	if( self.Toggleable and self.Toggled == true ) then
 		debug_skilluse("TOGGLED");
 		return false;
+	end
+
+	-- Check required buffs/debuffs
+	if( self.ReqBuffName ~= "" ) then
+		local checktab;
+
+		if( self.ReqBuffTarget == "player" ) then
+			if( self.ReqBuffType == "buff" ) then
+				checktab = player.Buffs;
+			else
+				checktab = player.Debuffs;
+			end;
+		elseif( self.ReqBuffTarget == "target" ) then
+			if( self.ReqBuffType == "buff" ) then
+				checktab = target.Buffs;
+			else
+				checktab = target.Debuffs;
+			end;
+		end
+
+		if( self.ReqBuffCount > (checktab[self.ReqBuffName] or 0) ) then
+			return false;
+		end;
 	end
 
 	return true;

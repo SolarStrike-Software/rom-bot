@@ -16,6 +16,7 @@ function database.load()
 		local name, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration;
 		local range, minrange, casttime, cooldown, type, target;
 		local toggleable, minmanaper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
+		local reqbufftype, reqbuffcount, reqbufftarget, reqbuffname;
 
 		name = v:getAttribute("name");
 		mana = v:getAttribute("mana");
@@ -41,6 +42,11 @@ function database.load()
 		aslevel = v:getAttribute("aslevel");
 		skilltab = v:getAttribute("skilltab");
 		skillnum = v:getAttribute("skillnum");
+
+		reqbufftype = string.lower(tostring(v:getAttribute("reqbufftype") or ""));
+		reqbuffcount = tonumber(v:getAttribute("reqbuffcount") or 0);
+		reqbufftarget = string.lower(tostring(v:getAttribute("reqbufftarget") or "player"));
+		reqbuffname = tostring(v:getAttribute("reqbuffname") or "");
 
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
@@ -111,6 +117,11 @@ function database.load()
 		if(aslevel) then tmp.aslevel = aslevel; end;	
 		if(skilltab) then tmp.skilltab = skilltab; end;	
 		if(skillnum) then tmp.skillnum = skillnum; end;		
+
+		if(reqbufftype == "buff" or reqbufftype == "debuff" ) then tmp.ReqBuffType = reqbufftype; end;
+		if(reqbuffcount > 0 ) then tmp.ReqBuffCount = reqbuffcount; end;
+		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
+		if(reqbuffname ~= "") then tmp.ReqBuffName = reqbuffname; end;
 
 		database.skills[name] = tmp;
 	end

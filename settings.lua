@@ -342,7 +342,7 @@ function settings.load()
 				v = v .. "\\"; -- Append the trailing backslash if necessary.
 			end
 
-			local filename = v .. "bindings.txt"
+			local filename = v .. "bindings.txt";
 			if( fileExists(filename) ) then
 				file = io.open(filename, "r");
 				local tmp = filename;
@@ -679,7 +679,6 @@ function settings.loadProfile(_name)
 			if( not (autouse == true or autouse == false) ) then
 				autouse = true;
 			end;
-
 
 			-- check if 'wrong' options are set
 			if( v:getAttribute("mana")      or

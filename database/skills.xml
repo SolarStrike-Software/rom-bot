@@ -217,7 +217,7 @@
 	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
 	<skill name="KNIGHT_DISARMAMENT" mana="20" manainc="2.0" range="50" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
-	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" />
+	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" reqbufftype="debuff" reqbuffcount="3" reqbufftarget="target" reqbuffname="Light Seal III" />
 	<skill name="KNIGHT_SHIELD_BASH" mana="50" manainc="5.0" range="10" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
 	<skill name="KNIGHT_SHIELD_OF_TRUTH" mana="150" cooldown="60" type="buff" target="self" inbattle="true" />

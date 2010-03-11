@@ -307,6 +307,8 @@ function CPawn:updateBuffs(target)
 			self.Debuffs[buffname] = count;
 		end
 	end
+
+	self.LastBuffUpdateTime = getTime();
 end
 
 function CPawn:haveTarget()
