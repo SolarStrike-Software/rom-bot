@@ -284,14 +284,14 @@ function CPawn:updateBuffs(target)
 	self.Buffs = {}; -- Flush old buffs/debuffs
 	self.Debuffs = {};
 
-	local buffs = {RoMScript("} for i=1,9 do w,x,y,z=UnitBuff('" .. target ..
+	local buffs = {RoMScript("} for i=1,16 do w,x,y,z=UnitBuff('" .. target ..
 	"', i) table.insert(a,w) table.insert(a,y) end z={")};
 
-	local debuffs = {RoMScript("} for i=1,9 do w,x,y,z=UnitDebuff('" .. target
+	local debuffs = {RoMScript("} for i=1,16 do w,x,y,z=UnitDebuff('" .. target
 	.. "', i) table.insert(a,w) table.insert(a,y) end z={")};
 
 	if( buffs ) then
-		for i = 1,#buffs/2,2 do
+		for i = 1,#buffs,2 do
 			local buffname = buffs[i];
 			local count = buffs[i+1] or 0;
 
@@ -300,7 +300,7 @@ function CPawn:updateBuffs(target)
 	end
 
 	if( debuffs ) then
-		for i = 1,#debuffs/2,2 do
+		for i = 1,#debuffs,2 do
 			local buffname = debuffs[i] or "<UNKNOWN>";
 			local count = debuffs[i+1] or 0;
 
