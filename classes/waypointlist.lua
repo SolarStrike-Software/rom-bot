@@ -43,34 +43,52 @@ function CWaypointList:load(filename)
 	self.Waypoints = {}; -- Delete current waypoints.
 	self.ForcedType = 0;	-- delete forced waypoint type
 
+	local onLoadEvent = nil;
+
 	for i,v in pairs(elements) do
 		local x,z = v:getAttribute("x"), v:getAttribute("z");
 		local type = v:getAttribute("type");
 		local action = v:getValue();
+		local name = v:getName() or "";
 
-		local tmp = CWaypoint(x, z);
-		if( action ) then tmp.Action = action; end;
-		if( type ) then
-			if( type == "TRAVEL" ) then
-				tmp.Type = WPT_TRAVEL;
-			elseif( type == "RUN" ) then
-				tmp.Type = WPT_RUN;
-			elseif( type == "NORMAL" ) then
-				tmp.Type = WPT_NORMAL;
+		if( string.lower(name) == "waypoint" ) then
+			local tmp = CWaypoint(x, z);
+			if( action ) then tmp.Action = action; end;
+			if( type ) then
+				if( type == "TRAVEL" ) then
+					tmp.Type = WPT_TRAVEL;
+				elseif( type == "RUN" ) then
+					tmp.Type = WPT_RUN;
+				elseif( type == "NORMAL" ) then
+					tmp.Type = WPT_NORMAL;
+				else
+					-- Undefined type, assume WPT_NORMAL
+					tmp.Type = WPT_NORMAL;
+				end
 			else
-				-- Undefined type, assume WPT_NORMAL
-				tmp.Type = WPT_NORMAL;
+				-- No type set, assume Type from header tag
+				tmp.Type = self.Type;
 			end
-		else
-			-- No type set, assume Type from header tag
-			tmp.Type = self.Type;
-		end
 
-		table.insert(self.Waypoints, tmp);
+			table.insert(self.Waypoints, tmp);
+		elseif( string.lower(name) == "onload" ) then
+			if( string.len(action) > 0 and string.find(action, "%w") ) then
+				onLoadEvent = loadstring(action);
+				assert(onLoadEvent, sprintf(language[152]));
+
+				if( _G.type(onLoadEvent) ~= "function" ) then
+					onLoadEvent = nil;
+				end;
+			end
+		end
 	end
 
 	self.CurrentWaypoint = 1;
 	self.Mode = "waypoints";
+
+	if( onLoadEvent ) then
+		onLoadEvent();
+	end
 end
 
 
