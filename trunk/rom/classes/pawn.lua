@@ -4,6 +4,9 @@ PT_MONSTER = 2;
 PT_NPC = 4;
 PT_NODE = 4;
 
+RACE_HUMAN = 0;
+RACE_ELF = 1;
+
 CLASS_NONE = -1;
 CLASS_WARRIOR = 1;
 CLASS_SCOUT = 2;
@@ -57,6 +60,7 @@ CPawn = class(
 		self.MaxMP = 1000;
 		self.MP2 = 1000;
 		self.MaxMP2 = 1000;
+		self.Race = RACE_HUMAN;
 		self.X = 0.0;
 		self.Y = 0.0;
 		self.Z = 0.0;
@@ -133,7 +137,6 @@ CPawn = class(
 		self.free_flag2 = false;			-- free flag for user use
 		self.free_flag3 = false;			-- free flag for user use		
 
-		
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
 );
@@ -152,6 +155,8 @@ function CPawn:update()
 	self.MaxMP = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMaxMP_offset), memerrmsg);
 	self.MP2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMP2_offset), memerrmsg);
 	self.MaxMP2 = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnMaxMP2_offset), memerrmsg);
+
+	self.Race = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnRace_offset), memerrmsg);
 
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnType_offset), memerrmsg);
@@ -335,7 +340,7 @@ function CPawn:haveTarget()
 end
 
 function CPawn:getTarget()
-	if( self.TargetPtr) then
+	if( self.TargetPtr ) then
 		return CPawn(self.TargetPtr);
 	else
 		return nil;

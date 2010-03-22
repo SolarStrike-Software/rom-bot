@@ -368,6 +368,8 @@ local _checkskills_last_updatetime = 0;
 function CPlayer:checkSkills(_only_friendly)
 	local used = false;
 
+	self:update();
+
 	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
 		self:updateBuffs();
 	end;
@@ -597,6 +599,7 @@ function CPlayer:fight()
 
 	local break_fight = false;	-- flag to avoid kill counts for breaked fights
 	while( self:haveTarget() ) do
+		self:update();
 		-- If we die, break
 		if( self.HP < 1 or self.Alive == false ) then
 			if( settings.profile.options.COMBAT_TYPE == "melee" ) then
@@ -782,8 +785,8 @@ function CPlayer:fight()
 		end
 
 		yrest(100);
-		target:update();
 		self:update();
+		target = self:getTarget();
 
 
 		-- do we need that? Because the DO statement is allready a 
@@ -878,7 +881,7 @@ function CPlayer:loot()
 		return
 	end
 
-
+	self:update();
 	local target = self:getTarget();
 
 	if( target == nil or target.Address == 0 ) then
@@ -927,7 +930,6 @@ function CPlayer:loot()
 		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 	end
 
-
 	looten();
 
 	-- check for loot problems to give a noob mesassage
@@ -953,7 +955,7 @@ function CPlayer:loot()
 	end;
 
 	-- Close the booty bag.
-	RoMScript("CloseBooty()");
+	RoMScript("BootyFrame:Hide()");
 
 	-- Maybe take a step forward to pick up a buff.
 	if( math.random(100) > 80 ) then
@@ -1622,6 +1624,8 @@ function CPlayer:clearTarget()
 	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, 0);
 	self.TargetPtr = 0;
 	self.Cast_to_target = 0;
+
+	RoMScript("TargetFrame:Hide()");
 end
 
 -- returns true if this CPawn is registered as a friend

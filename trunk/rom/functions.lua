@@ -121,7 +121,7 @@ function selectGame()
 
     notShown = true;
 	if (#windowList > 1) then  -- if theres more than 1 window, ask the player witch character to use
-		while not keyPressed(key.VK_RETURN) do
+		while not keyPressedLocal(key.VK_RETURN) do
 	    	if keyPressed(key.VK_UP) or keyPressed(key.VK_DOWN) or notShown then
 	        	notShown = false;
 	    		if keyPressed(key.VK_DOWN) then
@@ -155,7 +155,7 @@ function selectGame()
 				printf("\n");
 				yrest(200);
 	    	end
-	    	if keyPressed(settings.hotkeys.STOP_BOT.key) then
+	    	if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
 	        	error("User quit");
 			end
 		end

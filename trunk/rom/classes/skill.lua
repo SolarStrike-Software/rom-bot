@@ -97,8 +97,11 @@ CSkill = class(
 
 
 function CSkill:canUse(_only_friendly, target)
-	target = target or player:getTarget();
-	if( hotkey == 0 ) then return false; end; --hotkey must be set!
+	if( target == nil ) then
+		player:update();
+		target = player:getTarget();
+	end
+	if( self.hotkey == 0 ) then return false; end; --hotkey must be set!
 
 	-- a local function to make it more easy to insert debuging lines
 	-- you have to insert the correspointing options into your profile
