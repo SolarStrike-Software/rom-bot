@@ -31,6 +31,7 @@ addresses = {
 	pawnMount_offset = 0xC4,
 	pawnName_offset = 0x290,
 	pawnPetPtr_offset = 0x280,
+	pawnRace_offset = 0x310,
 	pawnTargetPtr_offset = 0x274,
 	pawnType_offset = 0x18,
 	pawnX_offset = 0x28,
@@ -40,5 +41,4 @@ addresses = {
 	staticbase_macro = 0x9D7A04,
 	staticpattern_char = 0x5D97BD,
 	staticpattern_macro = 0x73ADF5,
-	pawnRace_offset = 0x310,
 }

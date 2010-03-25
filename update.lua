@@ -1,56 +1,93 @@
 include("addresses.lua");
 include("functions.lua");
 
+-- Note: We get 'char' and 'macro' data from functions.lua
+-- because it is used in other scripts.
+
+local charPtrUpdatePattern = string.char(0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC0, 0x74, 0xFF, 0x8B, 0x80);
+local charPtrUpdateMask = "xx????xxx?xx";
+local charPtrUpdateOffset = 2;
+
+local mousePtrUpdatePattern = string.char(0x80, 0xBD, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x8B, 0x95, 0xFF, 0xFF, 0xFF, 0xFF);
+local mousePtrUpdateMask = "xx????xxx????";
+local mousePtrUpdateOffset = 9;
+
+local camPtrUpdatePattern = string.char(0xFF, 0xD2, 0x8B, 0x8E, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0xD8);
+local camPtrUpdateMask = "xxxx????xx";
+local camPtrUpdateOffset = 4;
+
+local camXUVecUpdatePattern = string.char(0xD9, 0x5C, 0x24, 0x08, 0xD9, 0x82, 0xFF, 0xFF, 0xFF, 0xFF, 0xD9, 0x5C, 0x24);
+local camXUVecUpdateMask = "xxxxxx????xxx";
+local camXUVecUpdateOffset = 6;
+
+local camXUpdatePattern = string.char(0xD9, 0x82, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x57, 0xC9, 0xD8, 0xA2, 0xFF, 0xFF, 0xFF, 0xFF);
+local camXUpdateMask = "xx????xxxxx????";
+local camXUpdateOffset = 11;
+
+local castbarUpdatePattern = string.char(0xC2, 0x04, 0x00, 0xD9, 0x44, 0x24, 0x04, 0xD9, 0x81, 0xFF, 0xFF, 0xFF, 0xFF);
+local castbarUpdateMask = "xxxxxxxxx????";
+local castbarUpdateOffset = 9;
+
+local charAliveUpdatePattern = string.char(0x88, 0x44, 0x24, 0xFF, 0x8A, 0x87, 0xFF, 0xFF, 0xFF, 0xFF);
+local charAliveUpdateMask = "xxx?xx????";
+local charAliveUpdateOffset = 6;
+
+local charBattleUpdatePattern = string.char(0x89, 0x44, 0x24, 0x20, 0x8A, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0xF6, 0xD8);
+local charBattleUpdateMask = "xxxxxx????xx";
+local charBattleUpdateOffset = 6;
+
+-- NOTE: Must add 10 bytes to the value here
+local macro1UpdatePattern = string.char(0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x38, 0x98, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0xB8);
+local macro1UpdateMask = "xx????xx????xx";
+local macro1UpdateOffset = 8;
+
 
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
-	local staticcharbase, staticmacrobase;
+	local function update(name, pattern, mask, offset, sStart, sEnd)
+		local found = 0;
+		found = findPatternInProcess(getProc(), pattern, mask, sStart, sEnd);
 
-	-- Find the character's static base
-	local found = findPatternInProcess(getProc(), getCharUpdatePattern(), getCharUpdateMask(), 0x5A0000, 0xA0000);
-	if( found == 0 ) then
-		error("Unable to find static char base pointer in module.", 0);
+		if( found == 0 ) then
+			error("Unable to find \'" .. name .. "\' in module.", 0);
+		end
+
+		addresses[name] = memoryReadInt(getProc(), found + offset);
+		printf("Patched addresses." .. name .. "\t (value: 0x%X, at: 0x%X)\n", addresses[name], found + offset);
+		return found;
 	end
 
-	addresses.staticpattern_char = found;
-	addresses.staticbase_char = memoryReadInt(getProc(), found + getCharUpdateOffset());
+	addresses.staticpattern_char = update("staticpattern_char", getCharUpdatePattern(),
+		getCharUpdateMask(), getCharUpdateOffset(), 0x5A0000, 0xA0000);
 
-	if( addresses.staticbase_char == nil ) then
-		error("Found char pattern, but unable to read memory.\n");
-	end
+	addresses.staticpattern_macro = update("staticbase_macro", getMacroUpdatePattern(),
+		getMacroUpdateMask(), getMacroUpdateOffset(), 0x700000, 0xA0000);
 
-	-- Find the character offset
-	local found = findPatternInProcess(getProc(), getCharOffsetUpdatePattern(), getCharOffsetUpdateMask(), 0x5A0000, 0xA0000);
-	if( found == 0 ) then
-		error("Unable to find char offset in module.", 0);
-	end
+	update("charPtr_offset", charPtrUpdatePattern, charPtrUpdateMask, charPtrUpdateOffset, 0x5A0000, 0xA0000);
+	update("mousePtr_offset", mousePtrUpdatePattern, mousePtrUpdateMask, mousePtrUpdateOffset, 0x5F0000, 0xA0000);
+	update("camPtr_offset", camPtrUpdatePattern, camPtrUpdateMask, camPtrUpdateOffset, 0x5E0000, 0xA0000);
 
-	addresses.charPtr_offset = memoryReadInt(getProc(), found + getCharOffsetUpdateOffset());
+	update("camXUVec_offset", camXUVecUpdatePattern, camXUVecUpdateMask, camXUVecUpdateOffset, 0x440000, 0xA0000);
+	-- Assume Y is +4, and Z is +8
+	addresses.camYUVec_offset = addresses.camXUVec_offset + 4;
+	addresses.camZUVec_offset = addresses.camXUVec_offset + 8;
 
-	if( addresses.charPtr_offset == nil ) then
-		error("Found char offset pattern, but unable to read memory.\n");
-	end
+	update("camX_offset", camXUpdatePattern, camXUpdateMask, camXUpdateOffset, 0x440000, 0xA0000);
+	-- Assume Y is +4, and Z is +8
+	addresses.camY_offset = addresses.camX_offset + 4;
+	addresses.camZ_offset = addresses.camX_offset + 8;
 
-	-- Find the macro static base
-	local found = findPatternInProcess(getProc(), getMacroUpdatePattern(), getMacroUpdateMask(), 0x700000, 0xA0000);
-	if( found == 0 ) then
-		error("Unable to find static macro base pointer in module.", 0);
-	end
+	update("castbar_offset", castbarUpdatePattern, castbarUpdateMask, castbarUpdateOffset, 0x820000, 0xA0000);
+	update("charAlive_offset", charAliveUpdatePattern, charAliveUpdateMask, charAliveUpdateOffset, 0x5E0000, 0xA0000);
+	update("charBattle_offset", charBattleUpdatePattern, charBattleUpdateMask, charBattleUpdateOffset, 0x5E0000, 0xA0000);
 
-	addresses.staticpattern_macro = found;
-	addresses.staticbase_macro = memoryReadInt(getProc(), found + getMacroUpdateOffset());
-
-	if( addresses.staticbase_macro == nil ) then
-		error("Found macro pattern, but unable to read memory.\n");
-	end
-
-
-
-	printf("addresses.staticbase_char: 0x%X\n", addresses.staticbase_char);
-	printf("addresses.staticbase_macro: 0x%X\n", addresses.staticbase_macro);
-	printf("addresses.charPtr_offset: 0x%X\n", addresses.charPtr_offset);
+	-- NOTE: We must manually adjust the macro forward 16 bytes
+	-- Assume macro2 is macro1 + 0x508
+	update("macro1_offset", macro1UpdatePattern, macro1UpdateMask, macro1UpdateOffset, 0x7A0000, 0xA0000);
+	addresses.macro1_offset = addresses.macro1_offset + 0x10;
+	addresses.macro2_offset = addresses.macro1_offset + 0x508;
 end
 
 function rewriteAddresses()
