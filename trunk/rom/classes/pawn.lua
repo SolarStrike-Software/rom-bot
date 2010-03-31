@@ -301,6 +301,7 @@ function CPawn:updateBuffs(target)
 		for i = 1,#buffs,2 do
 			local buffname = buffs[i];
 			local count = buffs[i+1] or 0;
+			if( count == 0 ) then count = 1; end;
 
 			self.Buffs[buffname] = count;
 		end
@@ -310,6 +311,7 @@ function CPawn:updateBuffs(target)
 		for i = 1,#debuffs,2 do
 			local buffname = debuffs[i] or "<UNKNOWN>";
 			local count = debuffs[i+1] or 0;
+			if( count == 0 ) then count = 1; end;
 
 			self.Debuffs[buffname] = count;
 		end

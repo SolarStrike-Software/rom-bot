@@ -121,7 +121,7 @@ function saveWaypoints(list)
 			tag_open = true;
 		elseif( v.wp_type == "MER" ) then -- Merchant
 			if( tag_open ) then
-				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, v.npc_name) .. "\n";
+				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
 				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
 				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
@@ -129,7 +129,7 @@ function saveWaypoints(list)
 			end
 		elseif( v.wp_type == "NPC" ) then -- Open NPC Dialog
 			if( tag_open ) then
-				hf_line = hf_line .. "\t\t" .. sprintf(p_targetNPC_command, v.npc_name) .. "\n";
+				hf_line = hf_line .. "\t\t" .. sprintf(p_targetNPC_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
 				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
 				"\n\t\t" .. sprintf(p_targetNPC_command, v.npc_name) ) .. "\n";

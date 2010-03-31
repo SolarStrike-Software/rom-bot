@@ -27,7 +27,6 @@
 	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Kettenr\129stung (Geschenk aus Logar)" />
 	<giftbag itemid="201851" type="bag" armor=""        level="9" name="Mondquellen-Geschenkbeutel" />
 	<giftbag itemid="221684" type=""    armor=""        level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
-	<giftbag itemid="202152" type=""    armor=""        level="9" name="Frucht der zus\132tzlichen Erfahrung" />
 	<giftbag itemid="201852" type="bag" armor=""        level="10" name="Heulender Geschenkbeutel" />
 	<giftbag itemid="221685" type=""    armor="cloth"   level="10" name="Stoffhandschuhe (Geschenk aus Logar" />
 	<giftbag itemid="221686" type=""    armor="leather" level="10" name="Lederhandschuhe (Geschenk aus Logar" />
@@ -54,4 +53,6 @@
 	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Chain Armor" />
 	<giftbag itemid="205937" type="bag" armor=""        level="9" name="Trial Package" />
 	<giftbag itemid="224919" type=""    armor=""        level="9" name="Trial Necklace" />
+
+	<giftbag itemid="202152" type=""    armor=""        level="9" name="Frucht der zus\132tzlichen Erfahrung" />
 </giftbags>

@@ -115,7 +115,7 @@
 	<skill name="WARRIOR_OPEN_FLANK" aslevel="2" skilltab="4" skillnum="2" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
 	<skill name="WARRIOR_PROBING_ATTACK" aslevel="2" skilltab="4" skillnum="3" rage="20" range="50" cooldown="4" type="damage" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
-	<skill name="WARRIOR_TACTICAL_ATTACK" aslevel="4" skilltab="4" skillnum="4" rage="15" range="50" cooldown="5" type="damage" target="enemy" />
+	<skill name="WARRIOR_TACTICAL_ATTACK" aslevel="4" skilltab="4" skillnum="4" rage="15" range="50" cooldown="5" type="damage" target="enemy" reqbufftype="debuff" reqbuffcount="1" reqbufftarget="target" reqbuffname="Bleed" />
 	<skill name="WARRIOR_THUNDER" aslevel="6" skilltab="4" skillnum="5" debuff="weakened" rage="15" range="50" cooldown="15" type="damage" target="enemy" />
 	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="WARRIOR_FEINT" aslevel="10" range="50" cooldown="2" type="damage" target="enemy" />
@@ -268,7 +268,7 @@
 	<skill name="SCOUT_MANA_DRAIN_SHOT" aslevel="12" skilltab="4" skillnum="6" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
 	<skill name="SCOUT_LASSO" aslevel="14" skilltab="4" skillnum="7" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
 	<skill name="SCOUT_PIERCING_ARROW" aslevel="18" skilltab="4" skillnum="8" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
-	<skill name="SCOUT_SNIPE" consumable="1" range="240" casttime="4" cooldown="15" type="buff" target="self" />
+	<skill name="SCOUT_SNIPE" consumable="1" range="240" casttime="4" cooldown="15" type="damage" target="enemy" />
 	<skill name="SCOUT_DETECTION" concentration="9" type="buff" target="self" />
 	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="180" cooldown="20" type="damage" target="enemy" />
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
