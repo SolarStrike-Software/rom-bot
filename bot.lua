@@ -358,7 +358,7 @@ function main()
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setCurrentWaypoint( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
 		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 		

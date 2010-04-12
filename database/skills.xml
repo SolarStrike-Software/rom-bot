@@ -51,7 +51,8 @@
 	<skill name="MAGE_STARS_OF_LIGHT" mana="30" range="200" cooldown="2" type="dot" />
 	<skill name="MAGE_MESSENGER_OF_LIGHT" mana="30" cooldown="600" type="buff" target="self" />
 	<skill name="MAGE_LIGHT_CHARGE" mana="30" range="150" minrange="80" cooldown="8" priority="100" />
-
+	<skill name="MAGE_PERCEPTION" mana="660" cooldown="600" range="200" type="buff" target="self" />
+	<skill name="MAGE_MAGIC_TARGET" mana="520" cooldown="1800" range="200" type="buff" target="self" />
 
 
 	<!-- Priest Skills -->
