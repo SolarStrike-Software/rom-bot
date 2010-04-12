@@ -89,6 +89,8 @@ function CWaypointList:load(filename)
 	if( onLoadEvent ) then
 		onLoadEvent();
 	end
+
+	self:setCurrentWaypoint(self:getNearestWaypoint(player.X, player.Z));
 end
 
 
@@ -231,6 +233,11 @@ function CWaypointList:setWaypointIndex(index)
 	if( index > #self.Waypoints ) then index = #self.Waypoints; end;
 
 	self.CurrentWaypoint = index;
+end
+
+function CWaypointList:setCurrentWaypoint(wpi)
+      if( wpi == 1 ) then wpi = #self.Waypoints else wpi = wpi - 1; end;
+      self:setWaypointIndex(wpi);
 end
 
 -- Returns an index to the waypoint closest to the given point.

@@ -106,6 +106,7 @@ function saveWaypoints(list)
 	local openformat = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\"%s>%s";
 	local closeformat = "</waypoint>\n";
 
+	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	file:write(str);					-- write first tag
 

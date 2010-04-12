@@ -8,8 +8,8 @@ include("settings.lua");
 include("functions.lua");
 
 
-setStartKey(settings.hotkeys.START_BOT.key);
-setStopKey(settings.hotkeys.STOP_BOT.key);
+setStartKey(0);
+setStopKey(0);
 
 function pauseCallback()
 	printf("\nPaused.\n");

@@ -441,7 +441,7 @@ function loadPaths( _wp_path, _rp_path)
 		end;
 		__WPL:load(filename);
 		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
-		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+
 		if(__WPL.CurrentWaypoint ~= 1) then
 			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
 			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);

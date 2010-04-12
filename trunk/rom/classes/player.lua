@@ -937,7 +937,6 @@ function CPlayer:loot()
 	target = self:getTarget();
 	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
-	    dist > 25 and
 	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
 		
