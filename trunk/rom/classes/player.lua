@@ -402,6 +402,15 @@ function CPlayer:checkSkills(_only_friendly)
 				player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
 				player.Last_ignore_target_time = os.time();		-- and the time we break the fight
 				self:clearTarget();
+
+				if( self.Battling ) then
+					yrest(1000);
+				   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+				   yrest(1000);
+				   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+				   self:update();
+				end
+
 				break_fight = true;
 				break;
 			end
@@ -624,6 +633,15 @@ function CPlayer:fight()
 			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
 			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
 			self:clearTarget();
+
+			if( self.Battling ) then
+				yrest(1000);
+			   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+			   yrest(1000);
+			   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+			   self:update();
+			end
+
 			break_fight = true;
 			break;
 		end
@@ -837,7 +855,7 @@ function CPlayer:fight()
 
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
-	if( settings.profile.options.LOOT == true  and
+	if( and settings.profile.options.LOOT == true  and
 		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 --		yrest(800);
 		inventory:updateSlotsByTime(800);
@@ -846,7 +864,9 @@ function CPlayer:fight()
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
-	self:loot();
+	if( not break_fight ) then
+		self:loot();
+	end
 
 	if( self.TargetPtr ~= 0 ) then
 		self:clearTarget();
