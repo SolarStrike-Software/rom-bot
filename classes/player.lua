@@ -855,7 +855,7 @@ function CPlayer:fight()
 
 	-- give client a little time to update battle flag (to come out of combat), 
 	-- if we loot even at combat we don't need the time
-	if( and settings.profile.options.LOOT == true  and
+	if( settings.profile.options.LOOT == true  and
 		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 --		yrest(800);
 		inventory:updateSlotsByTime(800);
@@ -1202,14 +1202,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
 	if( success ) then
-		-- We successfully reached the waypoint.
-		-- Execute it's action, if it has one.
 
-		if( waypoint.Action and type(waypoint.Action) == "string" ) then
-			local actionchunk = loadstring(waypoint.Action);
-			assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );	-- little bug, could also be __RPL ?
-			actionchunk();
-		end
 	end
 
 	if( self.Battling and

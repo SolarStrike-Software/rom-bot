@@ -358,11 +358,11 @@ function main()
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
-		__WPL:setCurrentWaypoint( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
 		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 		
-		__RPL:setCurrentWaypoint( __RPL:getNearestWaypoint(player.X, player.Z ) );
+		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __RPL:getNextWaypoint();
 		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 		
@@ -600,11 +600,11 @@ function main()
 
 			if( player.Returning ) then
 				wp = __RPL:getNextWaypoint();
-				wpnum = __RPL.CurrentWaypoint;
+				wpnum = wp.wpnum;--__RPL.CurrentWaypoint;
 				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z);	-- Moving to returnpath waypoint
 			else
 				wp = __WPL:getNextWaypoint();
-				wpnum = __WPL.CurrentWaypoint;
+				wpnum = wp.wpnum;--__WPL.CurrentWaypoint;
 				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);	-- Moving to waypoint
 			end;
 
@@ -630,18 +630,32 @@ function main()
 				if( player.Returning ) then
 					-- Completed. Return to normal waypoints.
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
-						__WPL:setCurrentWaypoint(__WPL:getNearestWaypoint(player.X, player.Z));
+						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
 						if( __WPL.Mode == "wander" ) then
 							__WPL.OrigX = player.X;
 							__WPL.OrigZ = player.Z;
 						end
 						player.Returning = false;
 						cprintf(cli.yellow, language[7]);
+
 					else
 						__RPL:advance();
 					end
+
+					-- Execute it's action, if it has one.
+					if( wp.Action and type(wp.Action) == "string" ) then
+						local actionchunk = loadstring(wp.Action);
+						assert( actionchunk,  sprintf(language[150], __RPL.CurrentWaypoint) );
+						actionchunk();
+					end
 				else
 					__WPL:advance();
+					-- Execute it's action, if it has one.
+					if( wp.Action and type(wp.Action) == "string" ) then
+						local actionchunk = loadstring(wp.Action);
+						assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );
+						actionchunk();
+					end
 				end
 			else
 				if( not reason == WF_TARGET ) then
@@ -790,11 +804,11 @@ function resurrect()
 	player.Returning = nil;
 	if( __RPL and __WPL.Mode ~= "wander" ) then
 		-- compare closest waypoint with closest returnpath point
-		__WPL:setCurrentWaypoint( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
 		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 
-		__RPL:setCurrentWaypoint __RPL:getNearestWaypoint(player.X, player.Z ) );
+		__RPL:setWaypointIndex(__RPL:getNearestWaypoint(player.X, player.Z) );
 		local hf_wp = __RPL:getNextWaypoint();
 		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
 
@@ -815,7 +829,7 @@ function resurrect()
 	-- not using returnpath, so we use the normal waypoint path
 	if( player.Returning == nil) then
 		player.Returning = false;
-		__WPL:setCurrentWaypoint( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		cprintf(cli.green, language[112], 	-- using normal waypoint file
 		__WPL:getFileName() );
 	end
