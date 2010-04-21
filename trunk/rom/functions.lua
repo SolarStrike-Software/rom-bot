@@ -514,8 +514,8 @@ function RoMScript(script)
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
 	local text = "/script r='' a={" .. script ..
-	"} for i=1,#a do if a[i] then r=r..tostring(a[i])" ..
-	" end r=r..'" .. string.char(9) .. "' end" ..
+	"} for i=1,#a do r=r..tostring(a[i])" ..
+	" r=r..'" .. string.char(9) .. "' end" ..
 	" EditMacro(2,'',7,r);";
 
 	-- Check to make sure length is within bounds
