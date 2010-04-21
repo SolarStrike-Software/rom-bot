@@ -2306,10 +2306,12 @@ end
 
 function CPlayer:mount()
 	if( not inventory ) then
+		printf("Inventory is not mapped. Cannot mount unil it is mapped.\n");
 		return;
 	end
 
 	if( self.Mounted ) then
+		printf("Already mounted.\n");
 		return;
 	end
 

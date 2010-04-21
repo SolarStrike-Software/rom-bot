@@ -161,7 +161,7 @@ function CPawn:update()
 	self.Id = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnId_offset), memerrmsg);
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnType_offset), memerrmsg);
 
-	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 1;
+	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 3;
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
