@@ -59,7 +59,7 @@ function findOffsets()
 		return found;
 	end
 
-	addresses.staticpattern_char = update("staticpattern_char", getCharUpdatePattern(),
+	addresses.staticpattern_char = update("staticbase_char", getCharUpdatePattern(),
 		getCharUpdateMask(), getCharUpdateOffset(), 0x5A0000, 0xA0000);
 
 	addresses.staticpattern_macro = update("staticbase_macro", getMacroUpdatePattern(),
