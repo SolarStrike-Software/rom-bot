@@ -29,3 +29,7 @@ end
 function CWaypointListWander:setRadius(rad)
 	self.Radius = rad;
 end
+
+function CWaypointListWander:findWaypointTag(tag)
+	return 0;
+end

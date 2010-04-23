@@ -50,6 +50,9 @@ function CWaypointList:load(filename)
 		local type = v:getAttribute("type");
 		local action = v:getValue();
 		local name = v:getName() or "";
+		local tag = v:getAttribute("tag") or "";
+
+		printf("WP tag: \'%s\'\n", tag);
 
 		if( string.lower(name) == "waypoint" ) then
 			local tmp = CWaypoint(x, z);
@@ -69,6 +72,8 @@ function CWaypointList:load(filename)
 				-- No type set, assume Type from header tag
 				tmp.Type = self.Type;
 			end
+
+			if( tag ) then tmp.Tag = string.lower(tag); end;
 
 			table.insert(self.Waypoints, tmp);
 		elseif( string.lower(name) == "onload" ) then
@@ -247,4 +252,15 @@ function CWaypointList:getNearestWaypoint(_x, _z)
 	end
 
 	return closest;
+end
+
+function CWaypointList:findWaypointTag(tag)
+	tag = string.lower(tag);
+	for i,v in pairs(self.Waypoints) do
+		if( v.Tag == tag ) then
+			return i;
+		end
+	end
+
+	return 0;
 end
