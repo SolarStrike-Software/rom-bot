@@ -52,8 +52,6 @@ function CWaypointList:load(filename)
 		local name = v:getName() or "";
 		local tag = v:getAttribute("tag") or "";
 
-		printf("WP tag: \'%s\'\n", tag);
-
 		if( string.lower(name) == "waypoint" ) then
 			local tmp = CWaypoint(x, z);
 			if( action ) then tmp.Action = action; end;

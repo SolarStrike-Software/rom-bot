@@ -99,6 +99,7 @@ function main()
 	if( settings.options.DEBUGGING ) then
 		-- Player debugging info
 		printf("[DEBUG] playerAddr: 0x%X\n", player.Address);
+		printf("[DEBUG] player classes: %d/%d\n", player.Class1, player.Class2);
 		printf("[DEBUG] player pet: 0x%X\n", player.PetPtr);
 		printf("[DEBUG] Player target: 0x%X\n", player.TargetPtr);
 
@@ -600,11 +601,11 @@ function main()
 
 			if( player.Returning ) then
 				wp = __RPL:getNextWaypoint();
-				wpnum = wp.wpnum;--__RPL.CurrentWaypoint;
+				wpnum = __RPL.CurrentWaypoint;
 				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z);	-- Moving to returnpath waypoint
 			else
 				wp = __WPL:getNextWaypoint();
-				wpnum = wp.wpnum;--__WPL.CurrentWaypoint;
+				wpnum = __WPL.CurrentWaypoint;
 				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);	-- Moving to waypoint
 			end;
 
