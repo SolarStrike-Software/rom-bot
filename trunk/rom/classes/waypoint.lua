@@ -11,11 +11,13 @@ CWaypoint = class(
 			self.Z = copyfrom.Z;
 			self.Action = copyfrom.Action;
 			self.Type = copyfrom.Type;
+			self.Tag = copyfrom.Tag;
 		else
 			self.X = _X;
 			self.Z = _Z;
 			self.Action = nil; -- String containing Lua code to execute when reacing the point.
 			self.Type = WTP_NORMAL;
+			self.Tag = "";
 		end
 
 		if( not self.X ) then self.X = 0.0; end;
