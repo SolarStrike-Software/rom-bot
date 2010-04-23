@@ -37,8 +37,8 @@ addresses = {
 	pawnX_offset = 0x28,
 	pawnY_offset = 0x2C,
 	pawnZ_offset = 0x30,
-	staticbase_char = 0x985C3C,
-	staticbase_macro = 0x9D7A04,
-	staticpattern_char = 0x5D97BD,
-	staticpattern_macro = 0x73ADF5,
+	staticbase_char = 0x994F3C,
+	staticbase_macro = 0x9E8704,
+	staticpattern_char = 0x5DAD6D,
+	staticpattern_macro = 0x740055,
 }
