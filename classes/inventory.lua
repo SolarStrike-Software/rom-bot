@@ -404,6 +404,10 @@ function CInventory:autoSell()
 		local duramax;		-- durability max value (if found)
 		local durakey = ITEM_TOOLTIP_DURABILITY[bot.ClientLanguage];	-- keyword to search for
 
+		if( durakey == nil ) then
+			error(language[1005], 0);
+		end
+
 		-- read durability from tooltip
 		for i,text in pairs(_tooltip_right) do
 			for _keyword, _dura, _duramax in string.gfind(text, "("..durakey..")%s*(%d+)/(%d+)") do

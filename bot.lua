@@ -105,9 +105,11 @@ function main()
 
 		if( player.TargetPtr ~= 0 ) then
 			local target = CPawn(player.TargetPtr);
-			printf("[DEBUG] Player target type: 0x%X\n", target.Type);
-			printf("[DEBUG] Player target attackable: %s\n", target.Attackable);
+			printf("[DEBUG] player target type: 0x%X\n", target.Type);
+			printf("[DEBUG] player target attackable: %s\n", target.Attackable);
 		end
+
+		printf("[DEBUG] player in battle: %s\n", tostring(player.Battling));
 	end
 
 	mousePawn = CPawn( memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) );
