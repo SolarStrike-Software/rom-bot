@@ -365,7 +365,7 @@ end
 local _checkskills_last_targetbuffs = {};
 local _checkskills_last_targetdebuffs = {};
 local _checkskills_last_updatetime = 0;
-function CPlayer:checkSkills(_only_friendly)
+function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
 
 	self:update();
@@ -374,7 +374,7 @@ function CPlayer:checkSkills(_only_friendly)
 		self:updateBuffs();
 	end;
 
-	local target = self:getTarget();
+	local target = target or self:getTarget();
 	if( target ~= nil and _only_friendly ~= true ) then
 		if( _checkskills_last_updatetime == 0 or deltaTime(getTime(), _checkskills_last_updatetime) > 500 ) then
 			target:updateBuffs("target");

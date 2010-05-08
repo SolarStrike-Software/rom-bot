@@ -652,7 +652,7 @@ function settings.loadProfile(_name)
 			level = v:getAttribute("level");
 
 			-- using the MACRO key as hotkey is also a valid key
-			if( string.upper( v:getAttribute("hotkey") ) == "MACRO" ) then
+			if( string.upper( tostring(v:getAttribute("hotkey")) ) == "MACRO" ) then
 				hotkey = "MACRO";						-- set MACRO as hotkey
 			else
 				hotkey = key[v:getAttribute("hotkey")];	-- read the virtual key numer

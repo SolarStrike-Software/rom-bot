@@ -6,7 +6,8 @@ ITEM_TOOLTIP_DURABILITY = {
 	FR		= "Structure",
 	ENEU	= "Durability", 
 	ENUS	= "Durability",
-	PH = "Durability",
+	PH		= "Durability",
+	RU		= "\143\224\174\231\173\174\225\226\236",
 };
 
 -- itemquality -> color code
