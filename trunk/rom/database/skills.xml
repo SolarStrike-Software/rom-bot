@@ -44,7 +44,6 @@
 	<skill name="MAGE_DEMORALIZE" energy="30" range="150" cooldown="60" />
 	<skill name="MAGE_FANG_RITUAL" mana="30" type="buff" target="self" cooldown="600" />
 	<skill name="MAGE_DISTRACT" mana="70" cooldown="120" maxhpper="30" />
-	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" range="200" cooldown="1800" type="buff" target="self" />
 	<!-- TODO: Purify: Requires curse -->
 	<skill name="MAGE_PURIFY" mana="150" range="200" cooldown="10" type="buff" target="self" />
 	<skill name="MAGE_HOLY_LIGHT_STRIKE" mana="15" range="150" casttime="2" />
