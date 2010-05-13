@@ -15,6 +15,7 @@ if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
 
+setPriority(priority.high);
 
 settings.load();
 setStartKey(settings.hotkeys.START_BOT.key);

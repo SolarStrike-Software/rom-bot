@@ -142,9 +142,21 @@ bot =	{ 		-- global bot values
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
 		IgfAddon = false,	-- check if igf addon is active
-		};		
+		};
 
-settings = settings_default;
+
+if( table.copy == nil ) then
+	table.copy = function (_other)
+		local t = {};
+		for i,v in pairs(_other) do
+			t[i] = v;
+		end
+
+		return t;
+	end
+end
+
+settings = table.copy(settings_default);
 
 check_keys = { name = { } };
 function checkKeySettings( _name, _key, _modifier)
@@ -228,7 +240,6 @@ function checkKeySettings( _name, _key, _modifier)
 	check_keys[_name].name = _name;
 	check_keys[_name].key = _key;
 	check_keys[_name].modifier = _modifier;
-
 end
 
 
@@ -526,7 +537,7 @@ end
 
 function settings.loadProfile(_name)
 	-- Delete old profile settings (if they even exist), restore defaults
-	settings.profile = settings_default.profile;
+	settings.profile = table.copy(settings_default.profile);
 
 	local filename = getExecutionPath() .. "/profiles/" .. _name .. ".xml";
 	local root = xml.open(filename);
