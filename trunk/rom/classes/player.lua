@@ -13,6 +13,15 @@ JUMP_TRUE = true		-- jump to break cast
 
 CPlayer = class(CPawn);
 
+function CPlayer.new()
+	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local np = CPlayer(playerAddress);
+	np:initialize();
+	np:update();
+
+	return np;
+end
+
 function CPlayer:harvest( _id, _second_try )
 	if( foregroundWindow() ~= getWin() ) then
 		cprintf(cli.yellow, language[94]);
