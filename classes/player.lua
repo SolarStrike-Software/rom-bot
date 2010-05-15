@@ -2242,13 +2242,6 @@ function CPlayer:target_NPC(_npcname)
 		return
 	end
 
-	if(settings.hotkeys.TARGET_FRIEND.modifier) then
-		cprintf(cli.yellow, language[134], 	-- we don't support modifiers
-		   getKeyName(settings.hotkeys.TARGET_FRIEND.modifier), 
-		   getKeyName(settings.hotkeys.TARGET_FRIEND.key) );
-		return
-	end
-
 	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC 
 
 	local found_npc = false;
@@ -2268,8 +2261,14 @@ function CPlayer:target_NPC(_npcname)
 			break;
 		end
 
+		local target = self:getTarget();
+		local _precheck = (string.find(string.lower(target.Name), string.lower(_npcname), 1, true));
+
 		for i = 1, 6 do
-			keyboardPress(settings.hotkeys.TARGET_FRIEND.key);
+			if( not _precheck ) then
+				keyboardPress(settings.hotkeys.TARGET_FRIEND.key, settings.hotkeys.TARGET_FRIEND.modifier);
+			end
+
 			yrest(100);
 			player:update();
 
