@@ -2246,20 +2246,22 @@ function CPlayer:target_NPC(_npcname)
 
 	local found_npc = false;
 	local counter = 0;
+	local scanDirection = self.Direction;
 	
 	while(true) do
 		counter = counter + 1;
 		
 		-- turn character if first try wasn't successfull
 		if( counter == 2 ) then
-			self:turnDirection(-45);
+			scanDirection=scanDirection - math.pi/4
 		elseif( counter == 3 ) then
-			self:turnDirection(90);
+			scanDirection=scanDirection + math.pi/2
 		elseif( counter > 3 and  counter < 9) then
-			self:turnDirection(45);
+			scanDirection=scanDirection + math.pi/4
 		elseif( counter > 8 ) then
 			break;
 		end
+		camera:setRotation(scanDirection)
 
 		local target = self:getTarget();
 		local _precheck = (string.find(string.lower(target.Name), string.lower(_npcname), 1, true));
