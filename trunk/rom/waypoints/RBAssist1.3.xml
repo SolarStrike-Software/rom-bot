@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints>
+	<onLoad>
+	-- Rock5's Rombot Assist----------------------
+	local Version = "1.3"
+
+	-- User Options ------------------------------------
+	local attackMode = "trigger"
+	--      trigger  = Have to trigger each attack with the "go" macro.
+	--      auto     = Auto attacks targeted mobs. "go" macro toggles it on and off.
+	--      disabled = Only heal and buff. Never attacks. "go" macro does nothing.
+	-- Note: 'trigger' and 'auto' will always fight back if attacked.
+	----------------------------------------------------
+
+	-- Start messages
+	cprintf(cli.lightblue, "Rock5's Rombot Assist\n");
+	cprintf(cli.white, "Version: %s\n\n", Version);
+	cprintf(cli.white, "Attack mode is set to: %s\n", attackMode);
+	if attackMode == "trigger" then
+		cprintf(cli.yellow, "Use the \"go\" macro to attack targeted mobs.\n");
+	elseif attackMode == "auto" then
+		cprintf(cli.yellow, "Use the \"go\" macro to toggle auto attack on/off.\n");
+	elseif attackMode == "disabled" then
+		cprintf(cli.yellow, "Will only buff and heal. Will never fight. \"go\" macro does nothing.\n");
+	else
+		error("Incorrect value for option 'attackMode'. Please check script.\n",0)
+	end
+
+	local attack = false 	-- start with attack off
+
+	inventory:update() -- Find potions before we start
+
+	-- Main loop
+	while (true) do
+		if attackMode == "disabled" then
+			attack = false
+		else
+			local trigger = RoMScript("RBTrigger")
+			if trigger == "go" then
+				if attackMode == "trigger" then
+					attack = true
+				elseif attackMode == "auto" then
+					attack = (not attack)              -- Toggle attack
+					if attack then
+						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Attack mode on|r')")
+					else
+						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Attack mode off|r')")
+					end
+				end
+				RoMScript("}RBTrigger=nil;a={")         -- Resets trigger
+			elseif attackMode == "trigger" then
+				attack = false
+			end
+
+			if (player.Battling == true) or (attack == true) then
+				player:fight()
+			end
+		end
+
+		inventory:updateSlotsByTime(200)
+		player:checkPotions()
+		local target = player:getTarget();
+		player:checkSkills(true, target);
+
+		player:update()
+	end
+	</onLoad>
+</waypoints>

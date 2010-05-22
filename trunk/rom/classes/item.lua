@@ -8,6 +8,7 @@ ITEM_TOOLTIP_DURABILITY = {
 	ENUS	= "Durability",
 	PH		= "Durability",
 	RU		= "\143\224\174\231\173\174\225\226\236",
+	PL		= "Trwa\136o\152\143",
 };
 
 -- itemquality -> color code
