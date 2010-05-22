@@ -943,6 +943,8 @@ function settings.loadProfile(_name)
 			hf_language = "french";
 		elseif(bot.ClientLanguage  == "RU" ) then
 			hf_language = "russian";
+		elseif(bot.ClientLanguage == "PL" ) then
+			hf_language = "polish";
 		else
 			hf_language = "english";		
 		end
