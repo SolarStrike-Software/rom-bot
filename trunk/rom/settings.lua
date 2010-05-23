@@ -952,7 +952,7 @@ function settings.loadProfile(_name)
 		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
 
 			local function setLanguage(_name)
-				include(getExecutionPath() .. "/language/" .. _name .. ".lua");
+				include("/language/" .. _name .. ".lua");
 			end
 
 			local lang_base = {};
