@@ -131,6 +131,7 @@ settings_default = {
 			onDeath = nil,
 			onLoad = nil,
 			onLeaveCombat = nil,
+			onPreSkillCast = nil,
 			onSkillCast = nil,
 			onLevelup = nil,
 		}
@@ -629,6 +630,20 @@ function settings.loadProfile(_name)
 		end
 	end
 
+	local loadOnPreSkillCastEvent = function(node)
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onPreSkillCast= loadstring(luaCode);
+			assert(settings.profile.events.onPreSkillCast, sprintf(language[151], "onPreSkillCast"));
+
+			if( type(settings.profile.events.onPreSkillCast) ~= "function" ) then
+				settings.profile.events.onPreSkillCast = nil;
+			end;
+		end
+	end
+	
 	local loadOnSkillCastEvent = function(node)
 		local luaCode = node:getValue();
 		if( luaCode == nil ) then return; end;
@@ -642,7 +657,6 @@ function settings.loadProfile(_name)
 			end;
 		end
 	end
-
 
 	local skillSort = function(tab1, tab2)
 		if( tab2.priority < tab1.priority ) then
@@ -847,6 +861,8 @@ function settings.loadProfile(_name)
 			loadOnLevelupEvent(v);
 		elseif( string.lower(name) == "onskillcast" ) then
 			loadOnSkillCastEvent(v);
+		elseif( string.lower(name) == "onpreskillcast" ) then
+			loadOnPreSkillCastEvent(v);
 		elseif( string.lower(name) == "skills_warrior"  and
 		        player.Class1 == CLASS_WARRIOR ) then
 			loadSkills(v);

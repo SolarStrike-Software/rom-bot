@@ -67,6 +67,80 @@ function CInventory:reloadAmmunition(type)
 	end
 end
 
+function CInventory:isEquipped(__space)
+-- return true if equipped is equipped at slot and has durability > 0
+	local slot = 11;-- Automatically set slot to 16/MainHand
+	_space = string.lower(__space); 
+	
+	if ( type(_space) ~= "string" ) then
+		return false;
+	end
+	
+	if (_space == "head") then
+		slot = 1;
+	elseif (_space == "gloves") then
+		slot = 2;
+	elseif (_space == "boots") then
+		slot = 3;
+	elseif (_space == "shirt") then
+		slot = 4;
+	elseif (_space == "pants") then
+		slot = 5;
+	elseif (_space == "cloak") then
+		slot = 6;
+	elseif (_space == "belt") then
+		slot = 7;
+	elseif (_space == "shoulder") then
+		slot = 8;
+	elseif (_space == "necklace") then
+		slot = 9;
+	elseif (_space == "ammo") then
+		slot = 10;
+	elseif (_space == "bow") then
+		slot = 11;
+	elseif (_space == "rightring") then
+		slot = 12;
+	elseif (_space == "leftring") then
+		slot = 13;
+	elseif (_space == "rightearring") then
+		slot = 14;
+	elseif (_space == "leftearring") then
+		slot = 15;
+	elseif (_space == "mainhand") then
+		slot = 16;
+	elseif (_space == "offhand") then
+		slot = 17;
+	elseif (_space == "trinket") then
+		slot = 18; -- assumed, not confirmed
+	elseif (_space == "talisman1") then
+		slot = 19; -- slot next to necklace
+	elseif (_space == "talisman2") then
+		slot = 20; -- first slot under necklace next to shoulder
+	elseif (_space == "talisman3") then
+		slot = 21; -- first slot under talisman2 next to gloves
+	end
+	
+    local durability, durabilityMax, itemName = RoMScript("GetInventoryItemDurable('player',"..slot..");");
+
+	-- prevent aritmetic on a nil value if RoMScript failed/wrong values come back
+	if( type(durability) ~= "number" or  
+		type(durabilityMax) ~= "number" or 
+		durabilityMax == 0 or 
+		type(itemName) ~= "string" ) then
+		return false;
+	end
+
+	local realDurability = tonumber(durability)/tonumber(durabilityMax)*100;
+	
+	if( type(realDurability) ~= "number" or
+		realDurability < 0 ) then
+		return false;
+	end
+	
+	return true;
+	
+end
+
 function CInventory:getDurability(_slot)
 -- return item durability for a given slot in percent from 0 - 100
 
@@ -84,6 +158,8 @@ function CInventory:getDurability(_slot)
 	return tonumber(durability)/tonumber(durabilityMax)*100;
 	
 end
+
+
 
 function CInventory:getMainHandDurability()
 -- return values between 0 - 1 for combatibility reasons

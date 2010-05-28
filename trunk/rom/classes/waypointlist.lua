@@ -179,10 +179,11 @@ function CWaypointList:getNextWaypoint(_num)
 			self.CurrentWaypoint = hf_wpnum - #self.Waypoints;
 		end
 	else
-		hf_wpnum = self.CurrentWaypoint - 1;
+		self.CurrentWaypoint = self.CurrentWaypoint - _num;
 		if( self.CurrentWaypoint < 1 ) then
-			self.CurrentWaypoint = hf_wpnum + #self.Waypoints;
+			self.CurrentWaypoint = math.abs(#self.Waypoints - math.abs(self.CurrentWaypoint));
 		end
+		hf_wpnum = self.CurrentWaypoint;
 	end
 
 	
@@ -221,6 +222,10 @@ end
 function CWaypointList:reverse()
 	if( self.Direction == WPT_FORWARD ) then
 		self.Direction = WPT_BACKWARD;
+		self.CurrentWaypoint = self.CurrentWaypoint - 1;
+		if( self.CurrentWaypoint <= 0 ) then
+			self.CurrentWaypoint = #self.Waypoints - 1;
+		end
 	else
 		self.Direction = WPT_FORWARD;
 	end;
