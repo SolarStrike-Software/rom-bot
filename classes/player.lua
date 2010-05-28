@@ -245,6 +245,7 @@ end
 function CPlayer:resetSkillLastCastTime()
 	for i,v in pairs(settings.profile.skills) do
 		if( v.Name ~= "PRIEST_SOUL_BOND" ) then		-- real cooldown of 1800 sec
+
 			v.LastCastTime = { low = 0, high = 0 };
 		end;
 	end
@@ -275,97 +276,116 @@ function CPlayer:cast(skill)
 		hf_temp = getKeyName(skill.hotkey);
 	end
 	
-	printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
-	skill:use();
-	yrest(100);
-	self:update();
-
-	-- Wait for casting to start (if it has a decent cast time)
-	if( skill.CastTime > 0 ) then
---		local startTime = os.time();
-		local startTime = getTime();
-		while( not self.Casting ) do
-			-- break cast with jump if aggro before casting finished
-			if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
-			   ( skill.Type == STYPE_DAMAGE or
-				 skill.Type == STYPE_DOT ) ) then	-- with jump
-				printf(language[82]);	-- close print 'Casting ..." / aborted
-				return;
-			end;
-			yrest(50);
-			self:update();
---			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
-			if( deltaTime(getTime(), startTime) > skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
-				self.Casting = true; -- force it.
-				break;
-			end
-		end;
-
-		while(self.Casting) do
-			-- break cast with jump if aggro before casting finished
-			if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
-			   ( skill.Type == STYPE_DAMAGE or
-				 skill.Type == STYPE_DOT ) ) then	--  with jump
-				printf(language[82]);	-- close print 'Casting ..."
-				return;
-			end;
-			-- Waiting for casting to finish...
-			yrest(10);
-			self:update();
-
-			-- leave before Casting flag is gone, so we can cast faster
-			if( deltaTime(getTime(), startTime) > 
-			  skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
---				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
-				break;
-			end
-
-
-		end
---				printf(language[20]);		-- finished casting
-	else
-		yrest(500); -- assume 0.5 second yrest
-	end
-
-	-- count cast to enemy targets
-	if( skill.Target == STARGET_ENEMY ) then	-- target is unfriendly
-		self.Cast_to_target = self.Cast_to_target + 1;
-	end;
-
--- ??? why wait?
--- we have above a 500 wait if no CastTime or the self.Casting flag
---	if( skill.CastTime == 0 ) then
---		yrest(500);
---	else
---		yrest(100);
---	end;
-
-	-- print HP of our target
-	-- we do it later, because the client needs some time to change the values
-	local target = player:getTarget();
-	printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
-
-	-- the check was only done after every complete skill round
-	-- hence the message is not really needed anymore
-	-- we move the check INTO the skill round to be more accurate
-	-- by the max_fight_time option could be reduced
-	if( target.HP ~= lastTargetHP ) then
-		self.lastHitTime = os.time();
-		lastTargetHP = target.HP;
---				printf(language[23]);		-- target HP changed
-	end
-
-	if( type(settings.profile.events.onSkillCast) == "function" ) then
+	local continue = true;
+	if( type(settings.profile.events.onPreSkillCast) == "function" ) then
 		arg1 = skill;
-		if ( onSkillCast_active ~= true ) then	-- avoid calling event if already within an event
-			onSkillCast_active = true;
-			local status,err = pcall(settings.profile.events.onSkillCast);
+		if ( onPreSkillCast_active ~= true ) then	-- avoid calling event if already within an event
+			onPreSkillCast_active = true;
+			local status,result = pcall(settings.profile.events.onPreSkillCast);
 			if( status == false ) then
-				local msg = sprintf("onSkillCast error: %s", err);
+				local msg = sprintf("onPreSkillCast error: %s", result);
 				error(msg);
 			end
-			onSkillCast_active = false;
+			if( result == false ) then continue = false; end;
+			onPreSkillCast_active = false;
 		end
+	end
+
+	if(continue == true) then
+		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
+		skill:use();
+		yrest(100);
+		self:update();
+
+		-- Wait for casting to start (if it has a decent cast time)
+		if( skill.CastTime > 0 ) then
+	--		local startTime = os.time();
+			local startTime = getTime();
+			while( not self.Casting ) do
+				-- break cast with jump if aggro before casting finished
+				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
+				   ( skill.Type == STYPE_DAMAGE or
+					 skill.Type == STYPE_DOT ) ) then	-- with jump
+					printf(language[82]);	-- close print 'Casting ..." / aborted
+					return;
+				end;
+				yrest(50);
+				self:update();
+	--			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
+				if( deltaTime(getTime(), startTime) > skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
+					self.Casting = true; -- force it.
+					break;
+				end
+			end;
+
+			while(self.Casting) do
+				-- break cast with jump if aggro before casting finished
+				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
+				   ( skill.Type == STYPE_DAMAGE or
+					 skill.Type == STYPE_DOT ) ) then	--  with jump
+					printf(language[82]);	-- close print 'Casting ..."
+					return;
+				end;
+				-- Waiting for casting to finish...
+				yrest(10);
+				self:update();
+
+				-- leave before Casting flag is gone, so we can cast faster
+				if( deltaTime(getTime(), startTime) > 
+				  skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
+	--				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
+					break;
+				end
+
+
+			end
+	--				printf(language[20]);		-- finished casting
+		else
+			yrest(500); -- assume 0.5 second yrest
+		end
+
+		-- count cast to enemy targets
+		if( skill.Target == STARGET_ENEMY ) then	-- target is unfriendly
+			self.Cast_to_target = self.Cast_to_target + 1;
+		end;
+
+	-- ??? why wait?
+	-- we have above a 500 wait if no CastTime or the self.Casting flag
+	--	if( skill.CastTime == 0 ) then
+	--		yrest(500);
+	--	else
+	--		yrest(100);
+	--	end;
+
+		-- print HP of our target
+		-- we do it later, because the client needs some time to change the values
+		local target = player:getTarget();
+		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
+
+		-- the check was only done after every complete skill round
+		-- hence the message is not really needed anymore
+		-- we move the check INTO the skill round to be more accurate
+		-- by the max_fight_time option could be reduced
+		if( target.HP ~= lastTargetHP ) then
+			self.lastHitTime = os.time();
+			lastTargetHP = target.HP;
+	--				printf(language[23]);		-- target HP changed
+		end
+
+		if( type(settings.profile.events.onSkillCast) == "function" ) then
+			arg1 = skill;
+			if ( onSkillCast_active ~= true ) then	-- avoid calling event if already within an event
+				onSkillCast_active = true;
+				local status,err = pcall(settings.profile.events.onSkillCast);
+				if( status == false ) then
+					local msg = sprintf("onSkillCast error: %s", err);
+					error(msg);
+				end
+				onSkillCast_active = false;
+			end			
+		end
+	else
+		continue = true;
 	end
 end
 
@@ -579,7 +599,7 @@ function CPlayer:fight()
 				return;
 			end
 		end;
-
+		
 		if( settings.profile.hotkeys.MACRO ) then
 			RoMScript("UseSkill(1,1);");
 		else
