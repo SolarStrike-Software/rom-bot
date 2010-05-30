@@ -1874,8 +1874,6 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 -- _resttype ( time / full )  time = rest the given time  full = stop resting after being full   default = time
 -- _restaddrnd  ( max random addition after being full in sec)
 --
--- if using type 'full', the bot will only rest if HP or MP is below a defined level 
--- you define that level in your profile with the options MP_REST and HP_REST
 --
 -- e.g.
 -- player:rest(20)                 will rest for 20 seconds.
@@ -1909,11 +1907,6 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	-- some classes dont have mana, in that cases Player.mana = 0
 	local hf_mana_rest = (player.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
 	local hf_hp_rest   = (player.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
-
-	if( player.Mana >= hf_mana_rest  and player.HP >= hf_hp_rest and
-	    _resttype == 'full' ) then	-- nothing to do
-		return;								-- go back
-	end;
 	
 	local restStart = os.time();		-- set start timer
 
