@@ -460,9 +460,14 @@ function main()
 		if( player:haveTarget()  and
 		    player.Current_waypoint_type ~= WPT_RUN ) then	-- no resting if running waypoin type
 
-			if( player.Mana/player.MaxMana*100 >= settings.profile.options.MP_REST
-				and player.HP/player.MaxHP*100 >= settings.profile.options.HP_REST ) then
-					player:rest( 50, 99, "full", 10 );		-- rest befor next fight
+			local manaRest, healthRest = false, false;
+			if( player.MaxMana > 0 ) then
+				manaRest = (player.Mana / player.MaxMana * 100) <= settings.profile.options.MP_REST;
+			end
+			healthRest = (player.HP / player.MaxHP * 100) <= settings.profile.options.HP_REST;
+
+			if( manaRest or healthRest ) then
+					player:rest( 50, 99, "full", 10 );		-- rest before next fight
 			end
 		end;
 
