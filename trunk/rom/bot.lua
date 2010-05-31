@@ -459,7 +459,11 @@ function main()
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
 		if( player:haveTarget()  and
 		    player.Current_waypoint_type ~= WPT_RUN ) then	-- no resting if running waypoin type
-			player:rest( 50, 99, "full", 10 );		-- rest befor next fight
+
+			if( player.Mana/player.MaxMana*100 >= settings.profile.options.MP_REST
+				and player.HP/player.MaxHP*100 >= settings.profile.options.HP_REST ) then
+					player:rest( 50, 99, "full", 10 );		-- rest befor next fight
+			end
 		end;
 
 
