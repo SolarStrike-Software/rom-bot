@@ -219,7 +219,7 @@ function CPlayer:harvest( _id, _second_try )
 	    os.difftime(os.time(), startHarvestTime) < 5 ) then
 		cprintf(cli.green, language[81]);		-- Unexpected interruption at harvesting begin
 			yrest(5000);
-		player:harvest( _id, true );
+		self:harvest( _id, true );
 	end
 
 end
@@ -359,7 +359,7 @@ function CPlayer:cast(skill)
 
 		-- print HP of our target
 		-- we do it later, because the client needs some time to change the values
-		local target = player:getTarget();
+		local target = self:getTarget();
 		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
 
 		-- the check was only done after every complete skill round
@@ -761,10 +761,10 @@ function CPlayer:fight()
 
 				posX = self.X + math.cos(angle) * (movedist);
 				posZ = self.Z + math.sin(angle) * (movedist);
-				success, reason = player:moveTo(CWaypoint(posX, posZ), true);
+				success, reason = self:moveTo(CWaypoint(posX, posZ), true);
 			else 	-- normal melee
 --			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
-				success, reason = player:moveTo(target, true);
+				success, reason = self:moveTo(target, true);
 				-- Start melee attacking
 				if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 					timedAttack();
@@ -772,7 +772,7 @@ function CPlayer:fight()
 			end
 
 			if( not success ) then
-				player:unstick();
+				self:unstick();
 			end
 
 			yrest(500);
