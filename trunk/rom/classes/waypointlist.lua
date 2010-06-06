@@ -210,25 +210,34 @@ end
 
 -- Sets the "direction" (forward/backward) to travel
 function CWaypointList:setDirection(wpt)
-	-- Ignore invalid types
-	if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
-		return;
-	end;
+   -- Ignore invalid types
+   if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
+      return;
+   end;
 
-	self.Direction = wpt;
+   if( wpt ~= self.Direction ) then
+      self.Direction = wpt
+      if( wpt == WPT_BACKWARD ) then
+         self.CurrentWaypoint = self.CurrentWaypoint - 1;
+         if( self.CurrentWaypoint <= 0 ) then
+            self.CurrentWaypoint = #self.Waypoints - 1;
+         end
+      else
+         self.CurrentWaypoint = self.CurrentWaypoint + 1;
+         if( self.CurrentWaypoint >= #self.Waypoints ) then
+            self.CurrentWaypoint = 2;
+         end
+      end;
+   end
 end
 
 -- Reverse your current direction
 function CWaypointList:reverse()
-	if( self.Direction == WPT_FORWARD ) then
-		self.Direction = WPT_BACKWARD;
-		self.CurrentWaypoint = self.CurrentWaypoint - 1;
-		if( self.CurrentWaypoint <= 0 ) then
-			self.CurrentWaypoint = #self.Waypoints - 1;
-		end
-	else
-		self.Direction = WPT_FORWARD;
-	end;
+   if( self.Direction == WPT_FORWARD ) then
+      self:setDirection(WPT_BACKWARD);
+   else
+      self:setDirection(WPT_FORWARD);
+   end;
 end
 
 -- Sets the next waypoint to move to to whatever
