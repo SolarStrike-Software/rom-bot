@@ -210,7 +210,7 @@
 	<!-- Knight skills -->
 	<skill name="KNIGHT_HOLY_STRIKE" skilltab="2" skillnum="2" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
 	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" target="self" />
-	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="120" type="buff" target="self" />
+	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="300" type="buff" target="self" />
 	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
 	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />
 	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" target="self" />
