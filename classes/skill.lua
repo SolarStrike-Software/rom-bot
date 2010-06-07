@@ -175,13 +175,13 @@ function CSkill:canUse(_only_friendly, target)
 
 	-- You don't meet the maximum HP percent requirement
 	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
-	if( player.HP / player.MaxHP * 100 > self.MaxHpPer ) then
+	if( (self.MaxHpPer < 0 and -1 or 1) * (player.HP / player.MaxHP * 100) > self.MaxHpPer ) then
 		debug_skilluse("MAXHPPER", player.HP/player.MaxHP*100, self.MaxHpPer);
 		return false;
 	end
 
 	-- You are not below the maximum Mana Percent
-	if( (player.Mana/player.MaxMana*100) > self.MaxManaPer ) then
+	if( (self.MaxManaPer < 0 and -1 or 1) * (player.Mana/player.MaxMana*100) > self.MaxManaPer ) then
 		debug_skilluse("MAXMANAPER", (player.Mana/player.MaxMana*100), self.MaxManaPer);
 		return false;
 	end
@@ -255,7 +255,7 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- only if target HP % is below given level
-	if( target  and  target.HP/target.MaxHP*100 > self.TargetMaxHpPer ) then
+	if( target  and  ((self.TargetMaxHpPer < 0 and -1 or 1) * (target.HP/target.MaxHP*100)) > self.TargetMaxHpPer ) then
 		debug_skilluse("TARGETHPPER", target.HP/target.MaxHP*100 );
 		return false;
 	end

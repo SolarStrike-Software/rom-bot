@@ -690,10 +690,10 @@ function settings.loadProfile(_name)
 			-- Over-ride attributes
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
 			priority = v:getAttribute("priority");
-			maxhpper = tonumber(v:getAttribute("hpper"));
-			targetmaxhpper = tonumber(v:getAttribute("targethpper"));
+			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")));
+			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")));
 			targetmaxhp = tonumber((string.gsub(v:getAttribute("targethp") or "","!","-")));
-			maxmanaper = tonumber(v:getAttribute("manaper"));
+			maxmanaper = tonumber((string.gsub(v:getAttribute("manaper") or "","!","-")));
 			cooldown = tonumber(v:getAttribute("cooldown"));
 			inbattle = v:getAttribute("inbattle");
 			pullonly = v:getAttribute("pullonly");
