@@ -692,7 +692,7 @@ function settings.loadProfile(_name)
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber(v:getAttribute("hpper"));
 			targetmaxhpper = tonumber(v:getAttribute("targethpper"));
-			targetmaxhp = tonumber(v:getAttribute("targethp"));
+			targetmaxhp = tonumber((string.gsub(v:getAttribute("targethp") or "","!","-")));
 			maxmanaper = tonumber(v:getAttribute("manaper"));
 			cooldown = tonumber(v:getAttribute("cooldown"));
 			inbattle = v:getAttribute("inbattle");

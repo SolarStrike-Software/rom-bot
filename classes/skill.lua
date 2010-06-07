@@ -261,7 +261,7 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- only if target HP points is below given level
-	if( target  and  target.HP > self.TargetMaxHp ) then
+	if( target  and  ((self.TargetMaxHp < 0 and -1 or 1) * target.HP) > self.TargetMaxHp ) then
 		debug_skilluse("TARGEHP", target.HP );
 		return false;
 	end
