@@ -511,9 +511,18 @@ function RoMScript(script)
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
 
+	local scriptDef;
+
+	if( settings.options.LANGUAGE == "spanish" ) then
+		scriptDef = "/redactar";
+	else
+		scriptDef = "/script";
+	end
+	
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
-	local text = "/script r='' a={" .. script ..
+	
+	local text = scriptDef.." r='' a={" .. script ..
 	"} for i=1,#a do r=r..tostring(a[i])" ..
 	" r=r..'" .. string.char(9) .. "' end" ..
 	" EditMacro(2,'',7,r);";

@@ -141,7 +141,8 @@ function database.load()
 		database.skills[skill_name].en = v:getAttribute("en");
 		database.skills[skill_name].de = v:getAttribute("de");
 		database.skills[skill_name].fr = v:getAttribute("fr");
-		database.skills[skill_name].ru = v:getAttribute("ru");		
+		database.skills[skill_name].ru = v:getAttribute("ru");
+		database.skills[skill_name].es = v:getAttribute("es");
 	  end
 	end
 
