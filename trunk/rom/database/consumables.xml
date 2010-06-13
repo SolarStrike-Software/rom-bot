@@ -40,6 +40,7 @@
 	<potion type="mana" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
 	<!-- Arrow quivers -->
+	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202083" name="Gunpowder Arrow Quiver" level="49" />
@@ -52,6 +53,8 @@
 	<potion type="arrow_quiver" id="202075" name="Wooden Arrow Quiver" level="1" />
 
 	<!-- Arrows -->
+	<potion type="arrow" id="212185" name="Runic Thorn" level="55" />
+	<potion type="arrow" id="210312" name="" level="56" /><!-- Kerl's Mechanical Arrow -->
 	<potion type="arrow" id="210311" name="Gunpowder Arrow" level="49" />
 	<potion type="arrow" id="210310" name="Razor Tooth Arrow" level="42" />
 	<potion type="arrow" id="210309" name="Cross Spike Arrow" level="35" />
