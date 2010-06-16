@@ -312,9 +312,9 @@ function CPlayer:cast(skill)
 				yrest(50);
 				self:update();
 	--			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
-				if( deltaTime(getTime(), startTime) > skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
-					self.Casting = true; -- force it.
-					break;
+				if( deltaTime(getTime(), startTime) > 1500 ) then -- Assume failed to caste after 1.5 sec
+					printf(language[180]);	-- close print 'Casting ..." / aborted
+					return;
 				end
 			end;
 
@@ -327,7 +327,7 @@ function CPlayer:cast(skill)
 					return;
 				end;
 				-- Waiting for casting to finish...
-				yrest(10);
+				yrest(50);
 				self:update();
 
 				-- leave before Casting flag is gone, so we can cast faster
