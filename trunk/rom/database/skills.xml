@@ -325,6 +325,10 @@
 	<skill name="DRUID_MOTHER_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
 	<skill name="DRUID_SUMMON_SANDSTORM" mana="70" nature="4" range="180" cooldown="8" />
 
+	<!-- Elite -->
+	<skill name="DRUID_CAMELLIA_FLOWER" mana="25" range="200" type="heal" target="friendly" />
+	
+	
 	<!-- Warden skills -->
 	<skill name="WARDEN_CHARGED_CHOP" skilltab="2" skillnum="1" mana="20" range="50" casttime="2" cooldown="3" />
 	<skill name="WARDEN_BRIAR_SHIELD" skilltab="2" skillnum="2" mana="30" type="buff" target="self" cooldown="300" />
