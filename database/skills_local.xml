@@ -301,6 +301,9 @@
 	<DRUID_BODY_VITALIZATION en="Body Vitalization" de="Körpervitalisierung" />
 	<DRUID_WITHERING_SEED en="Withering Seed" de="Samen des Verwelkens" />
 	<DRUID_SUMMON_SANDSTORM en="Summon Sandstorm" de="Sandsturm" />
+	
+	<!-- Elite -->
+	<DRUID_CAMELLIA_FLOWER en="Camellia Flower" de="Kamelienblüte" />
 
 		<!-- Warden skills -->
 	<WARDEN_CHARGED_CHOP en="Charged Chop" de="Geladener Hieb" />
