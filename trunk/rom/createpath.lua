@@ -26,8 +26,8 @@ p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
 p_wp_type = "";		-- type for normal waypoints 
 p_hp_type = "";		-- type for harvest waypoints		
 p_harvest_command = "player:harvest();";
-p_merchant_command = "player:merchant(\"%s\");";	
-p_targetNPC_command = "player:target_NPC(\"%s\");";	
+p_merchant_command = "player:merchant(\"%s\"); yrest(2000);";
+p_targetNPC_command = "player:target_NPC(\"%s\"); yrest(2000);";
 p_choiceOption_command = "sendMacro(\"ChoiceOption(%d);\");";
 p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";	
 -- ********************************************************************
