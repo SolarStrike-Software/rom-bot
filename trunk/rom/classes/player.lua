@@ -698,7 +698,7 @@ function CPlayer:fight()
 		end
 
 		-- We're a bit TOO close...
-		if( dist < 5.0 ) then
+		if( dist < 5.0 and not player.Casting ) then
 			printf(language[24]);
 			keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 			yrest(200);
@@ -734,7 +734,7 @@ function CPlayer:fight()
 			break;
 		end;
 
-		if( dist > suggestedRange ) then
+		if( dist > suggestedRange and not player.Casting ) then
 			
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
