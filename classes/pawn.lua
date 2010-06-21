@@ -138,6 +138,9 @@ CPawn = class(
 		self.free_flag1 = false;			-- free flag for user use
 		self.free_flag2 = false;			-- free flag for user use
 		self.free_flag3 = false;			-- free flag for user use		
+		self.LastSkillCastTime = 0;			-- CastTime of last skill with CastTime >0
+		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
+		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

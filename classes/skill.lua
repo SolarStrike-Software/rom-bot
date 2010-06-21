@@ -356,7 +356,8 @@ function CSkill:use()
 	-- we calculate the value at bot start time
 	self.LastCastTime = getTime();
 	self.LastCastTime.low = self.LastCastTime.low + self.CastTime*1000 * bot.GetTimeFrequency;
-	
+	if self.CastTime > 0 then player.LastSkillCastTime = self.CastTime end
+	if self.CastTime > 0 then player.LastSkillType = self.Type end
 	-- wait for global cooldown gap (1000ms) between skill use
 	-- there are different 'waits' in the bot:
 	-- at CPlayer:cast(skill): for the casting flag gone
@@ -381,13 +382,13 @@ function CSkill:use()
 
 	-- Make sure we aren't already busy casting something else, thats only neccessary after
 	-- skills with a casting timess
-	local start_wait = getTime();
-	while(player.Casting) do
+	--[[local start_wait = getTime();
+	while(player.Casting) do -- this is done in CPlayer:cast()
 		if( deltaTime(getTime(), start_wait ) > 6000 ) then break; end;	-- in case there is a client update bug
 		-- Waiting for casting to finish...
 		yrest(50);
 		player:update();
-	end
+	end]]
 
 	bot.LastSkillKeypressTime = getTime();		-- remember time to check time-lag between casts
 

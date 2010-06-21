@@ -292,16 +292,25 @@ function CPlayer:cast(skill)
 	end
 
 	if(continue == true) then
+		if self.Casting then self:waitTillCastingEnds() end -- Wait for previous cast to end minus undercut
+		while skill.CastTime == 0 and self.Casting do  -- fixes instant cast after timed cast timing problem, waits till finished
+			self:update(); yrest(50);
+		end
 		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
 		skill:use();
-		yrest(100);
+		local startTime = getTime();
+		-- yrest(100);
 		self:update();
-
+		
 		-- Wait for casting to start (if it has a decent cast time)
 		if( skill.CastTime > 0 ) then
+			-- wait for previous cast to finish. >PRIOR assume missed it
+			while (self.Casting) and (deltaTime(getTime(),startTime) < settings.profile.options.SKILL_USE_PRIOR) do 
+				self:update(); yrest(10);
+			end
 	--		local startTime = os.time();
-			local startTime = getTime();
-			while( not self.Casting ) do
+			startTime = getTime();
+			while( not self.Casting ) do -- wait for casting to start
 				-- break cast with jump if aggro before casting finished
 				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
 				   ( skill.Type == STYPE_DAMAGE or
@@ -318,7 +327,10 @@ function CPlayer:cast(skill)
 				end
 			end;
 
-			while(self.Casting) do
+			self.LastSkillStartTime=getTime() -- now that casting = true reset starttime to now
+			
+			-- Following is obsolete
+			--[[while(self.Casting) do
 				-- break cast with jump if aggro before casting finished
 				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
 				   ( skill.Type == STYPE_DAMAGE or
@@ -338,10 +350,10 @@ function CPlayer:cast(skill)
 				end
 
 
-			end
+			end]]
 	--				printf(language[20]);		-- finished casting
 		else
-			yrest(500); -- assume 0.5 second yrest
+			yrest(700); -- assume .7 second yrest
 		end
 
 		-- count cast to enemy targets
@@ -456,12 +468,13 @@ function CPlayer:checkSkills(_only_friendly, target)
 --				self:update();
 --			end
 
-			-- break cast if aggro before casting
+ 	-- this is done in CPlayer:cast() so it's duplicated
+			--[[ break cast if aggro before casting
 			if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
 			   ( v.Type == STYPE_DAMAGE or
 			     v.Type == STYPE_DOT )  ) then	-- without jump
 				return false;
-			end;
+			end;]]
 
 			self:cast(v);
 			used = true;
@@ -492,8 +505,8 @@ function CPlayer:checkPotions()
 		os.difftime(os.time(), self.PotionLastUseTime) > cooldown_hp )  then
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
-			yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
-
+			-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drunk before cast/skill is finished
+			if self.Casting then waitTillCastingEnds() end -- wait if still casting minus undercut
 			local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
 			if( checkItemName ~= item.Name ) then
 				cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
@@ -532,8 +545,8 @@ function CPlayer:checkPotions()
 			os.difftime(os.time(), self.PotionLastUseTime) > cooldown_mana )  then
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
-				yrest(settings.profile.options.SKILL_USE_PRIOR);	-- wait cast/skill use to be finished
-
+				-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drubk before cast/skill is finished
+				if self.Casting then waitTillCastingEnds() end -- wait if still casting minus undercut
 				local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
 				if( checkItemName ~= item.Name ) then
 					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
@@ -586,10 +599,11 @@ function CPlayer:fight()
 	-- just in case the first one didn't go through
 	local function timedAttack()
 		self:update();
-		if( self.Casting ) then
+		-- Obsolete. Interferes with undercutting skills
+		--[[if( self.Casting ) then
 			-- Don't interupt casting
 			return;
-		end;
+		end;]]
 
 		-- Prevents looting when looting is turned off
 		-- (target is dead, or about to be dead)
@@ -904,7 +918,6 @@ function CPlayer:fight()
 
 	-- update ~ 3-4 slots (about 50 ms each)
 	inventory:updateSlotsByTime(200);
-
 end
 
 function CPlayer:loot()
@@ -2342,5 +2355,26 @@ function CPlayer:mount()
 	if( mount ) then
 		mount:use();
 		yrest(6000);
+	end
+end
+
+-- Waits till casting ends minus SKILL_USE_PRIOR.
+function CPlayer:waitTillCastingEnds()
+	while(self.Casting) do
+		-- break cast with jump if aggro before casting finished
+		if( self:check_aggro_before_cast(JUMP_TRUE, self.LastSkillType)) then	--  with jump
+			printf(language[82]);	-- close print 'Casting ..."
+			return;
+		end;
+		-- Waiting for casting to finish...
+		yrest(50);
+		self:update();
+
+		-- leave before Casting flag is gone, so we can cast faster
+		if( deltaTime(getTime(), self.LastSkillStartTime) > 
+		  self.LastSkillCastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
+			--				end of waiting
+			break;
+		end
 	end
 end
