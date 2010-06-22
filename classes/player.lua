@@ -506,7 +506,7 @@ function CPlayer:checkPotions()
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
 			-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drunk before cast/skill is finished
-			if self.Casting then waitTillCastingEnds() end -- wait if still casting minus undercut
+			if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
 			local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
 			if( checkItemName ~= item.Name ) then
 				cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
@@ -546,7 +546,7 @@ function CPlayer:checkPotions()
 			item = inventory:bestAvailableConsumable("mana");
 			if( item ) then
 				-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drubk before cast/skill is finished
-				if self.Casting then waitTillCastingEnds() end -- wait if still casting minus undercut
+				if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
 				local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
 				if( checkItemName ~= item.Name ) then
 					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
