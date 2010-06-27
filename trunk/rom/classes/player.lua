@@ -1136,7 +1136,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
-	while( dist > 15.0 ) do
+	
+	local successDist = 15.0 -- Distance to consider successfully reaching the target location
+	if self.Mounted then
+		successDist = 30.0 -- so we don't overpass it and double back when mounted
+	end
+	while( dist > successDist ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -1279,8 +1284,14 @@ function CPlayer:faceDirection(dir)
 	local Vec1 = math.cos(dir);
 	local Vec2 = math.sin(dir);
 
-	memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
-	memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec2);
+	if self.Mounted then
+		local tmpAddress = memoryReadInt(getProc(), self.Address + addresses.charPtrMounted_offset);
+		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirXUVec_offset, Vec1);
+		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirYUVec_offset, Vec2);
+	else
+		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
+		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec2);
+	end
 end
 
 -- turns the player at a given angel in grad
