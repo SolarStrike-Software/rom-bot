@@ -22,6 +22,112 @@ function CPlayer.new()
 	return np;
 end
 
+function CPlayer:harvest(_id, _second_try)
+	local function findNearestHarvestable()
+		local closestHarvestable = nil;
+		local obj = nil;
+		local objectList = CObjectList();
+		objectList:update();
+
+		for i = 0,OBJ_LIST_SIZE - 1 do
+			obj = objectList:getObject(i);
+
+			if( obj ~= nil ) then
+				if( obj.Type == PT_NODE ) then
+					local dist = distance(self.X, self.Z, obj.X, obj.Z);
+					if( closestHarvestable == nil ) then
+						if( distance(self.X, self.Z, obj.X, obj.Z ) < 120 ) then
+							closestHarvestable = obj;
+						end
+					else
+						if( distance(self.X, self.Z, obj.X, obj.Z) <
+							distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) ) then
+							-- this node is closer
+							closestHarvestable = obj;
+						end
+					end
+				end
+			end
+		end
+
+		return closestHarvestable;
+	end
+
+	local function nodeStillFound(node)
+		local closestHarvestable = nil;
+		local obj = nil;
+		local objectList = CObjectList();
+		objectList:update();
+
+		for i = 0,OBJ_LIST_SIZE - 1 do
+			obj = objectList:getObject(i);
+			if( obj.Address == node.Address ) then
+				return true;
+			end
+		end
+
+		return false;
+	end
+
+	yrest(200); -- Make sure we come to a stop before attempting to harvest.
+	closestHarvestable = findNearestHarvestable();
+
+	if( closestHarvestable == nil ) then
+		printf(language[79]);
+		return;
+	end
+
+	cprintf(cli.yellow, language[95], closestHarvestable.Name);
+
+	if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
+		self:moveTo(CWaypoint(closestHarvestable.X, closestHarvestable.Z), true);
+	end
+
+	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
+	RoMScript("UseSkill(1,1)");
+
+	self:update();
+	local timeStart = getTime();
+	while( not self.Harvesting ) do
+		-- Wait to start harvesting
+		yrest(100);
+		self:update();
+		if( self.Battling ) then
+			printf(language[78]);
+			return;
+		end
+
+		if( deltaTime(getTime(), timeStart) > 2000 ) then
+			-- Maybe the command didn't go through. Try once more.
+			RoMScript("UseSkill(1,1)");
+			yrest(500);
+			break;
+		end
+	end
+
+	self:update();
+	timeStart = getTime();
+	while( self.Harvesting ) do
+		yrest(100);
+		self:update();
+		if( self.Battling ) then
+			printf(language[78]);
+			return;
+		end
+
+		if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
+			return;
+		end
+
+		if( deltaTime(getTime(), timeStart) > 45000 ) then
+			-- Taking too long. Drop out.
+			printf("Stop harvesting. Taking too long.\n");
+			return;
+		end
+	end
+end
+
+--[[
 function CPlayer:harvest( _id, _second_try )
 	if( foregroundWindow() ~= getWin() ) then
 		cprintf(cli.yellow, language[94]);
@@ -223,7 +329,7 @@ function CPlayer:harvest( _id, _second_try )
 	end
 
 end
-
+]]
 
 function CPlayer:initialize()
 	memoryWriteInt(getProc(), self.Address + addresses.castbar_offset, 0);

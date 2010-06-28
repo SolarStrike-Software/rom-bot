@@ -1,4 +1,4 @@
-BOT_VERSION = 3.27;
+BOT_VERSION = 3.29;
 
 include("addresses.lua");
 include("database.lua");
@@ -9,6 +9,8 @@ include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
 include("classes/waypointlist_wander.lua");
 include("classes/node.lua");
+include("classes/object.lua");
+include("classes/objectlist.lua");
 include("settings.lua");
 include("functions.lua");
 if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
@@ -93,9 +95,7 @@ function main()
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
 		tonumber(addresses.staticbase_char), tonumber(playerAddress)));
 
-	player = CPlayer(playerAddress);
-	player:initialize();
-	player:update();
+	player = CPlayer.new();
 
 	if( settings.options.DEBUGGING ) then
 		-- Player debugging info
