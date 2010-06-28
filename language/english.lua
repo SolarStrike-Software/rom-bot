@@ -64,7 +64,9 @@ language = {
 	
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
-	
+
+	[78] = "Harvesting cancelled due to aggressive enemies.\n",
+	[79] = "No nearby harvestables found.\n",
 	[80] = "Move in\n",
 	[81] = "Unexpected interruption at harvesting begin. We will try it again.\n",
 	[82] = "=>   * aborted *\n",
@@ -80,7 +82,7 @@ language = {
 	[92] = "Mouseclick %s at %d,%d in %dx%d (recalculated from %d,%d by %dx%d)\n",
 	[93] = "Mouseclick %s at %d,%d in %dx%d.\n",
 	[94] = "The RoM window have to be in the foreground to be able to use the harvesting function. We can't harvest now!\n",
-	[95] = "We found %s und will harvest it.\n",
+	[95] = "We found %s and will harvest it.\n",
 	[96] = "We begin the fight with ranged pulling.\n",
 	[97] = "Ranged pulling finished, mob in melee distance.\n",
 	[98] = "Ranged pulling after 3 sec wait finished.\n",

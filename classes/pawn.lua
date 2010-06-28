@@ -90,6 +90,7 @@ CPawn = class(
 
 
 		-- Directed more at player, but may be changed later.
+		self.Harvesting = false; -- Whether or not we are currently harvesting
 		self.Battling = false; -- The actual "in combat" flag.
 		self.Fighting = false; -- Internal use, does not depend on the client's battle flag
 		self.Casting = false;
@@ -167,6 +168,7 @@ function CPawn:update()
 	self.Type = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnType_offset), memerrmsg);
 
 	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 3;
+	self.Harvesting = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnHarvesting_offset), memerrmsg) ~= 0;
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);

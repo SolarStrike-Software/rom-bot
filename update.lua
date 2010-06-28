@@ -32,6 +32,10 @@ local charAliveUpdatePattern = string.char(0x88, 0x44, 0x24, 0xFF, 0x8A, 0x87, 0
 local charAliveUpdateMask = "xxx?xx????";
 local charAliveUpdateOffset = 6;
 
+local pawnHarvestUpdatePattern = string.char(0x5F, 0x89, 0xAE, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0xAE, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0xAE);
+local pawnHarvestUpdateMask = "xxx????xx????xx";
+local pawnHarvestUpdateOffset = 9;
+
 local charBattleUpdatePattern = string.char(0x89, 0x44, 0x24, 0x20, 0x8A, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0xF6, 0xD8);
 local charBattleUpdateMask = "xxxxxx????xx";
 local charBattleUpdateOffset = 6;
@@ -40,6 +44,10 @@ local charBattleUpdateOffset = 6;
 local macro1UpdatePattern = string.char(0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x38, 0x98, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0xB8);
 local macro1UpdateMask = "xx????xx????xx";
 local macro1UpdateOffset = 8;
+
+local staticTableUpdatePattern = string.char(0x7E, 0xFF, 0x53, 0x56, 0x57, 0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x3C, 0xA8, 0x8B, 0x1D);
+local staticTableUpdateMask = "x?xxxx????xxxxx";
+local staticTableUpdateOffset = 6;
 
 
 -- This function will attempt to automatically find the true addresses
@@ -83,11 +91,17 @@ function findOffsets()
 	update("charAlive_offset", charAliveUpdatePattern, charAliveUpdateMask, charAliveUpdateOffset, 0x5E0000, 0xA0000);
 	update("charBattle_offset", charBattleUpdatePattern, charBattleUpdateMask, charBattleUpdateOffset, 0x5E0000, 0xA0000);
 
+	-- NOTE: We must manually adjust forward 0x3C bytes
+	update("pawnHarvesting_offset", pawnHarvestUpdatePattern, pawnHarvestUpdateMask, pawnHarvestUpdateOffset, 0x820000, 0xA0000);
+	addresses.pawnHarvesting_offset = addresses.pawnHarvesting_offset + 0x3C;
+
 	-- NOTE: We must manually adjust the macro forward 16 bytes
 	-- Assume macro2 is macro1 + 0x508
 	update("macro1_offset", macro1UpdatePattern, macro1UpdateMask, macro1UpdateOffset, 0x7A0000, 0xA0000);
 	addresses.macro1_offset = addresses.macro1_offset + 0x10;
 	addresses.macro2_offset = addresses.macro1_offset + 0x508;
+
+	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
 end
 
 function rewriteAddresses()
