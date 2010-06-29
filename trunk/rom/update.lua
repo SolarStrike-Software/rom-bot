@@ -49,6 +49,9 @@ local staticTableUpdatePattern = string.char(0x7E, 0xFF, 0x53, 0x56, 0x57, 0xA1,
 local staticTableUpdateMask = "x?xxxx????xxxxx";
 local staticTableUpdateOffset = 6;
 
+local staticTableSizeUpdatePattern = string.char(0x83, 0xC4, 0x04, 0x8B, 0x15, 0xFF, 0xFF, 0xFF, 0xFF, 0x52, 0x8D, 0x84, 0x24);
+local staticTableSizeUpdateMask = "xxxxx????xxxx";
+local staticTableSizeUpdateOffset = 5;
 
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
@@ -102,6 +105,7 @@ function findOffsets()
 	addresses.macro2_offset = addresses.macro1_offset + 0x508;
 
 	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
+	update("staticTableSize", staticTableSizeUpdatePattern, staticTableSizeUpdateMask, staticTableSizeUpdateOffset, 0x620000, 0xA0000);
 end
 
 function rewriteAddresses()

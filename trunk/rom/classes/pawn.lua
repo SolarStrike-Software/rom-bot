@@ -177,7 +177,7 @@ function CPawn:update()
 	if( namePtr == nil or namePtr == 0 ) then
 		tmp = nil;
 	else
-		tmp = debugAssert(memoryReadString(proc, namePtr));
+		tmp = memoryReadString(proc, namePtr);
 	end
 	showWarnings(true); -- Re-enable warnings after reading
 

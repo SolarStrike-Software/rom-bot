@@ -40,6 +40,7 @@ addresses = {
 	pawnY_offset = 0x2C,
 	pawnZ_offset = 0x30,
 	staticTablePtr = 0x9F4FDC,
+	staticTableSize = 0x9F4FD8,
 	staticbase_char = 0x9A116C,
 	staticbase_macro = 0x9F3964,
 	staticpattern_char = 0x5DB57D,

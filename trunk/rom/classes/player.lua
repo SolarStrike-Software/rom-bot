@@ -23,20 +23,21 @@ function CPlayer.new()
 end
 
 function CPlayer:harvest(_id, _second_try)
-	local function findNearestHarvestable()
+	local function findNearestHarvestable(ignore)
+		ignore = ignore or 0;
 		local closestHarvestable = nil;
 		local obj = nil;
 		local objectList = CObjectList();
 		objectList:update();
 
-		for i = 0,OBJ_LIST_SIZE - 1 do
+		for i = 0,objectList:size() do
 			obj = objectList:getObject(i);
 
 			if( obj ~= nil ) then
-				if( obj.Type == PT_NODE ) then
+				if( obj.Type == PT_NODE and obj.Address ~= ignore and database.nodes[obj.Id] ) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z);
 					if( closestHarvestable == nil ) then
-						if( distance(self.X, self.Z, obj.X, obj.Z ) < 120 ) then
+						if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
 							closestHarvestable = obj;
 						end
 					else
@@ -59,7 +60,7 @@ function CPlayer:harvest(_id, _second_try)
 		local objectList = CObjectList();
 		objectList:update();
 
-		for i = 0,OBJ_LIST_SIZE - 1 do
+		for i = 0,objectList:size() do
 			obj = objectList:getObject(i);
 			if( obj.Address == node.Address ) then
 				return true;
@@ -70,60 +71,67 @@ function CPlayer:harvest(_id, _second_try)
 	end
 
 	yrest(200); -- Make sure we come to a stop before attempting to harvest.
-	closestHarvestable = findNearestHarvestable();
+	local lastHarvestedNodeAddr = nil;
 
-	if( closestHarvestable == nil ) then
-		printf(language[79]);
-		return;
-	end
-
-	cprintf(cli.yellow, language[95], closestHarvestable.Name);
-
-	if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
-		self:moveTo(CWaypoint(closestHarvestable.X, closestHarvestable.Z), true);
-	end
-
-	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
-	RoMScript("UseSkill(1,1)");
-
-	self:update();
-	local timeStart = getTime();
-	while( not self.Harvesting ) do
-		-- Wait to start harvesting
-		yrest(100);
+	while(true) do
 		self:update();
-		if( self.Battling ) then
-			printf(language[78]);
+		closestHarvestable = findNearestHarvestable(lastHarvestedNodeAddr);
+
+		if( closestHarvestable == nil ) then
+			printf(language[79]);
 			return;
 		end
 
-		if( deltaTime(getTime(), timeStart) > 2000 ) then
-			-- Maybe the command didn't go through. Try once more.
-			RoMScript("UseSkill(1,1)");
-			yrest(500);
-			break;
-		end
-	end
+		cprintf(cli.yellow, language[95], closestHarvestable.Name);
 
-	self:update();
-	timeStart = getTime();
-	while( self.Harvesting ) do
-		yrest(100);
+		if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
+			printf("[DEBUG]: Moving to harvestable.\n");
+			self:moveTo(CWaypoint(closestHarvestable.X, closestHarvestable.Z), true);
+		end
+
+		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
+		RoMScript("UseSkill(1,1)");
+
 		self:update();
-		if( self.Battling ) then
-			printf(language[78]);
-			return;
+		local timeStart = getTime();
+		while( not self.Harvesting ) do
+			-- Wait to start harvesting
+			yrest(100);
+			self:update();
+			if( self.Battling ) then
+				printf(language[78]);
+				return;
+			end
+
+			if( deltaTime(getTime(), timeStart) > 3000 ) then
+				-- Maybe the command didn't go through. Try once more.
+				RoMScript("UseSkill(1,1)");
+				yrest(500);
+				break;
+			end
 		end
 
-		if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
-			return;
-		end
+		self:update();
+		timeStart = getTime();
+		while( self.Harvesting ) do
+			yrest(100);
+			self:update();
+			if( self.Battling ) then
+				printf(language[78]);
+				return;
+			end
 
-		if( deltaTime(getTime(), timeStart) > 45000 ) then
-			-- Taking too long. Drop out.
-			printf("Stop harvesting. Taking too long.\n");
-			return;
+			if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
+				break;
+			end
+
+			if( deltaTime(getTime(), timeStart) > 45000 ) then
+				-- Taking too long. Drop out.
+				printf("Stop harvesting. Taking too long.\n");
+				break;
+			end
 		end
+		lastHarvestedNodeAddr = closestHarvestable.Address;
 	end
 end
 

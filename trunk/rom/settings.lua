@@ -42,6 +42,7 @@ settings_default = {
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
 			LOOT_PAUSE_AFTER = 10,			-- probability in % for short pause after loot to look more human
+			HARVEST_DISTANCE = 120,
 			MAX_FIGHT_TIME = 12,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
