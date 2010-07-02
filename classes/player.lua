@@ -23,7 +23,7 @@ function CPlayer.new()
 end
 
 function CPlayer:harvest(_id, _second_try)
-	local function findNearestHarvestable(ignore)
+	local function findNearestHarvestable(_id, ignore)
 		ignore = ignore or 0;
 		local closestHarvestable = nil;
 		local obj = nil;
@@ -34,7 +34,7 @@ function CPlayer:harvest(_id, _second_try)
 			obj = objectList:getObject(i);
 
 			if( obj ~= nil ) then
-				if( obj.Type == PT_NODE and obj.Address ~= ignore and database.nodes[obj.Id] ) then
+				if( obj.Type == PT_NODE and obj.Address ~= ignore and (_id == obj.Id or (not _id and database.nodes[obj.Id])) ) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z);
 					if( closestHarvestable == nil ) then
 						if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
@@ -75,7 +75,7 @@ function CPlayer:harvest(_id, _second_try)
 
 	while(true) do
 		self:update();
-		closestHarvestable = findNearestHarvestable(lastHarvestedNodeAddr);
+		closestHarvestable = findNearestHarvestable(_id, lastHarvestedNodeAddr);
 
 		if( closestHarvestable == nil ) then
 			printf(language[79]);
