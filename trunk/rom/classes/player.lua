@@ -92,6 +92,10 @@ function CPlayer:harvest(_id, _second_try)
 		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
 		RoMScript("UseSkill(1,1)");
 
+		if _id then -- The rest is not needed if not resource node
+			return true
+		end
+		
 		self:update();
 		local timeStart = getTime();
 		while( not self.Harvesting ) do
