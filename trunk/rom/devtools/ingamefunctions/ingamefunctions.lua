@@ -11,7 +11,7 @@ function igf_GetTooltip(_side, _bagid)
 		ChatFrame1:AddMessage("IGF: pls call igf_GetTooltip() with a valid bagid.");
 		return false
 	end
-	
+
 	GameTooltip:ClearLines();			-- seems not to work, still sometimes old values there ???
 	GameTooltip:SetBagItem(_bagid);		-- set tooltip for given bagid
 --	GameTooltip:Show()		-- ok
@@ -26,13 +26,13 @@ function igf_GetTooltip(_side, _bagid)
 			text = lineobj:GetText();
 			lineobj:SetText("");		-- there was a problem with old values, so one more try to clear them
 		end
-		
+
 		-- set space if text is empty, because RoMScript can't handle back empty strings
 		if (not text  or
 			text == "") then
 			text = " ";
 		end
-		
+
 		tt[i] = text;
 	end
 
@@ -43,7 +43,7 @@ function igf_GetTooltip(_side, _bagid)
 -- /script ReloadUI();
 -- /script GameTooltip:SetBagItem(68);
 -- /script igf_GetTooltip("Right", 68)
-	
+
 end
 
 
@@ -53,7 +53,7 @@ function igf_parseItemLink(_itemlink)
 	if _itemlink == "" or _itemlink == nil then
 		return;
  	end
-	
+
 	local hf_itemlink = string.sub(_itemlink, 2);
 	local id = tonumber(string.sub(_itemlink, 8, 12), 16);  -- Convert to decimal
 	local color = string.sub(_itemlink, 19, 24);
@@ -69,11 +69,11 @@ end
 
 function igf_getSlotData(_slotnr)
 	local itemlink, bagid, icon, name, itemcount = GetBagItemLink(GetBagItemInfo(_slotnr)),GetBagItemInfo(_slotnr);
-	
+
 --	local _type, _data, _name = ParseHyperlink( itemLink );
 	local itemid, color = Fusion_parseItemLink( itemlink );
 	local tmp = { bagid = nil, icon = nil, name = nil, itemcount = nil, itemid = nil, color = nil };
-	
+
 	-- from GetBagItemInfo()
 	if(bagid)		then tmp.bagid = bagid;			end
 	if(icon)		then tmp.icon = icon;			end
@@ -83,7 +83,7 @@ function igf_getSlotData(_slotnr)
 	if(itemlink)	then tmp.itemlink = itemlink;	end
 	if(color)		then tmp.color = color;			end
 	if(itemid)		then tmp.itemid = itemid;		end
-	
+
 	-- also return empty slots, because they always have a bagid
 	return tmp;
 end
@@ -102,4 +102,27 @@ function igf_printBagInfo(_maxslots)
 		end
     end
 
+end
+
+-- questname = name of quest
+-- returns '2' if quest complete, '1' if accepted but not complete and '0' if not accepted
+function igf_questStatus(_questname)
+	local lowername=string.gsub(string.lower(_questname),"'","")
+	local c = 1
+	local getname = GetQuestRequest(c,-2)
+	while getname ~= nil do
+		getname=string.gsub(getname,"'","")
+		if string.find(string.lower(getname), lowername) then -- Quest exists
+			for i = 1, GetQuestRequest(c,-1) do -- for each goal
+				__,getstatus = GetQuestRequest(c,i)
+				if getstatus == 0 then -- check if not complete
+					return 1
+				end
+			end
+			return 2
+        end
+		c = c + 1
+		getname = GetQuestRequest(c,-2)
+	end
+	return 0
 end

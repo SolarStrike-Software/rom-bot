@@ -376,3 +376,17 @@ function CPawn:distanceToTarget()
 
 	return math.sqrt( (tx-px)*(tx-px) + (ty-py)*(ty-py) + (tz-pz)*(tz-pz) );
 end
+
+function CPawn:hasBuff(buff)
+	self:updateBuffs()
+	local bool = (self.Buffs[buff] ~= nil) -- exists or not, true or false
+	local count = (self.Buffs[buff] or 0) -- Buff count or 0
+	return bool, count
+end
+
+function CPawn:hasDebuff(deBuff)
+	self:updateBuffs()
+	local bool = (self.Debuffs[deBuff] ~= nil) -- exists or not, true or false
+	local count = (self.Debuffs[deBuff] or 0) -- Debuff count or 0
+	return bool, count
+end
