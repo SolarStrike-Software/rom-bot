@@ -16,7 +16,7 @@
 	<potion type="healing" id="200664" level="6" name="Basic First Aid Potion" />
 	<potion type="healing" id="203159" level="1" potency="500" name="Kuerbispizza" />
 	<potion type="healing" id="200154" level="1" potency="300" name="Heiltrank" />
-	<potion type="healing" id="200151" level="1" potency="220" name="Basic Medicine" />
+	<potion type="healing" id="200151" level="10" potency="220" name="Basic Medicine" />
 	<potion type="healing" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
 
 	<!-- Mana potions -->
@@ -35,7 +35,7 @@
 	<potion type="mana" id="201046" level="11" name="Magic Potion" />
 	<potion type="mana" id="201043" level="6" name="Basic Magic Potion" />
 	<potion type="mana" id="200155" level="3" potency="300" name="Basic Mana Potion" />
-	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />
+	<potion type="mana" id="200152" level="30" potency="220" name="Basic Spirit Potion" />
 	<potion type="mana" id="203160" level="1" potency="500" name="Kuerbissuppe" />
 	<potion type="mana" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
