@@ -2366,7 +2366,7 @@ end
 -- auto interact with a merchant
 function CPlayer:merchant(_npcname)
 	if self:target_NPC(_npcname) then
-		yrest(3000);
+		yrest(1000);
 		RoMScript("ChoiceOption(1)");
 		yrest(1000);
 		RoMScript("ClickRepairAllButton()");
@@ -2391,6 +2391,28 @@ end
 -- if after some tries we don't find the target, the character will turn around 
 -- in steps and tries again to find the target
 function CPlayer:target_NPC(_npcname)
+	if( not _npcname ) then
+		cprintf(cli.yellow, language[133]);	-- Please give a NPC name
+		return
+	end
+
+	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC 
+
+	local npc = self:findNearestNameOrId(_npcname)
+	if npc then	-- we successfully found NPC
+		-- target NPC
+		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, npc.Address);
+		RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
+		yrest(2000);
+		return true
+	else
+		cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
+		return false
+	end
+end
+
+
+--[[function CPlayer:target_NPC(_npcname)
 
 	if( not _npcname ) then
 		cprintf(cli.yellow, language[133]);	-- Please give a NPC name
@@ -2467,6 +2489,75 @@ function CPlayer:target_NPC(_npcname)
 	
 	return false;
 
+end]]
+
+function CPlayer:findNearestNameOrId(_objnameorid, ignore)
+	ignore = ignore or 0;
+	local closestObject = nil;
+	local obj = nil;
+	local objectList = CObjectList();
+	objectList:update();
+
+	for i = 0,objectList:size() do
+		obj = objectList:getObject(i);
+
+		if( obj ~= nil ) then
+			if( obj.Type == PT_NODE and obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
+				local dist = distance(self.X, self.Z, obj.X, obj.Z);
+				if( closestObject == nil ) then
+					if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+						closestObject = obj;
+					end
+				else
+					if( distance(self.X, self.Z, obj.X, obj.Z) <
+						distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
+						-- this node is closer
+						closestObject = obj;
+					end
+				end
+			end
+		end
+	end
+
+   return closestObject;
+end
+
+function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
+	_waittime = _waittime or 0
+	_harvestall = (_harvestall == true)
+	_donotignore = (_donotignore == true)
+	if( not _objname ) then
+		cprintf(cli.yellow, language[181]);	-- Please give an Object name
+		return
+	end
+	
+	yrest(200); -- Make sure we come to a stop before attempting to harvest.
+	local lastHarvestedNodeAddr = nil;
+	local objFound = false;
+
+	while(true) do
+		obj = self:findNearestNameOrId(_objname, lastHarvestedNodeAddr)
+		if obj then -- object found, target
+			cprintf(cli.yellow, language[95], obj.Name);
+			objFound = true
+			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, obj.Address);
+			yrest(100)
+			RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
+			yrest(_waittime);
+		end
+
+		if obj and _harvestall == true then -- harvest again
+			if _donotignore ~= true then
+				lastHarvestedNodeAddr = obj.Address -- Default ignore this address in next search
+			end
+		else -- No more harvesting
+			if objFound == false then
+				printf(language[79]); -- No harvestables found
+			end
+			
+			return objFound
+		end
+	end
 end
 
 function CPlayer:mount()

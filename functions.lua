@@ -1041,9 +1041,6 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 end
 
-COMPLETED = 2; -- Use eg. 'if getQuestStatus(questname) == COMPLETED then'
-NOT_COMPLETED = 1; -- Use eg. 'if getQuestStatus(questname) == NOT_COMPLETED then'
-NOT_ACCEPTED = 0; -- Use eg. 'if getQuestStatus(questname) == NOT_ACCEPTED then'
 function getQuestStatus(_questname)
 	-- Used when you need to make 3 way decision, get quest, complete quest or gather quest items.
 	if (bot.IgfAddon == false) then

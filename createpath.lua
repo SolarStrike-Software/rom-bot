@@ -20,16 +20,16 @@ database.load();
 -- like type=TRAVEL, than you can change the global variables
 -- below to your need, see the following example
 -- p_wp_gtype = " type=\"TRAVEL\"";	-- global type for whole file
--- p_wp_type = " type=\"TRAVEL\"";	-- type for normal waypoints 
--- p_hp_type = " type=\"TRAVEL\"";	-- type for harvest waypoints		
+-- p_wp_type = " type=\"TRAVEL\"";	-- type for normal waypoints
+-- p_hp_type = " type=\"TRAVEL\"";	-- type for harvest waypoints
 p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
-p_wp_type = "";		-- type for normal waypoints 
-p_hp_type = "";		-- type for harvest waypoints		
+p_wp_type = "";		-- type for normal waypoints
+p_hp_type = "";		-- type for harvest waypoints
 p_harvest_command = "player:harvest();";
-p_merchant_command = "player:merchant(\"%s\"); yrest(2000);";
-p_targetNPC_command = "player:target_NPC(\"%s\"); yrest(2000);";
+p_merchant_command = "player:merchant(\"%s\");";
+p_targetNPC_command = "player:target_NPC(\"%s\");";
 p_choiceOption_command = "sendMacro(\"ChoiceOption(%d);\");";
-p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";	
+p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";
 -- ********************************************************************
 -- End of Change parameter changes                                    *
 -- ********************************************************************
@@ -39,7 +39,7 @@ setStartKey(key.VK_DELETE);
 setStopKey(key.VK_END);
 
 wpKey = key.VK_NUMPAD1;			-- insert a movement point
-harvKey = key.VK_NUMPAD2;		-- insert a harvest point	
+harvKey = key.VK_NUMPAD2;		-- insert a harvest point
 saveKey = key.VK_NUMPAD3;		-- save the waypoints
 merchantKey = key.VK_NUMPAD4;	-- target merchant, repair and buy stuff
 targetNPCKey = key.VK_NUMPAD5;	-- target NPC and open dialog waypoint
@@ -62,14 +62,14 @@ for i = 2,#args do
 		else
 			-- invalid option
 			local msg = sprintf(language[61], args[i]);
-			error(msg, 0 ); 
+			error(msg, 0 );
 		end
 	end
 
 	-- check the options
 	if(not foundpos  and  args[i] ~= "update" ) then
 		local msg = sprintf(language[61], args[i]);
-		error(msg, 0 ); 
+		error(msg, 0 );
 	end;
 
 end
@@ -163,8 +163,8 @@ function saveWaypoints(list)
 	file:write(hf_line);
 	file:write("</waypoints>");
 
---[[	
-	if( tag_open ) then 
+--[[
+	if( tag_open ) then
 		file:write("\n\t</waypoint>\n</waypoints>\n");
 	else
 		file:write("</waypoints>\n");
@@ -172,7 +172,7 @@ function saveWaypoints(list)
 ]]
 
 	file:close();
-	
+
 	wpList = {};	-- clear intenal table
 
 end
@@ -186,7 +186,7 @@ function main()
 		cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
 		cprintf(cli.green, language[501]);	-- RoM waypoint creator\n
-		printf(language[502]			-- Insert new waypoint 
+		printf(language[502]			-- Insert new waypoint
 			.. language[503]		-- Insert new harvest waypoint
 			.. language[505]		-- Save waypoints and quit
 			.. language[509]		-- Insert merchant command
@@ -194,12 +194,12 @@ function main()
 			.. language[517]		-- Insert choiceOption command
 			.. language[510]		-- Insert Mouseclick Left command
 			.. language[506],		-- Save waypoints and restart
-			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey), 
-			getKeyName(merchantKey), getKeyName(targetNPCKey), 
+			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
+			getKeyName(merchantKey), getKeyName(targetNPCKey),
 			getKeyName(choiceOptionKey), getKeyName(mouseClickKey),
 			getKeyName(restartKey) );
-		
-		attach(getWin())	
+
+		attach(getWin())
 		addMessage(language[501]);	-- -- RoM waypoint creator\n
 
 		local hf_key_pressed, hf_key;
@@ -253,35 +253,35 @@ function main()
 
 				player:update();
 
-				local tmp = {}, hf_type;		
-				tmp.X = player.X;		
+				local tmp = {}, hf_type;
+				tmp.X = player.X;
 				tmp.Z = player.Z;
 				hf_type = "";
-				
+
 
 				-- waypoint or harvest point key: create a waypoint/harvest waypoint
 				if( hf_key == "HP" ) then			-- harvest waypoint
 					tmp.wp_type = "HP";
-					hf_type = "HP"; 
+					hf_type = "HP";
 					addMessage(sprintf(language[512], #wpList+1) ); -- harvestpoint added
 				elseif(	hf_key == "WP") then			-- normal waypoint
-					tmp.wp_type = "WP"; 
+					tmp.wp_type = "WP";
 					hf_type = "WP";
 					addMessage(sprintf(language[511], #wpList+1) ); -- waypoint added
 				elseif( hf_key == "MER" ) then
 					tmp.wp_type = "MER";
 					local target = player:getTarget();	-- get target name
 					tmp.npc_name = target.Name;
-					hf_type = "target/merchant NPC "..tmp.npc_name; 
+					hf_type = "target/merchant NPC "..tmp.npc_name;
 					addMessage(sprintf(language[513], #wpList+1, tmp.npc_name));
 				elseif( hf_key == "NPC" ) then
 					tmp.wp_type = "NPC";
 					local target = player:getTarget();	-- get target name
 					tmp.npc_name = target.Name;
-					hf_type = "target/dialog NPC "..tmp.npc_name; 
+					hf_type = "target/dialog NPC "..tmp.npc_name;
 					addMessage(sprintf(language[514], #wpList+1, tmp.npc_name));
 				elseif(	hf_key == "CO") then			-- normal waypoint
-					tmp.wp_type = "CO"; 
+					tmp.wp_type = "CO";
 
 					-- ask for option number
 					keyboardBufferClear();
@@ -296,10 +296,10 @@ function main()
 					local wx, wy, hf_wide, hf_high = windowRect(getWin());
 					tmp.wide = hf_wide;
 					tmp.high = hf_high;
-			        tmp.mx = x - wx; 
+			        tmp.mx = x - wx;
 					tmp.my = y - wy;
 					hf_type = sprintf("mouseclick %d,%d (%dx%d)", tmp.mx, tmp.my, tmp.wide, tmp.high );
-					addMessage(sprintf(language[515], 
+					addMessage(sprintf(language[515],
 					tmp.mx, tmp.my, tmp.wide, tmp.high )); -- Mouseclick
 				end
 
