@@ -378,14 +378,22 @@ function CPawn:distanceToTarget()
 end
 
 function CPawn:hasBuff(buff)
-	self:updateBuffs()
+	if self.Address == player.TargetPtr then
+		self:updateBuffs("target")
+	else
+		self:updateBuffs("player")
+	end
 	local bool = (self.Buffs[buff] ~= nil) -- exists or not, true or false
 	local count = (self.Buffs[buff] or 0) -- Buff count or 0
 	return bool, count
 end
 
 function CPawn:hasDebuff(deBuff)
-	self:updateBuffs()
+	if self.Address == player.TargetPtr then
+		self:updateBuffs("target")
+	else
+		self:updateBuffs("player")
+	end
 	local bool = (self.Debuffs[deBuff] ~= nil) -- exists or not, true or false
 	local count = (self.Debuffs[deBuff] or 0) -- Debuff count or 0
 	return bool, count

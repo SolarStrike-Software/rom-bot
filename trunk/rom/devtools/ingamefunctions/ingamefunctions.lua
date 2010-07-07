@@ -105,7 +105,6 @@ function igf_printBagInfo(_maxslots)
 end
 
 -- questname = name of quest
--- returns '2' if quest complete, '1' if accepted but not complete and '0' if not accepted
 function igf_questStatus(_questname)
 	local lowername=string.gsub(string.lower(_questname),"'","")
 	local c = 1
@@ -116,13 +115,13 @@ function igf_questStatus(_questname)
 			for i = 1, GetQuestRequest(c,-1) do -- for each goal
 				__,getstatus = GetQuestRequest(c,i)
 				if getstatus == 0 then -- check if not complete
-					return 1
+					return "incomplete"
 				end
 			end
-			return 2
+			return "complete"
         end
 		c = c + 1
 		getname = GetQuestRequest(c,-2)
 	end
-	return 0
+	return "not accepted"
 end
