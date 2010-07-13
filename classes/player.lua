@@ -2542,7 +2542,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
 			objFound = true
 			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, obj.Address);
 			yrest(100)
-			RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
+			RoMScript("UseSkill(1,1)"); yrest(50);
 			yrest(_waittime);
 		end
 
