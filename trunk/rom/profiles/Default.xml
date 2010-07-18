@@ -30,7 +30,7 @@
 		<option name="MAX_FIGHT_TIME"     value="15" />	<!-- Max time without damage before break -->
 		<option name="DOT_PERCENT"        value="90" />
 		<option name="ANTI_KS"            value="true" />
-		<option name="MAX_TARGET_DIST"    value="10000" />
+		<option name="MAX_TARGET_DIST"    value="225" />
 
 		<!-- Attack monsters 3 levels above or 10 below your level -->
 		<option name="TARGET_LEVELDIF_ABOVE" value="3" />

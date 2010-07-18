@@ -85,7 +85,6 @@ function CPlayer:harvest(_id, _second_try)
 		cprintf(cli.yellow, language[95], closestHarvestable.Name);
 
 		if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
-			printf("[DEBUG]: Moving to harvestable.\n");
 			self:moveTo(CWaypoint(closestHarvestable.X, closestHarvestable.Z), true);
 		end
 
@@ -137,6 +136,82 @@ function CPlayer:harvest(_id, _second_try)
 		end
 		lastHarvestedNodeAddr = closestHarvestable.Address;
 	end
+end
+
+-- Returns nil if nothing found, otherwise returns a pawn
+function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
+	ignore = ignore or 0;
+	local aggroOnly = aggroOnly or false;
+	local bestEnemy = nil;
+	local bestScore = 0;
+	local obj = nil;
+	local objectList = CObjectList();
+	objectList:update();
+
+	if( type(evalFunc) ~= "function" ) then
+		evalFunc = function (unused) return true; end;
+	end
+
+	-- The 'max' values that each scoring sub-part uses
+	local SCORE_DISTANCE = 60;      -- closer = more score; actually score will usually be less than half
+	local SCORE_AGGRESSIVE = 80;    -- aggressive = score
+	local SCORE_ATTACKING = 100;    -- attacking = score
+	local SCORE_HEALTHPERCENT = 75; -- lower health = more score
+
+
+	for i = 0,objectList:size() do
+		obj = objectList:getObject(i);
+
+		if( obj ~= nil ) then
+			if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
+				local dist = distance(self.X, self.Z, obj.X, obj.Z);
+				local pawn = CPawn(obj.Address);
+
+				if( evalFunc(obj.Address) == true ) then
+					if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.MAX_TARGET_DIST and
+					((obj.Address == self.Address and aggroOnly == true) or aggroOnly == false) ) then
+						local currentScore = 0;
+						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
+						currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
+						if( pawn.TargetPtr == self.Address ) then currentScore = currentScore + SCORE_ATTACKING; end;
+						if( pawn.Aggressive ) then
+							currentScore = currentScore + SCORE_AGGRESSIVE;
+							if( settings.options.DEBUGGING ) then
+								printf("[DEBUG] %s is marked aggressive\n", pawn.Name);
+							end
+						end;
+
+						if( bestEnemy == nil ) then
+							bestEnemy = obj;
+							bestScore = currentScore;
+						elseif( currentScore > bestScore ) then
+							bestEnemy = obj;
+							bestScore = currentScore;
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if( bestEnemy ) then
+		return CPawn(bestEnemy.Address);
+	else
+		return nil;
+	end
+end
+
+function CPlayer:target(pawnOrAddress)
+	local address = nil;
+	if( type(pawnOrAddress) == "number" ) then
+		address = pawnOrAddress;
+	elseif( type(pawnOrAddress) == "table" ) then
+		address = pawnOrAddress.Address;
+	end
+
+	if( address == nil ) then return; end;
+
+	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 end
 
 --[[
@@ -709,6 +784,7 @@ function CPlayer:fight()
 	end
 
 	local target = self:getTarget();
+	self.IgnoreTarget = target.Address;
 	self.Fighting = true;
 
 	cprintf(cli.green, language[22], target.Name);	-- engagin x in combat
@@ -1115,7 +1191,9 @@ function CPlayer:loot()
 	-- check for loot problems to give a noob mesassage
 	self:update();
 	target = self:getTarget();
-	if( self.X == hf_x  and	-- we didn't move, seems attack key is not defined
+	dist = distance(self.X, self.Z, target.X, target.Z);
+	if( dist > 50 and -- We would need to be further away to be able to move to the target
+		self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
 	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
@@ -1143,6 +1221,200 @@ function CPlayer:loot()
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	end
 
+end
+
+-- Basic target evaluation.
+-- Returns true if a valid target, else false.
+function evalTargetDefault(address)
+	local function debug_target(_place)
+		if( settings.profile.options.DEBUG_TARGET and
+			self.TargetPtr ~= self.LastTargetPtr ) then
+			cprintf(cli.yellow, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
+			self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
+		end
+	end
+	
+	local function printNotTargetReason(_reason)
+		if( self.TargetPtr ~= self.LastTargetPtr ) then
+			cprintf(cli.yellow, "%s\n", _reason);
+			self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
+		end
+	end
+
+	local target = CPawn(address);
+
+	-- Can't have self as target
+	if( address == player.Address ) then
+		return false;
+	end
+
+	-- Not attackable
+	if( not target.Attackable ) then
+		return false;
+	end
+
+	-- Dead
+	if( target.HP < 1 ) then
+		return false;
+	end
+
+	-- Also dead (and has loot)
+	if( target.Lootable ) then
+		return false;
+	end
+
+	if( not target.Alive ) then
+		return false;
+	end
+
+	-- Check height difference
+	if( math.abs(target.Y - player.Y) > 45 ) then
+		return false;
+	end
+
+	-- check level of target against our leveldif settings
+	if( ( target.Level - player.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
+	( player.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
+		if ( player.Battling == false ) then	-- if we don't have aggro then
+			debug_target("target lvl above/below profile settings without battling")
+			return false;			-- he is not a valid target
+		end;
+
+		if( player.Battling == true  and		-- we have aggro
+		target.TargetPtr ~= player.Address ) then	-- but not from that mob
+			debug_target("target lvl above/below profile settings with battling from other mob")
+			return false;
+		end;
+	end;
+
+	-- check if we just ignored that target / ignore it for 10 sec
+	if(address == player.Last_ignore_target_ptr  and
+	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
+		if ( self.Battling == false ) then	-- if we don't have aggro then
+			cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
+			   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
+			debug_target("ignore that target for 10 sec (e.g. after doing no damage")
+			return false;			-- he is not a valid target
+		end;
+
+		if( self.Battling == true  and		-- we have aggro
+		target.TargetPtr ~= self.Address ) then	-- but not from that mob
+			debug_target("we have aggro from another mob")
+			return false;         
+		end;
+	end
+
+	-- check distance to target against MAX_TARGET_DIST
+	if( distance(player.X, player.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
+		if ( player.Battling == false ) then	-- if we don't have aggro then
+			debug_target("target dist > MAX_TARGET_DIST")
+			return false;			-- he is not a valid target
+		end;
+
+		if( player.Battling == true  and		-- we have aggro
+		target.TargetPtr ~= player.Address ) then	-- but not from that mob
+			debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
+			return false;         
+		end;
+	end;
+
+	-- PK protect
+	if( target.Type == PT_PLAYER ) then      -- Player are type == 1
+		if ( player.Battling == false ) then   -- if we don't have aggro then
+			debug_target("PK player, but not fighting us")
+			return false;         -- he is not a valid target
+		end;
+
+		if( player.Battling == true  and         -- we have aggro
+			target.TargetPtr ~= player.Address ) then   -- but not from the PK player
+			debug_target("PK player, aggro, but he don't target us")
+			return false;
+		end;
+	end;
+
+	-- Friends aren't enemies
+	if( player:isFriend(target) ) then
+		if ( player.Battling == false ) then   -- if we don't have aggro then
+			debug_target("target is in friends")
+			return false;		-- he is not a valid target
+		end;
+
+		if( player.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
+			target.TargetPtr ~= player.Address ) then   -- but not from that target
+			debug_target("target is in friends, aggro, but not from that target")
+			return false;
+		end;
+	end;
+
+	-- Pets aren't enemies
+	if( target.Address == player.Pet.Address ) then
+		return false;
+	end
+
+	-- Mob limitations defined?
+	if( #settings.profile.mobs > 0 ) then
+		if( player:isInMobs(target) == false ) then
+			if ( player.Battling == false ) then   -- if we don't have aggro then
+				debug_target("mob limitation is set, mob is not a valid target")
+				return false;		-- he is not a valid target
+			end;
+
+			if( player.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
+				target.TargetPtr ~= player.Address ) then   -- but not from that target
+				debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
+				return false;
+			end;
+		end;
+	end;
+
+	-- target is to strong for us
+	if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
+		if ( player.Battling == false ) then	-- if we don't have aggro then
+--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			return false;		-- he is not a valid target
+		end;
+
+		if( player.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
+			target.TargetPtr ~= player.Address ) then		-- but not from that target
+--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+			printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+			return false;
+		end;
+	end;
+
+	-- don't target NPCs 
+	if( target.Type == PT_NPC ) then      -- NPCs are type == 4
+		debug_target("thats a NPC, he should be friendly and not attackable")
+		return false;         -- he is not a valid target
+	end;
+
+	if( settings.profile.options.ANTI_KS ) then
+		if( target.TargetPtr ~= player.Address ) then
+			-- If the target's TargetPtr is 0,
+			-- that doesn't necessarily mean they don't
+			-- have a target (game bug, not a bug in the bot)
+			if( target.TargetPtr == 0 ) then
+				if( target.HP < target.MaxHP ) then
+					debug_target("anti kill steal: target not fighting us: target not targeting us")
+					return false;
+				end
+			else
+				-- They definitely have a target.
+				-- If it is a friend, we can help.
+				-- Otherwise, leave it alone.
+
+				local targetOfTarget = CPawn(target.TargetPtr);
+
+				if( not player:isFriend(targetOfTarget) ) then
+					debug_target("anti kill steal: target not fighting us: target don't targeting a friend")
+					return false;
+				end
+			end
+		end
+	end
+
+	return true;
 end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets)
@@ -1241,8 +1513,11 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
 	-- direction ok, now look for a target before start movig
-	if( (not ignoreCycleTargets) and (not self.Battling) ) then	
-		if( self:findTarget() ) then			-- find a new target
+	if( (not ignoreCycleTargets) and (not self.Battling) ) then
+		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
+		if( newTarget ) then			-- find a new target
+			self:target(newTarget.Address);
+			local atkMask = memoryReadInt(getProc(), newTarget.Address + addresses.pawnAttackable_offset);
 			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
 			success = false;
 			failreason = WF_TARGET;
@@ -1255,7 +1530,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 	
-	local successDist = 15.0 -- Distance to consider successfully reaching the target location
+	local successDist = 20.0 -- Distance to consider successfully reaching the target location
 	if self.Mounted then
 		successDist = 30.0 -- so we don't overpass it and double back when mounted
 	end
@@ -1286,7 +1561,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		-- look for a new target while moving
 		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) ) then
-			if( self:findTarget() ) then	-- find a new target
+			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
+			if( newTarget ) then	-- find a new target
+				self:target(newTarget);
 				cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
 				success = false;
 				failreason = WF_TARGET;
@@ -1366,13 +1643,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
-	if( success ) then
-
-	end
-
 	if( self.Battling and
 		 waypoint.Type ~= WPT_RUN ) then
-		self:waitForAggro();
+		--self:waitForAggro();
+		self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
 	end
 
 	return success, failreason;
@@ -2077,7 +2351,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		self:update();
 
 		if( self.Battling ) then          -- we get aggro,
-			self:clearTarget();       -- get rid of mob to be able to target attackers
+			self:clearTarget();      -- get rid of mob to be able to target attackers
 			cprintf(cli.green, language[39] );   -- get aggro 
 			break;
 		end;
@@ -2099,7 +2373,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 					break;
 				end;
 				if( self.Battling ) then          -- we get aggro,
-					self:clearTarget();       -- get rid of mob to be able to target attackers
+					self:clearTarget();      -- get rid of mob to be able to target attackers
 					cprintf(cli.green, language[39] );   -- Stop resting because of aggro
 					break;
 				end;

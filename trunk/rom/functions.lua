@@ -506,7 +506,7 @@ end
 
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
-function RoMScript(script)
+function RoMScript(script, default)
 
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
@@ -564,11 +564,11 @@ function RoMScript(script)
 	-- Use high-res timers to find out when to time-out
 	local startWaitTime = getTime();
 	while( memoryReadByte(getProc(), macro_address + addresses.macro2_offset) == 6 ) do
-		if( deltaTime(getTime(), startWaitTime) > 500 ) then
+		if( deltaTime(getTime(), startWaitTime) > 800 ) then
 			if( settings.options.DEBUGGING_MACRO ) then
 				cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
 			end;
-			break; -- Timed out
+			return default; -- Timed out
 		end;
 		rest(1);
 	end
