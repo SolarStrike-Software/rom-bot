@@ -108,6 +108,7 @@ function main()
 			local target = CPawn(player.TargetPtr);
 			printf("[DEBUG] player target type: 0x%X\n", target.Type);
 			printf("[DEBUG] player target attackable: %s\n", target.Attackable);
+			printf("[DEBUG] player target aggressive: %s\n", target.Aggressive);
 		end
 
 		printf("[DEBUG] player in battle: %s\n", tostring(player.Battling));
@@ -393,6 +394,9 @@ function main()
 		end
 
 		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
+			printf("player.TargetPtr: 0x%X\n", player.TargetPtr);
+			local pawn = CPawn(player.TargetPtr);
+			printf("target type: %d\n", pawn.Type);
 			player:clearTarget();
 		end
 
@@ -483,9 +487,11 @@ function main()
 				cprintf(cli.green, language[113]);	-- we don't stop and don't fight back
 				break;
 			end;
-			
+
+			player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
+
 			-- wait a second with the aggro message to avoid wrong msg 
-			-- ecause of slow battle flag from the client
+			-- because of slow battle flag from the client
 			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
 				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
 				msg_print = true;

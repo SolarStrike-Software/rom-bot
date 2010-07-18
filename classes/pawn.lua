@@ -20,6 +20,8 @@ CLASS_DRUID = 8;
 ATTACKABLE_MASK_PLAYER = 0x10000;
 ATTACKABLE_MASK_MONSTER = 0xA0000;
 
+AGGRESSIVE_MASK_MONSTER = 0x100000;
+
 -- used in function.lua for openGiftbag()
 armorMap = {
 	[CLASS_NONE] = "none",
@@ -73,6 +75,9 @@ CPawn = class(
 		self.Attackable = false;
 		self.Alive = true;
 		self.Mounted = false;
+		self.IgnoreTarget = 0;
+		self.Lootable = false;
+		self.Aggressive = false;
 
 		self.LastBuffUpdateTime = getTime();
 		self.Buffs = {};
@@ -170,6 +175,13 @@ function CPawn:update()
 	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 3;
 	self.Harvesting = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnHarvesting_offset), memerrmsg) ~= 0;
 
+	-- 60 = lootable, 58 = not lootable ??
+	self.Lootable = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnLootable_offset), memerrmsg);
+	if( self.Type == 2 ) then
+		--printf("%s Lootable flag: 0x%X (%d)\n", self.Name, self.Lootable, self.Lootable);
+	end
+	self.Lootable = self.Lootable == 60;
+
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
 	local namePtr = debugAssert(memoryReadUInt(proc, self.Address + addresses.pawnName_offset), memerrmsg);
@@ -212,12 +224,21 @@ function CPawn:update()
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.pawnZ_offset), memerrmsg);
 
-	--local attackableFlag = debugAssert(memoryReadUByte(proc, self.Address + addresses.pawnAttackable_offset)) or 0;
-	--printf("attackable flag: 0x%X (%s)\n", attackableFlag, self.Name);
-	--printf("check(player): %s\n", tostring( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ));
+	local attackableFlag = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnAttackable_offset)) or 0;
 
 	if( self.Type == PT_MONSTER ) then
-		self.Attackable = true;
+		--printf("%s attackable flag: 0x%X\n", self.Name, attackableFlag);
+		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) ) then
+			self.Attackable = true;
+		else
+			self.Attackable = false;
+		end
+
+		if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
+			self.Aggressive = true;
+		else
+			self.Aggressive = false;
+		end
 	else
 		self.Attackable = false;
 		--[[

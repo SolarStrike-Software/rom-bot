@@ -65,7 +65,7 @@ settings_default = {
 			
 			-- expert options
 			MAX_SKILLUSE_NODMG = 3,				-- maximum casts without damaging the target before break it
-			MAX_TARGET_DIST = 999,			-- maximum distance to select a target (helpfull to limit at small places)
+			MAX_TARGET_DIST = 250,			-- maximum distance to select a target (helpfull to limit at small places)
 			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			AUTO_TARGET = true,				-- bot will target mobs automaticly (set it to false if you want to use the bot only as fight support)
 			SKILL_GLOBALCOOLDOWN = 1200,	-- Global Skill Use Cooldown (1000ms) we use a little more
