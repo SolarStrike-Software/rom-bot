@@ -91,7 +91,7 @@ function CPlayer:harvest(_id, _second_try)
 		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
 		RoMScript("UseSkill(1,1)");
 
-		if _id then -- The rest is not needed if not resource node
+		if _id and not database.nodes[closestHarvestable.Id] then -- The rest is not needed if not resource node
 			return true
 		end
 		
@@ -1290,14 +1290,14 @@ function evalTargetDefault(address)
 	-- check if we just ignored that target / ignore it for 10 sec
 	if(address == player.Last_ignore_target_ptr  and
 	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
-		if ( self.Battling == false ) then	-- if we don't have aggro then
+		if ( player.Battling == false ) then	-- if we don't have aggro then
 			cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
 			   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
 			debug_target("ignore that target for 10 sec (e.g. after doing no damage")
 			return false;			-- he is not a valid target
 		end;
 
-		if( self.Battling == true  and		-- we have aggro
+		if( player.Battling == true  and		-- we have aggro
 		target.TargetPtr ~= self.Address ) then	-- but not from that mob
 			debug_target("we have aggro from another mob")
 			return false;         
