@@ -162,6 +162,7 @@ language = {
 	[178] = "Loot skiped because of aggro.\n",
 	[179] = "Maximum range of range attack skills is lesser then COMBAT_DISTANCE=%d. Please reduce your combat distances settings.\n",
 	[180] = "=>   * Failed to cast *\n",
+	[181] = "target_Object(): Please give an Object name for using that function.\n",
 	
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 	
