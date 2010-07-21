@@ -1228,16 +1228,16 @@ end
 function evalTargetDefault(address)
 	local function debug_target(_place)
 		if( settings.profile.options.DEBUG_TARGET and
-			self.TargetPtr ~= self.LastTargetPtr ) then
-			cprintf(cli.yellow, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
-			self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
+			player.TargetPtr ~= player.LastTargetPtr ) then
+			cprintf(cli.yellow, "[DEBUG] "..player.TargetPtr.." ".._place.."\n");
+			player.LastTargetPtr = player.TargetPtr;		-- remember target address to avoid msg spam
 		end
 	end
 	
 	local function printNotTargetReason(_reason)
-		if( self.TargetPtr ~= self.LastTargetPtr ) then
+		if( player.TargetPtr ~= player.LastTargetPtr ) then
 			cprintf(cli.yellow, "%s\n", _reason);
-			self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
+			player.LastTargetPtr = player.TargetPtr;		-- remember target address to avoid msg spam
 		end
 	end
 
@@ -1298,7 +1298,7 @@ function evalTargetDefault(address)
 		end;
 
 		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= self.Address ) then	-- but not from that mob
+		target.TargetPtr ~= player.Address ) then	-- but not from that mob
 			debug_target("we have aggro from another mob")
 			return false;         
 		end;
@@ -1371,7 +1371,7 @@ function evalTargetDefault(address)
 	if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 		if ( player.Battling == false ) then	-- if we don't have aggro then
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-			printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
 			return false;		-- he is not a valid target
 		end;
 
