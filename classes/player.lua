@@ -2776,7 +2776,7 @@ function CPlayer:findNearestNameOrId(_objnameorid, ignore)
 		obj = objectList:getObject(i);
 
 		if( obj ~= nil ) then
-			if( obj.Type == PT_NODE and obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
+			if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
 				local dist = distance(self.X, self.Z, obj.X, obj.Z);
 				if( closestObject == nil ) then
 					if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
