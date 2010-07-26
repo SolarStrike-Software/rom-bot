@@ -2,6 +2,7 @@ BOT_VERSION = 3.29;
 
 include("addresses.lua");
 include("database.lua");
+include("functions.lua");
 include("classes/player.lua");
 include("classes/inventory.lua");
 include("classes/camera.lua");
@@ -12,7 +13,6 @@ include("classes/node.lua");
 include("classes/object.lua");
 include("classes/objectlist.lua");
 include("settings.lua");
-include("functions.lua");
 if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end

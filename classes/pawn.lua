@@ -1,6 +1,7 @@
 PT_NONE = 0;
 PT_PLAYER = 1;
 PT_MONSTER = 2;
+PT_SIGIL = 3;
 PT_NPC = 4;
 PT_NODE = 4;
 

@@ -700,7 +700,10 @@ function CPlayer:checkPotions()
 		if( item ) then
 			-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drunk before cast/skill is finished
 			if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
-			local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+			-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+			-- I think this check here is useless now
+			local checkItemName = item.Name;
+			item:update();
 			if( checkItemName ~= item.Name ) then
 				cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
 				item:update();
@@ -1186,7 +1189,12 @@ function CPlayer:loot()
 		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 	end
 
-	looten();
+	yrest(500);
+	self:update();
+	target:update();
+	if target.Lootable then
+		looten();
+	end;
 
 	-- check for loot problems to give a noob mesassage
 	self:update();
@@ -1199,7 +1207,7 @@ function CPlayer:loot()
 		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
 		
 		-- second loot try?
-		if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 ) then
+		if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 and target.Lootable ) then
 			yrest(settings.profile.options.LOOT_AGAIN);
 			looten();	-- try it again
 		end
@@ -1214,11 +1222,51 @@ function CPlayer:loot()
 	-- Close the booty bag.
 	RoMScript("BootyFrame:Hide()");
 
-	-- Maybe take a step forward to pick up a buff.
-	if( math.random(100) > 80 ) then
-		keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+	local function getNearestSigil()
+		local nearestSigil = nil;
+		local obj = nil;
+		local objectList = CObjectList();
+		objectList:update();
+
+		for i = 0,objectList:size() do
+			obj = objectList:getObject(i);
+
+			if( obj ~= nil ) then
+				if( obj.Type == PT_SIGIL ) then
+					local dist = distance(self.X, self.Z, obj.X, obj.Z);
+
+					if( nearestSigil == nil and dist < settings.profile.options.MAX_TARGET_DIST ) then
+						nearestSigil = obj;
+					else
+						
+						if( dist < settings.profile.options.MAX_TARGET_DIST and
+							dist < distance(self.X, self.Z, nearestSigil.X, nearestSigil.Z) ) then
+							-- New nearest sigil found
+							nearestSigil = obj;
+						end
+					end
+				end
+			end
+		end
+
+		return nearestSigil;
+	end
+
+	-- Pick up all nearby sigils
+	self:clearTarget();
+	self:update();
+	local sigil = getNearestSigil();
+	--while( sigil ) do
+	if( sigil ) then
+		local dist = distance(self.X, self.Z, sigil.X, sigil.Z);
+		local angle = math.atan2(sigil.Z - self.Z, sigil.X - self.X);
+		local nX = self.X + math.cos(angle) * (dist + 15);
+		local nZ = self.Z + math.sin(angle) * (dist + 15);
+
+		self:moveTo( CWaypoint(nX, nZ), true );
 		yrest(500);
-		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+		self:update();
+		sigil = getNearestSigil();
 	end
 
 end
@@ -1378,7 +1426,7 @@ function evalTargetDefault(address)
 		if( player.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
 			target.TargetPtr ~= player.Address ) then		-- but not from that target
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-			printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 			return false;
 		end;
 	end;
@@ -1423,6 +1471,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local angleDif = angleDifference(angle, self.Direction);
 	local canTarget = false;
 	local startTime = os.time();
+	ignoreTargets = ignoreTargets or false;
 
 	if( ignoreCycleTargets == nil ) then
 		ignoreCycleTargets = false;
