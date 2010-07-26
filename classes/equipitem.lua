@@ -39,6 +39,7 @@ function CEquipItem:update()
 		self.Empty = false;
 		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
 		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		self.MaxDurability = memoryReadByte( proc, self.Address + addresses.maxDurabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
