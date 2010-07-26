@@ -1,7 +1,6 @@
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
-include("classes/inventory.lua");
 include("classes/camera.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
