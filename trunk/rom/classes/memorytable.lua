@@ -140,26 +140,30 @@ function GetNextTableAddress( ptr )
 	
 	local function CheckAddress( addressToCheck )
 		local tmp = memoryReadInt( proc, addressToCheck + 0x4 );
+		local tmpOffset, tmpOffset4;
 		
-		tmpOffset = memoryReadInt( proc, tmp );
-		tmpOffset4 = memoryReadInt( proc, tmp + 0x4 );
-		tmpID = memoryReadInt( proc, tmp + addresses.idOffset );
-		
-		if debugTableIndexes then
-			cprintf( cli.green, "Readed from %X\t at 0x4 %X\tOriginal pointer: %X\n", addressToCheck, tmp, ptr );
-			if tmpOffset ~= addressToCheck and tmpOffset4 ~= addressToCheck then
-				printf( cli.red, "Offset at 0x0 points to: %X\tOffset at 0x4 points to: %X\n", tmpOffset or 0, tmpOffset4 or 0 );
+		if ( tmp ~= nil ) then
+			tmpOffset = memoryReadInt( proc, tmp ) or 0;
+			tmpOffset4 = memoryReadInt( proc, tmp + 0x4 ) or 0;
+			tmpID = memoryReadInt( proc, tmp + addresses.idOffset ) or 0;
+			
+			if debugTableIndexes then
+				cprintf( cli.green, "Readed from %X\t at 0x4 %X\tOriginal pointer: %X\n", addressToCheck, tmp, ptr );
+				if tmpOffset ~= addressToCheck and tmpOffset4 ~= addressToCheck then
+					printf( cli.red, "Offset at 0x0 points to: %X\tOffset at 0x4 points to: %X\n", tmpOffset or 0, tmpOffset4 or 0 );
+				end;
+			end;
+			
+			if ( ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
+				if debugTableIndexes then
+					cprintf( cli.lightblue, "Returning: %X\n", tmp );
+				end;
+				return tmp;
 			end;
 		end;
-		
-		if ( tmp ~= nil and ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
-			if debugTableIndexes then
-				cprintf( cli.lightblue, "Returning: %X\n", tmp );
-			end;
-			return tmp;
-		else
-			tmp = memoryReadInt( proc, addressToCheck + 0x8 );
+		tmp = memoryReadInt( proc, addressToCheck + 0x8 );
 
+		if ( tmp ~= nil ) then
 			tmpOffset = memoryReadInt( proc, tmp );
 			tmpOffset4 = memoryReadInt( proc, tmp + 0x4 );
 			tmpID = memoryReadInt( proc, tmp + addresses.idOffset );
@@ -171,13 +175,13 @@ function GetNextTableAddress( ptr )
 				end;
 			end;
 
-			if ( tmp ~= nil and ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
+			if ( ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
 				if debugTableIndexes then
 					cprintf( cli.lightblue, "Returning: %X\n", tmp );
 				end;
 				return tmp;
-			end
-		end; 
+			end;
+		end;
 		
 		if debugTableIndexes then
 			cprintf( cli.turquoise, "Returning NIL\n" );
