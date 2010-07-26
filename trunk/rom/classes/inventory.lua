@@ -1,75 +1,114 @@
+include("memorytable.lua");
 include("item.lua");
+include("equipitem.lua");
 
+local proc = getProc();
 
 CInventory = class(
 	function (self)
-		self.BagSlot = {} 
+		local _bagId = 61;
+		self.BagSlot = {};
+		self.EquipSlots = {};
+		self.Money = memoryReadInt( proc, addresses.moneyPtr );
+		
+		if( settings.profile.options.DEBUG_INV ) then
+			printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
+		end;
+
+		local timeStart = getTime();
+		
 		for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
-			self.BagSlot[slotNumber] = CItem(slotNumber);
+			self.BagSlot[slotNumber] = CItem( _bagId );
+			_bagId = _bagId + 1;
 		end
 		
-		self.NextItemToUpdate = 1;
+		if( settings.profile.options.DEBUG_INV ) then	
+			printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
+		end;
 		
+		for slotNumber = 1, 22, 1 do
+			self.EquipSlots[slotNumber] = CEquipItem( slotNumber );
+		end
+
+		self.NextItemToUpdate = 1;		
 	end
-)
+);
 
+function CInventory:update()
+--	if( settings.profile.options.DEBUG_INV ) then
+--		printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
+--	end;
 
-function CInventory:getAmmunitionCount()
-	local count = RoMScript("GetInventoryItemCount('player', 9);");
-	if count == nil then
-		count = 0;
+	local timeStart = getTime();
+
+	self.Money = memoryReadInt( proc, addresses.moneyPtr );
+
+	for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
+		self.BagSlot[slotNumber]:update();
 	end
-	return count;
-end
 
- 
--- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
-function CInventory:reloadAmmunition(type) 
-	item = self:bestAvailableConsumable(type);
-	-- if theres no ammunition, open a ammunition bag
-	if not item then
-		if type == "arrow" then
-			openItem = self:bestAvailableConsumable("arrow_quiver");
-		elseif type == "thrown" then
-			openItem = self:bestAvailableConsumable("thrown_bag");
-		end
-		
-		if not openItem then
-			return false;
-		end
+--	if( settings.profile.options.DEBUG_INV ) then	
+		printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
+		printf( "You have: %d gold.\n", self.Money );
+--	end;
+end;
 
-		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. openItem.SlotNumber .. ")");
-		yrest(200);
-		self:update();
-		item = self:bestAvailableConsumable("arrow");
-		if( item and checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
-			openItem:update();
-		else
-			openItem:use();
-		end
-		
-		-- after opening, update the inventory (this takes about 10 sec)
-		self:update();
-		
-		item = self:bestAvailableConsumable(type);
+function CInventory:updateEquipment()
+--	if( settings.profile.options.DEBUG_INV ) then
+--		printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
+--	end;
+
+	local timeStart = getTime();
+
+	for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
+		self.EquipSlots[slotNumber]:update();
 	end
+
+--	if( settings.profile.options.DEBUG_INV ) then	
+		printf( "Equipment update took: %d\n", deltaTime( getTime(), timeStart ) );
+--	end;
+end;
+
+-- Here for compatibility reasons
+function CInventory:getItemCount(itemId)
+	if(itemId == nil) then
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );	
+		return 0;
+	end
+
+	return self:itemTotalCount( itemId );
+end;
+
+-- No longer uses cached information, it updates before checking
+function CInventory:itemTotalCount(itemNameOrId)
+	self:update();
 	
-	if item then
-		-- use it
-		local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
-		if( checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
-			item:update();
-		else
-			item:use();
-		end
-	end
-end
+	totalCount = 0;
+ 	for slot,item in pairs(self.BagSlot) do
+	    if item.Id == itemNameOrId or item.Name == itemNameOrId then
+			totalCount = totalCount + item.ItemCount;
+		end;
+	end;
+	
+	return totalCount;
+end;
 
-function CInventory:isEquipped(__space)
+function CInventory:useItem(itemNameOrId)
+	self:update();
+	
+	for slot,item in pairs( self.BagSlot ) do
+		if item.Id == itemNameOrId or item.Name == itemNameOrId then
+			item:use();
+			return true, item.Id, item.Name;
+		end;
+	end;
+	
+	return false;
+end;
+
+function CInventory:isEquipped( __space )
 -- return true if equipped is equipped at slot and has durability > 0
-	local slot = 11;-- Automatically set slot to 16/MainHand
+	local slot = 16;-- Automatically set slot to 16/MainHand
 	_space = string.lower(__space); 
 	
 	if ( type(_space) ~= "string" ) then
@@ -118,62 +157,46 @@ function CInventory:isEquipped(__space)
 		slot = 20; -- first slot under necklace next to shoulder
 	elseif (_space == "talisman3") then
 		slot = 21; -- first slot under talisman2 next to gloves
-	end
+	elseif (_space == "wings") then
+		slot = 22;
+	end;
 	
-    local durability, durabilityMax, itemName = RoMScript("GetInventoryItemDurable('player',"..slot..");");
-
-	-- prevent aritmetic on a nil value if RoMScript failed/wrong values come back
-	if( type(durability) ~= "number" or  
-		type(durabilityMax) ~= "number" or 
-		durabilityMax == 0 or 
-		type(itemName) ~= "string" ) then
+	self.EquipSlots[ slot ]:update();
+	
+	if( self.EquipSlots[ slot ].Empty ) then
 		return false;
-	end
-
-	local realDurability = tonumber(durability)/tonumber(durabilityMax)*100;
+	end;
 	
-	if( type(realDurability) ~= "number" or
-		realDurability < 0 ) then
+	local realDurability = self.EquipSlots[ slot ].Durability / self.EquipSlots[ slot ].MaxDurabilty * 100;
+	
+	if( realDurability <= 0 ) then
 		return false;
-	end
+	end;
 	
-	return true;
+	return true;	
+end;
+
+function CInventory:getDurability( _slot )
+	-- return item durability for a given slot in percent from 0 - 100
+
+	if( not _slot) then _slot = 16; end		-- 16=MainHand | 17=OffHand | 11=Ranged
 	
-end
-
-function CInventory:getDurability(_slot)
--- return item durability for a given slot in percent from 0 - 100
-
-	if( not _slot) then _slot = 15; end		-- 15=MainHand | 16=OffHand | 10=Ranged
-
-    local durability, durabilityMax = RoMScript("GetInventoryItemDurable('player',".._slot..");");
-
-	-- prevent aritmetic on a nil value if RoMScript failed/wrong values come back
-	if( type(durability) ~= "number" or  
-		type(durabilityMax) ~= "number" 
-		or durabilityMax == 0) then
-		return 100;
-	end
-
-	return tonumber(durability)/tonumber(durabilityMax)*100;
+	self.EquipSlots[ _slot ]:update();
 	
-end
-
-
+	return self.EquipSlots[ _slot ].Durability / self.EquipSlots[ _slot ].MaxDurabilty * 100;
+end;
 
 function CInventory:getMainHandDurability()
--- return values between 0 - 1 for combatibility reasons
-
-	return inventory:getDurability(15) / 100;		-- 15=Main Hand
-
-end
+	-- return values between 0 - 1 for compatibility reasons
+	return inventory:getDurability( 16 ) / 100;		-- 16=Main Hand
+end;
 
 -- Make a full update
 -- or update slot 1 to _maxslot
-function CInventory:update(_maxslot)
+function CInventory:update( _maxslot )
 	if( not _maxslot ) then _maxslot = settings.profile.options.INV_MAX_SLOTS; end;
 
-	printf(language[1000], _maxslot);  -- Updating
+	-- printf(language[1000], _maxslot);  -- Updating
 	
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
@@ -185,13 +208,11 @@ function CInventory:update(_maxslot)
 	printf("\n");
 	keyboardSetDelay(50);
 	
-	player.InventoryDoUpdate = false;			-- set back update trigger
-	player.InventoryLastUpdate = os.time();		-- remember update time
+	-- player.InventoryDoUpdate = false;			-- set back update trigger
+	-- player.InventoryLastUpdate = os.time();		-- remember update time
 
-	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
-	
-end
-
+	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then	
+end;
 
 -- update x slots until given time in ms is gone
 function CInventory:updateSlotsByTime(_ms)
@@ -229,43 +250,10 @@ function CInventory:updateNextSlot(_times)
 		self.NextItemToUpdate = self.NextItemToUpdate + 1;
 		if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
 			self.NextItemToUpdate = 1;
-		end
+		end;
 
-	end
-	
-end
-
--- uses romscript, its 
-function CInventory:getItemCount(itemId)
-	if(itemId == nil) then
-		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );	
-		return 0;
-	end
-
-	itemCount = RoMScript("GetBagItemCount("..itemId..")");
-	return tonumber(itemCount);
-end
-
--- uses pre existing information
-function CInventory:itemTotalCount(itemNameOrId)
-	totalCount = 0;
- 	for slot,item in pairs(self.BagSlot) do
-	    if item.Id == itemNameOrId or item.Name == itemNameOrId then
-			totalCount = totalCount+item.ItemCount;
-		end
-	end
-	return totalCount;
-end
-
-function CInventory:useItem(itemNameOrId)
-	for slot,item in pairs(self.BagSlot) do
-		if item.Id == itemNameOrId or item.Name == itemNameOrId then
-			item:use();
-			return true, item.Id, item.Name;
-		end
-	end
-	return false
-end
+	end;
+end;
 
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
@@ -296,7 +284,7 @@ function CInventory:bestAvailableConsumable(type)
 		select_strategy = select_strategy_default;	-- default = 'best'
 	end
 
-
+	self:update();
 	-- check item slots slot by slot
 	for slot,item in pairs(self.BagSlot) do
 		local consumable = database.consumables[item.Id];		

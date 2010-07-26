@@ -1,4 +1,4 @@
--- A little class
+local proc = getProc();
 
 -- Tooltip parser keywords
 ITEM_TOOLTIP_DURABILITY = {
@@ -22,42 +22,74 @@ ITEMCOLOR = {
 	GOLD =   tonumber("0xFFA37D50"),
 };
 
+-- making a new one because i dont know if the other is used elsewhere
+ITEMQUALITYCOLOR = { 
+	tonumber("0xFFFFFFFF"),
+	tonumber("0xFF00FF00"),
+	tonumber("0xFF0072BC"),
+	tonumber("0xFFA864A8"),
+	tonumber("0xFFF68E56"),
+	tonumber("0xFFA37D50"),
+	0,
+	0,
+	tonumber("0xFFA864A8"),
+};
+
 CItem = class(
-	function(self,slotNumber)
+	function( self, bagId )		
+		self.Address = addresses.staticInventory + ( ( bagId - 61 ) * 68 );
+		self.BaseItemAddress = nil;
+		self.Empty = true;
 		self.Id = 0;
-		self.BagId = 0;
-		self.Name = "";
+		self.BagId = bagId;
+		self.Name = "<EMPTY>";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
-		self.SlotNumber = slotNumber;
+		self.SlotNumber = -1; -- No idea how to get this one, i think is not used, at least not in inventory...
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
+		self.Durability = 0;
+		self.Quality = 0; -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
+		self.Value = 0;
+		self.Worth = 0;
+		self.InUse = false;
+		self.BoundStatus = 1; -- 0 = pick, 1 = no, 2 = bound 3 = equip
+		self.RequiredLvl = 0;
+		self.CoolDownTime = 0;
+		self.LastTimeUsed = 0;
+		self.MaxStack = 0;
+		self.ObjType = 0;
+		
+		if ( self.Address ~= nil and self.Address ~= 0 ) then
+			self:update();
+		end;
 	end
-)
+);
 
 
 function CItem:use()
-
-	-- TODO: because client is to slow to notice the use in time, we reduce it by hand
-	-- after we use it / we will have to check that if we also use other things
-	-- that are not consumable like mounts, armor
+	local canUse = true;
 	self:update();
 	
-	-- TODO: avoid some unclear bug / should be solved if we really clear empty slots
-	-- or if we update fast enough?
-	if( self.BagId == nil ) then
-		cprintf(cli.yellow, "Empty BagId, that should not happen!\n" );
-		return 0;
-	end
-
-	RoMScript("UseBagItem("..self.BagId..");");
-
-	if (database.consumables[self.Id]) then 	-- is in consumable database? / could be reduced
-		self.ItemCount = self.ItemCount - 1;
+	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
+	if not self.InUse then
+		if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
+		( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
+			canUse = false;
+		end;
+	else -- Item is in use, locked, we can't use it
+		canUse = false;
+	end;
+	
+	if ( canUse ) then
+		RoMScript("UseBagItem("..self.BagId..");");
+		self.LastTimeUsed = getTime();
 	end;
 
-	if( settings.profile.options.DEBUG_INV) then	
-		cprintf(cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
+	self:update();
+
+	if ( settings.profile.options.DEBUG_INV ) then	
+		cprintf( cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
 	end;
 
 	return self.ItemCount;
@@ -76,7 +108,133 @@ function CItem:__tonumber()
 end
 
 function CItem:update()
+	local nameAddress;
+	local oldId = self.Id;
+	self.Id = memoryReadInt( proc, self.Address ) or 0;
+	
+	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
+		self.BaseItemAddress = GetItemAddress( self.Id );		
+		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
+			cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", self.Id );
+			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));
+			return;
+		end;
+		
+		self.Name = "";
+		self.Empty = false;
+		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		if ( self.Durability > 0 ) then
+			self.Durability = self.Durability / 100;
+		end;
+		self.Value = memoryReadInt( proc, self.BaseItemAddress + addresses.valueOffset );
+		if ( self.Value > 0 ) then
+			self.Worth = self.Value / 10;
+		end;
+		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
+		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
+		self.RequiredLvl = memoryReadInt( proc, self.BaseItemAddress + addresses.requiredLevelOffset );
+		self.MaxStack = memoryReadInt( proc, self.BaseItemAddress + addresses.maxStackOffset );
+		self.ObjType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset );
+		
+		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
+			local skillItemId = memoryReadInt( proc, self.BaseItemAddress + addresses.realItemIdOffset );
+			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
+				local skillItemAddress = GetItemAddress( skillItemId );
+				if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
+					self.CoolDownTime = memoryReadInt( proc, skillItemAddress + addresses.coolDownOffset );
+				end;
+			end;
+			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
+		end;
+		
+		-- Special case for cards
+		if ( self.Id >= 770000 and self.Id <= 771000 ) then
+			-- We need to get info from NPC...
+			tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idCardNPCOffset );
+			npcInfoAddress = GetItemAddress( tmp );
+			nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
+			self.Name = "Card - "; -- We should add a string so we can localize this
+		else
+			nameAddress = memoryReadInt( proc, self.BaseItemAddress + addresses.nameOffset );
+		end;
 
+		if( nameAddress == nil or nameAddress == 0 ) then
+			tmp = nil;
+		else
+			tmp = memoryReadString(proc, nameAddress);
+		end;
+
+		if tmp ~= nil then
+			self.Name = self.Name .. tmp;
+		else
+			self.Name = "<EMPTY>";
+		end;
+
+		self.Quality = memoryReadInt( proc, self.BaseItemAddress + addresses.qualityBaseOffset );
+		local plusQuality = memoryReadByte( proc, self.Address + addresses.qualityTierOffset );
+		local quality, tier = math.modf ( plusQuality / 16 );
+		-- tier = tier * 16; -- Tier not really used yet...
+		if ( quality > 0 ) then
+			self.Quality = self.Quality + ( quality / 2 );
+		end;
+		
+		-- Assign color based on quality
+		self.Color = ITEMQUALITYCOLOR[ self.Quality + 1 ];
+		
+		-- Build an usable ItemLink		
+		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color, self.Name );
+	elseif ( self.Id == 0 ) then
+		self.Empty = true;
+		self.Id = 0;
+		self.Name = "<EMPTY>";
+		self.ItemCount = 0;
+		self.Color = "ffffff";
+		self.SlotNumber = -1;
+		self.Icon = "";
+		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
+		self.Durability = 0;
+		self.Quality = 0; -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
+		self.Value = 0;
+		self.Worth = 0;
+		self.InUse = false;
+		self.RequiredLvl = 0;
+	else
+		-- if id is not 0 and hasn't changed we only update these values
+		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		if ( self.Durability > 0 ) then
+			self.Durability = self.Durability / 100;
+		end;
+		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
+		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
+	end;
+	
+	if( settings.profile.options.DEBUG_INV ) then	
+		if ( self.Empty ) then
+			printf( "BagID: %d is <EMPTY>.\n", self.BagId );
+		else
+			local _color = cli.white;
+			printf( "BagID: %d\tcontains: %d\t (%d) ", self.BagId, self.ItemCount, self.Id );
+			if ( self.Quality == 1 ) then
+				_color = cli.lightgreen;
+			end;
+			if ( self.Quality == 2 ) then
+				_color = cli.blue;
+			end;
+			if ( self.Quality == 3 ) then
+				_color = cli.purple;
+			end;
+			if ( self.Quality == 4 ) then
+				_color = cli.yellow;
+			end;
+			if ( self.Quality == 5 ) then
+				_color = cli.forestgreen;
+			end;
+			cprintf(  _color, "[%s]\n", self.Name );
+		end;
+	end;
+--[[
 --	local old_BagId = self.BagId;	-- remember bagId before update
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
 	local id, color;
@@ -125,7 +283,7 @@ function CItem:update()
 		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
 	end;
 	
-
+]]--
 end
 
 -- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
