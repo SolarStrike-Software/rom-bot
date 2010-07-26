@@ -167,7 +167,7 @@ function CInventory:isEquipped( __space )
 		return false;
 	end;
 	
-	local realDurability = self.EquipSlots[ slot ].Durability / self.EquipSlots[ slot ].MaxDurabilty * 100;
+	local realDurability = self.EquipSlots[ slot ].Durability / self.EquipSlots[ slot ].MaxDurability * 100;
 	
 	if( realDurability <= 0 ) then
 		return false;
@@ -182,8 +182,7 @@ function CInventory:getDurability( _slot )
 	if( not _slot) then _slot = 16; end		-- 16=MainHand | 17=OffHand | 11=Ranged
 	
 	self.EquipSlots[ _slot ]:update();
-	
-	return self.EquipSlots[ _slot ].Durability / self.EquipSlots[ _slot ].MaxDurabilty * 100;
+	return self.EquipSlots[ _slot ].Durability / self.EquipSlots[ _slot ].MaxDurability * 100;
 end;
 
 function CInventory:getMainHandDurability()

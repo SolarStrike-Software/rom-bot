@@ -743,7 +743,10 @@ function CPlayer:checkPotions()
 			if( item ) then
 				-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drubk before cast/skill is finished
 				if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
-				local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+				--local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+				-- I think this check here is useless now
+				local checkItemName = item.Name;
+				item:update();
 				if( checkItemName ~= item.Name ) then
 					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
 					item:update();
