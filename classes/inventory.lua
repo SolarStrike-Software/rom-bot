@@ -69,6 +69,15 @@ function CInventory:updateEquipment()
 --	end;
 end;
 
+function CInventory:getAmmunitionCount()
+	self.EquipSlots[ 9 ]:update(); -- 9 Ammunition slot
+	local count = self.EquipSlots[ 9 ].ItemCount;
+	if count == nil then
+		count = 0;
+	end;
+	return count;
+end;
+
 -- Here for compatibility reasons
 function CInventory:getItemCount(itemId)
 	if(itemId == nil) then
