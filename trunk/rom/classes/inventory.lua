@@ -6,6 +6,8 @@ local proc = getProc();
 
 CInventory = class(
 	function (self)
+		LoadTables();
+		
 		local _bagId = 61;
 		self.BagSlot = {};
 		self.EquipSlots = {};
