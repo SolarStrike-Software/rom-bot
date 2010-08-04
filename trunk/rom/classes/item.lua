@@ -69,6 +69,7 @@ CItem = class(
 
 function CItem:use()
 	local canUse = true;
+	local reason = "";
 	self:update();
 	
 	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
@@ -76,14 +77,20 @@ function CItem:use()
 		if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
 		( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
 			canUse = false;
+			reason = "Cooldown";
 		end;
 	else -- Item is in use, locked, we can't use it
+		reason = "In use";
 		canUse = false;
 	end;
 	
 	if ( canUse ) then
-		RoMScript("UseBagItem("..self.BagId..");");
+		RoMScript("UseBagItem("..self.BagId..")");
 		self.LastTimeUsed = getTime();
+		yrest( 500 ); -- give time for server to respond with new item count
+	else
+		cprintf( cli.yellow, "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason );
+		logMessage( sprintf( "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason ) );
 	end;
 
 	self:update();
@@ -183,7 +190,7 @@ function CItem:update()
 		self.Color = ITEMQUALITYCOLOR[ self.Quality + 1 ];
 		
 		-- Build an usable ItemLink		
-		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color, self.Name );
+		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
 	elseif ( self.Id == 0 ) then
 		self.Empty = true;
 		self.Id = 0;
