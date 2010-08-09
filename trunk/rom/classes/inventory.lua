@@ -62,8 +62,8 @@ function CInventory:updateEquipment()
 
 	local timeStart = getTime();
 
-	for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
-		self.EquipSlots[slotNumber]:update();
+	for slotNumber = 1, 22, 1 do
+		self.EquipSlots[ slotNumber ]:update();
 	end
 
 --	if( settings.profile.options.DEBUG_INV ) then	
@@ -72,8 +72,9 @@ function CInventory:updateEquipment()
 end;
 
 function CInventory:getAmmunitionCount()
-	self.EquipSlots[ 9 ]:update(); -- 9 Ammunition slot
-	local count = self.EquipSlots[ 9 ].ItemCount;
+	self:updateEquipment();
+	-- self.EquipSlots[ 9 ]:update(); -- 9 Ammunition slot
+	local count = self.EquipSlots[ 10 ].ItemCount;
 	if count == nil then
 		count = 0;
 	end;
@@ -245,7 +246,7 @@ end;
 
 function CInventory:getMainHandDurability()
 	-- return values between 0 - 1 for compatibility reasons
-	return inventory:getDurability( 16 ) / 100;		-- 16=Main Hand
+	return inventory:getDurability( 16 );		-- 16=Main Hand
 end;
 
 -- Make a full update
