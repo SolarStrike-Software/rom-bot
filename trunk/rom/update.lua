@@ -53,6 +53,10 @@ local staticTableSizeUpdatePattern = string.char(0x83, 0xC4, 0x04, 0x8B, 0x15, 0
 local staticTableSizeUpdateMask = "xxxxx????xxxx";
 local staticTableSizeUpdateOffset = 5;
 
+local pingOffsetUpdatePattern = string.char(0xFF, 0xD2, 0xEB, 0x17, 0x8B, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0x03, 0x85);
+local pingOffsetUpdateMask = "xxxxxx????xx";
+local pingOffsetUpdateOffset = 6;
+
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
@@ -106,6 +110,8 @@ function findOffsets()
 
 	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
 	update("staticTableSize", staticTableSizeUpdatePattern, staticTableSizeUpdateMask, staticTableSizeUpdateOffset, 0x620000, 0xA0000);
+
+	update("ping_offset", pingOffsetUpdatePattern, pingOffsetUpdateMask, pingOffsetUpdateOffset, 0x5FA000, 0xA0000);
 end
 
 function rewriteAddresses()

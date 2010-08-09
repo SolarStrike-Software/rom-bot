@@ -498,7 +498,9 @@ function CPlayer:cast(skill)
 		-- Wait for casting to start (if it has a decent cast time)
 		if( skill.CastTime > 0 ) then
 			-- wait for previous cast to finish. >PRIOR assume missed it
-			while (self.Casting) and (deltaTime(getTime(),startTime) < settings.profile.options.SKILL_USE_PRIOR) do 
+			local prior = getSkillUsePrior();
+
+			while (self.Casting) and (deltaTime(getTime(),startTime) < prior) do 
 				self:update(); yrest(10);
 			end
 	--		local startTime = os.time();
@@ -521,30 +523,6 @@ function CPlayer:cast(skill)
 			end;
 
 			self.LastSkillStartTime=getTime() -- now that casting = true reset starttime to now
-			
-			-- Following is obsolete
-			--[[while(self.Casting) do
-				-- break cast with jump if aggro before casting finished
-				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
-				   ( skill.Type == STYPE_DAMAGE or
-					 skill.Type == STYPE_DOT ) ) then	--  with jump
-					printf(language[82]);	-- close print 'Casting ..."
-					return;
-				end;
-				-- Waiting for casting to finish...
-				yrest(50);
-				self:update();
-
-				-- leave before Casting flag is gone, so we can cast faster
-				if( deltaTime(getTime(), startTime) > 
-				  skill.CastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
-	--				self.Casting = true; 	-- leave before Casting flag is gone, so we can cast faster
-					break;
-				end
-
-
-			end]]
-	--				printf(language[20]);		-- finished casting
 		else
 			yrest(700); -- assume .7 second yrest
 		end
@@ -698,10 +676,7 @@ function CPlayer:checkPotions()
 		os.difftime(os.time(), self.PotionLastUseTime) > cooldown_hp )  then
 		item = inventory:bestAvailableConsumable("healing");
 		if( item ) then
-			-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drunk before cast/skill is finished
 			if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
-			-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
-			-- I think this check here is useless now
 			local checkItemName = item.Name;
 			item:update();
 			if( checkItemName ~= item.Name ) then
@@ -2917,8 +2892,9 @@ function CPlayer:waitTillCastingEnds()
 		self:update();
 
 		-- leave before Casting flag is gone, so we can cast faster
-		if( deltaTime(getTime(), self.LastSkillStartTime) > 
-		  self.LastSkillCastTime*1000 - settings.profile.options.SKILL_USE_PRIOR ) then
+		local prior = getSkillUsePrior();
+
+		if( deltaTime(getTime(), self.LastSkillStartTime) > self.LastSkillCastTime * 1000 - prior ) then
 			--				end of waiting
 			break;
 		end
