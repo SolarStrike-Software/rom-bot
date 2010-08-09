@@ -46,6 +46,7 @@ addresses = {
 	staticbase_macro = 0x9FEE3C,
 	staticpattern_char = 0x63B024,
 	staticpattern_macro = 0x7440B5,
+	ping_offset = 0x7A0, -- ADDED
 	-- Start of new memory tables addresses and offsets
 	staticInventory = 0x9B8948,
 	staticEquipBase = 0x9ABABC,

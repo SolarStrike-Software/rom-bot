@@ -164,8 +164,10 @@ function CSkill:canUse(_only_friendly, target)
 
 
 	-- Still cooling down...
+	local prior = getSkillUsePrior();
+
 	if( deltaTime(getTime(), self.LastCastTime) < 
-		  (self.Cooldown*1000 - self.rebuffcut*1000 - settings.profile.options.SKILL_USE_PRIOR) ) then	-- Cooldown is in sec
+		  (self.Cooldown*1000 - self.rebuffcut*1000 - prior) ) then	-- Cooldown is in sec
 		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;
 --	else
@@ -365,8 +367,10 @@ function CSkill:use()
 	-- and here to have a minimum delay between the keypresses
 	-- 850/900 will work after skills without casting time, but will result in misses 
 	-- after skills that have a casting time
+	local prior = getSkillUsePrior();
+
 	while( deltaTime(getTime(), bot.LastSkillKeypressTime) < 
-		settings.profile.options.SKILL_GLOBALCOOLDOWN-settings.profile.options.SKILL_USE_PRIOR ) do
+		settings.profile.options.SKILL_GLOBALCOOLDOWN - prior ) do
 		yrest(10);
 	end
 

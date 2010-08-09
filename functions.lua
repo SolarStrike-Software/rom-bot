@@ -1049,3 +1049,21 @@ function getQuestStatus(_questname)
 	
 	return RoMScript("igf_questStatus(\"".._questname.."\")")
 end
+
+-- Read the ping variable from the client
+function getPing()
+	return memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.ping_offset);
+end
+
+-- Returns the proper SKILL_USE_PRIOR value (whether manual or auto, and adjusted)
+function getSkillUsePrior()
+	local prior = 0;
+	if( settings.profile.options.SKILL_USE_PRIOR == "auto" ) then
+		-- assume ping - 20
+		prior = math.max(getPing() - 20, 25);
+	else
+		prior = settings.profile.options.SKILL_USE_PRIOR;
+	end
+
+	return prior;
+end
