@@ -80,6 +80,53 @@ function CInventory:getAmmunitionCount()
 	return count;
 end;
 
+-- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
+function CInventory:reloadAmmunition(type) 
+	item = self:bestAvailableConsumable(type);
+	-- if theres no ammunition, open a ammunition bag
+	if not item then
+		if type == "arrow" then
+			openItem = self:bestAvailableConsumable("arrow_quiver");
+		elseif type == "thrown" then
+			openItem = self:bestAvailableConsumable("thrown_bag");
+		end
+		
+		if not openItem then
+			return false;
+		end
+
+		local checkItemName = openItem.Name;
+		self:update();
+		yrest(200);
+		item = self:bestAvailableConsumable(type);
+		if( item and checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+			openItem:update();
+		else
+			openItem:use();
+			yrest( 500 ); --give time to server to respond with the opened item
+		end
+		
+		-- after opening, update the inventory (this takes about 10 sec)
+		self:update();
+		
+		item = self:bestAvailableConsumable(type);
+	end
+	
+	if item then
+		-- use it
+		-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+		local checkItemName = item.Name;
+		item:update();
+		if( checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+			item:update();
+		else
+			item:use();
+		end
+	end
+end;
+
 -- Here for compatibility reasons
 function CInventory:getItemCount(itemId)
 	if(itemId == nil) then
