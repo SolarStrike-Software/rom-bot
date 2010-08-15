@@ -168,8 +168,8 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 				local pawn = CPawn(obj.Address);
 
 				if( evalFunc(obj.Address) == true ) then
-					if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.MAX_TARGET_DIST and
-					((obj.Address == self.Address and aggroOnly == true) or aggroOnly == false) ) then
+					if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
+					((pawn.TargetPtr == self.Address and aggroOnly == true) or aggroOnly == false) ) then
 						local currentScore = 0;
 						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
 						currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
@@ -195,8 +195,10 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	end
 
 	if( bestEnemy ) then
+		printf("Best target is %s\n", bestEnemy.Name);
 		return CPawn(bestEnemy.Address);
 	else
+		printf("No good target found.\n");
 		return nil;
 	end
 end
@@ -1331,18 +1333,51 @@ function evalTargetDefault(address)
 	end
 
 	-- check distance to target against MAX_TARGET_DIST
-	if( distance(player.X, player.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
-			debug_target("target dist > MAX_TARGET_DIST")
-			return false;			-- he is not a valid target
-		end;
+	local wpl; -- this is the waypoint list we're using
+	local V; -- this is the point we will use for distance checking
 
-		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= player.Address ) then	-- but not from that mob
-			debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-			return false;         
+	if( player.Returning ) then
+		wpl = __RPL;
+	else
+		wpl = __WPL;
+	end
+
+	if( (not target.Aggressive) and (__WPL:getMode() == "waypoints") ) then
+		-- We only want passive creatures near our waypoint path
+		local pA = wpl:getNextWaypoint();--CWaypoint(wpl.Waypoints[wpl.CurrentWaypoint].X, wpl.Waypoints[wpl.CurrentWaypoint].Z);
+		local pB = wpl:getNextWaypoint(1);
+
+		V = getNearestSegmentPoint(player.X, player.Z, pA.X, pA.Z, pB.X, pB.Z);
+	else
+		-- We'll fight aggressive creatures that are near the player
+		-- or any creature if we're not using a proper waypoint list
+		V = CWaypoint(player.X, player.Z);
+	end
+
+	-- use a bounding box first to avoid sqrt when not needed (sqrt is expensive)
+	if( target.X > (V.X - settings.profile.options.MAX_TARGET_DIST) and
+		target.X < (V.X + settings.profile.options.MAX_TARGET_DIST) and
+		target.Z > (V.Z - settings.profile.options.MAX_TARGET_DIST) and
+		target.Z < (V.Z + settings.profile.options.MAX_TARGET_DIST) ) then
+
+		if( distance(V.X, V.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
+			if ( player.Battling == false ) then	-- if we don't have aggro then
+				debug_target("target dist > MAX_TARGET_DIST")
+				return false;			-- he is not a valid target
+			end;
+
+			if( player.Battling == true  and		-- we have aggro
+			target.TargetPtr ~= player.Address ) then	-- but not from that mob
+				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
+				return false;         
+			end;
 		end;
-	end;
+	else
+		-- must be too far away
+		debug_target("target dist > MAX_TARGET_DIST")
+		return false;
+	end
+
 
 	-- PK protect
 	if( target.Type == PT_PLAYER ) then      -- Player are type == 1
