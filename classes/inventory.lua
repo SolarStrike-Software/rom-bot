@@ -259,11 +259,11 @@ function CInventory:update( _maxslot )
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
-		if( not settings.profile.options.DEBUG_INV ) then
-			displayProgressBar(slotNumber/_maxslot*100, 50);
-		end
+		--if( not settings.profile.options.DEBUG_INV ) then
+		--	displayProgressBar(slotNumber/_maxslot*100, 50);
+		--end
 	end
-	printf("\n");
+	--printf("\n");
 	keyboardSetDelay(50);
 	
 	-- player.InventoryDoUpdate = false;			-- set back update trigger

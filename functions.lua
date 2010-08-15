@@ -1067,3 +1067,31 @@ function getSkillUsePrior()
 
 	return prior;
 end
+
+
+-- Returns the point that is nearest to (X,Z) between segment (A,B) and (C,D)
+function getNearestSegmentPoint(x, z, a, b, c, d)
+	local dx1 = x - a;
+	local dz1 = z - b;
+	local dx2 = c - a;
+	local dz2 = d - b;
+
+	local dot = dx1 * dx2 + dz1 * dz2;
+	local len_sq = dx2 * dx2 + dz2 * dz2;
+	local param = dot / len_sq;
+
+	local nx, nz;
+
+	if( param < 0 ) then
+		nx = a;
+		nz = b;
+	elseif( param > 1 ) then
+		nx = c;
+		nz = d;
+	else
+		nx = a + param * dx2;
+		nz = b + param * dz2;
+	end
+
+	return CWaypoint(nx, nz);
+end
