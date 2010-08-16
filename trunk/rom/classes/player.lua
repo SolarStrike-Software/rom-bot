@@ -195,10 +195,8 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	end
 
 	if( bestEnemy ) then
-		printf("Best target is %s\n", bestEnemy.Name);
 		return CPawn(bestEnemy.Address);
 	else
-		printf("No good target found.\n");
 		return nil;
 	end
 end
@@ -1169,7 +1167,7 @@ function CPlayer:loot()
 		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 	end
 
-	yrest(500);
+	yrest(1000);
 	self:update();
 	target:update();
 	if target.Lootable then
