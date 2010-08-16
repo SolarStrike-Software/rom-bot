@@ -181,7 +181,7 @@ function CPawn:update()
 	if( self.Type == 2 ) then
 		--printf("%s Lootable flag: 0x%X (%d)\n", self.Name, self.Lootable, self.Lootable);
 	end
-	self.Lootable = self.Lootable == 60;
+	self.Lootable = bitAnd(self.Lootable, 0x4);
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
