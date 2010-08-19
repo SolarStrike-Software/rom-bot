@@ -170,17 +170,6 @@ function main()
 	
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
 
-	-- onLoad event
-	-- possibility for users to overwrite profile settings
-	if( type(settings.profile.events.onLoad) == "function" ) then
-		local status,err = pcall(settings.profile.events.onLoad);
-		if( status == false ) then
-			local msg = sprintf("onLoad error: %s", err);
-			error(msg);
-		end
-	end
-
-
 	-- list waypoint files and files in folders
 	-- only files with filetype '.xml' are listed
 	-- only folders without '.' are listed
@@ -381,6 +370,16 @@ function main()
 
 	-- Update inventory
 	inventory:update();
+
+	-- onLoad event
+	-- possibility for users to overwrite profile settings
+	if( type(settings.profile.events.onLoad) == "function" ) then
+		local status,err = pcall(settings.profile.events.onLoad);
+		if( status == false ) then
+			local msg = sprintf("onLoad error: %s", err);
+			error(msg);
+		end
+	end
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
