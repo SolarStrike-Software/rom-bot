@@ -2870,15 +2870,30 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
 	local objFound = false;
 
 	while(true) do
-		obj = self:findNearestNameOrId(_objname, lastHarvestedNodeAddr)
-		if obj then -- object found, target
-			cprintf(cli.yellow, language[95], obj.Name);
-			objFound = true
-			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, obj.Address);
-			yrest(100)
-			RoMScript("UseSkill(1,1)"); yrest(50);
-			yrest(_waittime);
-		end
+		repeat
+			interrupted = false
+			obj = self:findNearestNameOrId(_objname, lastHarvestedNodeAddr)
+			if obj then -- object found, target
+				cprintf(cli.yellow, language[95], obj.Name);
+				objFound = true
+				memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, obj.Address);
+				yrest(100)
+				RoMScript("UseSkill(1,1)"); yrest(50);
+				timeStart = getTime()
+				repeat
+					self:update();
+					while( self.Battling ) do
+						self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
+						self:update();
+						if( self:haveTarget() ) then
+							self:fight();
+							interrupted = true
+						end
+					end
+					yrest(100);
+				until deltaTime(getTime(),timeStart) > _waittime
+			end
+		until interrupted == false
 
 		if obj and _harvestall == true then -- harvest again
 			if _donotignore ~= true then

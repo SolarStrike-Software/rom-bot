@@ -341,7 +341,6 @@ function LoadTables()
 		i = i + 1;
 		realTablePointer = memoryReadInt( proc, tablePointer + ( i * 4 ) );
 	end;
-	print( "\n" );
 end;
 
 -- LoadTables();
