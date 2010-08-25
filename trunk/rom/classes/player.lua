@@ -944,9 +944,9 @@ function CPlayer:fight()
 
 			if( settings.profile.options.COMBAT_TYPE == "ranged" or
 			  self.ranged_pull == true ) then		-- melees with timed ranged pull
-				-- Move closer in increments
-				local movedist = dist/10; if( dist < 50 ) then movedist = dist - 5; end;
-				if( dist > 50 and movedist < 50 ) then movedist = 50 end;
+				movedist = dist - suggestedRange
+				if movedist > 200 then movedist = (movedist * .75) end -- stop short in case mob is moving toward you
+				if( dist > 50 and movedist < 40 ) then movedist = 40 end;
 
 				posX = self.X + math.cos(angle) * (movedist);
 				posZ = self.Z + math.sin(angle) * (movedist);
@@ -1014,7 +1014,8 @@ function CPlayer:fight()
 			end
 		end
 
-		if( self:checkPotions() or self:checkSkills() ) then
+		local only_friendly = (dist > suggestedRange and not self.Battling) -- Only use attack skills if in range or already Battling
+		if( self:checkPotions() or self:checkSkills(only_friendly) ) then
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
@@ -1376,7 +1377,7 @@ function evalTargetDefault(address)
 		return false;
 	end
 
-
+	
 	-- PK protect
 	if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 		if ( player.Battling == false ) then   -- if we don't have aggro then
@@ -2894,7 +2895,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
 				until deltaTime(getTime(),timeStart) > _waittime
 			end
 		until interrupted == false
-
+		
 		if obj and _harvestall == true then -- harvest again
 			if _donotignore ~= true then
 				lastHarvestedNodeAddr = obj.Address -- Default ignore this address in next search
