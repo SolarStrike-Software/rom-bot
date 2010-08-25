@@ -57,6 +57,11 @@ local pingOffsetUpdatePattern = string.char(0xFF, 0xD2, 0xEB, 0x17, 0x8B, 0x85, 
 local pingOffsetUpdateMask = "xxxxxx????xx";
 local pingOffsetUpdateOffset = 6;
 
+
+local staticEquipBaseUpdatePattern = string.char(0x0F, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0xC8, 0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF, 0xEB);
+local staticEquipBaseUpdateMask = "xx????xxx????x????x";
+local staticEquipBaseUpdateOffset = 14;
+
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
@@ -70,7 +75,9 @@ function findOffsets()
 		end
 
 		addresses[name] = memoryReadInt(getProc(), found + offset);
-		printf("Patched addresses." .. name .. "\t (value: 0x%X, at: 0x%X)\n", addresses[name], found + offset);
+		local msg = sprintf("Patched addresses." .. name .. "\t (value: 0x%X, at: 0x%X)", addresses[name], found + offset);
+		printf(msg.. "\n");
+		logMessage(msg);
 		return found;
 	end
 
@@ -112,6 +119,8 @@ function findOffsets()
 	update("staticTableSize", staticTableSizeUpdatePattern, staticTableSizeUpdateMask, staticTableSizeUpdateOffset, 0x620000, 0xA0000);
 
 	update("ping_offset", pingOffsetUpdatePattern, pingOffsetUpdateMask, pingOffsetUpdateOffset, 0x5FA000, 0xA0000);
+
+	update("staticEquipBase", staticEquipBaseUpdatePattern, staticEquipBaseUpdateMask, staticEquipBaseUpdateOffset, 0x5E0000, 0xA0000);
 end
 
 function rewriteAddresses()

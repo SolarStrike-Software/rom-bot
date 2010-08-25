@@ -92,18 +92,22 @@ function CPlayer:harvest(_id, _second_try)
 		RoMScript("UseSkill(1,1)");
 
 		if _id and not database.nodes[closestHarvestable.Id] then -- The rest is not needed if not resource node
-			return true
+			return true;
 		end
 		
+		yrest(500);
+
 		self:update();
 		local timeStart = getTime();
+		local skip = false;
 		while( not self.Harvesting ) do
 			-- Wait to start harvesting
 			yrest(100);
 			self:update();
 			if( self.Battling ) then
 				printf(language[78]);
-				return;
+				skip = true;
+				break;
 			end
 
 			if( deltaTime(getTime(), timeStart) > 3000 ) then
@@ -116,12 +120,12 @@ function CPlayer:harvest(_id, _second_try)
 
 		self:update();
 		timeStart = getTime();
-		while( self.Harvesting ) do
+		while( self.Harvesting and skip == false ) do
 			yrest(100);
 			self:update();
 			if( self.Battling ) then
 				printf(language[78]);
-				return;
+				break;
 			end
 
 			if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
@@ -134,7 +138,21 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 		end
-		lastHarvestedNodeAddr = closestHarvestable.Address;
+
+
+		self:update();
+		if( not self.Battling ) then
+			lastHarvestedNodeAddr = closestHarvestable.Address;
+		else
+			while( self.Battling ) do
+				local enemy = self:findEnemy(true, nil, nil, nil)
+				self:target(enemy);
+				self:update();
+				if( self:haveTarget() ) then
+					self:fight();
+				end
+			end
+		end
 	end
 end
 
@@ -166,6 +184,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 			if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
 				local dist = distance(self.X, self.Z, obj.X, obj.Z);
 				local pawn = CPawn(obj.Address);
+				pawn:update();
 
 				if( evalFunc(obj.Address) == true ) then
 					if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
@@ -176,9 +195,6 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 						if( pawn.TargetPtr == self.Address ) then currentScore = currentScore + SCORE_ATTACKING; end;
 						if( pawn.Aggressive ) then
 							currentScore = currentScore + SCORE_AGGRESSIVE;
-							if( settings.options.DEBUGGING ) then
-								printf("[DEBUG] %s is marked aggressive\n", pawn.Name);
-							end
 						end;
 
 						if( bestEnemy == nil ) then
