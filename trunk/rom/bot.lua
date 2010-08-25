@@ -17,6 +17,17 @@ if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
 
+-- Install bot addons
+local addondir = getDirectory(getExecutionPath() .. "/addons/");
+for i,v in pairs(addondir) do
+	local match = string.match(v, "addon_(.*)%.lua");
+	if( match ~= nil ) then
+		include("/addons/" .. v);
+		logMessage("Bot addon \'" .. match .. "\' successfully loaded.");
+	end
+end
+
+
 setPriority(priority.high);
 
 settings.load();
@@ -393,9 +404,6 @@ function main()
 		end
 
 		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
-			printf("player.TargetPtr: 0x%X\n", player.TargetPtr);
-			local pawn = CPawn(player.TargetPtr);
-			printf("target type: %d\n", pawn.Type);
 			player:clearTarget();
 		end
 
