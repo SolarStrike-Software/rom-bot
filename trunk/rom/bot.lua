@@ -18,11 +18,11 @@ if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 end
 
 -- Install bot addons
-local addondir = getDirectory(getExecutionPath() .. "/addons/");
+local addondir = getDirectory(getExecutionPath() .. "/userfunctions/");
 for i,v in pairs(addondir) do
 	local match = string.match(v, "addon_(.*)%.lua");
 	if( match ~= nil ) then
-		include("/addons/" .. v);
+		include("/userfunctions/" .. v);
 		logMessage("Bot addon \'" .. match .. "\' successfully loaded.");
 	end
 end
