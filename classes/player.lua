@@ -960,13 +960,14 @@ function CPlayer:fight()
 
 			if( settings.profile.options.COMBAT_TYPE == "ranged" or
 			  self.ranged_pull == true ) then		-- melees with timed ranged pull
-				movedist = dist - suggestedRange
-				if movedist > 200 then movedist = (movedist * .75) end -- stop short in case mob is moving toward you
-				if( dist > 50 and movedist < 40 ) then movedist = 40 end;
+				if dist > suggestedRange then -- move closer
+					movedist = dist - suggestedRange
+					if movedist < 50 ) then movedist = 50 end;
 
-				posX = self.X + math.cos(angle) * (movedist);
-				posZ = self.Z + math.sin(angle) * (movedist);
-				success, reason = self:moveTo(CWaypoint(posX, posZ), true);
+					posX = self.X + math.cos(angle) * (movedist);
+					posZ = self.Z + math.sin(angle) * (movedist);
+					success, reason = self:moveTo(CWaypoint(posX, posZ), true);
+				end
 			else 	-- normal melee
 --			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				success, reason = self:moveTo(target, true);
@@ -1030,8 +1031,7 @@ function CPlayer:fight()
 			end
 		end
 
-		local only_friendly = (dist > suggestedRange and not self.Battling) -- Only use attack skills if in range or already Battling
-		if( self:checkPotions() or self:checkSkills(only_friendly) ) then
+		if( self:checkPotions() or self:checkSkills() ) then
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
@@ -1624,8 +1624,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	 	-- only if not in the fight stuff coding (means self.Fighting == false )
 	 	if( self.Battling and 				-- we have aggro
 	 	    self.Fighting == false  and		-- we are not coming from the fight routines (bec. as melee we should move in fight)
-	 	    waypoint.Type ~= WPT_RUN  and	-- only stop if not waypoint type RUN
-			waypoint.Type ~= WPT_TRAVEL and
+			waypoint.Type ~= WPT_TRAVEL and	-- only stop if not waypoint type TRAVEL
 	 	    os.difftime(os.time(), player.LastAggroTimout ) > 10 ) then		-- dont stop 10sec after last aggro wait timeout
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
@@ -2715,10 +2714,11 @@ function CPlayer:mouseclickM(_x, _y, _wwide, _whigh)
 end
 
 -- auto interact with a merchant
-function CPlayer:merchant(_npcname)
+function CPlayer:merchant(_npcname, _option)
+	_option = _option or 1
 	if self:target_NPC(_npcname) then
 		yrest(1000);
-		RoMScript("ChoiceOption(1)");
+		RoMScript("ChoiceOption(".._option..")");
 		yrest(1000);
 		RoMScript("ClickRepairAllButton()");
 		yrest(1000);
