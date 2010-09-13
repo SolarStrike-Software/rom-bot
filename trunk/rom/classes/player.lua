@@ -962,7 +962,7 @@ function CPlayer:fight()
 			  self.ranged_pull == true ) then		-- melees with timed ranged pull
 				if dist > suggestedRange then -- move closer
 					movedist = dist - suggestedRange
-					if movedist < 50 ) then movedist = 50 end;
+					if movedist < 50 then movedist = 50 end;
 
 					posX = self.X + math.cos(angle) * (movedist);
 					posZ = self.Z + math.sin(angle) * (movedist);
