@@ -715,7 +715,7 @@ function CPlayer:checkPotions()
 			return true;
 		else		-- potions empty
 			if( os.difftime(os.time(), self.PotionLastHpEmptyTime) > 16 ) then
-				cprintf(cli.yellow, language[17], settings.profile.options.INV_MAX_SLOTS); 		-- No more (usable) hp potions
+				cprintf(cli.yellow, language[17], inventory.MaxSlots); 		-- No more (usable) hp potions
 				self.PotionLastHpEmptyTime = os.time();
 				-- full inventory update if potions empty
 				if( os.difftime(os.time(), player.InventoryLastUpdate) > 
@@ -758,7 +758,7 @@ function CPlayer:checkPotions()
 				return true;		-- avoid invalid/use count of 
 			else	-- potions empty
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
-					cprintf(cli.yellow, language[16], settings.profile.options.INV_MAX_SLOTS); 		-- No more (usable) mana potions
+					cprintf(cli.yellow, language[16], inventory.MaxSlots); 		-- No more (usable) mana potions
 					self.PotionLastManaEmptyTime = os.time();
 					-- full inventory update if potions empty
 					if( os.difftime(os.time(), player.InventoryLastUpdate) > 

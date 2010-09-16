@@ -1,6 +1,6 @@
 WPT_NORMAL = 3;
-WPT_TRAVEL = 4;		-- don't target
-WPT_RUN = 5;		-- don't target, don't fight back
+WPT_TRAVEL = 4;		-- don't target, don't fight back
+WPT_RUN = 5;		-- don't target
 
 CWaypoint = class(
 	function (self, _X, _Z)
