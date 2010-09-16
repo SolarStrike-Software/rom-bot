@@ -8,18 +8,16 @@ CInventory = class(
 	function (self)
 		LoadTables();
 		
+		self.MaxSlots = 180;
+
 		local _bagId = 61;
 		self.BagSlot = {};
 		self.EquipSlots = {};
 		self.Money = memoryReadInt( proc, addresses.moneyPtr );
-		
-		if( settings.profile.options.DEBUG_INV ) then
-			printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
-		end;
 
 		local timeStart = getTime();
 		
-		for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
+		for slotNumber = 1, self.MaxSlots, 1 do
 			self.BagSlot[slotNumber] = CItem( _bagId );
 			_bagId = _bagId + 1;
 		end
@@ -37,15 +35,11 @@ CInventory = class(
 );
 
 function CInventory:update()
---	if( settings.profile.options.DEBUG_INV ) then
---		printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
---	end;
-
 	local timeStart = getTime();
 
 	self.Money = memoryReadInt( proc, addresses.moneyPtr );
 
-	for slotNumber = 1, settings.profile.options.INV_MAX_SLOTS, 1 do
+	for slotNumber = 1, self.MaxSlots, 1 do
 		self.BagSlot[slotNumber]:update();
 	end
 
@@ -56,10 +50,6 @@ function CInventory:update()
 end;
 
 function CInventory:updateEquipment()
---	if( settings.profile.options.DEBUG_INV ) then
---		printf( "We gonna update: %d slots.\n", settings.profile.options.INV_MAX_SLOTS );
---	end;
-
 	local timeStart = getTime();
 
 	for slotNumber = 1, 22, 1 do
@@ -252,16 +242,13 @@ end;
 -- Make a full update
 -- or update slot 1 to _maxslot
 function CInventory:update( _maxslot )
-	if( not _maxslot ) then _maxslot = settings.profile.options.INV_MAX_SLOTS; end;
+	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
 	-- printf(language[1000], _maxslot);  -- Updating
 	
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
-		--if( not settings.profile.options.DEBUG_INV ) then
-		--	displayProgressBar(slotNumber/_maxslot*100, 50);
-		--end
 	end
 	--printf("\n");
 	keyboardSetDelay(50);
@@ -306,7 +293,7 @@ function CInventory:updateNextSlot(_times)
 
 		self.BagSlot[self.NextItemToUpdate]:update();
 		self.NextItemToUpdate = self.NextItemToUpdate + 1;
-		if (self.NextItemToUpdate > settings.profile.options.INV_MAX_SLOTS) then
+		if (self.NextItemToUpdate > self.MaxSlots) then
 			self.NextItemToUpdate = 1;
 		end;
 
@@ -447,8 +434,8 @@ function CInventory:autoSell()
 	end
 
 	-- warning if not all inventory slots are updated
-	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
-		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
+	if( settings.profile.options.INV_AUTOSELL_TOSLOT > self.MaxSlots ) then
+		cprintf(cli.yellow, language[1003], self.MaxSlots, settings.profile.options.INV_AUTOSELL_TOSLOT);
 	end
 	
 	-- warning if igf addon is missing
