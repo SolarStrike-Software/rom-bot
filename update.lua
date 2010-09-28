@@ -62,11 +62,35 @@ local staticEquipBaseUpdatePattern = string.char(0x0F, 0x8D, 0xFF, 0xFF, 0xFF, 0
 local staticEquipBaseUpdateMask = "xx????xxx????x????x";
 local staticEquipBaseUpdateOffset = 14;
 
+local boundStatusOffsetUpdatePattern = string.char(0x51, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x43, 0xFF, 0x8B, 0x13);
+local boundStatusOffsetUpdateMask = "xx????xx?xx";
+local boundStatusOffsetUpdateOffset = 8;
+
+local durabilityOffsetUpdatePattern = string.char(0x03, 0xC2, 0x8B, 0x4B, 0xFF, 0x3B, 0xC8, 0x75);
+local durabilityOffsetUpdateMask = "xxxx?xxx";
+local durabilityOffsetUpdateOffset = 4;
+
+local idCardNPCOffsetUpdatePattern = string.char(0x75, 0xFF, 0x8B, 0x91, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x35);
+local idCardNPCOffsetUpdateMask = "x?xx????xx";
+local idCardNPCOffsetUpdateOffset = 4;
+
+local nameOffsetUpdatePattern = string.char(0x50, 0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x41, 0xFF, 0x5E);
+local nameOffsetUpdateMask = "xx????xx?x";
+local nameOffsetUpdateOffset = 8;
+
+
+
+
+
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
-	local function update(name, pattern, mask, offset, sStart, sEnd)
+	local function update(name, pattern, mask, offset, sStart, sEnd, size)
+		if( name == nil or pattern == nil or mask == nil or offset == nil or sStart == nil or sEnd == nil ) then
+			error("Function \'update\' received nil parameter.", 2);
+		end
+
 		local found = 0;
 		found = findPatternInProcess(getProc(), pattern, mask, sStart, sEnd);
 
@@ -74,7 +98,18 @@ function findOffsets()
 			error("Unable to find \'" .. name .. "\' in module.", 0);
 		end
 
-		addresses[name] = memoryReadInt(getProc(), found + offset);
+		local readFunc = nil;
+		if( size == 1 ) then
+			readFunc = memoryReadUByte;
+		elseif( size == 2 ) then
+			readFunc = memoryReadUShort;
+		elseif( size == 4 ) then
+			readFunc = memoryReadUInt
+		else -- default, assume 4 bytes
+			readFunc = memoryReadUInt;
+		end
+
+		addresses[name] = readFunc(getProc(), found + offset);
 		local msg = sprintf("Patched addresses." .. name .. "\t (value: 0x%X, at: 0x%X)", addresses[name], found + offset);
 		printf(msg.. "\n");
 		logMessage(msg);
@@ -121,6 +156,11 @@ function findOffsets()
 	update("ping_offset", pingOffsetUpdatePattern, pingOffsetUpdateMask, pingOffsetUpdateOffset, 0x5FA000, 0xA0000);
 
 	update("staticEquipBase", staticEquipBaseUpdatePattern, staticEquipBaseUpdateMask, staticEquipBaseUpdateOffset, 0x5E0000, 0xA0000);
+
+	update("boundStatusOffset", boundStatusOffsetUpdatePattern, boundStatusOffsetUpdateMask, boundStatusOffsetUpdateOffset, 0x820000, 0xA0000, 1);
+	update("durabilityOffset", durabilityOffsetUpdatePattern, durabilityOffsetUpdateMask, durabilityOffsetUpdateOffset, 0x690000, 0xA0000, 1);
+	update("idCardNPCOffset", idCardNPCOffsetUpdatePattern, idCardNPCOffsetUpdateMask, idCardNPCOffsetUpdateOffset, 0x680000, 0xA0000);
+	update("nameOffset", nameOffsetUpdatePattern, nameOffsetUpdateMask, nameOffsetUpdateOffset, 0x680000, 0xA0000, 1);
 end
 
 function rewriteAddresses()

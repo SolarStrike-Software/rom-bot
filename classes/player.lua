@@ -188,7 +188,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 
 				if( evalFunc(obj.Address) == true ) then
 					if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
-					((pawn.TargetPtr == self.Address and aggroOnly == true) or aggroOnly == false) ) then
+					(( (pawn.TargetPtr == self.Address or pawn.TargetPtr == self.PetPtr) and aggroOnly == true) or aggroOnly == false) ) then
 						local currentScore = 0;
 						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
 						currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );

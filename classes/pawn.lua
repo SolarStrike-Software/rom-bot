@@ -176,12 +176,12 @@ function CPawn:update()
 	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 3;
 	self.Harvesting = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnHarvesting_offset), memerrmsg) ~= 0;
 
-	-- 60 = lootable, 58 = not lootable ??
-	self.Lootable = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnLootable_offset), memerrmsg);
-	if( self.Type == 2 ) then
-		--printf("%s Lootable flag: 0x%X (%d)\n", self.Name, self.Lootable, self.Lootable);
+	tmp = memoryReadInt(proc, self.Address + addresses.pawnLootable_offset);
+	if( tmp ) then
+		self.Lootable = bitAnd(tmp, 0x4);
+	else
+		self.Lootable = false;
 	end
-	self.Lootable = bitAnd(self.Lootable, 0x4);
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
