@@ -998,7 +998,6 @@ function displayProgressBar(percent, size)
 		printf(string.rep("-", blocksUnfilled) .. "]");
 
 		lastDisplayBlocks = blocksFilled;
-		if blocksFilled == size then printf("\n") end
 	end
 end
 
