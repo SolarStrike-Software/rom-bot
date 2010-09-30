@@ -78,6 +78,9 @@ local nameOffsetUpdatePattern = string.char(0x50, 0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 
 local nameOffsetUpdateMask = "xx????xx?x";
 local nameOffsetUpdateOffset = 8;
 
+local requiredLevelOffsetUpdatePattern = string.char(0x8B, 0x9C, 0x24, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x4B, 0xFF, 0x8B, 0xBC, 0x24);
+local requiredLevelOffsetUpdateMask = "xxx????xx?xxx";
+local requiredLevelOffsetUpdateOffset = 9;
 
 
 
@@ -161,6 +164,8 @@ function findOffsets()
 	update("durabilityOffset", durabilityOffsetUpdatePattern, durabilityOffsetUpdateMask, durabilityOffsetUpdateOffset, 0x690000, 0xA0000, 1);
 	update("idCardNPCOffset", idCardNPCOffsetUpdatePattern, idCardNPCOffsetUpdateMask, idCardNPCOffsetUpdateOffset, 0x680000, 0xA0000);
 	update("nameOffset", nameOffsetUpdatePattern, nameOffsetUpdateMask, nameOffsetUpdateOffset, 0x680000, 0xA0000, 1);
+	update("requiredLevelOffset", requiredLevelOffsetUpdatePattern, requiredLevelOffsetUpdateMask, requiredLevelOffsetUpdateOffset, 0x790000, 0xA0000, 1);
+
 end
 
 function rewriteAddresses()
