@@ -2108,8 +2108,12 @@ function CPlayer:update()
 
 	-- Update our exp gain
 	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
-		local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
-		local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
+		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
+		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
+
+		local newExp = memoryReadIntPtr(getProc(), addresses.charExp_address, 0) or 0;
+		local maxExp = memoryReadIntPtr(getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
+
 		self.LastExpUpdateTime = os.time();					-- Reset timer
 
 		if( type(newExp) ~= "number" ) then newExp = 0; end;
