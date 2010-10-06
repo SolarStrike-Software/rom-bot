@@ -36,16 +36,17 @@ ITEMQUALITYCOLOR = {
 };
 
 CItem = class(
-	function( self, bagId )		
-		self.Address = addresses.staticInventory + ( ( bagId - 61 ) * 68 );
+	function( self, slotnumber )
+		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 		self.BaseItemAddress = nil;
 		self.Empty = true;
 		self.Id = 0;
-		self.BagId = bagId;
+		--self.BagId = bagId;
 		self.Name = "<EMPTY>";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
-		self.SlotNumber = -1; -- No idea how to get this one, i think is not used, at least not in inventory...
+		self.SlotNumber = slotnumber
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 		self.Durability = 0;
@@ -117,6 +118,13 @@ end
 function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
+	local oldBagId = self.BagId;
+	
+	self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+	if self.BagId ~= oldId then -- need new address
+		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
+	end
+
 	self.Id = memoryReadInt( proc, self.Address ) or 0;
 	
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
@@ -197,7 +205,7 @@ function CItem:update()
 		self.Name = "<EMPTY>";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
-		self.SlotNumber = -1;
+		--self.SlotNumber = -1;
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 		self.Durability = 0;

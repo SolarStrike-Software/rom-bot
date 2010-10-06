@@ -24,6 +24,7 @@ addresses = {
 	idCardNPCOffset = 0x364,
 	idOffset = 0xC,
 	inUseOffset = 0x1C,
+	inventoryBagIds = 0x9C87A0,
 	itemCountOffset = 0x10,
 	itemInfoOffset = 0x10,
 	macro1_offset = 0x118,

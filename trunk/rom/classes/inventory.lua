@@ -10,7 +10,6 @@ CInventory = class(
 		
 		self.MaxSlots = 180;
 
-		local _bagId = 61;
 		self.BagSlot = {};
 		self.EquipSlots = {};
 		self.Money = memoryReadInt( proc, addresses.moneyPtr );
@@ -18,8 +17,7 @@ CInventory = class(
 		local timeStart = getTime();
 		
 		for slotNumber = 1, self.MaxSlots, 1 do
-			self.BagSlot[slotNumber] = CItem( _bagId );
-			_bagId = _bagId + 1;
+			self.BagSlot[slotNumber] = CItem( slotNumber );
 		end
 		
 		if( settings.profile.options.DEBUG_INV ) then	
