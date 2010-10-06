@@ -2847,7 +2847,11 @@ end
 
 end]]
 
-function CPlayer:findNearestNameOrId(_objnameorid, ignore)
+function CPlayer:findNearestNameOrId(_objtable, ignore)
+	if type(_objtable) == "number" or type(_objtable) == "string" then
+		_objtable = {_objtable}
+	end
+	
 	ignore = ignore or 0;
 	local closestObject = nil;
 	local obj = nil;
@@ -2858,17 +2862,19 @@ function CPlayer:findNearestNameOrId(_objnameorid, ignore)
 		obj = objectList:getObject(i);
 
 		if( obj ~= nil ) then
-			if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
-				local dist = distance(self.X, self.Z, obj.X, obj.Z);
-				if( closestObject == nil ) then
-					if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
-						closestObject = obj;
-					end
-				else
-					if( distance(self.X, self.Z, obj.X, obj.Z) <
-						distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
-						-- this node is closer
-						closestObject = obj;
+			for __, _objnameorid in pairs(_objtable) do
+				if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
+					local dist = distance(self.X, self.Z, obj.X, obj.Z);
+					if( closestObject == nil ) then
+						if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+							closestObject = obj;
+						end
+					else
+						if( distance(self.X, self.Z, obj.X, obj.Z) <
+							distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
+							-- this node is closer
+							closestObject = obj;
+						end
 					end
 				end
 			end
