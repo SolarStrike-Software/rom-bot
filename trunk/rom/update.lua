@@ -93,15 +93,123 @@ itemCountOffsetUpdateOffset = 4;
 inUseOffsetUpdatePattern = string.char(0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x6E, 0xFF, 0x56);
 inUseOffsetUpdateMask = "xx????xx?x";
 inUseOffsetUpdateOffset = 8;
---[[
-maxDurabilityOffsetUpdatePattern = string.char();
-maxDurabilityOffsetUpdateMask = "";
-maxDurabilityOffsetUpdateOffset = 0;
-]]
+
+maxDurabilityOffsetUpdatePattern = string.char(0x0F, 0xB6, 0x4D, 0xFF, 0x0F, 0xAF, 0x8E);
+maxDurabilityOffsetUpdateMask = "xxx?xxx";
+maxDurabilityOffsetUpdateOffset = 3;
 
 charMaxExpTableUpdatePattern = string.char(0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x35, 0xFF, 0xFF, 0xFF, 0xFF, 0x3B, 0xF0);
 charMaxExpTableUpdateMask = "x????xx????xx";
 charMaxExpTableUpdateOffset = 7;
+
+pawnLootableOffsetUpdatePattern = string.char(0x8A, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8A, 0x95, 0xFF, 0xFF, 0xFF, 0xFF, 0x80, 0xA5);
+pawnLootableOffsetUpdateMask = "xx????xx????xx";
+pawnLootableOffsetUpdateOffset = 8;
+
+charPtrMountedOffsetUpdatePattern = string.char(0xCC, 0xCC, 0x8B, 0x41, 0xFF, 0xC3, 0xCC);
+charPtrMountedOffsetUpdateMask = "xxxx?xx";
+charPtrMountedOffsetUpdateOffset = 4;
+
+realItemIdOffsetUpdatePattern = string.char(0x8B, 0xF0, 0xEB, 0xA5, 0x8B, 0x89, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC9);
+realItemIdOffsetUpdateMask = "xxxxxx????xx";
+realItemIdOffsetUpdateOffset = 6;
+
+coolDownOffsetUpdatePattern = string.char(0x75, 0x4F, 0xF3, 0x0F, 0x2A, 0x88, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x2F, 0xC1);
+coolDownOffsetUpdateMask = "xxxxxx????xxx";
+coolDownOffsetUpdateOffset = 6;
+
+idOffsetUpdatePattern = string.char(0x8B, 0x46, 0xFF, 0x8B, 0xFA, 0x99);
+idOffsetUpdateMask = "xx?xxx";
+idOffsetUpdateOffset = 2;
+
+pawnClass1OffsetUpdatePattern = string.char(0xC7, 0x40, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x91, 0xFF, 0xFF, 0xFF, 0xFF, 0x83, 0xFA);
+pawnClass1OffsetUpdateMask = "xx?????xx????xx";
+pawnClass1OffsetUpdateOffset = 9;
+
+pawnClass2OffsetUpdatePattern = string.char(0x89, 0x10, 0x8B, 0x89, 0xFF, 0xFF, 0xFF, 0xFF, 0x83, 0xF9, 0xFF, 0x77);
+pawnClass2OffsetUpdateMask = "xxxx????xx?x";
+pawnClass2OffsetUpdateOffset = 4;
+
+pawnDirXUVecOffsetUpdatePattern = string.char(0xCC, 0x8B, 0x44, 0x24, 0xFF, 0xD9, 0x41, 0xFF, 0xD9, 0x18, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xD9,
+											0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xC2, 0x04, 0x00, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xF3);
+pawnDirXUVecOffsetUpdateMask = "xxxx?xx?xxxx?xx?xx?xx?xxxxxxxxxxxx";
+pawnDirXUVecOffsetUpdateOffset = 7;
+
+pawnDirYUVecOffsetUpdatePattern = string.char(0xD9, 0x58, 0xFF, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xC2, 0x04, 0x00, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xF3);
+pawnDirYUVecOffsetUpdateMask = "xx?xx?xx?xxxxxxxxxxxx";
+pawnDirYUVecOffsetUpdateOffset = 5;
+
+pawnHPOffsetUpdatePattern = string.char(0x74, 0xFF, 0x8B, 0x88, 0xFF, 0xFF, 0xFF, 0xFF, 0x2B, 0x88);
+pawnHPOffsetUpdateMask = "x?xx????xx";
+pawnHPOffsetUpdateOffset = 4;
+
+pawnIdOffsetUpdatePattern = string.char(0x7F, 0xFF, 0x8B, 0x46, 0xFF, 0x50, 0xE8);
+pawnIdOffsetUpdateMask = "x?xx?xx";
+pawnIdOffsetUpdateOffset = 4;
+
+pawnLevelOffsetUpdatePattern = string.char(0x56, 0x89, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x91, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x35);
+pawnLevelOffsetUpdateMask = "xxx????xx????xx";
+pawnLevelOffsetUpdateOffset = 3;
+
+pawnLevel2OffsetUpdatePattern = string.char(0x56, 0x89, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x91, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x35);
+pawnLevel2OffsetUpdateMask = "xxx????xx????xx";
+pawnLevel2OffsetUpdateOffset = 9;
+
+pawnMPOffsetUpdatePattern = string.char(0x74, 0xFF, 0x8B, 0x8E, 0xFF, 0xFF, 0xFF, 0xFF, 0x33, 0xD2, 0x85, 0xC9);
+pawnMPOffsetUpdateMask = "x?xx????xxxx";
+pawnMPOffsetUpdateOffset = 4;
+
+pawnMaxHPOffsetUpdatePattern = string.char(0x52, 0x8B, 0xCE, 0x89, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0xE8);
+pawnMaxHPOffsetUpdateMask = "xxxxx????x";
+pawnMaxHPOffsetUpdateOffset = 5;
+
+pawnMaxMPOffsetUpdatePattern = string.char(0x33, 0xD2, 0x85, 0xC9, 0x0F, 0x9C, 0xC2, 0x89, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0x83, 0xEA, 0x01);
+pawnMaxMPOffsetUpdateMask = "xxxxxxxxx????xxx";
+pawnMaxMPOffsetUpdateOffset = 9;
+
+pawnMountOffsetUpdatePattern = string.char(0xCC, 0x8A, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0xA8, 0x01, 0x74, 0xFF, 0xA8, 0x02);
+pawnMountOffsetUpdateMask = "xxx????xxx?xx";
+pawnMountOffsetUpdateOffset = 3;
+
+pawnNameOffsetUpdatePattern = string.char(0xC3, 0x8D, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3, 0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC0, 0x75);
+pawnNameOffsetUpdateMask = "xxx????xxx????xxx";
+pawnNameOffsetUpdateOffset = 10;
+
+pawnPetPtrOffsetUpdatePattern = string.char(0x56, 0x89, 0x7C, 0x24, 0xFF, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x87, 0xFF, 0xFF, 0xFF, 0xFF, 0x33, 0xDB);
+pawnPetPtrOffsetUpdateMask = "xxxx?x????xx????xx";
+pawnPetPtrOffsetUpdateOffset = 12;
+
+pawnRaceOffsetUpdatePattern = string.char(0xF3, 0x0F, 0x11, 0x85, 0xFF, 0xFF, 0xFF, 0xFF,
+0x89, 0x9D, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x85, 0xFF, 0xFF, 0xFF, 0xFF,
+0x89, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x9D, 0xFF, 0xFF, 0xFF, 0xFF,
+0xC7, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x00, 0x00, 0x00,
+0x89, 0x85, 0xFF, 0xFF, 0xFF, 0xFF);
+pawnRaceOffsetUpdateMask = "xxxx????xx????xx????xx????xx????xx????xxxxxx????";
+pawnRaceOffsetUpdateOffset = 44;
+
+pawnTargetPtrOffsetUpdatePattern = string.char(0x85, 0xC0, 0x75, 0x3F, 0x85, 0xED, 0x74, 0x08, 0x8B, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0xEB, 0x0C);
+pawnTargetPtrOffsetUpdateMask = "xxxxxxxxxx????xx";
+pawnTargetPtrOffsetUpdateOffset = 10;
+
+pawnTypeOffsetUpdatePattern = string.char(0xFF, 0xD0, 0x8B, 0x46, 0xFF, 0x83, 0xE8, 0x02, 0x74, 0x09, 0x83, 0xE8, 0x02);
+pawnTypeOffsetUpdateMask = "xxxx?xxxxxxxx";
+pawnTypeOffsetUpdateOffset = 4;
+
+pawnXOffsetUpdatePattern = string.char(0x8B, 0x44, 0x24, 0x04, 0xD9, 0x41, 0xFF, 0xD9, 0x18, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0x04, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xC2, 0x04, 0x00);
+pawnXOffsetUpdateMask = "xxxxxx?xxxx?xxxxx?xx?xxx";
+pawnXOffsetUpdateOffset = 6;
+
+qualityBaseOffsetUpdatePattern = string.char(0x74, 0x15, 0x85, 0xF6, 0x8B, 0x40, 0xFF, 0x74, 0x10, 0x0F, 0xB6, 0x4E);
+qualityBaseOffsetUpdateMask = "xxxxxx?xxxxx";
+qualityBaseOffsetUpdateOffset = 6;
+
+qualityTierOffsetUpdatePattern = string.char(0x77, 0x19, 0x83, 0x7B, 0xFF, 0x01, 0x7F, 0x13, 0x8A, 0x4F, 0xFF, 0x80, 0xE1);
+qualityTierOffsetUpdateMask = "xxxx?xxxxx?xx";
+qualityTierOffsetUpdateOffset = 10;
+
+valueOffsetUpdatePattern = string.char(0x50, 0xFF, 0xD2, 0x8B, 0x4F, 0xFF, 0x83, 0xC1, 0xFF, 0xB8);
+valueOffsetUpdateMask = "xxxxx?xx?x";
+valueOffsetUpdateOffset = 5;
 
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
@@ -146,20 +254,50 @@ function findOffsets()
 	update("charPtr_offset", charPtrUpdatePattern, charPtrUpdateMask, charPtrUpdateOffset, 0x5A0000, 0xA0000);
 	update("mousePtr_offset", mousePtrUpdatePattern, mousePtrUpdateMask, mousePtrUpdateOffset, 0x5F0000, 0xA0000);
 	update("camPtr_offset", camPtrUpdatePattern, camPtrUpdateMask, camPtrUpdateOffset, 0x5E0000, 0xA0000);
-
 	update("camXUVec_offset", camXUVecUpdatePattern, camXUVecUpdateMask, camXUVecUpdateOffset, 0x440000, 0xA0000);
-	-- Assume Y is +4, and Z is +8
-	addresses.camYUVec_offset = addresses.camXUVec_offset + 4;
-	addresses.camZUVec_offset = addresses.camXUVec_offset + 8;
-
 	update("camX_offset", camXUpdatePattern, camXUpdateMask, camXUpdateOffset, 0x440000, 0xA0000);
-	-- Assume Y is +4, and Z is +8
-	addresses.camY_offset = addresses.camX_offset + 4;
-	addresses.camZ_offset = addresses.camX_offset + 8;
-
 	update("castbar_offset", castbarUpdatePattern, castbarUpdateMask, castbarUpdateOffset, 0x820000, 0xA0000);
 	update("charAlive_offset", charAliveUpdatePattern, charAliveUpdateMask, charAliveUpdateOffset, 0x5E0000, 0xA0000);
 	update("charBattle_offset", charBattleUpdatePattern, charBattleUpdateMask, charBattleUpdateOffset, 0x5E0000, 0xA0000);
+	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
+	update("staticTableSize", staticTableSizeUpdatePattern, staticTableSizeUpdateMask, staticTableSizeUpdateOffset, 0x620000, 0xA0000);
+	update("ping_offset", pingOffsetUpdatePattern, pingOffsetUpdateMask, pingOffsetUpdateOffset, 0x5FA000, 0xA0000);
+	update("staticEquipBase", staticEquipBaseUpdatePattern, staticEquipBaseUpdateMask, staticEquipBaseUpdateOffset, 0x5E0000, 0xA0000);
+	update("boundStatusOffset", boundStatusOffsetUpdatePattern, boundStatusOffsetUpdateMask, boundStatusOffsetUpdateOffset, 0x820000, 0xA0000, 1);
+	update("durabilityOffset", durabilityOffsetUpdatePattern, durabilityOffsetUpdateMask, durabilityOffsetUpdateOffset, 0x690000, 0xA0000, 1);
+	update("idCardNPCOffset", idCardNPCOffsetUpdatePattern, idCardNPCOffsetUpdateMask, idCardNPCOffsetUpdateOffset, 0x680000, 0xA0000);
+	update("nameOffset", nameOffsetUpdatePattern, nameOffsetUpdateMask, nameOffsetUpdateOffset, 0x680000, 0xA0000, 1);
+	update("requiredLevelOffset", requiredLevelOffsetUpdatePattern, requiredLevelOffsetUpdateMask, requiredLevelOffsetUpdateOffset, 0x790000, 0xA0000, 1);
+	update("itemCountOffset", itemCountOffsetUpdatePattern, itemCountOffsetUpdateMask, itemCountOffsetUpdateOffset, 0x760000, 0xA0000, 1);
+	update("inUseOffset", inUseOffsetUpdatePattern, inUseOffsetUpdateMask, inUseOffsetUpdateOffset, 0x760000, 0xA0000, 1);
+	update("maxDurabilityOffset", maxDurabilityOffsetUpdatePattern, maxDurabilityOffsetUpdateMask, maxDurabilityOffsetUpdateOffset, 0x6A0000, 0xA0000, 1);
+	update("charMaxExpTable_address", charMaxExpTableUpdatePattern, charMaxExpTableUpdateMask, charMaxExpTableUpdateOffset, 0x615000, 0xA0000);
+	update("pawnLootable_offset", pawnLootableOffsetUpdatePattern, pawnLootableOffsetUpdateMask, pawnLootableOffsetUpdateOffset, 0x850000, 0xA0000);
+	update("charPtrMounted_offset", charPtrMountedOffsetUpdatePattern, charPtrMountedOffsetUpdateMask, charPtrMountedOffsetUpdateOffset, 0x840000, 0xA0000, 1);
+	update("realItemIdOffset", realItemIdOffsetUpdatePattern, realItemIdOffsetUpdateMask, realItemIdOffsetUpdateOffset, 0x6A0000, 0xA0000);
+	update("coolDownOffset", coolDownOffsetUpdatePattern, coolDownOffsetUpdateMask, coolDownOffsetUpdateOffset, 0x6A0000, 0xA0000);
+	update("idOffset", idOffsetUpdatePattern, idOffsetUpdateMask, idOffsetUpdateOffset, 0x820000, 0xA0000, 1);
+	update("pawnClass1_offset", pawnClass1OffsetUpdatePattern, pawnClass1OffsetUpdateMask, pawnClass1OffsetUpdateOffset, 0x5E0000, 0xA0000);
+	update("pawnClass2_offset", pawnClass2OffsetUpdatePattern, pawnClass2OffsetUpdateMask, pawnClass2OffsetUpdateOffset, 0x5E0000, 0xA0000);
+	update("pawnDirXUVec_offset", pawnDirXUVecOffsetUpdatePattern, pawnDirXUVecOffsetUpdateMask, pawnDirXUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
+	update("pawnDirYUVec_offset", pawnDirYUVecOffsetUpdatePattern, pawnDirYUVecOffsetUpdateMask, pawnDirYUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
+	update("pawnHP_offset", pawnHPOffsetUpdatePattern, pawnHPOffsetUpdateMask, pawnHPOffsetUpdateOffset, 0x7E0000, 0xA0000);
+	update("pawnId_offset", pawnIdOffsetUpdatePattern, pawnIdOffsetUpdateMask, pawnIdOffsetUpdateOffset, 0x850000, 0xA0000, 1);
+	update("pawnLevel_offset", pawnLevelOffsetUpdatePattern, pawnLevelOffsetUpdateMask, pawnLevelOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnLevel2_offset", pawnLevel2OffsetUpdatePattern, pawnLevel2OffsetUpdateMask, pawnLevel2OffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnMP_offset", pawnMPOffsetUpdatePattern, pawnMPOffsetUpdateMask, pawnMPOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnMaxHP_offset", pawnMaxHPOffsetUpdatePattern, pawnMaxHPOffsetUpdateMask, pawnMaxHPOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnMaxMP_offset", pawnMaxMPOffsetUpdatePattern, pawnMaxMPOffsetUpdateMask, pawnMaxMPOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnMount_offset", pawnMountOffsetUpdatePattern, pawnMountOffsetUpdateMask, pawnMountOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnName_offset", pawnNameOffsetUpdatePattern, pawnNameOffsetUpdateMask, pawnNameOffsetUpdateOffset, 0x840000, 0xA0000);
+	update("pawnPetPtr_offset", pawnPetPtrOffsetUpdatePattern, pawnPetPtrOffsetUpdateMask, pawnPetPtrOffsetUpdateOffset, 0x850000, 0xA0000);
+	update("pawnRace_offset", pawnRaceOffsetUpdatePattern, pawnRaceOffsetUpdateMask, pawnRaceOffsetUpdateOffset, 0x850000, 0xA0000);
+	update("pawnTargetPtr_offset", pawnTargetPtrOffsetUpdatePattern, pawnTargetPtrOffsetUpdateMask, pawnTargetPtrOffsetUpdateOffset, 0x5F0000, 0xA0000);
+	update("pawnType_offset", pawnTypeOffsetUpdatePattern, pawnTypeOffsetUpdateMask, pawnTypeOffsetUpdateOffset, 0x850000, 0xA0000, 1);
+	update("pawnX_offset", pawnXOffsetUpdatePattern, pawnXOffsetUpdateMask, pawnXOffsetUpdateOffset, 0x840000, 0xA0000, 1);
+	update("qualityBaseOffset", qualityBaseOffsetUpdatePattern, qualityBaseOffsetUpdateMask, qualityBaseOffsetUpdateOffset, 0x600000, 0xA0000, 1);
+	update("qualityTierOffset", qualityTierOffsetUpdatePattern, qualityTierOffsetUpdateMask, qualityTierOffsetUpdateOffset, 0x790000, 0xA0000, 1);
+	update("valueOffset", valueOffsetUpdatePattern, valueOffsetUpdateMask, valueOffsetUpdateOffset, 0x790000, 0xA0000, 1);
 
 	-- NOTE: We must manually adjust forward 0x3C bytes
 	update("pawnHarvesting_offset", pawnHarvestUpdatePattern, pawnHarvestUpdateMask, pawnHarvestUpdateOffset, 0x820000, 0xA0000);
@@ -171,21 +309,6 @@ function findOffsets()
 	addresses.macro1_offset = addresses.macro1_offset + 0x10;
 	addresses.macro2_offset = addresses.macro1_offset + 0x508;
 
-	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
-	update("staticTableSize", staticTableSizeUpdatePattern, staticTableSizeUpdateMask, staticTableSizeUpdateOffset, 0x620000, 0xA0000);
-
-	update("ping_offset", pingOffsetUpdatePattern, pingOffsetUpdateMask, pingOffsetUpdateOffset, 0x5FA000, 0xA0000);
-
-	update("staticEquipBase", staticEquipBaseUpdatePattern, staticEquipBaseUpdateMask, staticEquipBaseUpdateOffset, 0x5E0000, 0xA0000);
-
-	update("boundStatusOffset", boundStatusOffsetUpdatePattern, boundStatusOffsetUpdateMask, boundStatusOffsetUpdateOffset, 0x820000, 0xA0000, 1);
-	update("durabilityOffset", durabilityOffsetUpdatePattern, durabilityOffsetUpdateMask, durabilityOffsetUpdateOffset, 0x690000, 0xA0000, 1);
-	update("idCardNPCOffset", idCardNPCOffsetUpdatePattern, idCardNPCOffsetUpdateMask, idCardNPCOffsetUpdateOffset, 0x680000, 0xA0000);
-	update("nameOffset", nameOffsetUpdatePattern, nameOffsetUpdateMask, nameOffsetUpdateOffset, 0x680000, 0xA0000, 1);
-	update("requiredLevelOffset", requiredLevelOffsetUpdatePattern, requiredLevelOffsetUpdateMask, requiredLevelOffsetUpdateOffset, 0x790000, 0xA0000, 1);
-	update("itemCountOffset", itemCountOffsetUpdatePattern, itemCountOffsetUpdateMask, itemCountOffsetUpdateOffset, 0x760000, 0xA0000, 1);
-	update("inUseOffset", inUseOffsetUpdatePattern, inUseOffsetUpdateMask, inUseOffsetUpdateOffset, 0x760000, 0xA0000, 1);
-	update("charMaxExpTable_address", charMaxExpTableUpdatePattern, charMaxExpTableUpdateMask, charMaxExpTableUpdateOffset, 0x615000, 0xA0000);
 
 
 	-- Assumption-based updating.
@@ -198,6 +321,14 @@ function findOffsets()
 		addresses[name] = newValue;
 	end
 
+	assumptionUpdate("pawnMP2_offset", addresses.pawnMP_offset + 8);
+	assumptionUpdate("pawnMaxMP2_offset", addresses.pawnMaxMP_offset + 8);
+	assumptionUpdate("pawnY_offset", addresses.pawnX_offset + 4);
+	assumptionUpdate("pawnZ_offset", addresses.pawnX_offset + 8);
+	assumptionUpdate("camYUVec_offset", addresses.camXUVec_offset + 4);
+	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
+	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
+	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
 	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x11898);
 	assumptionUpdate("charExp_address", addresses.staticbase_char + 0x6C);
 end
