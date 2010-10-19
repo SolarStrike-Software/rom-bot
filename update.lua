@@ -256,7 +256,7 @@ function findOffsets()
 	update("camPtr_offset", camPtrUpdatePattern, camPtrUpdateMask, camPtrUpdateOffset, 0x5E0000, 0xA0000);
 	update("camXUVec_offset", camXUVecUpdatePattern, camXUVecUpdateMask, camXUVecUpdateOffset, 0x440000, 0xA0000);
 	update("camX_offset", camXUpdatePattern, camXUpdateMask, camXUpdateOffset, 0x440000, 0xA0000);
-	update("castbar_offset", castbarUpdatePattern, castbarUpdateMask, castbarUpdateOffset, 0x820000, 0xA0000);
+	update("pawnCasting_offset", castbarUpdatePattern, castbarUpdateMask, castbarUpdateOffset, 0x820000, 0xA0000);
 	update("charAlive_offset", charAliveUpdatePattern, charAliveUpdateMask, charAliveUpdateOffset, 0x5E0000, 0xA0000);
 	update("charBattle_offset", charBattleUpdatePattern, charBattleUpdateMask, charBattleUpdateOffset, 0x5E0000, 0xA0000);
 	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);

@@ -94,7 +94,7 @@ function CPlayer:harvest(_id, _second_try)
 		if _id and not database.nodes[closestHarvestable.Id] then -- The rest is not needed if not resource node
 			return true;
 		end
-		
+
 		yrest(500);
 
 		self:update();
@@ -252,7 +252,7 @@ function CPlayer:harvest( _id, _second_try )
 		local scanYMultiplier = settings.profile.options.HARVEST_SCAN_YMULTIPLIER;	-- multiplier for scan line height
 		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
 		local scan_yrest = settings.profile.options.HARVEST_SCAN_YREST;	-- yrest between mouse movements
-		
+
 		-- readaption stepsize to games client size
 		-- node width at 975 screen width is about 66 (for moxa)
 		scanStepSize = scanStepSize * ww / 1024;
@@ -260,7 +260,7 @@ function CPlayer:harvest( _id, _second_try )
 			cprintf(cli.yellow, "Your original stepsize is %d for 1024 screen width. We recalutate it to %d by %d screen width.\n",
 			  settings.profile.options.HARVEST_SCAN_STEPSIZE, scanStepSize, ww);
 			scan_yrest = scan_yrest + 200;
-			cprintf(cli.yellow, "Your rest between scan movements: %d ms, we add 200 ms for debugging resons.\n", 
+			cprintf(cli.yellow, "Your rest between scan movements: %d ms, we add 200 ms for debugging resons.\n",
 			  settings.profile.options.HARVEST_SCAN_YREST);
 		end
 
@@ -306,7 +306,7 @@ function CPlayer:harvest( _id, _second_try )
 				end
 
 				-- id was given, return them if found
-				if( mousePawn.Address ~= 0 
+				if( mousePawn.Address ~= 0
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
 					and _id == mousePawn.Id ) then
 					return mousePawn.Address, mx, my, mousePawn.Id;
@@ -337,7 +337,7 @@ function CPlayer:harvest( _id, _second_try )
 	local startHarvestTime = os.time();
 
 	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
-		
+
 		-- If out of distance, move and rescan
 		local mousePawn = CPawn(foundHarvestNode);
 		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
@@ -391,10 +391,10 @@ function CPlayer:harvest( _id, _second_try )
 				-- Wait for a few seconds... constantly check for aggro
 				local startWaitTime = os.time();
 				while( os.difftime(os.time(), startWaitTime) < 2 ) do
-					
+
 --					yrest(100);
 					inventory:updateSlotsByTime(100);	-- use time to update inventory
-					
+
 					self:update();
 
 					-- Make sure it didn't disapear
@@ -421,7 +421,7 @@ function CPlayer:harvest( _id, _second_try )
 
 	mouseSet(mouseOrigX, mouseOrigY);
 	attach(getWin()); -- Re-attach bindings
-	
+
 	-- sometimes harvesting breaks at begin after found, because camera is still
 	-- moving, in that case, wait a little and harvest again
 	if( hf_found == true   and
@@ -436,7 +436,7 @@ end
 ]]
 
 function CPlayer:initialize()
-	memoryWriteInt(getProc(), self.Address + addresses.castbar_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.pawnCasting_offset, 0);
 end
 
 -- Resets "toggled" skills to off & used counter to 0
@@ -485,7 +485,7 @@ function CPlayer:cast(skill)
 	else
 		hf_temp = getKeyName(skill.hotkey);
 	end
-	
+
 	local continue = true;
 	if( type(settings.profile.events.onPreSkillCast) == "function" ) then
 		arg1 = skill;
@@ -511,13 +511,13 @@ function CPlayer:cast(skill)
 		local startTime = getTime();
 		-- yrest(100);
 		self:update();
-		
+
 		-- Wait for casting to start (if it has a decent cast time)
 		if( skill.CastTime > 0 ) then
 			-- wait for previous cast to finish. >PRIOR assume missed it
 			local prior = getSkillUsePrior();
 
-			while (self.Casting) and (deltaTime(getTime(),startTime) < prior) do 
+			while (self.Casting) and (deltaTime(getTime(),startTime) < prior) do
 				self:update(); yrest(10);
 			end
 	--		local startTime = os.time();
@@ -582,7 +582,7 @@ function CPlayer:cast(skill)
 					error(msg);
 				end
 				onSkillCast_active = false;
-			end			
+			end
 		end
 	else
 		continue = true;
@@ -676,15 +676,15 @@ end
 function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
 
-	-- set general potion cooldown time	
+	-- set general potion cooldown time
 	local cooldown_hp = settings.profile.options.POTION_COOLDOWN
 	local cooldown_mana = settings.profile.options.POTION_COOLDOWN
-	
+
 	-- copy special mp/hp cooldowns if defined
-	if( settings.profile.options.POTION_COOLDOWN_HP ~= 0 ) then	
+	if( settings.profile.options.POTION_COOLDOWN_HP ~= 0 ) then
 		cooldown_hp = settings.profile.options.POTION_COOLDOWN_HP
 	end
-	if( settings.profile.options.POTION_COOLDOWN_MANA ~= 0 ) then	
+	if( settings.profile.options.POTION_COOLDOWN_MANA ~= 0 ) then
 		cooldown_mana = settings.profile.options.POTION_COOLDOWN_MANA
 	end
 
@@ -702,14 +702,14 @@ function CPlayer:checkPotions()
 			else
 				item:use();
 				self.PotionHpUsed = self.PotionHpUsed + 1;			-- counts use of HP potions
-			
+
 				cprintf(cli.green, language[10], 		-- Using HP potion
-				   self.HP, self.MaxHP, self.HP/self.MaxHP*100, 
+				   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
 				   item.Name, item.ItemCount);
 				if( self.Fighting ) then
 					yrest(1000);
 				end
-			  
+
 				self.PotionLastUseTime = os.time();
 			end
 
@@ -719,16 +719,16 @@ function CPlayer:checkPotions()
 				cprintf(cli.yellow, language[17], inventory.MaxSlots); 		-- No more (usable) hp potions
 				self.PotionLastHpEmptyTime = os.time();
 				-- full inventory update if potions empty
-				if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+				if( os.difftime(os.time(), player.InventoryLastUpdate) >
 				  settings.profile.options.INV_UPDATE_INTERVAL ) then
 					player.InventoryDoUpdate = true;
 				end
 			end;
-		end 
+		end
 	end
 
 	-- If we need to use a mana potion(if we even have mana)
-	if( self.MaxMana > 0 ) then 
+	if( self.MaxMana > 0 ) then
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION  and
 			os.difftime(os.time(), self.PotionLastUseTime) > cooldown_mana )  then
 			item = inventory:bestAvailableConsumable("mana");
@@ -745,24 +745,24 @@ function CPlayer:checkPotions()
 				else
 					item:use();
 					self.PotionManaUsed = self.PotionManaUsed + 1;		-- counts use of mana potions
-						
+
 					cprintf(cli.green, language[11], 		-- Using MP potion
-						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100, 
-						item.Name, item.ItemCount); 
+						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
+						item.Name, item.ItemCount);
 					if( self.Fighting ) then
 						yrest(1000);
 					end
-					
+
 					self.PotionLastUseTime = os.time();
 				end
 
-				return true;		-- avoid invalid/use count of 
+				return true;		-- avoid invalid/use count of
 			else	-- potions empty
 				if( os.difftime(os.time(), self.PotionLastManaEmptyTime) > 16 ) then
 					cprintf(cli.yellow, language[16], inventory.MaxSlots); 		-- No more (usable) mana potions
 					self.PotionLastManaEmptyTime = os.time();
 					-- full inventory update if potions empty
-					if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+					if( os.difftime(os.time(), player.InventoryLastUpdate) >
 					  settings.profile.options.INV_UPDATE_INTERVAL ) then
 						player.InventoryDoUpdate = true;
 					end
@@ -772,7 +772,7 @@ function CPlayer:checkPotions()
 	end
 
 	return false
-	
+
 end
 
 function CPlayer:fight()
@@ -805,7 +805,7 @@ function CPlayer:fight()
 				return;
 			end
 		end;
-		
+
 		if( settings.profile.hotkeys.MACRO ) then
 			RoMScript("UseSkill(1,1);");
 		else
@@ -823,7 +823,7 @@ function CPlayer:fight()
 	self.Cast_to_target = 0;		-- reset counter cast at enemy target
 	self.ranged_pull = false;		-- flag for timed ranged pull for melees
 	local hf_start_dist = 0;		-- distance to mob where we start the fight
-	
+
 	-- check if timed ranged pull for melee
 	if(settings.profile.options.COMBAT_TYPE == "melee"  and
 	   settings.profile.options.COMBAT_RANGED_PULL == true and
@@ -891,7 +891,7 @@ function CPlayer:fight()
 			if( dist <= settings.options.MELEE_DISTANCE ) then
 				cprintf(cli.green, language[97]); -- Ranged pulling finished, mob in melee distance
 				self.ranged_pull = false;
-			elseif( os.difftime(os.time(), self.aggro_start_time) > 3 and  
+			elseif( os.difftime(os.time(), self.aggro_start_time) > 3 and
 			  self.aggro_start_time ~= 0 ) then
 				cprintf(cli.green, language[98]); -- Ranged pulling after 3 sec wait finished
 				self.ranged_pull = false;
@@ -931,7 +931,7 @@ function CPlayer:fight()
 	-- Fix: there is a special dog mob 'Tatus', he switch from red to green at about 90%
 	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
-			target.Name ~= "Tatus"	and		
+			target.Name ~= "Tatus"	and
 		    target.TargetPtr ~= self.Address and
 			target.TargetPtr ~= self.Pet.Address ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
@@ -941,7 +941,7 @@ function CPlayer:fight()
 		end;
 
 		if( dist > suggestedRange and not player.Casting ) then
-			
+
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
 			if( move_closer_counter > 3  and
@@ -952,7 +952,7 @@ function CPlayer:fight()
 				break_fight = true;
 				break;
 			end
-			
+
 			printf(language[25], suggestedRange, dist);
 			-- move into distance
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
@@ -1043,8 +1043,8 @@ function CPlayer:fight()
 		target = self:getTarget();
 
 
-		-- do we need that? Because the DO statement is allready a 
-		-- while( self:haveTarget() statement / I will comment it out and see 
+		-- do we need that? Because the DO statement is allready a
+		-- while( self:haveTarget() statement / I will comment it out and see
 		-- what happens (d003232, 18.9.09)
 --		if( not self:haveTarget() ) then
 --			break;
@@ -1071,8 +1071,8 @@ function CPlayer:fight()
 		cprintf(cli.green, language[27], 	-- Fight finished. Target dead/lost
 		  self.mobs[target_Name],
 		  target_Name,
-		  self.Fights, 
-		  os.difftime(os.time(), 
+		  self.Fights,
+		  os.difftime(os.time(),
 		  self.BotStartTime_nr)/60);
 	else
 		cprintf(cli.green, language[177]); 	-- Fight aborted
@@ -1089,7 +1089,7 @@ function CPlayer:fight()
 	end
 
 
-	-- give client a little time to update battle flag (to come out of combat), 
+	-- give client a little time to update battle flag (to come out of combat),
 	-- if we loot even at combat we don't need the time
 	if( settings.profile.options.LOOT == true  and
 		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
@@ -1116,14 +1116,14 @@ end
 function CPlayer:loot()
 
 	if( settings.profile.options.LOOT ~= true ) then
-		if( settings.profile.options.DEBUG_LOOT) then	
+		if( settings.profile.options.DEBUG_LOOT) then
 			cprintf(cli.yellow, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true\n");
 		end;
 		return
 	end
-	
+
 	if( self.TargetPtr == 0 ) then
-		if( settings.profile.options.DEBUG_LOOT) then	
+		if( settings.profile.options.DEBUG_LOOT) then
 			cprintf(cli.yellow, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
 		end;
 		return
@@ -1140,7 +1140,7 @@ function CPlayer:loot()
 	local target = self:getTarget();
 
 	if( target == nil or target.Address == 0 ) then
-		if( settings.profile.options.DEBUG_LOOT) then	
+		if( settings.profile.options.DEBUG_LOOT) then
 			cprintf(cli.yellow, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
 		end;
 		return;
@@ -1171,12 +1171,12 @@ function CPlayer:loot()
 		local hf_attack_key;
 		if( settings.profile.hotkeys.MACRO ) then
 			hf_attack_key = "MACRO";
-			cprintf(cli.green, language[31], 
+			cprintf(cli.green, language[31],
 			   hf_attack_key , dist);	-- looting target.
 			RoMScript("UseSkill(1,1);");
 		else
 			hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
-			cprintf(cli.green, language[31], 
+			cprintf(cli.green, language[31],
 			   hf_attack_key , dist);	-- looting target.
 			keyboardPress(settings.profile.hotkeys.ATTACK.key);
 		end
@@ -1200,14 +1200,14 @@ function CPlayer:loot()
 		self.X == hf_x  and	-- we didn't move, seems attack key is not defined
 	    self.Z == hf_z  and
 	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
-		cprintf(cli.green, language[100]); -- We didn't move to the loot!? 
-		
+		cprintf(cli.green, language[100]); -- We didn't move to the loot!?
+
 		-- second loot try?
 		if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 and target.Lootable ) then
 			yrest(settings.profile.options.LOOT_AGAIN);
 			looten();	-- try it again
 		end
-		
+
 	end;
 
 	-- rnd pause from 2-6 sec after loot to look more human
@@ -1234,7 +1234,7 @@ function CPlayer:loot()
 					if( nearestSigil == nil and dist < settings.profile.options.MAX_TARGET_DIST ) then
 						nearestSigil = obj;
 					else
-						
+
 						if( dist < settings.profile.options.MAX_TARGET_DIST and
 							dist < distance(self.X, self.Z, nearestSigil.X, nearestSigil.Z) ) then
 							-- New nearest sigil found
@@ -1277,7 +1277,7 @@ function evalTargetDefault(address)
 			player.LastTargetPtr = player.TargetPtr;		-- remember target address to avoid msg spam
 		end
 	end
-	
+
 	local function printNotTargetReason(_reason)
 		if( player.TargetPtr ~= player.LastTargetPtr ) then
 			cprintf(cli.yellow, "%s\n", _reason);
@@ -1333,7 +1333,7 @@ function evalTargetDefault(address)
 
 	-- check if we just ignored that target / ignore it for 10 sec
 	if(address == player.Last_ignore_target_ptr  and
-	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
+	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then
 		if ( player.Battling == false ) then	-- if we don't have aggro then
 			cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
 			   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
@@ -1344,7 +1344,7 @@ function evalTargetDefault(address)
 		if( player.Battling == true  and		-- we have aggro
 		target.TargetPtr ~= player.Address ) then	-- but not from that mob
 			debug_target("we have aggro from another mob")
-			return false;         
+			return false;
 		end;
 	end
 
@@ -1385,7 +1385,7 @@ function evalTargetDefault(address)
 			if( player.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= player.Address ) then	-- but not from that mob
 				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-				return false;         
+				return false;
 			end;
 		end;
 	else
@@ -1394,7 +1394,7 @@ function evalTargetDefault(address)
 		return false;
 	end
 
-	
+
 	-- PK protect
 	if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 		if ( player.Battling == false ) then   -- if we don't have aggro then
@@ -1460,7 +1460,7 @@ function evalTargetDefault(address)
 		end;
 	end;
 
-	-- don't target NPCs 
+	-- don't target NPCs
 	if( target.Type == PT_NPC ) then      -- NPCs are type == 4
 		debug_target("thats a NPC, he should be friendly and not attackable")
 		return false;         -- he is not a valid target
@@ -1532,13 +1532,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		else
 			angle = self.Direction;
 		end;
-		
+
 		-- we will not move back to WP if wander and radius = 0
 		-- so one can move the character manual and use the bot only as fight support
 		-- there we set the WP to the actual player position
 		waypoint.Z = player.Z;
 		waypoint.X = player.X;
-		
+
 	end;
 
 	-- QUICK_TURN only
@@ -1607,7 +1607,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
-	
+
 	local successDist = 20.0 -- Distance to consider successfully reaching the target location
 	if self.Mounted then
 		successDist = 30.0 -- so we don't overpass it and double back when mounted
@@ -1764,7 +1764,7 @@ function CPlayer:faceDirection(dir)
 end
 
 -- turns the player at a given angel in grad
-function CPlayer:turnDirection(_angle)	
+function CPlayer:turnDirection(_angle)
 -- negative values means 'turn' left
 -- positive values means 'turn' right
 -- self.Direction values are from 0 til Pi and -Pi til 0 / 0 is at East
@@ -1798,7 +1798,7 @@ function CPlayer:unstick()
 		else
 			__WPL:backward();
 		end;
-		return;	
+		return;
 	end;
 
 -- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
@@ -1810,7 +1810,7 @@ function CPlayer:unstick()
 			__WPL:advance();	-- forward to sticky wp
 			__WPL:advance();	-- and one more
 		end;
-		return;	
+		return;
 	end;
 
 -- after 8x unstick try to run away a little and then go to the nearest waypoint
@@ -1870,7 +1870,7 @@ end
 
 function CPlayer:haveTarget()
 	if( CPawn.haveTarget(self) ) then
-	
+
 		local function debug_target(_place)
 			if( settings.profile.options.DEBUG_TARGET and
 				self.TargetPtr ~= self.LastTargetPtr ) then
@@ -1878,15 +1878,15 @@ function CPlayer:haveTarget()
 				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
 			end
 		end
-		
+
 		local function printNotTargetReason(_reason)
 			if( self.TargetPtr ~= self.LastTargetPtr ) then
 				cprintf(cli.yellow, "%s\n", _reason);
 				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
 			end
 		end
-		
-	
+
+
 		local target = self:getTarget();
 
 		if( target == nil ) then
@@ -1904,13 +1904,13 @@ function CPlayer:haveTarget()
 			if( self.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= self.Address ) then	-- but not from that mob
 				debug_target("target lvl above/below profile settings with battling from other mob")
-				return false;         
+				return false;
 			end;
 		end;
 
 		-- check if we just ignored that target / ignore it for 10 sec
 		if(self.TargetPtr == player.Last_ignore_target_ptr  and
-		   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then	
+		   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 				cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
 				   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
@@ -1921,7 +1921,7 @@ function CPlayer:haveTarget()
 			if( self.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= self.Address ) then	-- but not from that mob
 				debug_target("we have aggro from another mob")
-				return false;         
+				return false;
 			end;
 		end
 
@@ -1935,7 +1935,7 @@ function CPlayer:haveTarget()
 			if( self.Battling == true  and		-- we have aggro
 			target.TargetPtr ~= self.Address ) then	-- but not from that mob
 				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-				return false;         
+				return false;
 			end;
 		end;
 
@@ -2006,7 +2006,7 @@ function CPlayer:haveTarget()
 			end;
 		end;
 
-		-- don't target NPCs 
+		-- don't target NPCs
 		if( target.Type == PT_NPC ) then      -- NPCs are type == 4
 			debug_target("thats a NPC, he should be friendly and not attackable")
 			return false;         -- he is not a valid target
@@ -2069,11 +2069,11 @@ function CPlayer:update()
 
 
 	CPawn.update(self); -- run base function
-	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + addresses.castbar_offset), language[41]) ~= 0);
+	self.Casting = (debugAssert(memoryReadIntPtr(getProc(), addresses.castingBarPtr, addresses.castingBar_offset), language[41]) ~= 0);
 
 	self.Battling = debugAssert(memoryReadBytePtr(getProc(), addresses.staticbase_char,
 	addresses.charBattle_offset), language[41]) == 1;
-	
+
 	-- remember aggro start time, used for timed ranged pull
 	if( self.Battling == true ) then
 		if(self.aggro_start_time == 0) then
@@ -2279,7 +2279,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
-	
+
 	-- don't break friendly skills
 	if( _skill_type == STYPE_HEAL  or
 	    _skill_type == STYPE_BUFF  or
@@ -2301,7 +2301,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
 	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
-		target.Name ~= "Tatus"	and		
+		target.Name ~= "Tatus"	and
 		-- even he is attacking us
 	    target.HP/target.MaxHP*100 > 90 ) then			-- target is alive and no attacking us
 -- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
@@ -2313,7 +2313,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end;
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
-		
+
 		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
 		if( self:findTarget() ) then	-- we found a target
 			target = self:getTarget();
@@ -2324,7 +2324,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 				self:clearTarget();
 			end
 		end
-		
+
 		return true;
 	end;
 end
@@ -2355,7 +2355,7 @@ function CPlayer:findTarget()
 	else
 		return false;
 	end;
-	
+
 end
 
 
@@ -2375,9 +2375,9 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 -- e.g.
 -- player:rest(20)                 will rest for 20 seconds.
 -- player:rest(60, 80)             will rest between 60 and 80 seconds.
--- player:rest(90, 130, "full")     will rest up to between 90 and 130 seconds, and stop resting 
+-- player:rest(90, 130, "full")     will rest up to between 90 and 130 seconds, and stop resting
 --                                 if being full
--- player:rest(20, 60, "full, 20") will rest up to between 20 and 60 seconds, and stop resting 
+-- player:rest(20, 60, "full, 20") will rest up to between 20 and 60 seconds, and stop resting
 --                                 if being full, and wait after that between 1-20 seconds
 --
 -- to look not so bottish, please use the random time options!!!
@@ -2386,7 +2386,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	if( self.Battling == true) then return; end;		-- if aggro, go back
 
 	local hf_resttime;
-	
+
 	-- setting default values
 	if( _restmin     == nil  or  _restmin  == 0 )   then _restmin     = 10; end;
 	if( _restmax     == nil  or  _restmax  == 0 )   then _restmax     = _restmin; end;
@@ -2398,13 +2398,13 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		hf_resttime = _restmin;
 	end;
 
-	if( _restaddrnd  == nil  or  _restaddrnd == 0 ) then _restaddrnd  = 0; 
+	if( _restaddrnd  == nil  or  _restaddrnd == 0 ) then _restaddrnd  = 0;
 	else _restaddrnd  = math.random( _restaddrnd ); end;
 
 	-- some classes dont have mana, in that cases Player.mana = 0
 	local hf_mana_rest = (player.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
 	local hf_hp_rest   = (player.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
-	
+
 	local restStart = os.time();		-- set start timer
 
 	if( _resttype == "full") then
@@ -2418,7 +2418,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 
 	-- sit option is false as default and the option is not promoted
-	-- simply because if you misconfigure the rest option / don't use potions you will 
+	-- simply because if you misconfigure the rest option / don't use potions you will
 	-- rest and sit after every fight and that looks really bottish
 	local we_sit = false;
 	if( _resttype == "full" and			-- only sit for full rest, not for times restings
@@ -2433,10 +2433,10 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();      -- get rid of mob to be able to target attackers
-			cprintf(cli.green, language[39] );   -- get aggro 
+			cprintf(cli.green, language[39] );   -- get aggro
 			break;
 		end;
-		
+
 		-- check if resttime finished
 		if( os.difftime(os.time(), restStart ) > ( hf_resttime ) ) then
 			cprintf(cli.green, language[70], ( hf_resttime ) );   -- Resting finished after %s seconds
@@ -2458,7 +2458,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 					cprintf(cli.green, language[39] );   -- Stop resting because of aggro
 					break;
 				end;
-				self:checkPotions();   
+				self:checkPotions();
 				self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 				yrest(100);
 			end;
@@ -2468,7 +2468,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		end;
 
 		if( we_sit == false) then		-- can't cast while sitting
-			self:checkPotions();   
+			self:checkPotions();
 			self:checkSkills( ONLY_FRIENDLY ); 		-- only cast friendly spells to ourselfe
 		end
 
@@ -2500,7 +2500,7 @@ function CPlayer:sleep()
 	local sleep_start = os.time();		-- calculate the sleep time
 	self.Sleeping = true;	-- we are sleeping
 
-	cprintf(cli.yellow, language[89], os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );  
+	cprintf(cli.yellow, language[89], os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );
 
 	local hf_key = "";
 	while(true) do
@@ -2518,7 +2518,7 @@ function CPlayer:sleep()
 			if( hf_key == "AWAKE" ) then
 				hf_key = " ";	-- clear last pressed key
 
-				cprintf(cli.yellow, language[90], getKeyName(settings.hotkeys.START_BOT.key),  os.date() );  
+				cprintf(cli.yellow, language[90], getKeyName(settings.hotkeys.START_BOT.key),  os.date() );
 				self.Sleeping = false;	-- we are awake
 				break;
 			end;
@@ -2530,17 +2530,17 @@ function CPlayer:sleep()
 		-- wake up if aggro, but we don't clear the sleeping flag
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
-			cprintf(cli.yellow, language[91], os.date() );  -- Awake from sleep because of aggro 
+			cprintf(cli.yellow, language[91], os.date() );  -- Awake from sleep because of aggro
 			break;
 		end;
 
 		yrest(10);
 		self:logoutCheck(); 		-- check logout timer
 	end					-- end of while
-	
+
 	-- count the sleeping time
 	self.Sleeping_time = self.Sleeping_time + os.difftime(os.time(), sleep_start);
-	
+
 end
 
 function CPlayer:scan_for_NPC(_npcname)
@@ -2648,9 +2648,9 @@ function CPlayer:scan_for_NPC(_npcname)
 		-- click NPC
 		keyboardHold(key.VK_SHIFT);
 		mouseLClick();		-- one click to target npc
-		yrest(500);		
+		yrest(500);
 		mouseLClick();		-- one click to open dialog
-		yrest(500);	
+		yrest(500);
 		mouseLClick();		-- one click to be really sure
 		keyboardRelease(key.VK_SHIFT);
 
@@ -2674,13 +2674,13 @@ function CPlayer:mouseclick(_x, _y, _wwide, _whigh, _type)
 
 	local wx,wy,wwide,whigh  = windowRect(getWin());
 	local hf_x, hf_y;
-	
+
 	-- recalulate clickpoints depending from the actual RoM windows size
 	-- only if we know the original windows size from the clickpoints
 	if(_wwide  and _whigh) then
 		hf_x = wwide * _x / _wwide;
 		hf_y = whigh * _y / _whigh;
-		cprintf(cli.green, language[92], -- Mouseclick Left at %d,%d in %dx%d (recalculated 
+		cprintf(cli.green, language[92], -- Mouseclick Left at %d,%d in %dx%d (recalculated
 			_type, hf_x, hf_y, wwide, whigh, _x, _y, _wwide, _whigh);
 	else
 		hf_x = _x;
@@ -2688,7 +2688,7 @@ function CPlayer:mouseclick(_x, _y, _wwide, _whigh, _type)
 		cprintf(cli.green, language[93],	 -- Clicking mouseL at %d,%d in %dx%d\n
 			_type, hf_x, hf_y, wwide, whigh);
 	end;
-	
+
 	mouseSet(wx + hf_x, wy + hf_y);
 	yrest(100);
 
@@ -2696,7 +2696,7 @@ function CPlayer:mouseclick(_x, _y, _wwide, _whigh, _type)
 		mouseLClick();
 	elseif( string.lower(_type) == "r"  or  string.lower(_type) == "right" ) then
 		mouseRClick();
-	elseif( string.lower(_type) == "m"  or  string.lower(_type) == "middle" ) then	
+	elseif( string.lower(_type) == "m"  or  string.lower(_type) == "middle" ) then
 		mouseMClick();
 	else
 		cprintf(cli.yellow, "Unknow option %s for function CPlayer:mouseclick()\n", _type);
@@ -2740,11 +2740,11 @@ function CPlayer:merchant(_npcname, _option)
 	end
 
 	RoMScript("CloseWindows()");
-	
+
 end
 
 -- trys to target a friendly NPC/player with the ingame targetnearestfriend key
--- if after some tries we don't find the target, the character will turn around 
+-- if after some tries we don't find the target, the character will turn around
 -- in steps and tries again to find the target
 function CPlayer:target_NPC(_npcname)
 	if( not _npcname ) then
@@ -2752,10 +2752,13 @@ function CPlayer:target_NPC(_npcname)
 		return
 	end
 
-	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC 
+	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC
 
 	local npc = self:findNearestNameOrId(_npcname)
 	if npc then	-- we successfully found NPC
+		if( distance(self.X, self.Z, npc.X, npc.Z) > 39 ) then
+			self:moveTo(CWaypoint(npc.X, npc.Z), true);
+		end
 		-- target NPC
 		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, npc.Address);
 		RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
@@ -2775,15 +2778,15 @@ end
 		return
 	end
 
-	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC 
+	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC
 
 	local found_npc = false;
 	local counter = 0;
 	local scanDirection = self.Direction;
-	
+
 	while(true) do
 		counter = counter + 1;
-		
+
 		-- turn character if first try wasn't successfull
 		if( counter == 2 ) then
 			scanDirection=scanDirection - math.pi/4
@@ -2834,29 +2837,33 @@ end
 
 			yrest(100);
 		end
-		
+
 	end
 
 	cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
 	if( not found_npc) then
 		cprintf(cli.yellow, language[138], 	-- We didn't found any NPC
-		  getKeyName(settings.hotkeys.TARGET_FRIEND.key) );	
+		  getKeyName(settings.hotkeys.TARGET_FRIEND.key) );
 	end
-	
+
 	return false;
 
 end]]
 
-function CPlayer:findNearestNameOrId(_objtable, ignore)
+function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 	if type(_objtable) == "number" or type(_objtable) == "string" then
 		_objtable = {_objtable}
 	end
-	
+
 	ignore = ignore or 0;
 	local closestObject = nil;
 	local obj = nil;
 	local objectList = CObjectList();
 	objectList:update();
+
+	if( type(evalFunc) ~= "function" ) then
+		evalFunc = function (unused) return true; end;
+	end
 
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
@@ -2864,16 +2871,18 @@ function CPlayer:findNearestNameOrId(_objtable, ignore)
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
 				if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
-					local dist = distance(self.X, self.Z, obj.X, obj.Z);
-					if( closestObject == nil ) then
-						if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
-							closestObject = obj;
-						end
-					else
-						if( distance(self.X, self.Z, obj.X, obj.Z) <
-							distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
-							-- this node is closer
-							closestObject = obj;
+					if( evalFunc(obj.Address) == true ) then
+						local dist = distance(self.X, self.Z, obj.X, obj.Z);
+						if( closestObject == nil ) then
+							if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+								closestObject = obj;
+							end
+						else
+							if( distance(self.X, self.Z, obj.X, obj.Z) <
+								distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
+								-- this node is closer
+								closestObject = obj;
+							end
 						end
 					end
 				end
@@ -2884,31 +2893,48 @@ function CPlayer:findNearestNameOrId(_objtable, ignore)
    return closestObject;
 end
 
-function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
+function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, evalFunc)
 	_waittime = _waittime or 0
+	local minWaitTime = 1000 -- minimum time to wait for castbar to come up.
 	_harvestall = (_harvestall == true)
 	_donotignore = (_donotignore == true)
 	if( not _objname ) then
 		cprintf(cli.yellow, language[181]);	-- Please give an Object name
 		return
 	end
-	
+
 	yrest(200); -- Make sure we come to a stop before attempting to harvest.
-	local lastHarvestedNodeAddr = nil;
 	local objFound = false;
 
 	while(true) do
 		repeat
 			interrupted = false
-			obj = self:findNearestNameOrId(_objname, lastHarvestedNodeAddr)
+			obj = self:findNearestNameOrId(_objname, player.LastTargetPtr, evalFunc)
 			if obj then -- object found, target
 				cprintf(cli.yellow, language[95], obj.Name);
 				objFound = true
-				memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, obj.Address);
+				self:target(obj.Address);
+				if( distance(self.X, self.Z, obj.X, obj.Z) > 39 ) then
+					self:moveTo(CWaypoint(obj.X, obj.Z), true);
+				end
 				yrest(100)
 				RoMScript("UseSkill(1,1)"); yrest(50);
 				timeStart = getTime()
+
+				--Wait minimum time
 				repeat
+					yrest(100)
+					self:update()
+					if self.Casting or self.Battling then break end
+				until deltaTime(getTime(),timeStart) >= minWaitTime
+
+				if self.Casting == false and _waittime > 0 then -- Was expecting castingbar so try again, 2nd try.
+					RoMScript("UseSkill(1,1)"); yrest(50);
+					timeStart = getTime()
+				end
+
+				repeat
+					yrest(100);
 					self:update();
 					while( self.Battling ) do
 						self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
@@ -2918,20 +2944,18 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore)
 							interrupted = true
 						end
 					end
-					yrest(100);
-				until deltaTime(getTime(),timeStart) > _waittime
+				until deltaTime(getTime(),timeStart) > _waittime and player.Casting == false
 			end
 		until interrupted == false
-		
-		if obj and _harvestall == true then -- harvest again
+
+		if obj then -- harvest again
 			if _donotignore ~= true then
-				lastHarvestedNodeAddr = obj.Address -- Default ignore this address in next search
+				player.LastTargetPtr = obj.Address -- Default ignore this address in next search
 			end
-		else -- No more harvesting
-			if objFound == false then
-				printf(language[79]); -- No harvestables found
+			if _harvestall == false then -- No more harvesting
+				return objFound
 			end
-			
+		else
 			return objFound
 		end
 	end
@@ -2950,8 +2974,22 @@ function CPlayer:mount()
 
 	local mount = inventory:getMount();
 	if( mount ) then
-		mount:use();
-		yrest(6000);
+		repeat
+			while( self.Battling ) do
+				self:target(self:findEnemy(true, nil, nil, nil));
+				self:update();
+				if( self:haveTarget() ) then
+					self:fight();
+				end
+			end
+
+			mount:use();
+			yrest(500)
+			repeat
+				yrest(100);
+				self:update();
+			until player.Casting == false
+		until player.Mounted
 	end
 end
 
