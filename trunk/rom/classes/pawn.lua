@@ -119,7 +119,7 @@ CPawn = class(
 		self.InventoryLastUpdate = os.time(); -- time of the last full inventory updata
 		self.InventoryDoUpdate = false;	-- flag to 'force' inventory update
 		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
-		self.Success_waypoints = 0; -- count consecutively successfull reached waypoints 
+		self.Success_waypoints = 0; -- count consecutively successfull reached waypoints
 		self.Cast_to_target = 0;	-- count casts to our enemy target
 		self.LastAggroTimout = 0;	-- remeber last time we wait in vain for an aggro mob
 		self.level_detect_levelup = 0;	-- remember player level to detect levelups
@@ -141,10 +141,10 @@ CPawn = class(
 		self.free_field3 = nil;				-- free field for user use
 		self.free_counter1 = 0;				-- free counter for user use
 		self.free_counter2 = 0;				-- free counter for user use
-		self.free_counter3 = 0;				-- free counter for user use		
+		self.free_counter3 = 0;				-- free counter for user use
 		self.free_flag1 = false;			-- free flag for user use
 		self.free_flag2 = false;			-- free flag for user use
-		self.free_flag3 = false;			-- free flag for user use		
+		self.free_flag3 = false;			-- free flag for user use
 		self.LastSkillCastTime = 0;			-- CastTime of last skill with CastTime >0
 		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
 		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
@@ -175,6 +175,7 @@ function CPawn:update()
 
 	self.Mounted = debugAssert(memoryReadByte(proc, self.Address + addresses.pawnMount_offset), memerrmsg) ~= 3;
 	self.Harvesting = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnHarvesting_offset), memerrmsg) ~= 0;
+	self.Casting = (debugAssert(memoryReadInt(getProc(), self.Address + addresses.pawnCasting_offset), language[41]) ~= 0);
 
 	tmp = memoryReadInt(proc, self.Address + addresses.pawnLootable_offset);
 	if( tmp ) then
@@ -205,7 +206,7 @@ function CPawn:update()
 	else
 		-- time for only convert 8 characters is 0 ms
 		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
---		local hf_before = getTime(); 
+--		local hf_before = getTime();
 
 		if( bot.ClientLanguage == "RU" ) then
 			self.Name = utf82oem_russian(tmp);
@@ -213,7 +214,7 @@ function CPawn:update()
 			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
 --			self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
 		end
---		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) ); 
+--		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) );
 	end
 
 	self.Level = debugAssert(memoryReadInt(proc, self.Address + addresses.pawnLevel_offset), memerrmsg);
