@@ -2897,7 +2897,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 	_waittime = _waittime or 0
 	local minWaitTime = 1000 -- minimum time to wait for castbar to come up.
 	_harvestall = (_harvestall == true)
-	_donotignore = (_donotignore == true)
+	if type(_donotignore) ~= "boolean" then _donotignore = (_harvestall == false) end -- default value depends on _harvestall
 	if( not _objname ) then
 		cprintf(cli.yellow, language[181]);	-- Please give an Object name
 		return
