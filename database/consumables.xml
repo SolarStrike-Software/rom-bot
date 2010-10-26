@@ -92,6 +92,6 @@
 
 	<!-- Poison -->
 	<potion type="poison" id="200563" name="Poison Powder" level="1" />
-	<!--potion type="poison" id="200762" name="Poison Bottle" level="1" -->
+	<potion type="poison" id="200762" name="Poison Bottle" level="1" />
 
 </potions>
