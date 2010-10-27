@@ -153,13 +153,13 @@ function printPicture(pic, text, textColor)
 	if not textColor then
 	    textColor = 0;
 	end
-	
+
 	local readfile = io.open(getExecutionPath() .. "/database/img/"..pic..".bmp", "r");
 	if not readfile then
 	    print(pic);
 	    return 0;
 	end
-	
+
 	file = readfile:read("*all");
 	local height = string.byte(file, 23);
 	local width = string.byte(file, 19);
@@ -192,7 +192,7 @@ function printPicture(pic, text, textColor)
 		    	nextchar = string.char(string.byte(text, a));
 				a = a + 1;
 			end
-		    
+
 		    if nextchar == "\n" then
 		        nextchar = "¤";
 		        newline = true;
@@ -200,7 +200,7 @@ function printPicture(pic, text, textColor)
 
 			pixel = i+width-x;
 			col = color[pixel];
-			
+
 			-- repair colors from an unknown bug
 			if col == 9 then
 			    col = 12
@@ -223,7 +223,7 @@ function printPicture(pic, text, textColor)
       		elseif col == 14 then
       		    col = 11
 			end
-			
+
 			if nextchar == "¤" then
 				cprintf(col*16+col, nextchar);
 				--cprintf(col*16, col);
@@ -311,14 +311,14 @@ end
 
 function pauseCallback()
 	local msg = sprintf(language[46], getKeyName(getStartKey()));	--  to continue, (CTRL+L) exit ...
-		
+
 	-- If settings haven't been loaded...skip the cleanup.
 	if( not settings ) then
 		printf(msg);
 		return;
 	end;
 
-	releaseKeys();	
+	releaseKeys();
 	printf(msg);
 end
 atPause(pauseCallback);
@@ -362,7 +362,7 @@ function resumeCallback()
 		cprintf(cli.yellow, language[148]);	-- LWe will go to sleep after fight finished
 		player.Sleeping = true;		-- activate sleep
 	end
-	
+
 end
 atResume(resumeCallback);
 
@@ -394,7 +394,7 @@ function load_paths( _wp_path, _rp_path)
 
 	cprintf(cli.yellow, "Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
 	loadPaths( _wp_path, _rp_path);
-	
+
 end
 
 function loadPaths( _wp_path, _rp_path)
@@ -409,7 +409,7 @@ function loadPaths( _wp_path, _rp_path)
 		return;
 	end;
 	if( _wp_path == "" or _wp_path == " " ) then _wp_path = nil; end;
-	
+
 	-- check suffix and remember default return path name
 	local rp_default;
 	if(_wp_path ~= nil) then
@@ -432,12 +432,12 @@ function loadPaths( _wp_path, _rp_path)
 	if( _wp_path and
 		string.lower(_wp_path) ~= "wander" ) then
 		local filename = getExecutionPath() .. "/waypoints/" .. _wp_path;
-		if( not fileExists(filename) ) then 
+		if( not fileExists(filename) ) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
 			error(msg, 0);
 		end;
 		if( not __WPL ) then  		-- define object if not there
-			__WPL = CWaypointList(); 
+			__WPL = CWaypointList();
 		end;
 		__WPL:load(filename);
 		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
@@ -448,7 +448,7 @@ function loadPaths( _wp_path, _rp_path)
 		end;
 	end
 
-	-- set wander for WP	
+	-- set wander for WP
 	if( string.lower(_wp_path) == "wander" ) then
 		__WPL = CWaypointListWander();
 		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
@@ -458,29 +458,29 @@ function loadPaths( _wp_path, _rp_path)
 
 	-- look for default return path with suffix '_return'
 	if( not _rp_path ) then
-		if( fileExists(getExecutionPath() .. "/waypoints/" .. rp_default) ) then 		
+		if( fileExists(getExecutionPath() .. "/waypoints/" .. rp_default) ) then
 			cprintf(cli.green, language[162], rp_default );	-- Return path found with default naming
 			_rp_path = rp_default;	-- set default
 		else
 			cprintf(cli.yellow, language[163], rp_default );	-- No return path with default naming
 		end;
 	end
-	
+
 	-- return path defined or default found ... load it
 	if( _rp_path ) then
 		if( not __RPL ) then  		-- define object if not there
-			__RPL = CWaypointList(); 
+			__RPL = CWaypointList();
 		end;
 		local filename = getExecutionPath() .. "/waypoints/" .. _rp_path;
-		if( not fileExists(filename) ) then 
+		if( not fileExists(filename) ) then
 			local msg = sprintf(language[143], filename ); -- We can't find your returnpath file
 			error(msg, 0);
 		end;
 		__RPL:load(filename);
-		cprintf(cli.green, language[1], __RPL:getFileName());	-- Loaded return path 		
+		cprintf(cli.green, language[1], __RPL:getFileName());	-- Loaded return path
 	else
 		if( __RPL ) then  		-- clear old returnpath object
-			__RPL = nil; 
+			__RPL = nil;
 		end;
 	end;
 
@@ -501,7 +501,7 @@ function sendMacro(_script)
 	   string.sub(_script, 1, 40) );
 
 	return RoMScript(_script);
-	
+
 end
 
 
@@ -518,10 +518,10 @@ function RoMScript(script, default)
 	else
 		scriptDef = "/script";
 	end
-	
+
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with 120 character limit.
-	
+
 	local text = scriptDef.." r='' a={" .. script ..
 	"} for i=1,#a do r=r..tostring(a[i])" ..
 	" r=r..'" .. string.char(9) .. "' end" ..
@@ -572,7 +572,7 @@ function RoMScript(script, default)
 		end;
 		rest(1);
 	end
-   
+
 	--- Read the outcome from macro 2
 	readsz = "";
 	ret = {};
@@ -621,7 +621,7 @@ end
 -- http://en.wikipedia.org/wiki/Code_page_866
 function utf82oem_russian(txt)
   txt = string.gsub(txt, string.char(0xD0, 0x81), string.char(0xF0) );	-- 0xF0 / E with dots
-  txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xF1) );	-- 0xF1 / e with dots 
+  txt = string.gsub(txt, string.char(0xD1, 0x91), string.char(0xF1) );	-- 0xF1 / e with dots
   -- lower case
   local patt = string.char(0xD1) .. "([" .. string.char(0x80, 0x2D, 0x8F) .. "])";
   txt = string.gsub(txt, patt, function (s)
@@ -658,7 +658,7 @@ function oem2utf8_russian(txt)
           end
          return string.char(code);
   end
- 
+
   local result = '';
   for i=1,string.len(txt) do
       result = result .. translate( string.byte(txt,i) );
@@ -700,7 +700,7 @@ end
 function utf8ToAscii_umlauts(_str)
 
 	-- convert one UTF8 character to his ASCII code
-	-- key is the combined UTF8 code 
+	-- key is the combined UTF8 code
 	local function replaceUtf8( _str, _key )
 		local tmp = database.utf8_ascii[_key];
 		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
@@ -722,8 +722,8 @@ end
 -- printing ingame messages
 function asciiToUtf8_umlauts(_str)
 
-	-- convert one ASCII code to his UTF8 character 
-	-- key is the combined UTF8 code 
+	-- convert one ASCII code to his UTF8 character
+	-- key is the combined UTF8 code
 	local function replaceAscii( _str, _key )
 		local tmp = database.utf8_ascii[_key];
 		_str = string.gsub(_str, string.char(tmp.ascii), string.char(tmp.utf8_1, tmp.utf8_2) );
@@ -745,10 +745,10 @@ end
 function openGiftbags1To10(_player_level)
 
 	if( not _player_level) then _player_level = player.Level; end
-	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level 
-	
+	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level
+
 	-- open giftbag and equipt content
---	yrest(2000);	-- time for cooldowns to phase-out 
+--	yrest(2000);	-- time for cooldowns to phase-out
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
 			if( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
@@ -792,7 +792,7 @@ function levelupSkill(_skillname, _times)
 	-- check is skill has an aslevel in skills.xml
 	if ( skill_from_db.aslevel ~= nil and
 		 skill_from_db.aslevel > player.Level ) then
-		cprintf(cli.yellow, "You need at least level %d to levelup skill %s. Your level is %d.\n", 
+		cprintf(cli.yellow, "You need at least level %d to levelup skill %s. Your level is %d.\n",
 		   skill_from_db.aslevel, _skillname, player.Level );
 		return false;
 	end
@@ -823,7 +823,7 @@ function levelupSkills1To10(_loadonly)
 	-- CAUTION: addressing a invalid skill will crash the RoM client
 	local skillLevelupMap = {
 		[CLASS_WARRIOR]		= {  [1] = { aslevel = 1, skillname="WARRIOR_SLASH" },
-								 [2] = { aslevel = 2, skillname="WARRIOR_OPEN_FLANK" }, 
+								 [2] = { aslevel = 2, skillname="WARRIOR_OPEN_FLANK" },
 								 [3] = { aslevel = 2, skillname="WARRIOR_PROBING_ATTACK" },
 								 [4] = { aslevel = 4, skillname="WARRIOR_ENRAGED" },
 								 [5] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
@@ -831,7 +831,7 @@ function levelupSkills1To10(_loadonly)
 								 [2] = { aslevel = 2, skillname="SCOUT_WIND_ARROWS" },
 								 [3] = { aslevel = 4, skillname="SCOUT_VAMPIRE_ARROWS" },},
 		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" },
-								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" }, 
+								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" },
 								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" },
 								 [4] = { aslevel = 8, skillname="ROGUE_BLIND_STAB" } },
 		[CLASS_MAGE]		= {  [1] = { aslevel = 1, skillname="MAGE_FLAME" } },
@@ -848,7 +848,7 @@ function levelupSkills1To10(_loadonly)
 								 [4] = { aslevel = 4, skillname="WARDEN_BRIAR_SHIELD" },
 								 [5] = { aslevel = 8, skillname="WARDEN_POWER_OF_THE_WOOD_SPIRIT" } },
 		[CLASS_DRUID]		= {  [1] = { aslevel = 1, skillname="DRUID_RECOVER" },
-								 [2] = { aslevel = 1, skillname="DRUID_EARTH_ARROW" }, 
+								 [2] = { aslevel = 1, skillname="DRUID_EARTH_ARROW" },
 								 [3] = { aslevel = 2, skillname="DRUID_BRIAR_ENTWINEMENT" },
 								 [4] = { aslevel = 6, skillname="DRUID_RESTORE_LIFE" } },
 		};
@@ -863,7 +863,7 @@ function levelupSkills1To10(_loadonly)
 			if( player.Level == v.aslevel ) then		-- maxlevel the new skill
 					levelupSkill(v.skillname, v.aslevel);
 			elseif( player.Level == 2 and
-					v.aslevel == 1) then			-- 2x aft level 2  
+					v.aslevel == 1) then			-- 2x aft level 2
 					levelupSkill(v.skillname, 2);
 			elseif( player.Level > v.aslevel ) then  	-- levelup 1 level
 					levelupSkill(v.skillname);
@@ -874,7 +874,7 @@ function levelupSkills1To10(_loadonly)
 --		if( player.Level == v.aslevel ) then
 		-- we will also reload skills into skilltable if we restart the bot
 		-- TODO: but only at the levelup event
-		if( player.Level >= v.aslevel ) then 
+		if( player.Level >= v.aslevel ) then
 
 			local hf_found;
 			for i,profile_skills in pairs(settings.profile.skills)  do
@@ -887,7 +887,7 @@ function levelupSkills1To10(_loadonly)
 				tmp.hotkey = "MACRO";		-- use ROM API to use that skills
 				tmp.Level = 1;
 				table.insert(settings.profile.skills, tmp);
-				cprintf(cli.lightblue, "We learned skill \'%s\' and will use it\n", v.skillname );	-- Open/eqipt item:				
+				cprintf(cli.lightblue, "We learned skill \'%s\' and will use it\n", v.skillname );	-- Open/eqipt item:
 			end
 		end
 
@@ -919,21 +919,21 @@ end
 function changeProfileOption(_option, _value)
 
 	if( settings.profile.options[_option] == nil ) then
-		cprintf(cli.green, language[173], _option );	-- Unknown profile option 
+		cprintf(cli.green, language[173], _option );	-- Unknown profile option
 		return;
 	end
-	
+
 	local hf_old_value = settings.profile.options[_option];
 	settings.profile.options[_option] = _value;
-	
-	cprintf(cli.lightblue, language[172], _option, hf_old_value, _value );	-- We change the option 
-	
+
+	cprintf(cli.lightblue, language[172], _option, hf_old_value, _value );	-- We change the option
+
 end
 
 
 function convertProfileName(_profilename)
-	
-	-- local functions to replace special ASCII characters (e.g. in player name) 
+
+	-- local functions to replace special ASCII characters (e.g. in player name)
 	local function replace_special_ascii_character( _str, _v )
 		local found;
 --		local tmp = database.utf8_ascii[_ascii];
@@ -948,7 +948,7 @@ function convertProfileName(_profilename)
 			_str, found = replace_special_ascii_character( _str, v );	-- replace special characters
 			found_all = found_all + found;			-- count replacements
 		end
-	
+
 		if( found_all > 0) then
 			return _str, true;
 		else
@@ -1046,7 +1046,7 @@ function getQuestStatus(_questname)
 	if (bot.IgfAddon == false) then
 		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
 	end
-	
+
 	return RoMScript("igf_questStatus(\"".._questname.."\")")
 end
 
@@ -1094,4 +1094,19 @@ function getNearestSegmentPoint(x, z, a, b, c, d)
 	end
 
 	return CWaypoint(nx, nz);
+end
+
+function waitForLoadingScreen()
+	-- wait for loading screen to appear
+	if memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 then
+		repeat
+			yrest(1000)
+		until memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 1
+	end
+
+	-- wait until loading screen is gone
+	repeat
+		yrest(1000)
+	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
+	player:update()
 end

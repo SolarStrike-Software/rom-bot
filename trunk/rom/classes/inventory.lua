@@ -7,7 +7,7 @@ local proc = getProc();
 CInventory = class(
 	function (self)
 		LoadTables();
-		
+
 		self.MaxSlots = 180;
 
 		self.BagSlot = {};
@@ -15,20 +15,20 @@ CInventory = class(
 		self.Money = memoryReadInt( proc, addresses.moneyPtr );
 
 		local timeStart = getTime();
-		
+
 		for slotNumber = 1, self.MaxSlots, 1 do
 			self.BagSlot[slotNumber] = CItem( slotNumber );
 		end
-		
-		if( settings.profile.options.DEBUG_INV ) then	
+
+		if( settings.profile.options.DEBUG_INV ) then
 			printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
 		end;
-		
+
 		for slotNumber = 1, 22, 1 do
 			self.EquipSlots[slotNumber] = CEquipItem( slotNumber );
 		end
 
-		self.NextItemToUpdate = 1;		
+		self.NextItemToUpdate = 1;
 	end
 );
 
@@ -41,7 +41,7 @@ function CInventory:update()
 		self.BagSlot[slotNumber]:update();
 	end
 
---	if( settings.profile.options.DEBUG_INV ) then	
+--	if( settings.profile.options.DEBUG_INV ) then
 		printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
 		printf( "You have: %d gold.\n", self.Money );
 --	end;
@@ -54,7 +54,7 @@ function CInventory:updateEquipment()
 		self.EquipSlots[ slotNumber ]:update();
 	end
 
---	if( settings.profile.options.DEBUG_INV ) then	
+--	if( settings.profile.options.DEBUG_INV ) then
 		printf( "Equipment update took: %d\n", deltaTime( getTime(), timeStart ) );
 --	end;
 end;
@@ -70,7 +70,7 @@ function CInventory:getAmmunitionCount()
 end;
 
 -- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
-function CInventory:reloadAmmunition(type) 
+function CInventory:reloadAmmunition(type)
 	item = self:bestAvailableConsumable(type);
 	-- if theres no ammunition, open a ammunition bag
 	if not item then
@@ -79,7 +79,7 @@ function CInventory:reloadAmmunition(type)
 		elseif type == "thrown" then
 			openItem = self:bestAvailableConsumable("thrown_bag");
 		end
-		
+
 		if not openItem then
 			return false;
 		end
@@ -95,13 +95,13 @@ function CInventory:reloadAmmunition(type)
 			openItem:use();
 			yrest( 500 ); --give time to server to respond with the opened item
 		end
-		
+
 		-- after opening, update the inventory (this takes about 10 sec)
 		self:update();
-		
+
 		item = self:bestAvailableConsumable(type);
 	end
-	
+
 	if item then
 		-- use it
 		-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
@@ -119,7 +119,7 @@ end;
 -- Here for compatibility reasons
 function CInventory:getItemCount(itemId)
 	if(itemId == nil) then
-		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );	
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );
 		return 0;
 	end
 
@@ -129,39 +129,51 @@ end;
 -- No longer uses cached information, it updates before checking
 function CInventory:itemTotalCount(itemNameOrId)
 	self:update();
-	
+
 	totalCount = 0;
  	for slot,item in pairs(self.BagSlot) do
-	    if item.Id == itemNameOrId or item.Name == itemNameOrId then
-			totalCount = totalCount + item.ItemCount;
+	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
+				totalCount = totalCount + 1
+			else
+				totalCount = totalCount + item.ItemCount;
+			end
 		end;
 	end;
-	
+
 	return totalCount;
 end;
 
+function CInventory:findItem( itemNameOrId)
+ 	for slot,item in pairs(self.BagSlot) do
+	    if item.Available and (item.Name == nameOrId or item.Id == nameOrId) then
+			return item
+		end;
+	end;
+end
+
 function CInventory:useItem(itemNameOrId)
 	self:update();
-	
-	for slot,item in pairs( self.BagSlot ) do
-		if item.Id == itemNameOrId or item.Name == itemNameOrId then
+
+	item = self:findItem(itemNameOrId)
+	if item then
 			item:use();
 			return true, item.Id, item.Name;
 		end;
 	end;
-	
+
 	return false;
 end;
 
 function CInventory:isEquipped( __space )
 -- return true if equipped is equipped at slot and has durability > 0
 	local slot = 16;-- Automatically set slot to 16/MainHand
-	_space = string.lower(__space); 
-	
+	_space = string.lower(__space);
+
 	if ( type(_space) ~= "string" ) then
 		return false;
 	end
-	
+
 	if (_space == "head") then
 		slot = 1;
 	elseif (_space == "gloves") then
@@ -207,27 +219,27 @@ function CInventory:isEquipped( __space )
 	elseif (_space == "wings") then
 		slot = 22;
 	end;
-	
+
 	self.EquipSlots[ slot ]:update();
-	
+
 	if( self.EquipSlots[ slot ].Empty ) then
 		return false;
 	end;
-	
+
 	local realDurability = self.EquipSlots[ slot ].Durability / self.EquipSlots[ slot ].MaxDurability * 100;
-	
+
 	if( realDurability <= 0 ) then
 		return false;
 	end;
-	
-	return true;	
+
+	return true;
 end;
 
 function CInventory:getDurability( _slot )
 	-- return item durability for a given slot in percent from 0 - 100
 
 	if( not _slot) then _slot = 16; end		-- 16=MainHand | 17=OffHand | 11=Ranged
-	
+
 	self.EquipSlots[ _slot ]:update();
 	return self.EquipSlots[ _slot ].Durability / self.EquipSlots[ _slot ].MaxDurability * 100;
 end;
@@ -243,18 +255,18 @@ function CInventory:update( _maxslot )
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
 	-- printf(language[1000], _maxslot);  -- Updating
-	
+
 	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
 	end
 	--printf("\n");
 	keyboardSetDelay(50);
-	
+
 	-- player.InventoryDoUpdate = false;			-- set back update trigger
 	-- player.InventoryLastUpdate = os.time();		-- remember update time
 
-	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then	
+	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
 end;
 
 -- update x slots until given time in ms is gone
@@ -273,20 +285,20 @@ end
 function CInventory:updateNextSlot(_times)
 
 	if(not _times) then _times = 1; end
-	
+
 	for i = 1, _times do
 		local item = self.BagSlot[self.NextItemToUpdate];
 
---		if( settings.profile.options.DEBUG_INV) then	
+--		if( settings.profile.options.DEBUG_INV) then
 --			local msg = "";
 --			msg = "DEBUG updateNextSlot(): Slot #"..self.NextItemToUpdate..": ";
---			if(item.Name) then 
---				msg = msg.." name "..item.Name; 
+--			if(item.Name) then
+--				msg = msg.." name "..item.Name;
 --			else
---				msg = msg.." name ".." <Slot Empty>"; 
+--				msg = msg.." name ".." <Slot Empty>";
 --			end;
 --			if(item.ItemCount) then msg = msg.." ItemCount:"..item.ItemCount; end;
---			cprintf(cli.lightblue, "%s\n", msg);				
+--			cprintf(cli.lightblue, "%s\n", msg);
 --		end;
 
 		self.BagSlot[self.NextItemToUpdate]:update();
@@ -330,12 +342,13 @@ function CInventory:bestAvailableConsumable(type)
 	self:update();
 	-- check item slots slot by slot
 	for slot,item in pairs(self.BagSlot) do
-		local consumable = database.consumables[item.Id];		
+		local consumable = database.consumables[item.Id];
 
 		if( consumable  and							-- item in database
 		    consumable.Type == type and	 			-- right type (mana, arrow, ...)
 		 	consumable.Level <= player.Level and	-- level ok
-		 	item.ItemCount > 0 ) then				-- use only if some available
+		 	item.ItemCount > 0 and					-- use only if some available
+			item.Available) then					-- not in unrented bag
 
 			if( select_strategy == select_strategy_minstack ) then
 				-- select smallest stack
@@ -385,14 +398,14 @@ function CInventory:storeBuyConsumable(type, quantity)
 		if (storeItemLink == "" or storeItemLink == nil) then
 			break;
 		end
-		
+
 		storeItemId, storeItemColor, storeItemName = CItem:parseItemLink(storeItemLink);
 --		printf("%s %s\n", storeItemId, storeItemName);
 
 		local consumable = database.consumables[storeItemId];
 
-		if( consumable 
-		  and consumable.Type == type 
+		if( consumable
+		  and consumable.Type == type
 		  and consumable.Level <= player.Level ) then
 			if consumable.Level > bestLevel then
 				bestLevel = consumable.Level;
@@ -406,7 +419,7 @@ function CInventory:storeBuyConsumable(type, quantity)
 	    return false;
  	end
 
- 	
+
 	if self:getItemCount(bestItem) < quantity then
 	    numberToBuy = quantity - self:itemTotalCount(bestItem);
 	    printf(language[1001]);  -- Shopping
@@ -416,7 +429,7 @@ function CInventory:storeBuyConsumable(type, quantity)
 		end
 		printf("\n");
 	end
-	
+
 	return true;
 end
 
@@ -435,7 +448,7 @@ function CInventory:autoSell()
 	if( settings.profile.options.INV_AUTOSELL_TOSLOT > self.MaxSlots ) then
 		cprintf(cli.yellow, language[1003], self.MaxSlots, settings.profile.options.INV_AUTOSELL_TOSLOT);
 	end
-	
+
 	-- warning if igf addon is missing
 	if( bot.IgfAddon == false	and
 		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or
@@ -472,25 +485,25 @@ function CInventory:autoSell()
 
 	--	ITEMCOLORS table is defined in item.lua
 	local function sellColor(_itemcolor)
-		
+
 		for i,v in pairs(hf_quality_table) do
-		
+
 			if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
 				return true
 			end
 		end
-		
+
 		return false
-		
+
 	end
 
 	-- check if itemname or itemid is in the ignorelist
 	local function isInIgnorelist(_item)
-	
+
 		if ( not hf_ignore_table ) then
 			return false
 		end
-	
+
 		for i,ignorelistitem in pairs(hf_ignore_table) do
 
 			if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
@@ -501,13 +514,13 @@ function CInventory:autoSell()
 			end
 
 		end
-		
+
 		return false
-		
+
 	end
-	
+
 	local function isDuraIgnore(_tooltip_right)
-		
+
 		local duramax;		-- durability max value (if found)
 		local durakey = ITEM_TOOLTIP_DURABILITY[bot.ClientLanguage];	-- keyword to search for
 
@@ -524,7 +537,7 @@ function CInventory:autoSell()
 
 		debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 		  "Durability check, search for:", durakey, "=>", duramax);
-		
+
 		-- check dura
 		if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA 		and
 			settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
@@ -535,18 +548,18 @@ function CInventory:autoSell()
 			    settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
 			return true;
 		end
-		
-		return false		
-		
+
+		return false
+
 	end
-	
+
 
 	local function isInStatsNoSell(_tooltip_right)
-		
+
 		if ( not hf_stats_nosell ) then
 			return false
 		end
-	
+
 		for i1,tooltipline in pairs(_tooltip_right) do
 			for i2,nosellstat in pairs(hf_stats_nosell) do
 
@@ -561,17 +574,17 @@ function CInventory:autoSell()
 
 			end
 		end
-		
+
 		return false
-		
+
 	end
 
 	local function isInStatsSell(_tooltip_right)
-		
+
 		if ( not hf_stats_sell ) then
 			return false
 		end
-	
+
 		for i,tooltipline in pairs(_tooltip_right) do
 			for i,sellstat in pairs(hf_stats_sell) do
 
@@ -583,9 +596,9 @@ function CInventory:autoSell()
 
 			end
 		end
-		
+
 		return false
-		
+
 	end
 
 
@@ -596,7 +609,7 @@ function CInventory:autoSell()
 		local sell_item = true
 		local slotitem = self.BagSlot[slotNumber];
 
-		if( slotitem  and  tonumber(slotitem.Id) > 0 ) then
+		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available) then
 
 			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 			  "Check item so sell:", slotnumber, slotitem.Id, slotitem.Name);
@@ -618,7 +631,7 @@ function CInventory:autoSell()
 			if( bot.IgfAddon == true ) then
 				tooltip_right = slotitem:getGameTooltip("right");
 				if( tooltip_right == false ) then	-- error while reading tooltip
-					cprintf(cli.yellow, "Error reading tooltip for bagslot %s, %s %s\n", 
+					cprintf(cli.yellow, "Error reading tooltip for bagslot %s, %s %s\n",
 					 slotitem.SlotNumber, slotitem.Id, slotitem.Name);
 					 sell_item = false;
 				end
@@ -629,7 +642,7 @@ function CInventory:autoSell()
 				tooltip_right			and
 				isDuraIgnore(tooltip_right) == true ) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:", 
+				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
 				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
 				sell_item = false;
 			end
@@ -653,17 +666,17 @@ function CInventory:autoSell()
 				hf_wesell = true;
 				slotitem:use();
 			end
-			
+
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
 
 	end
-	
+
 	if( hf_wesell == true ) then
 		return true;
 	else
 		return false;
 	end
-	
+
 end
 
 function CInventory:getMount()
@@ -700,12 +713,14 @@ function CInventory:getMount()
 
 	print(self);
  	for slot,item in pairs(self.BagSlot) do
-	    for i, mount in pairs(mounts) do
-			if item.Id == mount then
-				return item;
+		if item.Available then
+			for i, mount in pairs(mounts) do
+				if item.Id == mount then
+					return item;
+				end
 			end
 		end
 	end
-	
+
 	return false;
 end
