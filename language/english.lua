@@ -11,14 +11,14 @@ language = {
 	[9] = "Unsticking player... at position %d,%d. Trial %d from maximal %d trials\n",
 	[10] = "MACRO: Using HP potion %s/%s (%d%%): %s (qty %s)\n",
 	[11] = "MACRO: Using MP potion %s/%s (%d%%): %s (qty %s)\n",
-	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",	
+	[12] = "Return path is closer then normal waypoints. Starting with return path!\n",
 	[13] = "Moving to return path waypoint #%d, (%d, %d)\n",
 	[14] = "We get aggro. Stop moving to waypoint and wait for target.\n",
 	[15] = "Waypoint #%d is closer then #1. Hence we start with waypoint #%d.\n",
 	[16] = "No more (usable) mana potions available at bagslot 1 to %d\n",
 	[17] = "No more (usable) hp potions available at bagslot 1 to %d\n",
 	[18] = "NOTICE: Item mismatch (%s~=%s); updating item info (don't panic).\n",
-	
+
 
 	[20] = "Finished casting\n",
 	[21] = "Use %s: %s",
@@ -39,7 +39,7 @@ language = {
 	[36] = "Aggro during first strike/cast, abort that cast/target: %s\n",
 	[37] = "Select new target %s in distance %d\n",
 	[38] = "Resting up to %s to fill up mana and HP.\n",
-	[39] = "Stop resting because of aggro.\n",	
+	[39] = "Stop resting because of aggro.\n",
 
 	[40] = "Player address changed: 0x%X\n",
 	[41] = "Failed to read memory",
@@ -49,19 +49,19 @@ language = {
 	[45] = "Multiple RoM windows found. Keep the RoM window to attach this bot to on top, and press %s.\n",
 	[46] = "Paused. (%s) to continue, (CTRL+L) exit to shell, (CTRL+C) quit\n",
 	[47] = "RoM window not found! RoM must be running first.",
-	[48] = "Error while reading memory address for \'%s\'. Game seems to be changed!!! Please run \'rom/bot.lua update\' AND install the new RoM Bot version!",	
+	[48] = "Error while reading memory address for \'%s\'. Game seems to be changed!!! Please run \'rom/bot.lua update\' AND install the new RoM Bot version!",
 
 	[50] = "%s  Auto-logging out.\n",
 	[51] = "Shutting system down.\n",
 	[52] = "Window lost (Client crashed or closed?). You must re-start the script.",
 	[53] = "Elapsed time %d greater then scheduled time %d. We will logout.\n",
-	[54] = "Counted deaths %d greater then maximal allowed deaths %d. We will logout.\n",	
-	[55] = "Unstick tries %d greater then maximal allowed untick tries %d.\n",		
+	[54] = "Counted deaths %d greater then maximal allowed deaths %d. We will logout.\n",
+	[55] = "Unstick tries %d greater then maximal allowed untick tries %d.\n",
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:profname] [path:pathname] [retpath:retname]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforce the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforce the use of return waypoint file \'retname.xml\'\n",
 	[62] = "Error while reading the language settings of the game. Have you assigned your empty MACRO ingame? Please restart the bot and/or the games client.",
-	
+
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
 
@@ -136,18 +136,18 @@ language = {
 	[147] = "Wrong selection. Please check and choose again!\n",
 	[148] = "We will go to sleep after fight finished / as soon as possible.\n",
 	[149] = "You have died... Sorry.\n",
-	
+
 	[150] = "Failed to compile and run Lua code for waypoint #%d",
 	[151] = "Failed to compile and run Lua code for %s in character profile.",
 	[152] = "Failed to compile and run Lua code for waypointlist onLoad event.",
-	
+
 	[160] = "Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
 	[161] = "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n",
 	[162] = "Return path found with default naming: %s\n",
 	[163] = "No return path with default naming %s found.\n",
 	[164] = "We are coming from a return_path. So we will going on using the returnpath %s.\n",
 	[165] = "We use the normal waypoint path %s now.\n",
-	[166] = "Please set new profile option <hotkey name=\"MACRO\" key=\"VK_7\" /> to use automtic resurrection macro.\n",	
+	[166] = "Please set new profile option <hotkey name=\"MACRO\" key=\"VK_7\" /> to use automtic resurrection macro.\n",
 	[167] = "Keyboard settings are from %s:",
 	[168] = "We will wander around with a radius of %d.\n",
 	[169] = "Use %s: Executing RoMScript \"%s\".\n",
@@ -163,9 +163,10 @@ language = {
 	[179] = "Maximum range of range attack skills is lesser then COMBAT_DISTANCE=%d. Please reduce your combat distances settings.\n",
 	[180] = "=>   * Failed to cast *\n",
 	[181] = "target_Object(): Please give an Object name for using that function.\n",
-	
+	[182] = "Unable to carry out specified action, item is in unrented bag",
+
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
-	
+
 
 	-- createpath.lua
 	[500] = "What do you want to name your path (without .xml)?\nName> ",
@@ -185,17 +186,17 @@ language = {
 	[514] = "%d: Waypoint added. Dialog with NPC %s will be started.\n",
 	[515] = "\'mouseclickL()\' command inserted (%d,%d).\n",
 	[516] = "\'Choice Option(%d)\' command inserted.\n",
-	[517] = "  (%s)\tInsert \'ChoiceOption()\' command.\n",	
-	
+	[517] = "  (%s)\tInsert \'ChoiceOption()\' command.\n",
+
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d minutes till level up",
 
 	[900] = "We now use a new macro function to communicate with the client.\n",
 	[901] = "Please define the new hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
-	[902] = "within your profile. You can delete the old hotkeys for:\n",	
+	[902] = "within your profile. You can delete the old hotkeys for:\n",
 	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
 	[904] = "Define ingame an empty macro at the FIRST macro space and assign that to your MACRO hotkey \'%s\'.\n",
 	[905] = "Please correct the profile \'%s\' and restart the bot again.\n",
-	[906] = "The communication to the game with the MACRO function seems not to work.\n",		
+	[906] = "The communication to the game with the MACRO function seems not to work.\n",
 
 	-- Inventory.lua
 	[1000] = "Mapping inventory (bagslot 1 to %d)...\n",

@@ -4,7 +4,7 @@ local proc = getProc();
 ITEM_TOOLTIP_DURABILITY = {
 	DE		= "Haltbarkeit",
 	FR		= "Structure",
-	ENEU	= "Durability", 
+	ENEU	= "Durability",
 	ENUS	= "Durability",
 	PH		= "Durability",
 	RU		= "\143\224\174\231\173\174\225\226\236",
@@ -13,7 +13,7 @@ ITEM_TOOLTIP_DURABILITY = {
 };
 
 -- itemquality -> color code
-ITEMCOLOR = { 
+ITEMCOLOR = {
 	WHITE =  tonumber("0xFFFFFFFF"),
 	GREEN =  tonumber("0xFF00FF00"),
 	BLUE =   tonumber("0xFF0072BC"),
@@ -23,7 +23,7 @@ ITEMCOLOR = {
 };
 
 -- making a new one because i dont know if the other is used elsewhere
-ITEMQUALITYCOLOR = { 
+ITEMQUALITYCOLOR = {
 	tonumber("0xFFFFFFFF"),
 	tonumber("0xFF00FF00"),
 	tonumber("0xFF0072BC"),
@@ -37,6 +37,7 @@ ITEMQUALITYCOLOR = {
 
 CItem = class(
 	function( self, slotnumber )
+		self.Available = false; -- If slot is in unrented bag then = false
 		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 		self.BaseItemAddress = nil;
@@ -60,7 +61,7 @@ CItem = class(
 		self.LastTimeUsed = 0;
 		self.MaxStack = 0;
 		self.ObjType = 0;
-		
+
 		if ( self.Address ~= nil and self.Address ~= 0 ) then
 			self:update();
 		end;
@@ -72,7 +73,12 @@ function CItem:use()
 	local canUse = true;
 	local reason = "";
 	self:update();
-	
+
+	if self.Available == false then
+		canUse = false
+		reason = "Unrented"
+	end
+
 	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
 	if not self.InUse then
 		if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
@@ -84,7 +90,7 @@ function CItem:use()
 		reason = "In use";
 		canUse = false;
 	end;
-	
+
 	if ( canUse ) then
 		RoMScript("UseBagItem("..self.BagId..")");
 		self.LastTimeUsed = getTime();
@@ -96,7 +102,7 @@ function CItem:use()
 
 	self:update();
 
-	if ( settings.profile.options.DEBUG_INV ) then	
+	if ( settings.profile.options.DEBUG_INV ) then
 		cprintf( cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
 	end;
 
@@ -104,12 +110,16 @@ function CItem:use()
 end
 
 function CItem:delete()
-    RoMScript("PickupBagItem("..self.BagId..");");
-	RoMScript("DeleteCursorItem();");
-	
-	-- Update it!
-	self:update();
-end 
+	if self.Available then
+		RoMScript("PickupBagItem("..self.BagId..");");
+		RoMScript("DeleteCursorItem();");
+
+		-- Update it!
+		self:update();
+	else
+		cprintf(cli.yellow, language[182]);	-- item in unrented bag
+	end
+end
 
 function CItem:__tonumber()
 	return self.Id;
@@ -119,22 +129,29 @@ function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
 	local oldBagId = self.BagId;
-	
+
 	self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
 	if self.BagId ~= oldId then -- need new address
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 	end
 
+	-- Check if not rented
+	if self.BagId > 120 then
+		self.Available = memoryReadUInt(proc, addresses.rentBagBase + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+	else
+		self.Available = true
+	end
+
 	self.Id = memoryReadInt( proc, self.Address ) or 0;
-	
+
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
-		self.BaseItemAddress = GetItemAddress( self.Id );		
+		self.BaseItemAddress = GetItemAddress( self.Id );
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
 			cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", self.Id );
 			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));
 			return;
 		end;
-		
+
 		self.Name = "";
 		self.Empty = false;
 		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
@@ -151,7 +168,7 @@ function CItem:update()
 		self.RequiredLvl = memoryReadInt( proc, self.BaseItemAddress + addresses.requiredLevelOffset );
 		self.MaxStack = memoryReadInt( proc, self.BaseItemAddress + addresses.maxStackOffset );
 		self.ObjType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset );
-		
+
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
 			local skillItemId = memoryReadInt( proc, self.BaseItemAddress + addresses.realItemIdOffset );
 			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
@@ -162,7 +179,7 @@ function CItem:update()
 			end;
 			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
 		end;
-		
+
 		-- Special case for cards
 		if ( self.Id >= 770000 and self.Id <= 771000 ) then
 			-- We need to get info from NPC...
@@ -193,11 +210,11 @@ function CItem:update()
 		if ( quality > 0 ) then
 			self.Quality = self.Quality + ( quality / 2 );
 		end;
-		
+
 		-- Assign color based on quality
 		self.Color = ITEMQUALITYCOLOR[ self.Quality + 1 ];
-		
-		-- Build an usable ItemLink		
+
+		-- Build an usable ItemLink
 		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
 	elseif ( self.Id == 0 ) then
 		self.Empty = true;
@@ -224,8 +241,8 @@ function CItem:update()
 		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
 		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
 	end;
-	
-	if( settings.profile.options.DEBUG_INV ) then	
+
+	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
 			printf( "BagID: %d is <EMPTY>.\n", self.BagId );
 		else
@@ -273,7 +290,7 @@ function CItem:update()
 		self = CItem(self.SlotNumber);
 		self.BagId = bagId;			-- always there
 --		self.ItemCount = 0;			-- 0 if no item at the slot
---		self.Name = "";				
+--		self.Name = "";
 --		self.Id	= 0;
 	else
 		id, color = self:parseItemLink(itemLink);
@@ -287,7 +304,7 @@ function CItem:update()
     	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
 	end
 
-	if( settings.profile.options.DEBUG_INV) then	
+	if( settings.profile.options.DEBUG_INV) then
 		local msg = "DEBUG item:update(): ";
 		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
 		if(self.BagId) then msg = msg.." bagId "..self.BagId; end;
@@ -297,7 +314,7 @@ function CItem:update()
 		if(self.ItemCount) then msg = msg.." qty "..self.ItemCount; end;
 		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
 	end;
-	
+
 ]]--
 end
 
@@ -326,12 +343,12 @@ function CItem:getGameTooltip(_place)
 --	local tooltip_right = {};
 --	for i=1,40,1 do
 --		local lineobj, text = _G["GameTooltipTextRight"..i];
---		
+--
 --		if(lineobj) then
 --			text = lineobj:GetText();
 --			lineobj:SetText("");
 --		end;
---		
+--
 --		if (text) then
 --			table.insert(tooltip_right, text);
 --		end;
@@ -341,7 +358,7 @@ function CItem:getGameTooltip(_place)
 -- ----------------------------------
 
 	local t = {};
-	
+
 	t[1],t[2],t[3],t[4],t[5],t[6],t[7],t[8],t[9],t[10],
 	t[11],t[12],t[13],t[14],t[15],t[16],t[17],t[18],t[19],t[20],
 	t[21],t[22],t[23],t[24],t[25],t[26],t[27],t[28],t[29],t[30],
@@ -366,7 +383,7 @@ function CItem:getGameTooltip(_place)
 	else
 		return false
 	end
-	
+
 end
 
 -- translate the hex color code into the color string

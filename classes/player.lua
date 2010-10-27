@@ -85,7 +85,7 @@ function CPlayer:harvest(_id, _second_try)
 		cprintf(cli.yellow, language[95], closestHarvestable.Name);
 
 		if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
-			self:moveTo(CWaypoint(closestHarvestable.X, closestHarvestable.Z), true);
+			self:moveInRange(CWaypoint(closestHarvestable.X, closestHarvestable.Z), 39, true);
 		end
 
 		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
@@ -1729,6 +1729,15 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	return success, failreason;
 end
 
+function CPlayer:moveInRange(target, range, ignoreCycleTargets)
+	-- calculates the closest waypoint that is distance "range" from target
+	local playerTargetDist = distance(self.X, self.Z, target.X, target.Z)
+	local ratio = (playerTargetDist - range)/playerTargetDist
+	local rx = self.X + (target.X - self.X) * ratio
+	local rz = self.Z + (target.Z - self.Z) * ratio
+	self:moveTo( CWaypoint(rx, rz), ignoreCycleTargets )
+end
+
 function CPlayer:waitForAggro()
 	local startTime = os.time();
 
@@ -2757,12 +2766,12 @@ function CPlayer:target_NPC(_npcname)
 	local npc = self:findNearestNameOrId(_npcname)
 	if npc then	-- we successfully found NPC
 		if( distance(self.X, self.Z, npc.X, npc.Z) > 39 ) then
-			self:moveTo(CWaypoint(npc.X, npc.Z), true);
+			self:moveInRange(CWaypoint(npc.X, npc.Z), 39, true);
 		end
 		-- target NPC
 		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, npc.Address);
 		RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
-		yrest(2000);
+		yrest(1000);
 		return true
 	else
 		cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
@@ -2909,13 +2918,21 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 	while(true) do
 		repeat
 			interrupted = false
-			obj = self:findNearestNameOrId(_objname, player.LastTargetPtr, evalFunc)
+			if _donotignore == false then
+				obj = self:findNearestNameOrId(_objname, player.LastTargetPtr, evalFunc)
+			else
+				obj = self:findNearestNameOrId(_objname, nil, evalFunc)
+			end
+
 			if obj then -- object found, target
-				cprintf(cli.yellow, language[95], obj.Name);
+				if self.LastTargetPtr ~= obj.Address then
+					cprintf(cli.yellow, language[95], obj.Name); -- We found object and will harvest it
+					self.LastTargetPtr = obj.Address;		-- remember target address to avoid msg spam
+				end
 				objFound = true
 				self:target(obj.Address);
 				if( distance(self.X, self.Z, obj.X, obj.Z) > 39 ) then
-					self:moveTo(CWaypoint(obj.X, obj.Z), true);
+					self:moveInRange(CWaypoint(obj.X, obj.Z), 39, true);
 				end
 				yrest(100)
 				RoMScript("UseSkill(1,1)"); yrest(50);
