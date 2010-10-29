@@ -146,7 +146,7 @@ end;
 
 function CInventory:findItem( itemNameOrId)
  	for slot,item in pairs(self.BagSlot) do
-	    if item.Available and (item.Name == nameOrId or item.Id == nameOrId) then
+	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
 			return item
 		end;
 	end;
@@ -155,11 +155,10 @@ end
 function CInventory:useItem(itemNameOrId)
 	self:update();
 
-	item = self:findItem(itemNameOrId)
+	local item = self:findItem(itemNameOrId)
 	if item then
-			item:use();
-			return true, item.Id, item.Name;
-		end;
+		item:use();
+		return true, item.Id, item.Name;
 	end;
 
 	return false;
