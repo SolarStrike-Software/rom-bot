@@ -1182,7 +1182,13 @@ function CPlayer:loot()
 		end
 
 	--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-		inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
+	--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
+		local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
+		local startWait = getTime()
+		while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
+			inventory:updateSlotsByTime(100)
+			target:update()
+		end
 	end
 
 	yrest(1000);
