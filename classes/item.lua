@@ -187,6 +187,12 @@ function CItem:update()
 			npcInfoAddress = GetItemAddress( tmp );
 			nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
 			self.Name = "Card - "; -- We should add a string so we can localize this
+		elseif ( self.Id >= 550000 and self.Id <=552000 ) then
+			-- We need to get info from item...
+			tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idRecipeItemOffset );
+			itemInfoAddress = GetItemAddress( tmp );
+			nameAddress = memoryReadInt( proc, itemInfoAddress + addresses.nameOffset );
+			self.Name = "Recipe - "; -- We should add a string so we can localize this
 		else
 			nameAddress = memoryReadInt( proc, self.BaseItemAddress + addresses.nameOffset );
 		end;

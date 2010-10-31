@@ -23,6 +23,7 @@ addresses = {
 	effectIsMainFlag_offset = 0x90,
 	effectType_offset = 0x94,
 	idCardNPCOffset = 0x364,
+	idRecipeItemOffset = 0xF0,
 	idOffset = 0xC,
 	inUseOffset = 0x1C,
 	inventoryBagIds = 0x9CA828,
