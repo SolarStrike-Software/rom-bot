@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?><waypoints>
 	<onLoad>
-	-- Rock5's Rombot Assist----------------------
-	local Version = "1.4"
+	--==              Rock5's Rombot Assist                 ==--
+	--==  www.solarstrike.net/phpBB3/viewtopic.php?p=10289  ==--
+	local Version = "1.5"
 
 	-- User Options ------------------------------------
 	local attackMode = "auto"
-	--      trigger  = Have to trigger each attack with the "go" macro.
-	--      auto     = Auto attacks targeted mobs. "go" macro toggles it on and off.
-	--      disabled = Only heal and buff. Never attacks. "go" macro does nothing.
+	--      trigger  = Have to trigger each attack with the "triggerKEY".
+	--      auto     = Auto attacks targeted mobs. The "triggerKEY" toggles it on and off.
+	--      disabled = Only heal and buff. Never attacks. The "triggerKEY" does nothing.
 	-- Note: 'trigger' and 'auto' will always fight back if attacked.
+	local triggerKEY = key.VK_SHIFT
 	----------------------------------------------------
 
 	-- Start messages
@@ -16,39 +18,38 @@
 	cprintf(cli.white, "Version: %s\n\n", Version);
 	cprintf(cli.white, "Attack mode is set to: %s\n", attackMode);
 	if attackMode == "trigger" then
-		cprintf(cli.yellow, "Use the \"go\" macro to attack targeted mobs.\n");
+		cprintf(cli.yellow, "Use the \"triggerKEY\" to attack targeted mobs.\n");
 	elseif attackMode == "auto" then
-		cprintf(cli.yellow, "Use the \"go\" macro to toggle auto attack on/off.\n");
+		cprintf(cli.yellow, "Use the \"triggerKEY\" to toggle auto attack on/off.\n");
 	elseif attackMode == "disabled" then
-		cprintf(cli.yellow, "Will only buff and heal. Will never fight. \"go\" macro does nothing.\n");
+		cprintf(cli.yellow, "Will only buff and heal. Will never fight. The \"triggerKEY\" does nothing.\n");
 	else
 		error("Incorrect value for option 'attackMode'. Please check script.\n",0)
 	end
-	
-	-- start with attack on, works "Out-of-the-box". Don't need to use trigger if you don't want to.
-	local attack = true 	
-	local timer = os.clock() -- Initialize timer
 
-	inventory:update() -- Find potions before we start
+	-- start with attack on. Only useful for "auto" mode. Starts with auto mode "on".
+	local attack = true
 
 	-- Main loop
 	while (true) do
 		if attackMode == "disabled" then
 			attack = false
 		else
-			local trigger = RoMScript("RBTrigger")
-			if trigger == "go" then
+			while keyPressed(triggerKEY) do
+				trigger = true
+			end
+			if trigger == true then
 				if attackMode == "trigger" then
 					attack = true
 				elseif attackMode == "auto" then
 					attack = (not attack)              -- Toggle attack
 					if attack then
-						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Attack mode on|r')")
+						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Auto attack mode on|r')")
 					else
-						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Attack mode off|r')")
+						sendMacro("DEFAULT_CHAT_FRAME:AddMessage('|cffffff00RB Assist: Auto attack mode off|r')")
 					end
 				end
-				RoMScript("}RBTrigger=nil;a={")         -- Resets trigger
+				trigger = false         -- Resets trigger
 			elseif attackMode == "trigger" then
 				attack = false
 			end
@@ -57,10 +58,8 @@
 				player:fight()
 			end
 		end
-		if (os.clock() - timer) > 900 then -- Check potions every 15 minutes
-			inventory:update()
-			timer = os.clock()
-		end
+
+		inventory:update()
 
 		player:checkPotions()
 		local target = player:getTarget();
