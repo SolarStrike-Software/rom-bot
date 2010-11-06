@@ -599,12 +599,24 @@ function CPlayer:checkSkills(_only_friendly, target)
 
 	self:update();
 
-	if( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
+	playerBuffsNeeded = false
+	targetBuffsNeeded = false
+	for i,v in pairs(settings.profile.skills) do
+		if v.ReqBuffName ~= "" then
+			if v.ReqBuffTarget == "player" then
+				playerBuffsNeeded = true
+			else
+				targetBuffsNeeded = true
+			end
+		end
+	end
+
+	if playerBuffsNeeded and ( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
 		self:updateBuffs();
 	end;
 
 	local target = target or self:getTarget();
-	if( target ~= nil and _only_friendly ~= true ) then
+	if targetBuffsNeeded and ( target ~= nil and _only_friendly ~= true ) then
 		if( _checkskills_last_updatetime == 0 or deltaTime(getTime(), _checkskills_last_updatetime) > 500 ) then
 			target:updateBuffs("target");
 			_checkskills_last_targetbuffs = target.Buffs;
