@@ -185,6 +185,8 @@
 	<skill name="ROGUE_INFORMER" aslevel="42" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" aslevel="44" cooldown="300" type="buff" target="self" />
 
+	<skill name="ROGUE_SEARING_LIGHT" mana="40" cooldown="600" type="buff" target="self" />
+
 	<!-- Elite -->
 	<skill name="ROGUE_DEATHS_TOUCH" rage="20" range="50" cooldown="10" />
 	<skill name="ROGUE_POISONOUS_INFECTION" rage="20" range="50" cooldown="15" />

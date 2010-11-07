@@ -175,9 +175,9 @@ pawnNameOffsetUpdatePattern = string.char(0xC3, 0x8D, 0x81, 0xFF, 0xFF, 0xFF, 0x
 pawnNameOffsetUpdateMask = "xxx????xxx????xxx";
 pawnNameOffsetUpdateOffset = 10;
 
-pawnPetPtrOffsetUpdatePattern = string.char(0x56, 0x89, 0x7C, 0x24, 0xFF, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x87, 0xFF, 0xFF, 0xFF, 0xFF, 0x33, 0xDB);
-pawnPetPtrOffsetUpdateMask = "xxxx?x????xx????xx";
-pawnPetPtrOffsetUpdateOffset = 12;
+pawnPetPtrOffsetUpdatePattern = string.char(0xCC, 0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC0, 0x75, 0x06, 0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0xC3);
+pawnPetPtrOffsetUpdateMask = "xxx????xxxxxx????x";
+pawnPetPtrOffsetUpdateOffset = 13;
 
 pawnRaceOffsetUpdatePattern = string.char(0xF3, 0x0F, 0x11, 0x85, 0xFF, 0xFF, 0xFF, 0xFF,
 0x89, 0x9D, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x85, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -210,6 +210,18 @@ qualityTierOffsetUpdateOffset = 10;
 valueOffsetUpdatePattern = string.char(0x50, 0xFF, 0xD2, 0x8B, 0x4F, 0xFF, 0x83, 0xC1, 0xFF, 0xB8);
 valueOffsetUpdateMask = "xxxxx?xx?x";
 valueOffsetUpdateOffset = 5;
+
+loadingScreenOffsetUpdatePattern = string.char(0xFF, 0xD2, 0xDD, 0x05, 0xFF, 0xFF, 0xFF, 0xFF, 0xC6, 0x46, 0x0FF, 0xFF, 0xD9, 0x44, 0x24, 0xFF, 0xDF, 0xF1);
+loadingScreenOffsetUpdateMask = "xxxx????xx??xxx?xx";
+loadingScreenOffsetUpdateOffset = 10;
+
+loadingScreenPtrUpdatePattern = string.char(0xFF, 0xD0, 0x80, 0x7E, 0xFF, 0xFF, 0x0F, 0x85, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC9, 0x0F, 0x84);
+loadingScreenPtrUpdateMask = "xxxx??xx????xx????xxxx";
+loadingScreenPtrUpdateOffset = 14;
+
+castingBarOffsetUpdatePattern = string.char(0x57, 0xFF, 0xD2, 0x8B, 0xF8, 0x8B, 0x44, 0x24, 0xFF, 0x89, 0x46, 0xFF, 0x8B, 0x44, 0x24, 0xFF, 0x85, 0xC0, 0x75, 0x05);
+castingBarOffsetUpdateMask = "xxxxxxxx?xx?xxx?xxxx";
+castingBarOffsetUpdateOffset = 11;
 
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
@@ -257,6 +269,7 @@ function findOffsets()
 	update("camXUVec_offset", camXUVecUpdatePattern, camXUVecUpdateMask, camXUVecUpdateOffset, 0x440000, 0xA0000);
 	update("camX_offset", camXUpdatePattern, camXUpdateMask, camXUpdateOffset, 0x440000, 0xA0000);
 	update("pawnCasting_offset", castbarUpdatePattern, castbarUpdateMask, castbarUpdateOffset, 0x820000, 0xA0000);
+	update("castingBar_offset", castingBarOffsetUpdatePattern, castingBarOffsetUpdateMask, castingBarOffsetUpdateOffset, 0x770000, 0xA0000, 1);
 	update("charAlive_offset", charAliveUpdatePattern, charAliveUpdateMask, charAliveUpdateOffset, 0x5E0000, 0xA0000);
 	update("charBattle_offset", charBattleUpdatePattern, charBattleUpdateMask, charBattleUpdateOffset, 0x5E0000, 0xA0000);
 	update("staticTablePtr", staticTableUpdatePattern, staticTableUpdateMask, staticTableUpdateOffset, 0x820000, 0xA0000);
@@ -298,6 +311,8 @@ function findOffsets()
 	update("qualityBaseOffset", qualityBaseOffsetUpdatePattern, qualityBaseOffsetUpdateMask, qualityBaseOffsetUpdateOffset, 0x600000, 0xA0000, 1);
 	update("qualityTierOffset", qualityTierOffsetUpdatePattern, qualityTierOffsetUpdateMask, qualityTierOffsetUpdateOffset, 0x790000, 0xA0000, 1);
 	update("valueOffset", valueOffsetUpdatePattern, valueOffsetUpdateMask, valueOffsetUpdateOffset, 0x790000, 0xA0000, 1);
+	update("loadingScreen_offset", loadingScreenOffsetUpdatePattern, loadingScreenOffsetUpdateMask, loadingScreenOffsetUpdateOffset, 0x7B0000, 0xA0000, 1);
+	update("loadingScreenPtr", loadingScreenPtrUpdatePattern, loadingScreenPtrUpdateMask, loadingScreenPtrUpdateOffset, 0x5E0000, 0xA00000);
 
 	-- NOTE: We must manually adjust forward 0x3C bytes
 	update("pawnHarvesting_offset", pawnHarvestUpdatePattern, pawnHarvestUpdateMask, pawnHarvestUpdateOffset, 0x820000, 0xA0000);
