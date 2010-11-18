@@ -70,14 +70,14 @@ function main()
 			else
 				-- invalid option
 				local msg = sprintf(language[61], args[i]);
-				error(msg, 0 ); 
+				error(msg, 0 );
 			end
 		end
 
 		-- check the options
 		if(not foundpos  and  args[i] ~= "update" ) then
 			local msg = sprintf(language[61], args[i]);
-			error(msg, 0 ); 
+			error(msg, 0 );
 		end;
 
 	end
@@ -99,7 +99,7 @@ function main()
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
 
-	if( playerAddress == nil ) then 
+	if( playerAddress == nil ) then
 		local msg = sprintf(language[48], "playerAddress");	-- pls update to current version
 		error(msg, 0);
 	end;
@@ -165,7 +165,7 @@ function main()
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
-	
+
 	if( getTimerFrequency ) then
 		-- Grab the real frequency instead of calculating it, if available
 		bot.GetTimeFrequency = getTimerFrequency().low / 1000;
@@ -178,7 +178,7 @@ function main()
 	end
 
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
-	
+
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
 
 	-- list waypoint files and files in folders
@@ -189,11 +189,11 @@ function main()
 
 		local hf_counter = 0;
 		local pathlist = { }
-		
+
 		local function read_subdirectory(_folder)
 			local subdir = getDirectory(getExecutionPath() .. "/waypoints/".._folder);
 			if( not subdir) then return; end
-			
+
 			for i,v in pairs(subdir) do
 				if( string.find (v,".xml",1,true) ) then
 					hf_counter = hf_counter + 1;
@@ -202,34 +202,34 @@ function main()
 						pathlist[hf_counter].filename = v;
 				end
 			end
-			
+
 		end		-- end of: local function read_subdirectory(_folder)
 
 
 		local function concat_filename(_i, _folder, _filename)
-			
+
 			local hf_newname;
 			local hf_folder = "";
 			local hf_dots = "";
 			local hf_slash = "";
-			
-			if( _folder  and  string.len(_folder) > 8 )  then 
-				hf_folder = string.sub(_folder, 1, 6); 
+
+			if( _folder  and  string.len(_folder) > 8 )  then
+				hf_folder = string.sub(_folder, 1, 6);
 				hf_dots = "..";
 				hf_slash = "/";
-			elseif( _folder  and  string.len(_folder) > 0 )  then 
+			elseif( _folder  and  string.len(_folder) > 0 )  then
 				hf_folder = _folder;
 				hf_slash = "/";
 			end
-			
+
 			hf_newname = sprintf("%s%s%s%s",
 			  hf_folder,
 			  hf_dots,
 			  hf_slash,
 			  _filename);
-			
+
 			hf_nr = sprintf("%3d:", _i);
-			
+
 			return hf_nr, hf_newname;
 
 		end
@@ -245,11 +245,11 @@ function main()
 		pathlist[0] = { };
 		pathlist[0].filename = "wander";
 		for i,v in pairs(dir) do
-		
+
 			-- no . means perhaps folder
 			if( not string.find (v,".",1,true) ) then
 				read_subdirectory(v);
-				
+
 			-- only list files with extension .xml
 			elseif( string.find (v,".xml",1,true) ) then
 				hf_counter = hf_counter + 1;
@@ -259,14 +259,14 @@ function main()
 		end
 
 		local inc = math.ceil(#pathlist/3);
-		
+
 		for i = 0, inc do
-			
+
 			local column1 = ""; local column2 = ""; local column3 = "";
 			local col1nr = ""; local col2nr = ""; local col3nr = "";
-			
+
 			col1nr, column1 = concat_filename(i, pathlist[i].folder, pathlist[i].filename)
-			
+
 			if ( (i + inc) <= #pathlist ) then
 				col2nr, column2 = concat_filename(i+inc, pathlist[i+inc].folder, pathlist[i+inc].filename);
 			end
@@ -274,7 +274,7 @@ function main()
 				col3nr, column3 = concat_filename(i+inc*2, pathlist[i+inc*2].folder, pathlist[i+inc*2].filename);
 			end
 
-			cprintf(cli.green,"%s %s %s %s %s %s\n", 
+			cprintf(cli.green,"%s %s %s %s %s %s\n",
 				col1nr,
 				string.sub(column1.."                    ", 1, 21),
 				col2nr,
@@ -287,18 +287,18 @@ function main()
 		-- ask for pathname to choose
 		keyboardBufferClear();
 		io.stdin:flush();
-		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path 
+		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path
 		local hf_choose_path_nr = tonumber(io.stdin:read() );
 		if( hf_choose_path_nr and
 			hf_choose_path_nr >= 0 and
-			hf_choose_path_nr <= #pathlist ) then 
+			hf_choose_path_nr <= #pathlist ) then
 			printf(language[146], hf_choose_path_nr );	-- You choose %s\n
 			if( pathlist[hf_choose_path_nr].folder ) then
 				wp_to_load = pathlist[hf_choose_path_nr].folder.."/"..pathlist[hf_choose_path_nr].filename;
 			else
 				wp_to_load = pathlist[hf_choose_path_nr].filename;
 			end
-			
+
 			return wp_to_load;
 		else
 			cprintf(cli.yellow, language[147]);	-- Wrong selection
@@ -306,9 +306,9 @@ function main()
 			return false;
 		end
 
-	end	
+	end
 	-- end of local function list_waypoint_files()
-	
+
 
 	-- This logic prevents files from being loaded if wandering was forced
 	local wp_to_load, rp_to_load;
@@ -334,12 +334,12 @@ function main()
 	if( settings.profile.options.PATH_TYPE == "wander") then
 	    wp_to_load = "wander";
 	end
-	
+
 	-- list the path list?
 	-- if we don't have a wp file to load, list them
 	if( __WPL == nil ) then		-- not allready loaded (in onLoad event)
 
-		while( wp_to_load == nil or wp_to_load == "" or wp_to_load == false	or wp_to_load == " " ) do	
+		while( wp_to_load == nil or wp_to_load == "" or wp_to_load == false	or wp_to_load == " " ) do
 			wp_to_load = list_waypoint_files();
 		end;
 
@@ -356,21 +356,21 @@ function main()
 
 	-- special option for use waypoint file from profile in a reverse order / not if forced path
 	if( settings.profile.options.WAYPOINTS_REVERSE == true  and
-	    not forcedPath  ) then 
+	    not forcedPath  ) then
 		__WPL:reverse();
 	end;
-	
+
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __WPL:getNextWaypoint();
 		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
-		
+
 		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
 		local hf_wp = __RPL:getNextWaypoint();
 		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
-		
+
 		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true;	-- then use return path first
 			cprintf(cli.yellow, language[12]);	-- Starting with return path
@@ -425,14 +425,14 @@ function main()
 		if( player.Sleeping == true ) then
 			yrest(800);	-- wait a little for the aggro flag
 			player:update();
-			if( player.Battling == false ) then 
-				player:sleep(); 
+			if( player.Battling == false ) then
+				player:sleep();
 			end;
 		end;	-- go sleeping if sleeping flag is set
 
 
 		-- trigger timed inventory update
-		--if( os.difftime(os.time(), player.InventoryLastUpdate) > 
+		--if( os.difftime(os.time(), player.InventoryLastUpdate) >
 			--settings.profile.options.INV_UPDATE_INTERVAL ) then
 			--player.InventoryDoUpdate = true;
 		--end
@@ -452,7 +452,7 @@ function main()
 		--  aggro flag would needs a wait (if no loot), so we don't check it
 		if(player.Level > player.level_detect_levelup   and
 		   not player.Battling )  then
-		
+
 			player.level_detect_levelup = player.Level;
 
 			-- check if onLevelup event is used in profile
@@ -468,14 +468,13 @@ function main()
 
 		-- rest after getting new target and before starting fight
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
-		if( player:haveTarget()  and
-		    player.Current_waypoint_type ~= WPT_RUN ) then	-- no resting if running waypoin type
+		if player.Current_waypoint_type ~= WPT_RUN then	-- no resting if running waypoin type
 
 			local manaRest, healthRest = false, false;
 			if( player.MaxMana > 0 ) then
-				manaRest = (player.Mana / player.MaxMana * 100) <= settings.profile.options.MP_REST;
+				manaRest = (player.Mana / player.MaxMana * 100) < settings.profile.options.MP_REST;
 			end
-			healthRest = (player.HP / player.MaxHP * 100) <= settings.profile.options.HP_REST;
+			healthRest = (player.HP / player.MaxHP * 100) < settings.profile.options.HP_REST;
 
 			if( manaRest or healthRest ) then
 					player:rest( 50, 99, "full", 10 );		-- rest before next fight
@@ -496,7 +495,7 @@ function main()
 
 			player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
 
-			-- wait a second with the aggro message to avoid wrong msg 
+			-- wait a second with the aggro message to avoid wrong msg
 			-- because of slow battle flag from the client
 			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
 				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
@@ -528,11 +527,11 @@ function main()
 			-- remember players position at fight start
 			local FightStartX = player.X;
 			local FightStartZ = player.Z;
-		
+
 			local target = player:getTarget();
 			if( settings.profile.options.ANTI_KS ) then
-				if( target:haveTarget() and 
-				  target:getTarget().Address ~= player.Address and 
+				if( target:haveTarget() and
+				  target:getTarget().Address ~= player.Address and
 				  (not player:isFriend(CPawn(target.TargetPtr))) ) then
 					cprintf(cli.red, language[5], target.Name);
 				else
@@ -542,7 +541,7 @@ function main()
 				player:fight();
 			end
 
-			
+
 			-- check if we (as melee) can skip a waypoint because we touched it while moving to the fight place
 			-- we do the check for all classes, even mostly only melees are touched by that, because only
 			-- they move within the fightstart/-end
@@ -563,7 +562,7 @@ function main()
 				local dir_fightstart_to_fightend = math.atan2(player.Z - FightStartZ, player.X - FightStartX);
 				local dist_fightstart_to_fightend = distance(player.X, player.Z, FightStartX, FightStartZ);
 
-				-- calculate how much  fighstart, wp and fightend are on a line, 0 = one line, 
+				-- calculate how much  fighstart, wp and fightend are on a line, 0 = one line,
 				local angleDif = angleDifference(dir_fightstart_to_currentwp, dir_fightstart_to_fightend);
 				if (settings.profile.options.DEBUG_WAYPOINT) then
 					printf("[DEBUG] FightStartX %s FightStartZ %s\n", FightStartX, FightStartZ );
@@ -616,7 +615,7 @@ function main()
 				end 	-- end of: check to skip a waypoint
 			end
 
-			
+
 		else
 		-- don't fight, move to wp
 			local wp = nil; local wpnum = nil;
@@ -685,8 +684,8 @@ function main()
 					cprintf(cli.red, language[8]);		-- Waypoint movement failed
 				end
 
-				if( reason == WF_COMBAT ) then	
-					cprintf(cli.turquoise, language[14]);	-- We get aggro. Stop moving to waypoint 
+				if( reason == WF_COMBAT ) then
+					cprintf(cli.turquoise, language[14]);	-- We get aggro. Stop moving to waypoint
 				end;
 
 				if( reason == WF_DIST ) then
@@ -706,9 +705,9 @@ function main()
 
 					-- Too many tries, logout
 					if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
-						player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then 
-						cprintf(cli.yellow, language[55], 
-						  player.Unstick_counter, 
+						player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then
+						cprintf(cli.yellow, language[55],
+						  player.Unstick_counter,
 						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
 						if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
 							player:logout();
@@ -720,7 +719,7 @@ function main()
 							player.Unstick_counter = 0;
 						end
 					end;
-					
+
 					if( player.Sleeping ~= true) then	-- not when to much trial and we go to sleep
 						-- unstick player und unstick message
 						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position
@@ -734,7 +733,7 @@ function main()
 
 		end
 	end
-	
+
 end
 
 function resurrect()
@@ -769,7 +768,7 @@ function resurrect()
 
 	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
 		cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
-				
+
 		-- try mouseclick to reanimate
 		cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
 		yrest(5000);
@@ -777,38 +776,38 @@ function resurrect()
 		-- if still dead, try macro if one defined
 		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
-			RoMScript("UseSelfRevive();");	-- first try self revive 
+			RoMScript("UseSelfRevive();");	-- first try self revive
 			yrest(500);
 			RoMScript("BrithRevive();");
-			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);	
+			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);
 			player:update();
 		end
 
 		-- death counter message
-		cprintf(cli.green, language[109],	-- You have died %s times 
+		cprintf(cli.green, language[109],	-- You have died %s times
 		   player.Death_counter, settings.profile.options.MAX_DEATHS);
-				
+
 		-- check maximal death if automatic mode
 		if( player.Death_counter > settings.profile.options.MAX_DEATHS ) then
-			cprintf(cli.yellow, language[54], player.Death_counter, 
+			cprintf(cli.yellow, language[54], player.Death_counter,
 			  settings.profile.options.MAX_DEATHS );	-- to much deaths
 			player:logout();
 		end
 
-		if( player.Level > 9  and 
+		if( player.Level > 9  and
 		    player.Alive      ) then	-- no wait if resurrect at the place of death / priest / buff
 			cprintf(cli.red, language[4]);		-- Returning to waypoints after 1 minute.
-			
+
 			-- check the first debuff that player has. (it has to be the weakness!)
 			local debuff = RoMScript("GetPlayerBuffLeftTime(GetPlayerBuff(1,'HARMFUL'))");
 			if(debuff == nil) then debuff = 0; end;
 			debuff = tonumber(debuff);
-			
+
 			if (debuff == 0 and not settings.profile.options.PK_COUNTS_AS_DEATH) then
 				print("This was a PK or no xp debt death.");
 				player.Death_counter = player.Death_counter - 1;
 			end
-			
+
 			player:rest(debuff,debuff+15); -- wait off the debuff before going about your path.
 		end
 
@@ -848,7 +847,7 @@ function resurrect()
 		player.Returning = true;
 		cprintf(cli.yellow, language[12]);
 	end
-			
+
 	-- not using returnpath, so we use the normal waypoint path
 	if( player.Returning == nil) then
 		player.Returning = false;
