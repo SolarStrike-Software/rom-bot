@@ -88,8 +88,12 @@ function CPlayer:harvest(_id, _second_try)
 			self:moveInRange(CWaypoint(closestHarvestable.X, closestHarvestable.Z), 39, true);
 		end
 
-		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
-		RoMScript("UseSkill(1,1)");
+		if( nodeStillFound(closestHarvestable) ) then
+			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
+			RoMScript("UseSkill(1,1)");
+		else
+			return; -- Node disappeared for whatever reason...
+		end
 
 		if _id and not database.nodes[closestHarvestable.Id] then -- The rest is not needed if not resource node
 			return true;
@@ -1395,6 +1399,8 @@ function evalTargetDefault(address)
 		local pB = wpl:getNextWaypoint(1);
 
 		V = getNearestSegmentPoint(player.X, player.Z, pA.X, pA.Z, pB.X, pB.Z);
+	else
+		V = CWaypoint(player.X, player.Z); -- Distance check from player in wander mode
 	end
 
 	-- use a bounding box first to avoid sqrt when not needed (sqrt is expensive)
