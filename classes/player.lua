@@ -2758,21 +2758,25 @@ end
 function CPlayer:merchant(_npcname, _option)
 	_option = _option or 1
 	if self:target_NPC(_npcname) then
+
 		yrest(1000);
 		RoMScript("ChoiceOption(".._option..")");
 		yrest(1000);
-		RoMScript("ClickRepairAllButton()");
-		yrest(1000);
-		inventory:update();
-		if ( inventory:autoSell() ) then
+		if RoMScript("StoreFrame:IsVisible()") then
+			RoMScript("ClickRepairAllButton()");
+			yrest(1000);
+
+			inventory:update();
+			if ( inventory:autoSell() ) then
+				inventory:update();
+			end
+			inventory:storeBuyConsumable("healing", settings.profile.options.HEALING_POTION);
+			inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
+			inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
+			inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
+			inventory:storeBuyConsumable("poison", settings.profile.options.POISON);
 			inventory:update();
 		end
-		inventory:storeBuyConsumable("healing", settings.profile.options.HEALING_POTION);
-		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
-		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
-		inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
-		inventory:storeBuyConsumable("poison", settings.profile.options.POISON);
-		inventory:update();
 	end
 
 	RoMScript("CloseWindows()");
