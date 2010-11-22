@@ -18,7 +18,7 @@ settings_default = {
 		LANGUAGE = "english",
 		USE_CLIENT_LANGUAGE = true,		-- automatic use client language after loading the bot
 		DEBUGGING = false,
-		DEBUGGING_MACRO = false,		
+		DEBUGGING_MACRO = false,
 		ROMDATA_PATH = nil,
 	},
 	profile = {
@@ -62,7 +62,7 @@ settings_default = {
 			POISON = 0,						-- shopping options, how many to buy/have in inventory
 			RELOAD_AMMUNITION = false,		-- false|arrow|thrown
 
-			
+
 			-- expert options
 			MAX_SKILLUSE_NODMG = 3,				-- maximum casts without damaging the target before break it
 			MAX_TARGET_DIST = 250,			-- maximum distance to select a target (helpfull to limit at small places)
@@ -76,7 +76,7 @@ settings_default = {
 			POTION_COOLDOWN_MANA = 0,		-- will only be used if not 0, if 0 POTION_COOLDOWN will be used
 			SIT_WHILE_RESTING = false,		-- sit while using the rest function
 			USE_MANA_POTION = "best",		-- which mana potion type to use: best | minstack
-			USE_HP_POTION = "best",			-- which HP potion type to use: best | minstack 			
+			USE_HP_POTION = "best",			-- which HP potion type to use: best | minstack
 			WAYPOINTS_REVERSE = false,		-- use the waypoint file in reverse order
 			WAYPOINT_PASS = 100,			-- skip a waypoint if we pass in distance x while fighting a mob (go to as melee)
 			WAYPOINT_PASS_DEGR = 90,		-- skip a waypoint if we touched one and the next is at least x degrees in front
@@ -100,16 +100,16 @@ settings_default = {
 			DEBUG_HARVEST = false, 			-- debug harvesting issues
 			DEBUG_WAYPOINT = false, 		-- debug waypoint issues
 			DEBUG_AUTOSELL = false, 		-- debug autosell issues
-			
+
 			-- debug skill use issues
 			DEBUG_SKILLUSE = {
 				ENABLE 		= false,
 				TIMEGAP		= true,		-- show the time gap between cast starts
 				ONCOOLDOWN	= true,		-- show the time in ms that we are before the cooldown
 				NOCOOLDOWN	= true,		-- show the time in ms that we are over the cooldown
-				HPLOW		= true 
+				HPLOW		= true
 				},
-			
+
 			-- expert inventar
 			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
 			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
@@ -122,10 +122,10 @@ settings_default = {
 			INV_AUTOSELL_STATS_NOSELL = nil,	-- stats (text search at right tooltip side) that will not be selled
 			INV_AUTOSELL_STATS_SELL = nil,		-- stats (text search at right tooltip side) that will be selled, even if in nosell
 
-			
-		},	
-		hotkeys = {  }, 
-		skills = {}, 
+
+		},
+		hotkeys = {  },
+		skills = {},
 		friends = {},
 		mobs = {},
 		events = {
@@ -140,7 +140,7 @@ settings_default = {
 };
 
 bot =	{ 		-- global bot values
-		ClientLanguage,		-- ingame language of the game [ DE|RU|FR|ENUS|ENEU 
+		ClientLanguage,		-- ingame language of the game [ DE|RU|FR|ENUS|ENEU
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
 		IgfAddon = false,	-- check if igf addon is active
@@ -170,7 +170,7 @@ function checkKeySettings( _name, _key, _modifier)
 	else
 		hf_check_where = language[140];		-- Ingame -> System -> Tastenbelegung
 	end
-	
+
 	local msg = nil;
 	-- no empty keys pls
 	if( _key == nil) then
@@ -223,16 +223,16 @@ function checkKeySettings( _name, _key, _modifier)
 		    v.modifier == _modifier ) then
 			local modname;
 
-			if( v.modifier ) then 
+			if( v.modifier ) then
 				modname = getKeyName(v.modifier).."+";
 			else
 				modname = "";
 			end;
 
 			local errstr = sprintf(language[121],	-- assigned the key \'%s%s\' double
-				modname, 
-				getKeyName(v.key), 
-				v.name, _name) .. 
+				modname,
+				getKeyName(v.key),
+				v.name, _name) ..
 				hf_check_where;
 			error(errstr, 0);
 		end
@@ -251,7 +251,7 @@ function settingsPrintKeys()
 	local msg;
 	msg ="QUICK_TURN = "..tostring(settings.profile.options.QUICK_TURN);	-- we wander around
 	logMessage(msg);		-- log keyboard settings
-	
+
 	if( bindings ) then		-- we read from bindings.txt
 		msg = sprintf(language[167], "bindings.txt");	-- Keyboard settings are from
 	else				-- we read settings.xml
@@ -268,23 +268,23 @@ function settingsPrintKeys()
 			msg = string.sub(v.name.."                               ", 1, 30);	-- function name
 
 			local modname;
-			if( v.modifier ) then 
+			if( v.modifier ) then
 				modname = getKeyName(v.modifier).."+";	-- modifier name
 			else
 				modname = "";
 			end;
-			
+
 			local keyname;
 			if( string.upper(v.key) == "MACRO" ) then
 				keyname = "MACRO";
 			else
 				keyname = getKeyName(v.key);
 			end
-			
+
 			msg = msg..modname..keyname;	-- add key name
 --			printf(msg.."\n");			-- print line
 			logMessage(msg);			-- log keyboard settings
-		
+
 		end;
 	end;
 
@@ -313,7 +313,7 @@ function settings.load()
 			end
 
 			checkKeySettings( v:getAttribute("description"),
-			  v:getAttribute("key"), 
+			  v:getAttribute("key"),
 			  v:getAttribute("modifier") );
 		end
 	end
@@ -328,7 +328,7 @@ function settings.load()
 	-- Load RoM keyboard bindings.txt file
 	local function load_RoM_bindings_txt()
 		local filename, file;
-		
+
 		local userprofilePath = os.getenv("USERPROFILE");
 		local documentPaths = {
 			userprofilePath .. "\\My Documents\\" .. "Runes of Magic", -- English
@@ -378,7 +378,7 @@ function settings.load()
 		check_keys["JUMP"] = nil;
 		check_keys["TARGET"] = nil;
 		check_keys["TARGET_FRIEND"] = nil;
-		
+
 		-- Load bindings.txt into own table structure
 		bindings = { name = { } };
 		-- read the lines in table 'lines'
@@ -388,7 +388,7 @@ function settings.load()
 				bindings[name].key1 = key1;
 				bindings[name].key2 = key2;
 
-				--settings.hotkeys[name].key = 
+				--settings.hotkeys[name].key =
 			end
 		end
 
@@ -402,7 +402,7 @@ function settings.load()
 				STRAFERIGHT = "STRAFF_RIGHT",
 				JUMP = "JUMP",
 				TARGETNEARESTENEMY = "TARGET",
-				TARGETNEARESTFRIEND = "TARGET_FRIEND",	
+				TARGETNEARESTFRIEND = "TARGET_FRIEND",
 			};
 
 			local hotkeyName = bindingName;
@@ -428,7 +428,7 @@ function settings.load()
 						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
 						checkKeySettings(hotkeyName, "VK_" .. bindings[bindingName].key1 );
 					end
-					
+
 				else
 					local err = sprintf(language[124], bindingName);	-- no ingame hotkey for
 					error(err, 0);
@@ -451,11 +451,11 @@ function settings.load()
 	-- only if we can find the bindings.txt file
 	local function check_ingame_settings( _name, _ingame_key)
 	-- no more needed, because we take the keys from the file if we found the file
-		
+
 		if( not bindings ) then		-- no bindings.txt file loaded
 			return
 		end;
-		
+
 		if( settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
 		settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
 			local msg = sprintf(language[125], _name);	-- settings.xml don't match your RoM ingame
@@ -468,7 +468,7 @@ function settings.load()
 		if( not settings.hotkeys[_name] ) then
 			error(language[126] .. _name, 0);	-- Global hotkey not set
 		end
-		
+
 		-- check if settings.lua hotkeys match the RoM ingame settings
 		-- check_ingame_settings( _name, _ingame_key);
 	end
@@ -497,7 +497,7 @@ function settings.load()
 --		elseif(hf_language == "FR" ) then
 --			settings.options.LANGUAGE = "french";
 --		else
---			settings.options.LANGUAGE = "english";		
+--			settings.options.LANGUAGE = "english";
 --		end
 --	end
 
@@ -523,7 +523,7 @@ function settings.load()
 	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
 
 	-- Check to make sure everything important is set
-	--           bot hotkey name    RoM ingame key name         
+	--           bot hotkey name    RoM ingame key name
 	checkHotkeys("MOVE_FORWARD",   "MOVEFORWARD");
 	checkHotkeys("MOVE_BACKWARD",  "MOVEBACKWARD");
 	checkHotkeys("ROTATE_LEFT",    "TURNLEFT");
@@ -533,7 +533,7 @@ function settings.load()
 	checkHotkeys("JUMP",           "JUMP");
 	checkHotkeys("TARGET",         "TARGETNEARESTENEMY");
 	checkHotkeys("TARGET_FRIEND",  "TARGETNEARESTFRIEND");
-	
+
 end
 
 
@@ -568,7 +568,7 @@ function settings.loadProfile(_name)
 			end
 
 			checkKeySettings(v:getAttribute("name"),
-			  v:getAttribute("key"), 
+			  v:getAttribute("key"),
 			  v:getAttribute("modifier") );
 
 		end
@@ -594,7 +594,7 @@ function settings.loadProfile(_name)
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
 			settings.profile.events.onDeath = loadstring(luaCode);
-			
+
 			assert(settings.profile.events.onDeath, sprintf(language[151], "onDeath"));
 
 			if( type(settings.profile.events.onDeath) ~= "function" ) then
@@ -644,7 +644,7 @@ function settings.loadProfile(_name)
 			end;
 		end
 	end
-	
+
 	local loadOnSkillCastEvent = function(node)
 		local luaCode = node:getValue();
 		if( luaCode == nil ) then return; end;
@@ -685,7 +685,7 @@ function settings.loadProfile(_name)
 			end
 
 			checkKeySettings( v:getAttribute("name"),
-			  v:getAttribute("hotkey"), 
+			  v:getAttribute("hotkey"),
 			  v:getAttribute("modifier") );
 
 			-- Over-ride attributes
@@ -727,7 +727,7 @@ function settings.loadProfile(_name)
 			end;
 
 			if( inbattle ~= nil ) then
-				if( inbattle == "true" or 
+				if( inbattle == "true" or
 					inbattle == true ) then
 					inbattle = true;
 				elseif( inbattle == "false"  or
@@ -791,11 +791,11 @@ function settings.loadProfile(_name)
 		for i,v in pairs(elements) do
 
 			local name = v:getAttribute("name");
-			
+
 			if( name ) then name = trim(name); end;
 
-			if( name ) then 
-		
+			if( name ) then
+
 				-- fix, because getAttribute seems not to recognize the escape characters
 				-- for special ASCII characters
 				name = string.gsub (name, "\\132", string.char(132));	-- ä
@@ -815,13 +815,13 @@ function settings.loadProfile(_name)
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
-		
+
 			local name = v:getAttribute("name");
 
 			if( name ) then name = trim(name); end;
 
-			if( name ) then 
-				
+			if( name ) then
+
 				-- fix, because getAttribute seems not to recognize the escape characters
 				-- for special ASCII characters
 				name = string.gsub (name, "\\132", string.char(132));	-- ä
@@ -916,13 +916,16 @@ function settings.loadProfile(_name)
 		error(msg, 0);
 	end
 
+	-- Setup the macros ans action key.
+	setupMacros()
+
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
 	settings.options.DEBUGGING_MACRO = true;
 	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
 	if( hf_return ~= 1234 ) then	-- return values not found
 --		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
-		cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro 
+		cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro
 
 		if ( settings.profile.hotkeys.MACRO.key) then
 			hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key);
@@ -934,7 +937,7 @@ function settings.loadProfile(_name)
 
 		error(msg, 0);
 	else								-- return values found, clear it and send message
-		cprintf(cli.green, "MACRO Test: ok\n" );	
+		cprintf(cli.green, "MACRO Test: ok\n" );
 		RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 	end
 	settings.options.DEBUGGING_MACRO = false;
@@ -965,7 +968,7 @@ function settings.loadProfile(_name)
 		elseif(bot.ClientLanguage == "ES" ) then
 			hf_language = "spanish";
 		else
-			hf_language = "english";		
+			hf_language = "english";
 		end
 
 		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
@@ -975,7 +978,7 @@ function settings.loadProfile(_name)
 			end
 
 			local lang_base = {};
-			
+
 			for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
 
 			setLanguage(hf_language);
@@ -994,7 +997,7 @@ function settings.loadProfile(_name)
 
 	-- now we can do all other setting checks
 
-	
+
 	-- Check if the player has any ranged damage skills
 	local rangedSkills = false;
 	for i,v in pairs(settings.profile.skills) do
@@ -1021,7 +1024,7 @@ function settings.loadProfile(_name)
 
 
 	-- default combat type if not in profile defined
-	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and 
+	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and
 	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
 		if( player.Class1 == CLASS_WARRIOR or
 		    player.Class1 == CLASS_ROGUE   or
@@ -1067,7 +1070,7 @@ function settings.loadProfile(_name)
 
 	-- check if igf addon is active
 	if ( RoMScript("IGF_INSTALLED") == true ) then
-		bot.IgfAddon = true; 
+		bot.IgfAddon = true;
 	else
 		bot.IgfAddon = false;
 	end

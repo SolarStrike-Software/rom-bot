@@ -524,8 +524,8 @@ function RoMScript(script, default)
 
 	local text = scriptDef.." r='' a={" .. script ..
 	"} for i=1,#a do r=r..tostring(a[i])" ..
-	" r=r..'" .. string.char(9) .. "' end" ..
-	" EditMacro(2,'',7,r);";
+	"..'" .. string.char(9) .. "' end" ..
+	" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,r)";
 
 	-- Check to make sure length is within bounds
 	local len = string.len(text);
@@ -533,27 +533,11 @@ function RoMScript(script, default)
 		error("Macro text too long.", 2);
 	end
 
-	--- Write the macro
-	local i;
-	local byte;
-	for i = 0, 254, 1 do
-		byte = string.byte(text, i + 1);
-		if( byte == nil or byte == 0 ) then
-			byte = 0;
+	-- Write the command macro
+	writeToMacro(commandMacro, text)
 
-			memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, 0);
-			break;
-		end
-		memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, byte);
-	end
-
-	-- Make sure we write out the NULL terminator
-	if( byte ~= 0 ) then
-		memoryWriteByte(getProc(), macro_address + addresses.macro1_offset + i, 0);
-	end
-
-   -- Write something on the first address, to see when its over written
-   memoryWriteByte(getProc(), macro_address + addresses.macro2_offset, 6);
+	-- Write something on the first address, to see when its over written
+	memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
 
 	--- Execute it
 	if( settings.profile.hotkeys.MACRO ) then
@@ -563,7 +547,7 @@ function RoMScript(script, default)
 	-- A cheap version of a Mutex... wait till it is "released"
 	-- Use high-res timers to find out when to time-out
 	local startWaitTime = getTime();
-	while( memoryReadByte(getProc(), macro_address + addresses.macro2_offset) == 6 ) do
+	while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
 		if( deltaTime(getTime(), startWaitTime) > 800 ) then
 			if( settings.options.DEBUGGING_MACRO ) then
 				cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
@@ -573,14 +557,15 @@ function RoMScript(script, default)
 		rest(1);
 	end
 
-	--- Read the outcome from macro 2
+	--- Read the outcome from the result macro
+	raw = readMacro(resultMacro)
 	readsz = "";
 	ret = {};
 	cnt = 0;
-	for i = 0, 254, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro2_offset + i);
+	for i = 1, 255, 1 do
+		local byte = string.byte(raw, i);
 
-		if( byte == 0 ) then -- Break on NULL terminator
+		if( byte == 0 or byte == null) then -- Break on NULL terminator
 			break;
 		elseif( byte == 9 ) then -- Use TAB to seperate
 			-- Implicit casting
@@ -1110,3 +1095,5 @@ function waitForLoadingScreen()
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
 	player:update()
 end
+
+

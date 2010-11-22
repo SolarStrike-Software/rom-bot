@@ -8,6 +8,7 @@ include("classes/waypointlist_wander.lua");
 include("classes/node.lua");
 include("settings.lua");
 include("functions.lua");
+include("macros.lua");
 
 settings.load();
 database.load();
