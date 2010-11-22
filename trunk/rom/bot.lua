@@ -13,6 +13,8 @@ include("classes/node.lua");
 include("classes/object.lua");
 include("classes/objectlist.lua");
 include("settings.lua");
+include("macros.lua");
+
 if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end

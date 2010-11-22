@@ -45,9 +45,9 @@ charBattleUpdateMask = "xxxxxx????xx";
 charBattleUpdateOffset = 6;
 
 -- NOTE: Must add 10 bytes to the value here
-macro1UpdatePattern = string.char(0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x38, 0x98, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0xB8);
-macro1UpdateMask = "xx????xx????xx";
-macro1UpdateOffset = 8;
+macroBodyUpdatePattern = string.char(0x0F, 0x84, 0xFF, 0xFF, 0xFF, 0xFF, 0x38, 0x98, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0xB8);
+macroBodyUpdateMask = "xx????xx????xx";
+macroBodyUpdateOffset = 8;
 
 staticTableUpdatePattern = string.char(0x7E, 0xFF, 0x53, 0x56, 0x57, 0xA1, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x3C, 0xA8, 0x8B, 0x1D);
 staticTableUpdateMask = "x?xxxx????xxxxx";
@@ -319,10 +319,8 @@ function findOffsets()
 	addresses.pawnHarvesting_offset = addresses.pawnHarvesting_offset + 0x3C;
 
 	-- NOTE: We must manually adjust the macro forward 16 bytes
-	-- Assume macro2 is macro1 + 0x508
-	update("macro1_offset", macro1UpdatePattern, macro1UpdateMask, macro1UpdateOffset, 0x7A0000, 0xA0000);
-	addresses.macro1_offset = addresses.macro1_offset + 0x10;
-	addresses.macro2_offset = addresses.macro1_offset + 0x508;
+	update("macroBody_offset", macroBodyUpdatePattern, macroBodyUpdateMask, macroBodyUpdateOffset, 0x7A0000, 0xA0000);
+	addresses.macroBody_offset = addresses.macroBody_offset + 0x10;
 
 
 
@@ -344,7 +342,7 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x11898);
+	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x118D8);
 	assumptionUpdate("charExp_address", addresses.staticbase_char + 0x6C);
 end
 
