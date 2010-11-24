@@ -89,11 +89,11 @@ function CWaypointList:load(filename)
 	self.CurrentWaypoint = 1;
 	self.Mode = "waypoints";
 
+	self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
+
 	if( onLoadEvent ) then
 		onLoadEvent();
 	end
-
-	self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
 end
 
 
@@ -110,13 +110,13 @@ function CWaypointList:setMode(mode)
 end
 
 function CWaypointList:setForcedWaypointType(_type)
-	
+
 	if( _type == nil  or  _type == ""  or  _type == 0 ) then
 		self.ForcedType = 0;
 		cprintf(cli.green, "Forced waypoint type cleared.\n" );
 		return;
 	end;
-	
+
 	if( _type == "NORMAL"  or  _type == WPT_NORMAL ) then
 		self.ForcedType = WPT_NORMAL;
 	elseif( _type == "TRAVEL"  or  _type == WPT_TRAVEL) then
@@ -127,7 +127,7 @@ function CWaypointList:setForcedWaypointType(_type)
 		cprintf(cli.yellow, "You try to force an unknown waypoint type \'%s\'. Please check.\n", _type);
 		error("Bot finished due to error above.", 0);
 	end
-	
+
 	cprintf(cli.green, "Forced waypoint type \'%s\' set by user.\n", _type );
 end
 
@@ -186,7 +186,7 @@ function CWaypointList:getNextWaypoint(_num)
 		hf_wpnum = self.CurrentWaypoint;
 	end
 
-	
+
 	local tmp = CWaypoint(self.Waypoints[hf_wpnum]);
 	tmp.wpnum = hf_wpnum;
 
