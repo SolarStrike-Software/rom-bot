@@ -223,6 +223,14 @@ castingBarOffsetUpdatePattern = string.char(0x57, 0xFF, 0xD2, 0x8B, 0xF8, 0x8B, 
 castingBarOffsetUpdateMask = "xxxxxxxx?xx?xxx?xxxx";
 castingBarOffsetUpdateOffset = 11;
 
+hotkeysKeyOffsetUpdatePattern = string.char(0x50, 0x57, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0XFF, 0x8B, 0x01, 0x8B, 0x56, 0xFF, 0x8B, 0x80);
+hotkeysKeyOffsetUpdateMask = "xxx????xx????xxxx?xx";
+hotkeysKeyOffsetUpdateOffset = 17;
+
+hotkeysOffsetUpdatePattern = string.char(0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x6B, 0xFF, 0x39, 0x6B, 0xFF, 0x76, 0x06, 0xFF, 0x15, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x7B, 0xFF, 0x3B);
+hotkeysOffsetUpdateMask = "x????xx?xx?xxxx????xx?x";
+hotkeysOffsetUpdateOffset = 21;
+
 -- This function will attempt to automatically find the true addresses
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
@@ -313,6 +321,8 @@ function findOffsets()
 	update("valueOffset", valueOffsetUpdatePattern, valueOffsetUpdateMask, valueOffsetUpdateOffset, 0x790000, 0xA0000, 1);
 	update("loadingScreen_offset", loadingScreenOffsetUpdatePattern, loadingScreenOffsetUpdateMask, loadingScreenOffsetUpdateOffset, 0x7B0000, 0xA0000, 1);
 	update("loadingScreenPtr", loadingScreenPtrUpdatePattern, loadingScreenPtrUpdateMask, loadingScreenPtrUpdateOffset, 0x5E0000, 0xA00000);
+	update("hotkeysKey_offset", hotkeysKeyOffsetUpdatePattern, hotkeysKeyOffsetUpdateMask, hotkeysKeyOffsetUpdateOffset, 0x7B0000, 0xA0000, 1);
+	update("hotkeys_offset", hotkeysOffsetUpdatePattern, hotkeysOffsetUpdateMask, hotkeysOffsetUpdateOffset, 0x7B0000, 0xA0000, 1);
 
 	-- NOTE: We must manually adjust forward 0x3C bytes
 	update("pawnHarvesting_offset", pawnHarvestUpdatePattern, pawnHarvestUpdateMask, pawnHarvestUpdateOffset, 0x820000, 0xA0000);
