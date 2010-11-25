@@ -20,10 +20,12 @@
 	<skill name="MAGE_ELECTRIC_COMPRESSION" type="buff" target="self" />
 	<skill name="MAGE_STATIC_FIELD" mana="20" range="150" casttime="1" type="stun" target="enemy" />
 	<skill name="MAGE_PURGATORY_FIRE" mana="50" type="damage" target="enemy" />
-	<skill name="MAGE_ENERGY_SUPPLY" mana="45" cooldown="120" type="buff" target="self" />
 	<skill name="MAGE_ENERGY_WELL" cooldown="120" type="buff" target="self" />
 	<skill name="MAGE_ELEMENTAL_WEAKNESS" mana="50" range="250" type="debuff" target="enemy" />
 	<skill name="MAGE_THUNDERSTORM" mana="70" range="180" type="damage" target="enemy" />
+	<skill name="MAGE_ENERGY_INFLUX" cooldown="120" type="buff" target="self" />
+	<skill name="MAGE_METEOR_SHOWER" mana="30" casttime="5" range="150" />
+	<skill name="MAGE_EARTH_SURGE" mana="48" range="200" minrange="80" cooldown="2"  />
 
 	<!-- Elite -->
 	<skill name="MAGE_MAGICAL_TALENT" rage="35" cooldown="300" type="buff" target="self" />
@@ -47,7 +49,7 @@
 	<!-- TODO: Purify: Requires curse -->
 	<skill name="MAGE_PURIFY" mana="150" range="200" cooldown="10" type="buff" target="self" />
 	<skill name="MAGE_HOLY_LIGHT_STRIKE" mana="15" range="150" casttime="2" />
-	<skill name="MAGE_STARS_OF_LIGHT" mana="30" range="200" cooldown="2" type="dot" />
+	<skill name="MAGE_STARS_OF_LIGHT" mana="30" range="200" cooldown="2" casttime="5" type="dot" />
 	<skill name="MAGE_MESSENGER_OF_LIGHT" mana="30" cooldown="600" type="buff" target="self" />
 	<skill name="MAGE_LIGHT_CHARGE" mana="30" range="150" minrange="80" cooldown="8" priority="100" />
 	<skill name="MAGE_PERCEPTION" mana="660" cooldown="900" range="200" type="buff" target="self" />
@@ -253,7 +255,7 @@
 	<skill name="KNIGHT_HOLY_PROTECTION" mana="30" range="150" cooldown="600" type="buff" target="self" />
 	<skill name="KNIGHT_FREE_WILL" mana="30" range="200" cooldown="120" type="buff" target="self" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
-
+	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="84" inbattle="true"/>
 
 	<!-- Scout skills -->
 	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2" type="damage" target="enemy" toggleable="true" />
