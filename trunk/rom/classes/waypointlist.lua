@@ -5,6 +5,7 @@ CWaypointList = class(
 	function(self)
 		self.Waypoints = {};
 		self.CurrentWaypoint = 1;
+		self.LastWaypoint = 1;
 		self.Direction = WPT_FORWARD;
 		self.OrigX = player.X;
 		self.OrigZ = player.Z;
@@ -86,10 +87,10 @@ function CWaypointList:load(filename)
 		end
 	end
 
-	self.CurrentWaypoint = 1;
 	self.Mode = "waypoints";
-
 	self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
+	self.LastWaypoint = self.CurrentWaypoint -1
+	if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 
 	if( onLoadEvent ) then
 		onLoadEvent();
@@ -140,6 +141,7 @@ function CWaypointList:getRadius()
 end
 
 function CWaypointList:advance()
+	self.LastWaypoint = self.CurrentWaypoint
 	if( self.Direction == WPT_FORWARD ) then
 		self.CurrentWaypoint = self.CurrentWaypoint + 1;
 		if( self.CurrentWaypoint > #self.Waypoints ) then
@@ -154,7 +156,7 @@ function CWaypointList:advance()
 end
 
 function CWaypointList:backward()
-
+	self.LastWaypoint = self.CurrentWaypoint
 	if( self.Direction == WPT_FORWARD ) then
 		self.CurrentWaypoint = self.CurrentWaypoint - 1;
 		if( self.CurrentWaypoint < 1 ) then
@@ -174,16 +176,15 @@ function CWaypointList:getNextWaypoint(_num)
 	local hf_wpnum;
 	if( self.Direction == WPT_FORWARD ) then
 		hf_wpnum = self.CurrentWaypoint + _num;
-		if( hf_wpnum > #self.Waypoints ) then
-			hf_wpnum = hf_wpnum - #self.Waypoints;
-		end
 	else
 		hf_wpnum = self.CurrentWaypoint - _num;
-		if( hf_wpnum < 1 ) then
-			hf_wpnum = hf_wpnum + #self.Waypoints;
-		end
 	end
 
+	if( hf_wpnum > #self.Waypoints ) then
+		hf_wpnum = hf_wpnum - #self.Waypoints;
+	elseif( hf_wpnum < 1 ) then
+		hf_wpnum = hf_wpnum + #self.Waypoints;
+	end
 
 	local tmp = CWaypoint(self.Waypoints[hf_wpnum]);
 	tmp.wpnum = hf_wpnum;
@@ -216,14 +217,14 @@ function CWaypointList:setDirection(wpt)
    if( wpt ~= self.Direction ) then
       self.Direction = wpt
       if( wpt == WPT_BACKWARD ) then
-         self.CurrentWaypoint = self.CurrentWaypoint - 1;
-         if( self.CurrentWaypoint <= 0 ) then
-            self.CurrentWaypoint = #self.Waypoints - 1;
+         self.CurrentWaypoint = self.CurrentWaypoint - 2;
+         if( self.CurrentWaypoint < 1 ) then
+            self.CurrentWaypoint = #self.Waypoints - self.CurrentWaypoint;
          end
       else
-         self.CurrentWaypoint = self.CurrentWaypoint + 1;
-         if( self.CurrentWaypoint >= #self.Waypoints ) then
-            self.CurrentWaypoint = 2;
+         self.CurrentWaypoint = self.CurrentWaypoint + 2;
+         if( self.CurrentWaypoint > #self.Waypoints ) then
+            self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints;
          end
       end;
    end
@@ -246,7 +247,7 @@ function CWaypointList:setWaypointIndex(index)
 	end
 	if( index < 1 ) then index = 1; end;
 	if( index > #self.Waypoints ) then index = #self.Waypoints; end;
-
+	self.LastWaypoint = self.CurrentWaypoint
 	self.CurrentWaypoint = index;
 end
 

@@ -1395,8 +1395,8 @@ function evalTargetDefault(address)
 	end
 
 	if (__WPL:getMode() == "waypoints") then
-		local pA = wpl:getNextWaypoint();--CWaypoint(wpl.Waypoints[wpl.CurrentWaypoint].X, wpl.Waypoints[wpl.CurrentWaypoint].Z);
-		local pB = wpl:getNextWaypoint(1);
+		local pA = wpl.Waypoints[wpl.LastWaypoint]
+		local pB = wpl.Waypoints[wpl.CurrentWaypoint]
 
 		V = getNearestSegmentPoint(player.X, player.Z, pA.X, pA.Z, pB.X, pB.Z);
 	else
