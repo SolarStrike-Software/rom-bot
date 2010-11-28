@@ -140,7 +140,6 @@ function CWaypointList:getRadius()
 end
 
 function CWaypointList:advance()
-
 	if( self.Direction == WPT_FORWARD ) then
 		self.CurrentWaypoint = self.CurrentWaypoint + 1;
 		if( self.CurrentWaypoint > #self.Waypoints ) then
@@ -176,14 +175,13 @@ function CWaypointList:getNextWaypoint(_num)
 	if( self.Direction == WPT_FORWARD ) then
 		hf_wpnum = self.CurrentWaypoint + _num;
 		if( hf_wpnum > #self.Waypoints ) then
-			self.CurrentWaypoint = hf_wpnum - #self.Waypoints;
+			hf_wpnum = hf_wpnum - #self.Waypoints;
 		end
 	else
-		self.CurrentWaypoint = self.CurrentWaypoint - _num;
-		if( self.CurrentWaypoint < 1 ) then
-			self.CurrentWaypoint = math.abs(#self.Waypoints - math.abs(self.CurrentWaypoint));
+		hf_wpnum = self.CurrentWaypoint - _num;
+		if( hf_wpnum < 1 ) then
+			hf_wpnum = hf_wpnum + #self.Waypoints;
 		end
-		hf_wpnum = self.CurrentWaypoint;
 	end
 
 
