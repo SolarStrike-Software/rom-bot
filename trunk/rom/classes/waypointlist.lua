@@ -219,7 +219,7 @@ function CWaypointList:setDirection(wpt)
       if( wpt == WPT_BACKWARD ) then
          self.CurrentWaypoint = self.CurrentWaypoint - 2;
          if( self.CurrentWaypoint < 1 ) then
-            self.CurrentWaypoint = #self.Waypoints - self.CurrentWaypoint;
+            self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint;
          end
       else
          self.CurrentWaypoint = self.CurrentWaypoint + 2;
