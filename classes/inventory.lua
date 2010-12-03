@@ -390,6 +390,7 @@ end
 -- but for arraws it might be 1 or 2
 -- type: healing|mana|arrow_quiver|thrown_bag|poison
 function CInventory:storeBuyConsumable(type, quantity)
+	-- Find best store item
 	local bestLevel = 0;
 	for storeSlot = 1, 28, 1 do
 		local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
@@ -418,9 +419,23 @@ function CInventory:storeBuyConsumable(type, quantity)
 	    return false;
  	end
 
+	-- Count number of better items in inventory
+	self:update();
 
-	if self:getItemCount(bestItem) < quantity then
-	    numberToBuy = quantity - self:itemTotalCount(bestItem);
+	local totalCount = 0;
+ 	for slot,item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id];
+	    if item.Available and
+		  consumable and
+		  consumable.Type == type and
+		  consumable.Level >= bestLevel then
+			totalCount = totalCount + item.ItemCount
+		end;
+	end;
+
+	-- See how many needed
+	if totalCount < quantity then
+	    numberToBuy = quantity - totalCount;
 	    printf(language[1001]);  -- Shopping
 	    for i = 1, numberToBuy, 1 do
 	    	RoMScript("StoreBuyItem("..bestItemSlot..")");
