@@ -328,7 +328,7 @@ function findOffsets()
 	update("pawnMaxMP_offset", pawnMaxMPOffsetUpdatePattern, pawnMaxMPOffsetUpdateMask, pawnMaxMPOffsetUpdateOffset, 0x840000, 0xA0000);
 	update("pawnMount_offset", pawnMountOffsetUpdatePattern, pawnMountOffsetUpdateMask, pawnMountOffsetUpdateOffset, 0x840000, 0xA0000);
 	update("pawnName_offset", pawnNameOffsetUpdatePattern, pawnNameOffsetUpdateMask, pawnNameOffsetUpdateOffset, 0x840000, 0xA0000);
-	update("pawnPetPtr_offset", pawnPetPtrOffsetUpdatePattern, pawnPetPtrOffsetUpdateMask, pawnPetPtrOffsetUpdateOffset, 0x850000, 0xA0000);
+	update("pawnPetPtr_offset", pawnPetPtrOffsetUpdatePattern, pawnPetPtrOffsetUpdateMask, pawnPetPtrOffsetUpdateOffset, 0x84F000, 0xA0000);
 	update("pawnRace_offset", pawnRaceOffsetUpdatePattern, pawnRaceOffsetUpdateMask, pawnRaceOffsetUpdateOffset, 0x850000, 0xA0000);
 	update("pawnTargetPtr_offset", pawnTargetPtrOffsetUpdatePattern, pawnTargetPtrOffsetUpdateMask, pawnTargetPtrOffsetUpdateOffset, 0x5F0000, 0xA0000);
 	update("pawnType_offset", pawnTypeOffsetUpdatePattern, pawnTypeOffsetUpdateMask, pawnTypeOffsetUpdateOffset, 0x850000, 0xA0000, 1);
