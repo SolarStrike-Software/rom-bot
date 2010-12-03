@@ -34,17 +34,30 @@ function CPlayer:harvest(_id, _second_try)
 			obj = objectList:getObject(i);
 
 			if( obj ~= nil ) then
-				if( obj.Type == PT_NODE and obj.Address ~= ignore and (_id == obj.Id or (not _id and database.nodes[obj.Id])) ) then
-					local dist = distance(self.X, self.Z, obj.X, obj.Z);
-					if( closestHarvestable == nil ) then
-						if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
-							closestHarvestable = obj;
-						end
-					else
-						if( distance(self.X, self.Z, obj.X, obj.Z) <
-							distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) ) then
-							-- this node is closer
-							closestHarvestable = obj;
+				if( obj.Type == PT_NODE and obj.Address ~= ignore and
+					(_id == obj.Id or (not _id and database.nodes[obj.Id])) ) then
+					local harvestType = database.nodes[obj.Id].Type;
+					local harvestThis = true;
+					if( harvestType == NTYPE_WOOD and settings.profile.options.HARVEST_WOOD == false ) then
+						harvestThis = false;
+					elseif( harvestType == NTYPE_HERB and settings.profile.options.HARVEST_HERB == false ) then
+						harvestThis = false;
+					elseif( harvestType == NTYPE_ORE and settings.profile.options.HARVEST_ORE == false ) then
+						harvestThis = false;
+					end
+
+					if( harvestThis == true ) then
+						local dist = distance(self.X, self.Z, obj.X, obj.Z);
+						if( closestHarvestable == nil ) then
+							if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+								closestHarvestable = obj;
+							end
+						else
+							if( distance(self.X, self.Z, obj.X, obj.Z) <
+								distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) ) then
+								-- this node is closer
+								closestHarvestable = obj;
+							end
 						end
 					end
 				end

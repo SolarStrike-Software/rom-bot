@@ -52,6 +52,9 @@
 
 		<!-- Harvest options -->
 		<option name="HARVEST_DISTANCE"		value="120" />
+		<option name="HARVEST_WOOD"			value="true" /> <!-- Choose which types to harvest. -->
+		<option name="HARVEST_HERB"			value="true" /> <!-- "true" = harvest, "false" = do not harvest -->
+		<option name="HARVEST_ORE"			value="true" />
 
 		<!-- Log out and resurrect settings -->
 		<option name="LOGOUT_TIME" 			value="0" />	<!-- in minutes, 0 = timer disabled -->
