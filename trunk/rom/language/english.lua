@@ -187,6 +187,7 @@ language = {
 	[515] = "\'mouseclickL()\' command inserted (%d,%d).\n",
 	[516] = "\'Choice Option(%d)\' command inserted.\n",
 	[517] = "  (%s)\tInsert \'ChoiceOption()\' command.\n",
+	[518] = "  (%s)\tReset waypoints and restart\n",
 
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d minutes till level up",
 
