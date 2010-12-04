@@ -35,8 +35,8 @@ p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";
 -- ********************************************************************
 
 
-setStartKey(key.VK_DELETE);
-setStopKey(key.VK_END);
+setStartKey(settings.hotkeys.START_BOT.key);
+setStopKey(settings.hotkeys.STOP_BOT.key);
 
 wpKey = key.VK_NUMPAD1;			-- insert a movement point
 harvKey = key.VK_NUMPAD2;		-- insert a harvest point
@@ -46,6 +46,7 @@ targetNPCKey = key.VK_NUMPAD5;	-- target NPC and open dialog waypoint
 choiceOptionKey = key.VK_NUMPAD6; 	-- insert choiceOption
 mouseClickKey = key.VK_NUMPAD7; -- Save MouseClick
 restartKey = key.VK_NUMPAD9;	-- restart waypoints script
+resetKey = key.VK_NUMPAD8;	-- restart waypoints script and discard changes
 
 
 -- read arguments / forced profile perhaps
@@ -184,7 +185,6 @@ function main()
 
 		local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 		cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
-
 		cprintf(cli.green, language[501]);	-- RoM waypoint creator\n
 		printf(language[502]			-- Insert new waypoint
 			.. language[503]		-- Insert new harvest waypoint
@@ -193,11 +193,12 @@ function main()
 			.. language[504]		-- Insert target/dialog NPC command
 			.. language[517]		-- Insert choiceOption command
 			.. language[510]		-- Insert Mouseclick Left command
+			.. language[518]		-- Reset script
 			.. language[506],		-- Save waypoints and restart
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
 			getKeyName(merchantKey), getKeyName(targetNPCKey),
 			getKeyName(choiceOptionKey), getKeyName(mouseClickKey),
-			getKeyName(restartKey) );
+			getKeyName(resetKey), getKeyName(restartKey) );
 
 		attach(getWin())
 		addMessage(language[501]);	-- -- RoM waypoint creator\n
@@ -239,6 +240,10 @@ function main()
 				hf_key_pressed = true;
 				hf_key = "RESTART";
 			end;
+			if( keyPressed(resetKey) ) then	-- reset key pressed
+				hf_key_pressed = true;
+				hf_key = "RESET";
+			end;
 
 			if( hf_key_pressed == false and 	-- key released, do the work
 				hf_key ) then					-- and key not empty
@@ -250,6 +255,15 @@ function main()
 					running = false;
 					break;
 				end;
+				
+				if( hf_key == "RESET" ) then
+					clearScreen();
+					wpList = {}; -- DON'T save clear table
+					hf_key = " ";	-- clear last pressed key
+					running = true; -- restart
+					break;
+				end;
+			
 
 				player:update();
 
@@ -315,6 +329,7 @@ function main()
 					running = true; -- restart
 					break;
 				end;
+				
 
 				hf_key = nil;	-- clear last pressed key
 			end;
