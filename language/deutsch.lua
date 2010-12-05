@@ -19,7 +19,7 @@ language = {
 	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",
 	[16] = "Keine (benutzbaren) Manatr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
 	[17] = "Keine (benutzbaren) Heiltr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
-	
+	[18] = "NOTIZ: Fehler beim Gegenstand (%s~=%s); hole neue Infos (dauert nur kurz).\n",
 
 	[20] = "Aus\129bung abgeschlossen\n",
 	[21] = "Dr\129cke %s: %s",
@@ -66,7 +66,9 @@ language = {
 	
 	[70] = "Pausieren nach %s Sekunden beendet.\n",	
 	[71] = "Pausiere f\129r %s Sekunden.\n",
-	
+	[78] = "Sammeln abgebrochen. Es wurde Aggro gezogen.\n",
+	[79] = "Es wurden keine Ressourcen in der Nähe gefunden.\n",
+
 	[80] = "N\132her herangehen.\n",
 	[81] = "Unerwartete Unterbrechung beim Erntebeginn. Wir versuchen es nochmal.\n",
 	[82] = "=>   * abgebrochen *\n",
@@ -139,7 +141,8 @@ language = {
 
 	[150] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Wegpunkt #%d. Bitte pr\129fen Sie den Lua Code an diesem Wegepunkt.",
 	[151] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Event %s im Charakter-Profil. Bitte \129berpr\129fen Sie den Lua Code zu dem angegebenen Event in Ihrem Profile.",
-	
+	[152] = "Fehler beim kompilieren und ausfuhren des LUA codes. Fehler in dem onLoad Event in der Wegpunkt Datei.",
+
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
 	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
 	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
@@ -160,6 +163,9 @@ language = {
 	[177] = "Aktueller Kampf abgebrochen.\n",
 	[178] = "Looten wegen Aggro \129bersprungen.\n",
 	[179] = "Maximale Reichweite der Fernkampff\132higkeiten ist kleiner als die Einstellung COMBAT_DISTANCE=%d. Bitte die COMBAT_DISTANCE Einstellung reduzieren.\n",
+	[180] = " =>   * Cast gescheitert *\n",
+	[181] = "target_Object(): Bitte gebe dem Objekt einen Namen fur diese Funktion.\n",
+	[182] = "Diese Aktion kann nicht ausgefuhrt werden, Gegenstand befindet sich in einem gesperrtem Rucksackfach",
 
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 
@@ -182,7 +188,7 @@ language = {
 	[515] = "\'mouseclickL()\' Befehl eingef\129gt (%d,%d).\n",
 	[516] = "\'ChoiceOption(%d)\' Befehl einf\129gt.\n",
 	[517] = "  (%s)\t\'ChoiceOption()\' Befehl einf\129gen\n",	
-	[518] = "  (%s)\tWegepunktdatei r\129cksetzen und neu starten\n",
+	[518] = "  (%s)   Reset des Wegpunkt und Neustart\n",
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d Minuten bis Stufe nach oben",
 
 	[900] = "Wir benutzen eine neue Macro Funktion um mit dem Spiel zu kommunizieren.\n",
@@ -199,5 +205,5 @@ language = {
 	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
 	[1003] = "The ingamefunctions addon (igf) is not installed! You set options, that need igf. We will not sell items! Please install igf (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ) or delete the autosell options INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n",
 	[1004] = "Das Addon ingamefunctions ist nicht installiert! Wir k\148nnen keine Gegenst\132nde verkaufen! Bitte igf installieren (den Ordner 'ingamefunctions' aus 'rom/devtools' in die RoM Installation in '/interface/addons' kopieren) oder l\148schen Sie die Optionen INV_AUTOSELL_NOSELL_DURA und INV_AUTOSELL_STATS_NOSELL aus Ihrem Profil.\n",
-	
+	[1005] = "AutoSell gescheitert: Deine Client Sprache wird nicht unterstutzt."
 };
