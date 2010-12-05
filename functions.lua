@@ -1032,7 +1032,15 @@ function getQuestStatus(_questname)
 		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
 	end
 
-	return RoMScript("igf_questStatus(\"".._questname.."\")")
+	if type(_questname) == "number" then
+		_questname = GetIdName(_questname)
+	end
+
+	if type(_questname) == "string" then
+		return RoMScript("igf_questStatus(\"".._questname.."\")")
+	end
+
+	error("Invalid id sent to getQuestStatus()")
 end
 
 -- Read the ping variable from the client
