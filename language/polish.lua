@@ -181,7 +181,8 @@ language = {
 	[515] = "\'mouseclickL()\' polecenie wstawione (%d,%d).\n",
 	[516] = "\'Choice Option(%d)\' polecenie wstawione.\n",
 	[517] = "  (%s)\tWstaw polecenie \'ChoiceOption()\'.\n",	
-	
+	[518] = "  (%s)\tusun\261\263 \152cie\190k\169 i uruchom ponownie\n",
+
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d xp/min, %d minut do zdobycia nowego poziomu",
 
 	[900] = "U\190yjemy nowego makra do komunikacji z klientem gry.\n",
