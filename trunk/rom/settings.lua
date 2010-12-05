@@ -138,6 +138,7 @@ settings_default = {
 			onPreSkillCast = nil,
 			onSkillCast = nil,
 			onLevelup = nil,
+			onHarvest = nil,
 		}
 	},
 };
@@ -345,6 +346,7 @@ function settings.load()
 			userprofilePath .. "\\Mijn documenten\\" .. "Runes of Magic", -- Dutch
 			userprofilePath .. "\\Moje dokumenty\\" .. "Runes of Magic", -- Polish
 			userprofilePath .. "\\Mis documentos\\" .. "Runes of Magic", -- Spanish
+			userprofilePath .. "\\Os Meus Documentos\\" .. "Runes of Magic", -- Portuguese
 		};
 
 		-- Use a user-specified path from settings.xml
@@ -639,11 +641,25 @@ function settings.loadProfile(_name)
 		if( luaCode == nil ) then return; end;
 
 		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onPreSkillCast= loadstring(luaCode);
+			settings.profile.events.onPreSkillCast = loadstring(luaCode);
 			assert(settings.profile.events.onPreSkillCast, sprintf(language[151], "onPreSkillCast"));
 
 			if( type(settings.profile.events.onPreSkillCast) ~= "function" ) then
 				settings.profile.events.onPreSkillCast = nil;
+			end;
+		end
+	end
+
+	local loadOnHarvestEvent = function(node)
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onHarvest = loadstring(luaCode);
+			assert(settings.profile.events.onHarvest, sprintf(language[151], "onHarvest"));
+
+			if( type(settings.profile.events.onHarvest) ~= "function" ) then
+				settings.profile.events.onHarvest = nil;
 			end;
 		end
 	end
@@ -865,6 +881,8 @@ function settings.loadProfile(_name)
 			loadOnLevelupEvent(v);
 		elseif( string.lower(name) == "onskillcast" ) then
 			loadOnSkillCastEvent(v);
+		elseif( string.lower(name) == "onharvest" ) then
+			loadOnHarvestEvent(v);
 		elseif( string.lower(name) == "onpreskillcast" ) then
 			loadOnPreSkillCastEvent(v);
 		elseif( string.lower(name) == "skills_warrior"  and

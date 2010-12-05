@@ -182,7 +182,7 @@ language = {
 	[515] = "\'mouseclickL()\' Befehl eingef\129gt (%d,%d).\n",
 	[516] = "\'ChoiceOption(%d)\' Befehl einf\129gt.\n",
 	[517] = "  (%s)\t\'ChoiceOption()\' Befehl einf\129gen\n",	
-	
+	[518] = "  (%s)\tWegepunktdatei r\129cksetzen und neu starten\n",
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d Minuten bis Stufe nach oben",
 
 	[900] = "Wir benutzen eine neue Macro Funktion um mit dem Spiel zu kommunizieren.\n",

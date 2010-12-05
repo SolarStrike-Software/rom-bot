@@ -180,4 +180,14 @@
 		--    player:cast("PRIEST_URGENT_HEAL");
 		--    player:cast("PRIEST_URGENT_HEAL");
 	]]></onSkillCast>
+
+	<onHarvest><![CDATA[
+		-- Additional Lua code to execute directly before the actual harvesting takes place.
+		-- Note: arg1 contains the object to be harvested.
+		-- i.e. arg1.Name will be the name of the node you are about to harvest
+		-- If this snippet returns 'false', the node will *not* be harvested.
+		-- All other return values result in the player attempting to harvest the node.
+		-- Note that returning 'false' here breaks out of harvesting completely;
+		-- You will not attempt to harvest other nearby nodes instead.
+	]]></onHarvest>
 </profile>

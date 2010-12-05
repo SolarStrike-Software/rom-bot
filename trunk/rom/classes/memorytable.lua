@@ -306,7 +306,30 @@ function GetItemAddress( id )
    return _address;
 end;
 
-function LoadTables()
+function LoadTables_cached(filename)
+	GetTablesPointers();
+
+	include(filename);
+	tables = {};
+	for i,v in pairs(cached_tables) do
+		local nt = CTDef();
+		nt.Address = v.Address;
+		nt.EnAddress = v.EnAddress;
+		nt.StartId = v.StartId;
+		nt.EndId = v.EndId;
+		nt.Name = v.Name;
+		nt.Ranges = {};
+		for i,v in pairs(v.Ranges) do
+			table.insert(nt.Ranges, CTRange(v.Start, v.End, v.StartAddress));
+		end
+		--nt:Update();
+		table.insert(tables, nt);
+	end
+
+	cached_tables = nil;
+end
+
+function LoadTables_memory()
 	GetTablesPointers();
 	
 	local realTablePointer = memoryReadInt(proc, tablePointer);
@@ -336,6 +359,7 @@ function LoadTables()
 			local primerId = memoryReadInt( proc, dataPointer + addresses.idOffset ); -- 12 bytes offset del id de objeto
 			local _table = CTDef(dataPointer);
 			_table.Name = name;
+			_table:Update();
 			table.insert( tables, _table);
 		end;
 		i = i + 1;
@@ -344,4 +368,59 @@ function LoadTables()
 	print( "\n" );
 end;
 
+function LoadTables()
+	FlushOldCachedTables();
+	local fname = getExecutionPath() .. "/cache/itemstables." .. getWin() .. ".lua";
+	if( fileExists(fname) ) then
+		LoadTables_cached(fname);
+	else
+		LoadTables_memory();
+		CacheTables();
+	end
+end
+
+function FlushOldCachedTables()
+	local dir = getDirectory(getExecutionPath() .. "/cache");
+
+	for i,v in pairs(dir) do
+		local valid = true;
+		local win = string.match(v, "^itemstables.(%d+).lua");
+		if( win ) then
+			if( windowValid(win) ) then
+				if( getWindowClassName(win) ~= "Radiant Arcana" ) then
+					valid = false;
+				end
+			else
+				valid = false;
+			end
+		end
+
+		-- if not valid, delete it.
+		if( valid == false ) then
+			local function fixSlashes(path)
+				--path = string.gsub(path, "\\+", "/");
+				path = string.gsub(path, "/+", "\\");
+
+				return path;
+			end
+
+			printf("Deleting %s (old cache file)\n", v);
+			system("del " .. fixSlashes(getExecutionPath() .. "/cache/" .. v));
+		end
+	end
+end
+
+function CacheTables()
+	local outFile = io.open(getExecutionPath() .. "/cache/itemstables." .. getWin() .. ".lua", "w");
+	outFile:write("cached_tables = {\n");
+	for i,v in pairs(tables) do
+		local rangesString = "";
+		for i,v in pairs(v.Ranges) do
+			rangesString = rangesString .. sprintf("{Start = 0x%X, End = 0x%X, StartAddress = 0x%X}, ", v.Start, v.End, v.StartAddress);
+		end
+		outFile:write(sprintf("\t{Address = 0x%X, EnAddress = 0x%x, StartId = 0x%X, EndId = 0x%x, Name = \"%s\", Ranges = {%s}},\n",
+			v.Address, v.EnAddress, v.StartId, v.EndId, v.Name, rangesString));
+	end
+	outFile:write(sprintf("}\n\n"));
+end
 -- LoadTables();

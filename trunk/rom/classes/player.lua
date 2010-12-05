@@ -95,6 +95,19 @@ function CPlayer:harvest(_id, _second_try)
 			return;
 		end
 
+		if( type(settings.profile.events.onHarvest) == "function" ) then
+			arg1 = CPawn(closestHarvestable.Address);
+			local status,result = pcall(settings.profile.events.onHarvest);
+			if( status == false ) then
+				local msg = sprintf("onHarvest error: %s", result);
+				error(msg);
+			end
+
+			if( result == false ) then -- They chose to not harvest this in the event
+				return;
+			end
+		end
+
 		cprintf(cli.yellow, language[95], closestHarvestable.Name);
 
 		if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
