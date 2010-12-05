@@ -428,7 +428,8 @@ function CInventory:storeBuyConsumable(type, quantity)
 	    if item.Available and
 		  consumable and
 		  consumable.Type == type and
-		  consumable.Level >= bestLevel then
+		  consumable.Level >= bestLevel and
+		  consumable.Level <= player.Level then
 			totalCount = totalCount + item.ItemCount
 		end;
 	end;
