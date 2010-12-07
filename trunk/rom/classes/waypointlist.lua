@@ -87,10 +87,14 @@ function CWaypointList:load(filename)
 		end
 	end
 
-	self.Mode = "waypoints";
-	self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
-	self.LastWaypoint = self.CurrentWaypoint -1
-	if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
+	if #self.Waypoints == 0 then -- Can't be mode 'waypoints' with no waypoints
+		self.Mode = "wander"
+	else
+		self.Mode = "waypoints"
+		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
+		self.LastWaypoint = self.CurrentWaypoint -1
+		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
+	end
 
 	if( onLoadEvent ) then
 		onLoadEvent();
