@@ -10,6 +10,8 @@ local idThreshold = 50; -- How many items we look back or forward to get the rig
 local debugTableIndexes = false;
 local debugTableRanges = false;
 
+local CACHE_PATH = getExecutionPath() .. "/../cache";
+
 CTRange = class(
 	function(self, _start, _end, startAddress)
 		self.Start = _start;
@@ -309,7 +311,25 @@ end;
 function LoadTables_cached(filename)
 	GetTablesPointers();
 
-	include(filename);
+	local status, err = pcall(dofile, filename);
+	if( not status ) then
+		-- Failed to load the cache file.
+		cprintf(cli.red, "[DEBUG] Failed to load cache file; Dropping bad file.\n");
+
+		--[[		Disables: unnecessary (file will be re-created, anyways)
+		local function fixSlashes(path)
+			--path = string.gsub(path, "\\+", "/");
+			path = string.gsub(path, "/+", "\\");
+
+			return path;
+		end
+		system("del " .. fixSlashes(CACHE_PATH .. "/" .. filename));
+		]]
+		LoadTables_memory();
+		CacheTables();
+		return;
+	end
+
 	tables = {};
 	for i,v in pairs(cached_tables) do
 		local nt = CTDef();
@@ -370,7 +390,7 @@ end;
 
 function LoadTables()
 	FlushOldCachedTables();
-	local fname = getExecutionPath() .. "/cache/itemstables." .. getWin() .. ".lua";
+	local fname = CACHE_PATH .. "/itemstables." .. getWin() .. ".lua";
 	if( fileExists(fname) ) then
 		LoadTables_cached(fname);
 	else
@@ -380,7 +400,10 @@ function LoadTables()
 end
 
 function FlushOldCachedTables()
-	local dir = getDirectory(getExecutionPath() .. "/cache");
+	local dir = getDirectory(CACHE_PATH);
+	if( not dir ) then
+		return;
+	end
 
 	for i,v in pairs(dir) do
 		local valid = true;
@@ -404,14 +427,20 @@ function FlushOldCachedTables()
 				return path;
 			end
 
-			printf("Deleting %s (old cache file)\n", v);
-			system("del " .. fixSlashes(getExecutionPath() .. "/cache/" .. v));
+			if( system and allowSystemCommands ) then
+				printf("Deleting %s (old cache file)\n", v);
+				system("del " .. fixSlashes(CACHE_PATH .. "/" .. v));
+			end
 		end
 	end
 end
 
 function CacheTables()
-	local outFile = io.open(getExecutionPath() .. "/cache/itemstables." .. getWin() .. ".lua", "w");
+	local outFile = io.open(CACHE_PATH .. "/itemstables." .. getWin() .. ".lua", "w");
+	if( not outFile ) then
+		return;
+	end
+
 	outFile:write("cached_tables = {\n");
 	for i,v in pairs(tables) do
 		local rangesString = "";
