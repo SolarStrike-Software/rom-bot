@@ -145,11 +145,23 @@ function CInventory:itemTotalCount(itemNameOrId)
 end;
 
 function CInventory:findItem( itemNameOrId)
+	local smallestStack = nil
+
+	self:update()
  	for slot,item in pairs(self.BagSlot) do
 	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
-			return item
+			if item.ItemCount > 1 then
+				-- find smallest stack
+				if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
+					smallestStack = item
+				end
+			else
+				return item
+			end
 		end;
 	end;
+
+	return smallestStack
 end
 
 function CInventory:useItem(itemNameOrId)
@@ -750,7 +762,6 @@ function CInventory:getMount()
 	505113,494474,
 	};
 
-	print(self);
  	for slot,item in pairs(self.BagSlot) do
 		if item.Available then
 			for i, mount in pairs(mounts) do

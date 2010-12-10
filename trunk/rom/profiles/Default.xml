@@ -56,6 +56,15 @@
 		<option name="HARVEST_HERB"			value="true" /> <!-- "true" = harvest, "false" = do not harvest -->
 		<option name="HARVEST_ORE"			value="true" />
 
+		<!-- Eggpet options -->
+		<option name="EGGPET_ENABLE_CRAFT"	value="false" /><!-- If using same slot for assist and craft, onlt 1 can be enabled. -->
+		<option name="EGGPET_CRAFT_SLOT"	value="1" />
+		<option name="EGGPET_ENABLE_ASSIST"	value="false" />
+		<option name="EGGPET_ASSIST_SLOT"	value="1" />
+		<option name="EGGPET_CRAFT"			value="mining,woodworking,herbalism" /> <!-- 'mining', 'woodworking', 'herbalism' or combination. -->
+		<option name="EGGPET_CRAFTINDEX"	value="" /> <!-- The level to craft. "" defaults to maximum -->
+
+
 		<!-- Log out and resurrect settings -->
 		<option name="LOGOUT_TIME" 			value="0" />	<!-- in minutes, 0 = timer disabled -->
 		<option name="LOGOUT_SHUTDOWN"		value="false" />

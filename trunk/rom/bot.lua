@@ -12,6 +12,7 @@ include("classes/waypointlist_wander.lua");
 include("classes/node.lua");
 include("classes/object.lua");
 include("classes/objectlist.lua");
+include("classes/eggpet.lua");
 include("settings.lua");
 include("macros.lua");
 
@@ -620,6 +621,9 @@ function main()
 
 		else
 		-- don't fight, move to wp
+			-- First check up on eggpet
+			checkEggs()
+
 			local wp = nil; local wpnum = nil;
 
 			if( player.Returning ) then

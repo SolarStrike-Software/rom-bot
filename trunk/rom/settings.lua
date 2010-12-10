@@ -64,6 +64,12 @@ settings_default = {
 			THROWN_BAG = 0,					-- shopping options, how many to buy/have in inventory
 			POISON = 0,						-- shopping options, how many to buy/have in inventory
 			RELOAD_AMMUNITION = false,		-- false|arrow|thrown
+			EGGPET_ENABLE_CRAFT = false,
+			EGGPET_CRAFT_SLOT = nil,
+			EGGPET_ENABLE_ASSIST = false,
+			EGGPET_ASSIST_SLOT = nil,
+			EGGPET_CRAFT = "mining,woodworking,herbalism",
+			EGGPET_CRAFTINDEX = "",
 
 
 			-- expert options
