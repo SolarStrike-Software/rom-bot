@@ -782,7 +782,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 		useQueue = false;
 	end
 
-	if( useQueue ) then
+	if( not useQueue ) then
 		for i,v in pairs(settings.profile.skills) do
 			if( v.AutoUse and v:canUse(_only_friendly, target) ) then
 
