@@ -438,7 +438,7 @@ function FlushOldCachedTables()
 
 			if( system and allowSystemCommands ) then
 				printf("Deleting %s (old cache file)\n", v);
-				system("del " .. fixSlashes(CACHE_PATH .. "/" .. v));
+				system("del \"" .. fixSlashes(CACHE_PATH .. "/" .. v) .. "\"");
 			end
 		end
 	end

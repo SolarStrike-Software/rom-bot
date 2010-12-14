@@ -48,7 +48,9 @@ CSkill = class(
 		self.MinManaPer = 0;	-- Must have more then this % Mana to use
 		self.Toggleable = false;
 		self.Toggled = false;
-		
+
+		self.Blocking = false;	-- Whether or not the skill blocks the queue
+
 		self.pullonly = false;	-- use only in pull phase (only for melees with ranged pull attacks)
 		self.maxuse = 0;	-- use that skill only x-times per fight
 		self.rebuffcut = 0;	-- reduce cooldown for x seconds to rebuff earlier
@@ -80,6 +82,8 @@ CSkill = class(
 			self.MaxManaPer = copyfrom.MaxManaPer;
 			self.MinManaPer = copyfrom.MinManaPer;
 			self.Toggleable = copyfrom.Toggleable;
+			self.hotkey = copyfrom.hotkey;
+			self.modifier = copyfrom.modifier;
 			self.priority = copyfrom.priority;
 			self.pullonly = copyfrom.pullonly;
 			self.maxuse = copyfrom.maxuse;
@@ -91,6 +95,8 @@ CSkill = class(
 			self.ReqBuffCount = copyfrom.ReqBuffCount;
 			self.ReqBuffTarget = copyfrom.ReqBuffTarget;
 			self.ReqBuffName = copyfrom.ReqBuffName;
+			self.Blocking = copyfrom.Blocking;
+
 		end
 	end
 );
@@ -324,8 +330,7 @@ function CSkill:canUse(_only_friendly, target)
 			end;
 		end
 
-		if( self.ReqBuffCount > (checktab[self.ReqBuffName] or 0) ) then
-			return false;
+		if( self.ReqBuffCount > (checktab[self.ReqBuffName] or 0) ) then			return false;
 		end;
 	end
 

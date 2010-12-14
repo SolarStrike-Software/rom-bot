@@ -152,6 +152,7 @@ CPawn = class(
 		self.LastSkillCastTime = 0;			-- CastTime of last skill with CastTime >0
 		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
 		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
+		self.SkillQueue = {};				-- Holds any queued skills, obviously
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

@@ -22,6 +22,55 @@ function CPlayer.new()
 	return np;
 end
 
+-- Inserts a skill at the end of the queue.
+-- Accepts a skill name like PRIEST_RISING_TIDE
+-- or a skill object
+function CPlayer:queueSkill(skill, blocking)
+	blocking = blocking or false;
+
+	if( type(skill) == "string" ) then
+		local skill_found = false;
+		for i,v in pairs(settings.profile.skills) do
+			if( v.Name == skill ) then
+				skill_found = true;
+				skill = CSkill(v);
+				break;
+			end
+		end
+
+		if( skill_found == false ) then
+			cprintf(cli.yellow, "Unknown profile skill %s. Check your manual castings "..
+			  "(e.g. in the events or waypoint files). Be sure the skill is in the "..
+			  "skills section of your profile.\n", skill);
+			return;
+		end
+	end
+
+	if( type(skill) ~= "table" ) then
+		cprintf(cli.red, "[DEBUG] Error: 'skill' is not a table in CPlayer:queueSkill()\n");
+		return;
+	end
+
+	skill.Blocking = blocking;
+	table.insert(self.SkillQueue, skill);
+end
+
+function CPlayer:flushSkillQueue()
+	self.SkillQueue = {};
+end
+
+function CPlayer:getNextQueuedSkill()
+	if( #self.SkillQueue > 0 ) then
+		return self.SkillQueue[1];
+	else
+		return nil;
+	end
+end
+
+function CPlayer:popSkillQueue()
+	table.remove(self.SkillQueue, 1);
+end
+
 function CPlayer:harvest(_id, _second_try)
 	local function findNearestHarvestable(_id, ignore)
 		ignore = ignore or 0;
@@ -660,57 +709,136 @@ function CPlayer:checkSkills(_only_friendly, target)
 		end
 	end
 
-	for i,v in pairs(settings.profile.skills) do
-		if( v.AutoUse and v:canUse(_only_friendly, target) ) then
+	local useQueue = true;
+	if( #self.SkillQueue > 0 ) then
+		-- Queue is not empty. See if we can cast anything
+		local skill = self:getNextQueuedSkill();
+		local target = self:getTarget();
+		if( skill.Blocking ) then
+			if( skill:canUse(false, target) ) then
+				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
+					target.HP == target.MaxHP ) then
+					printf(language[83]);			-- Taking too long to damage target
+					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
+					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
+					self:clearTarget();
 
+					if( self.Battling ) then
+						yrest(1000);
+					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+					   yrest(1000);
+					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+					   self:update();
+					end
 
-			-- additional potion check while working at a 'casting round'
-			self:checkPotions();
-
-			-- Short time break target: after x casts without damaging
-			local target = player:getTarget();
-			if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
-				target.HP == target.MaxHP ) then
-				printf(language[83]);			-- Taking too long to damage target
-				player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
-				player.Last_ignore_target_time = os.time();		-- and the time we break the fight
-				self:clearTarget();
-
-				if( self.Battling ) then
-					yrest(1000);
-				   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-				   yrest(1000);
-				   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-				   self:update();
+					break_fight = true;
 				end
 
-				break_fight = true;
-				break;
+				if( skill.CastTime > 0 ) then
+					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+					yrest(200); -- Wait to stop only if not an instant cast spell
+				end
+
+				self:cast(skill);
+				used = true;
+				self:popSkillQueue();
+			else
+				useQueue = false;
+			end
+		else
+			if( skill:canUse(false, target) ) then
+				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
+					target.HP == target.MaxHP ) then
+					printf(language[83]);			-- Taking too long to damage target
+					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
+					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
+					self:clearTarget();
+
+					if( self.Battling ) then
+						yrest(1000);
+					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+					   yrest(1000);
+					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+					   self:update();
+					end
+
+					break_fight = true;
+				end
+
+				if( skill.CastTime > 0 ) then
+					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+					yrest(200); -- Wait to stop only if not an instant cast spell
+				end
+
+				self:cast(skill);
+				used = true;
+				useQueue = false;
 			end
 
-			if( v.CastTime > 0 ) then
-				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-				yrest(200); -- Wait to stop only if not an instant cast spell
-			end
-
-			-- Make sure we aren't already busy casting something else
---			while(self.Casting) do
---				-- Waiting for casting to finish...
---				yrest(100);
---				self:update();
---			end
-
- 	-- this is done in CPlayer:cast() so it's duplicated
-			--[[ break cast if aggro before casting
-			if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
-			   ( v.Type == STYPE_DAMAGE or
-			     v.Type == STYPE_DOT )  ) then	-- without jump
-				return false;
-			end;]]
-
-			self:cast(v);
-			used = true;
+			self:popSkillQueue();
 		end
+	else
+		-- Queue is empty, continue like normal
+		useQueue = false;
+	end
+
+	if( useQueue ) then
+		for i,v in pairs(settings.profile.skills) do
+			if( v.AutoUse and v:canUse(_only_friendly, target) ) then
+
+
+				-- additional potion check while working at a 'casting round'
+				self:checkPotions();
+
+				-- Short time break target: after x casts without damaging
+				local target = self:getTarget();
+				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
+					target.HP == target.MaxHP ) then
+					printf(language[83]);			-- Taking too long to damage target
+					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
+					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
+					self:clearTarget();
+
+					if( self.Battling ) then
+						yrest(1000);
+					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+					   yrest(1000);
+					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+					   self:update();
+					end
+
+					break_fight = true;
+					break;
+				end
+
+				if( v.CastTime > 0 ) then
+					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+					yrest(200); -- Wait to stop only if not an instant cast spell
+				end
+
+				-- Make sure we aren't already busy casting something else
+	--			while(self.Casting) do
+	--				-- Waiting for casting to finish...
+	--				yrest(100);
+	--				self:update();
+	--			end
+
+		-- this is done in CPlayer:cast() so it's duplicated
+				--[[ break cast if aggro before casting
+				if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
+				   ( v.Type == STYPE_DAMAGE or
+					 v.Type == STYPE_DOT )  ) then	-- without jump
+					return false;
+				end;]]
+
+				self:cast(v);
+				used = true;
+			end
+		end
+	else
+		-- We used the skill queue instead of the above loop,
+		-- so now we check potions
+		self:checkPotions();
 	end
 
 	return used;
