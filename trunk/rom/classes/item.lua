@@ -139,7 +139,12 @@ function CItem:update()
 	local oldId = self.Id;
 	local oldBagId = self.BagId;
 
-	self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+	-- We only need to update the bagId for slots > 60
+	-- 1-60 are constant and cannot be read from the bagId table.
+	if( self.BagId > 60 ) then
+		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+	end
+
 	if self.BagId ~= oldId then -- need new address
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 	end
