@@ -38,7 +38,16 @@ ITEMQUALITYCOLOR = {
 CItem = class(
 	function( self, slotnumber )
 		self.Available = false; -- If slot is in unrented bag then = false
-		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+
+		-- Only actual inventory bags need their bagId looked up.
+		-- The item-shop bag and AT are both static, so we natively
+		-- use the 'slotnumber'.
+		if( slotnumber < 61 ) then
+			self.BagId = slotnumber
+		else
+			self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+		end
+
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 		self.BaseItemAddress = nil;
 		self.Empty = true;
@@ -272,6 +281,7 @@ function CItem:update()
 			cprintf(  _color, "[%s]\n", self.Name );
 		end;
 	end;
+
 --[[
 --	local old_BagId = self.BagId;	-- remember bagId before update
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
