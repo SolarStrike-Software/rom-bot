@@ -352,7 +352,11 @@ function LoadTables_cached(filename)
 			table.insert(nt.Ranges, CTRange(v.Start, v.End, v.StartAddress));
 		end
 		--nt:Update();
-		table.insert(tables, nt);
+		if( nt.StartId ) then
+			table.insert(tables, nt);
+		else
+			warning("StartId invalid; not inserting broken CTDef.");
+		end
 	end
 
 	cached_tables = nil;

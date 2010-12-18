@@ -6,6 +6,7 @@ local proc = getProc();
 
 CInventory = class(
 	function (self)
+		RoMScript("ToggleBackpack(), BagFrame:Hide()"); -- Make sure the client loads the tables first.
 		LoadTables();
 
 		self.MaxSlots = 180;
