@@ -39,14 +39,7 @@ CItem = class(
 	function( self, slotnumber )
 		self.Available = false; -- If slot is in unrented bag then = false
 
-		-- Only actual inventory bags need their bagId looked up.
-		-- The item-shop bag and AT are both static, so we natively
-		-- use the 'slotnumber'.
-		if( slotnumber < 61 ) then
-			self.BagId = slotnumber
-		else
-			self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
-		end
+		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
 
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 		self.BaseItemAddress = nil;
@@ -139,11 +132,8 @@ function CItem:update()
 	local oldId = self.Id;
 	local oldBagId = self.BagId;
 
-	-- We only need to update the bagId for slots > 60
-	-- 1-60 are constant and cannot be read from the bagId table.
-	if( self.BagId > 60 ) then
-		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
-	end
+
+	self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
 
 	if self.BagId ~= oldId then -- need new address
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
@@ -286,7 +276,6 @@ function CItem:update()
 			cprintf(  _color, "[%s]\n", self.Name );
 		end;
 	end;
-
 --[[
 --	local old_BagId = self.BagId;	-- remember bagId before update
 	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
