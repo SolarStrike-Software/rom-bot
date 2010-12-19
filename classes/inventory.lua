@@ -9,7 +9,7 @@ CInventory = class(
 		RoMScript("ToggleBackpack(), BagFrame:Hide()"); -- Make sure the client loads the tables first.
 		LoadTables();
 
-		self.MaxSlots = 180;
+		self.MaxSlots = 240;
 
 		self.BagSlot = {};
 		self.EquipSlots = {};
@@ -118,22 +118,28 @@ function CInventory:reloadAmmunition(type)
 end;
 
 -- Here for compatibility reasons
-function CInventory:getItemCount(itemId)
+function CInventory:getItemCount(itemId, range)
 	if(itemId == nil) then
 		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );
 		return 0;
 	end
 
-	return self:itemTotalCount( itemId );
+	return self:itemTotalCount( itemId, range );
 end;
 
 -- No longer uses cached information, it updates before checking
-function CInventory:itemTotalCount(itemNameOrId)
+function CInventory:itemTotalCount(itemNameOrId, range)
+	local first, last = getInventoryRange(range) -- get bag slot range
+	if first == nil then
+		first , last = 61, 240 -- default, search only bags
+	end
+
 	self:update();
 
 	totalCount = 0;
- 	for slot,item in pairs(self.BagSlot) do
-	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+	for slot = first, last do
+		item = inventory.BagSlot[slot]
+ 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
 			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
 				totalCount = totalCount + 1
 			else
@@ -145,12 +151,19 @@ function CInventory:itemTotalCount(itemNameOrId)
 	return totalCount;
 end;
 
-function CInventory:findItem( itemNameOrId)
+function CInventory:findItem( itemNameOrId, range)
+	local first, last = getInventoryRange(range) -- get bag slot range
+	if first == nil then
+		first , last = 1, 240 -- default, search all
+	end
+
 	local smallestStack = nil
 
 	self:update()
- 	for slot,item in pairs(self.BagSlot) do
-	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
+
+	for slot = first, last do
+		item = inventory.BagSlot[slot]
+ 	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
 			if item.ItemCount > 1 then
 				-- find smallest stack
 				if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
@@ -633,7 +646,7 @@ function CInventory:autoSell()
 
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
-	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT, settings.profile.options.INV_AUTOSELL_TOSLOT, 1 do
+	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 60, settings.profile.options.INV_AUTOSELL_TOSLOT + 60, 1 do
 		local sell_item = true
 		local slotitem = self.BagSlot[slotNumber];
 
@@ -780,4 +793,27 @@ function CInventory:getMount()
 	end
 
 	return false;
+end
+
+function getInventoryRange(range)
+	local rangeLower = string.lower(range)
+	if rangeLower == "all" then
+		return 1, 240
+	elseif rangeLower == "itemshop" then
+		return 1, 50
+	elseif rangeLower == "magicbox" then
+		return 51, 60
+	elseif rangeLower == "bag1" then
+		return 61, 90
+	elseif rangeLower == "bag2" then
+		return 91, 120
+	elseif rangeLower == "bag3" then
+		return 121, 150
+	elseif rangeLower == "bag4" then
+		return 151, 180
+	elseif rangeLower == "bag5" then
+		return 181, 210
+	elseif rangeLower == "bag6" then
+		return 211, 240
+	end
 end

@@ -39,7 +39,11 @@ CItem = class(
 	function( self, slotnumber )
 		self.Available = false; -- If slot is in unrented bag then = false
 
-		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+		if slotnumber > 60 then -- Is Bag Item
+			self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+		else
+			self.BagId = slotnumber
+		end
 
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 		self.BaseItemAddress = nil;
@@ -132,8 +136,11 @@ function CItem:update()
 	local oldId = self.Id;
 	local oldBagId = self.BagId;
 
-
-	self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+	if self.SlotNumber > 60 then -- Is Bag Item
+		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+	else
+		self.BagId = self.SlotNumber
+	end
 
 	if self.BagId ~= oldId then -- need new address
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
@@ -408,4 +415,39 @@ function CItem:getColorString()
 
 	return false
 
+end
+
+function CItem:moveTo(bag)
+	inventory:update()
+	local first, last = getInventoryRange(bag)
+	if first == nil then
+		printf("You must specify an inventory location to move the item to.\n")
+		return
+	end
+
+	-- Check if already in bag
+	if self.SlotNumber >= first and self.SlotNumber <= last then
+		return
+	end
+
+	-- Try to find a stack to merge with
+	local toItem = nil
+	if self.MaxStack > 1 and self.ItemCount < self.MaxStack then
+		local tmpItem = inventory:findItem(self.Id, bag) -- returns smallest stack in destination bag
+		if tmpItem and tmpItem.ItemCount + self.ItemCount <= self.MaxStack then -- can merge with this stack
+			toItem = tmpItem
+		end
+	end
+
+	-- Else we find an empty slot to place item
+	if toItem == nil then
+		toItem = inventory:findItem(0, bag)
+	end
+
+	-- If have 'toItem' then move there.
+	if toItem then
+		RoMScript("PickupBagItem("..self.BagId..");");
+		RoMScript("PickupBagItem("..toItem.BagId..");");
+		inventory:update()
+	end
 end

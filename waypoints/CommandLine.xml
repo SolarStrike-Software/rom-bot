@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints>
+<onLoad>
+proc = getProc()
+
+	repeat
+		printf("\nEnter a command to execute ('q' to end): ");
+		local name = io.stdin:read();
+		if name == "q" then error("Closing.",0) end
+		funct=loadstring(name)
+		if type(funct) == "function" then
+			local status,err = pcall(funct);
+			if status == false then
+				printf("onLoad error: %s", err);
+			end
+
+		else
+			print ("Invalid Command")
+		end
+	until false
+
+</onLoad>
+</waypoints>
