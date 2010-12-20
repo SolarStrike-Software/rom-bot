@@ -420,8 +420,8 @@ end
 function CItem:moveTo(bag)
 	inventory:update()
 	local first, last = getInventoryRange(bag)
-	if first == nil then
-		printf("You must specify an inventory location to move the item to.\n")
+	if first == nil or bag == "all" then
+		printf("You must specify an inventory location to move the item to. You cannot use \"all\".\n")
 		return
 	end
 

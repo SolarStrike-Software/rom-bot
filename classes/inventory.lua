@@ -33,7 +33,7 @@ CInventory = class(
 	end
 );
 
-function CInventory:update()
+--[[function CInventory:update()
 	local timeStart = getTime();
 
 	self.Money = memoryReadInt( proc, addresses.moneyPtr );
@@ -46,7 +46,7 @@ function CInventory:update()
 		printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
 		printf( "You have: %d gold.\n", self.Money );
 --	end;
-end;
+end;]]
 
 function CInventory:updateEquipment()
 	local timeStart = getTime();
@@ -277,6 +277,9 @@ end;
 -- Make a full update
 -- or update slot 1 to _maxslot
 function CInventory:update( _maxslot )
+
+	self.Money = memoryReadInt( proc, addresses.moneyPtr );
+
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
 	-- printf(language[1000], _maxslot);  -- Updating
@@ -796,6 +799,9 @@ function CInventory:getMount()
 end
 
 function getInventoryRange(range)
+	if range == nil then
+		return
+	end
 	local rangeLower = string.lower(range)
 	if rangeLower == "all" then
 		return 1, 240
@@ -815,5 +821,7 @@ function getInventoryRange(range)
 		return 181, 210
 	elseif rangeLower == "bag6" then
 		return 211, 240
+	elseif rangeLower == "bags" then
+		return 61, 240
 	end
 end
