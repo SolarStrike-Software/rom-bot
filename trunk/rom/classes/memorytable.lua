@@ -36,6 +36,8 @@ CTDef = class(
 
 function CTDef:Update()
 	self.StartId = memoryReadInt(proc, self.Address + addresses.idOffset );
+	if( self.StartId == nil ) then return; end;
+
 	if ( self.StartId > 800000 ) then -- Special case for one table that starts 32 bytes before...
 		self.Address = self.Address - 32;
 		self.StartId = memoryReadInt(proc, self.Address + addresses.idOffset );
@@ -47,6 +49,7 @@ function CTDef:Update()
 	local lastStartDir = self.Address;
 	local currItemDir = self.Address;
 	local lastItemDir = self.Address;
+	local dupeIdCheck;
 
 	if ( debugTableIndexes ) then
 		printf("Table starts with id: %d\t\t Dir: %X\n", self.StartId, self.Address);
@@ -56,7 +59,7 @@ function CTDef:Update()
 		currItemDir = currItemDir - itemSize; -- We move itemSize bytes up to go to next one
 		currId = memoryReadInt(proc, currItemDir + addresses.idOffset ); -- 12 bytes offset id object
 
-		if ( currId == nil or currId == 0 or ( ( currId > ( lastId + 3 ) ) or ( currId < ( lastId - 3 ) ) ) ) then
+		if ( currId == nil or currId == 0 or dupeIdCheck == currId or ( ( currId > ( lastId + 3 ) ) or ( currId < ( lastId - 3 ) ) ) ) then
 			-- Fiors we add the recently found range if its needed...
 			local found = false;
 			for _, _table in ipairs(tables) do
@@ -108,6 +111,7 @@ function CTDef:Update()
 			self.Address = currItemDir;
 		end;
 
+		dupeIdCheck = lastId;
 		lastId = currId;
 		lastItemDir = currItemDir;
 	end;
@@ -351,8 +355,8 @@ function LoadTables_cached(filename)
 		for i,v in pairs(v.Ranges) do
 			table.insert(nt.Ranges, CTRange(v.Start, v.End, v.StartAddress));
 		end
-		--nt:Update();
-		if( nt.StartId ) then
+		nt:Update();
+		if( nt.Address and nt.StartId ) then
 			table.insert(tables, nt);
 		else
 			warning("StartId invalid; not inserting broken CTDef.");
@@ -393,7 +397,9 @@ function LoadTables_memory()
 			local _table = CTDef(dataPointer);
 			_table.Name = name;
 			_table:Update();
-			table.insert( tables, _table);
+			if( _table.Address and _table.StartId ) then
+				table.insert( tables, _table);
+			end
 		end;
 		i = i + 1;
 		realTablePointer = memoryReadInt( proc, tablePointer + ( i * 4 ) );
