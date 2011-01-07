@@ -309,6 +309,12 @@ function CPlayer:target(pawnOrAddress)
 
 	if( address == nil ) then return; end;
 
+	local addressId = memoryReadUInt(getProc(), address + addresses.pawnId_offset) or 0;
+
+	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
+		return
+	end
+
 	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 end
 
@@ -1263,11 +1269,12 @@ function CPlayer:fight()
 
 	-- give client a little time to update battle flag (to come out of combat),
 	-- if we loot even at combat we don't need the time
-	if( settings.profile.options.LOOT == true  and
+	--[[if( settings.profile.options.LOOT == true  and
 		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
 --		yrest(800);
 		inventory:updateSlotsByTime(800);
-	end;
+
+	end;]]
 
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
@@ -1303,7 +1310,8 @@ function CPlayer:loot()
 
 	-- aggro and not loot in combat
 	if( self.Battling  and
-		settings.profile.options.LOOT_IN_COMBAT ~= true ) then
+		settings.profile.options.LOOT_IN_COMBAT ~= true ) and
+		self:findEnemy(true, nil, evalTargetDefault) then
 		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
 		return
 	end
@@ -1363,7 +1371,7 @@ function CPlayer:loot()
 		end
 	end
 
-	yrest(1000);
+	--yrest(1000);
 	self:update();
 	target:update();
 	if target.Lootable then
