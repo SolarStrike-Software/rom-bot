@@ -716,7 +716,11 @@ function main()
 						  player.Unstick_counter,
 						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
 						if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
-							player:logout();
+							if settings.profile.options.CLOSE_WHEN_STUCK == false then
+								player:logout() -- doesn't close client
+							else
+								player:logout(nil,true); -- closes client
+							end
 						else
 						-- pause or stop ?
 							player.Sleeping = true;		-- go to sleep

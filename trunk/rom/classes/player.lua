@@ -2434,11 +2434,14 @@ function CPlayer:logoutCheck()
 	end
 end
 
-function CPlayer:logout(fc_shutdown)
+function CPlayer:logout(fc_shutdown, logout_close)
 -- importing:
 --   fc_shutdown true/false/nil
 --   if nil, profile option 'settings.profile.options.LOGOUT_SHUTDOWN'
 --   will decide if shutdown or not occurs
+
+-- If logout_close is 'true' it will close the client
+--   otherwise it will just logout to character selection.
 
 	cprintf(cli.yellow, language[50], os.date() );	-- Logout at %time%
 
@@ -2446,15 +2449,7 @@ function CPlayer:logout(fc_shutdown)
 		fc_shutdown = true;
 	end;
 
-	if( settings.profile.hotkeys.MACRO ) then
-		RoMScript("Logout();");
-		yrest(30000); -- Wait for the log out to process
-	-- DEPRECATED
-	elseif( settings.profile.hotkeys.LOGOUT_MACRO ) then
-		keyboardPress(settings.profile.hotkeys.LOGOUT_MACRO.key);
-		yrest(30000);	-- Wait for the log out to process
-	-- END DEPRECATED
-	else
+	if logout_close == true then
 		local PID = findProcessByWindow(getWin()); -- Get process ID
 		os.execute("TASKKILL /PID " .. PID .. " /F");
 		while(true) do
@@ -2465,6 +2460,9 @@ function CPlayer:logout(fc_shutdown)
 			end;
 			yrest(100);
 		end
+	else
+		RoMScript("Logout();");
+		yrest(30000); -- Wait for the log out to process
 	end
 
 	if( fc_shutdown ) then
