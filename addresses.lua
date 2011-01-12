@@ -152,4 +152,9 @@ addresses = {
 	tablesBaseOffset = 0x28,
 	typeOffset = 0x78,
 	valueOffset = 0x34,
+	chatEntryOpen_offset = 0x1C,
+	chat_offset1 = 0x0,
+	chat_offset2 = 0x10,
+	chat_offset3 = 0x3D8,
+	chatbase_address = 0xA943AC,
 }
