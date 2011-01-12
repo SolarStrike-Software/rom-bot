@@ -306,7 +306,7 @@
 	<!-- Druid skills -->
 	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
 	<skill name="DRUID_ANTIDOTE" aslevel="4" skilltab="2" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
-	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" cooldown="300" type="buff" target="friendly" />
+	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" cooldown="600" type="buff" target="friendly" />
 	<skill name="DRUID_EARTH_PULSE" aslevel="12" skilltab="2" skillnum="4" mana="40" manainc="4" range="180" cooldown="15" />
 	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
 	<skill name="DRUID_EARTH_ARROW" aslevel="1" skilltab="4" skillnum="1" mana="12" manainc="1.1" range="200" casttime="2" />

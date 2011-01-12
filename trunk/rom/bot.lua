@@ -169,6 +169,13 @@ function main()
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
 
+	-- Install timer to continually close the chat (if open)
+	local function closeChatEntry()
+		memoryWriteIntPtr(getProc(), addresses.chatbase_address,
+			{addresses.chat_offset3, addresses.chat_offset2, addresses.chat_offset1, addresses.chatEntryOpen_offset}, 0);
+	end
+	registerTimer("timedCloseChatEntry", secondsToTimer(1), closeChatEntry);
+
 	if( getTimerFrequency ) then
 		-- Grab the real frequency instead of calculating it, if available
 		bot.GetTimeFrequency = getTimerFrequency().low / 1000;
