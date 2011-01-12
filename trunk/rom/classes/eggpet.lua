@@ -298,10 +298,11 @@ function CEggPet:craft(_craftType, indexLevel)
 	end
 
 	-- Get highest possible craft level
-	local maxCraftIndex = 1
+	local maxCraftIndex = 0
 	for i = 1, 14 do
-		if petCraftLvl < CRAFT_INDEX_LEVELS[i] then
-			maxCraftIndex = i - 1
+		if petCraftLvl >= CRAFT_INDEX_LEVELS[i] then
+			maxCraftIndex = i
+		else
 			break
 		end
 	end
