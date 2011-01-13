@@ -47,14 +47,14 @@ function CWaypointList:load(filename)
 	local onLoadEvent = nil;
 
 	for i,v in pairs(elements) do
-		local x,z = v:getAttribute("x"), v:getAttribute("z");
+		local x,z,y = v:getAttribute("x"), v:getAttribute("z"), v:getAttribute("y");
 		local type = v:getAttribute("type");
 		local action = v:getValue();
 		local name = v:getName() or "";
 		local tag = v:getAttribute("tag") or "";
 
 		if( string.lower(name) == "waypoint" ) then
-			local tmp = CWaypoint(x, z);
+			local tmp = CWaypoint(x, z, y);
 			if( action ) then tmp.Action = action; end;
 			if( type ) then
 				if( type == "TRAVEL" ) then
@@ -91,7 +91,7 @@ function CWaypointList:load(filename)
 		self.Mode = "wander"
 	else
 		self.Mode = "waypoints"
-		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z));
+		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y));
 		self.LastWaypoint = self.CurrentWaypoint -1
 		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 	end
@@ -256,12 +256,12 @@ function CWaypointList:setWaypointIndex(index)
 end
 
 -- Returns an index to the waypoint closest to the given point.
-function CWaypointList:getNearestWaypoint(_x, _z)
+function CWaypointList:getNearestWaypoint(_x, _z, _y)
 	local closest = 1;
 
 	for i,v in pairs(self.Waypoints) do
 		local oldClosestWp = self.Waypoints[closest];
-		if( distance(_x, _z, v.X, v.Z) < distance(_x, _z, oldClosestWp.X, oldClosestWp.Z) ) then
+		if( distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y) ) then
 			closest = i;
 		end
 	end

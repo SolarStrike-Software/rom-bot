@@ -273,14 +273,23 @@ function angleDifference(angle1, angle2)
   end
 end
 
-function distance(x1, y1, x2, y2)
-	if( x1 == nil or y1 == nil or x2 == nil or y2 == nil ) then
+function distance(x1, z1, y1, x2, z2, y2)
+	if z2 == nil and y2 == nil then -- assume x1,z1,x2,z2 values (2 dimensional)
+		z2 = x2
+		x2 = y1
+		y1 = nil
+	end
+
+	if( x1 == nil or z1 == nil or x2 == nil or z2 == nil ) then
 		error("Error: nil value passed to distance()", 2);
 	end
 
-	return math.sqrt( (y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) );
+	if y1 == nil or y2 == nil then -- 2 dimensional calculation
+		return math.sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) );
+	else -- 3 dimensional calculation
+		return math.sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+	end
 end
-
 
 -- Used in pause/exit callbacks. Just releases hotkeys.
 local function releaseKeys()

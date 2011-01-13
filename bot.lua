@@ -373,13 +373,13 @@ function main()
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 		local hf_wp = __WPL:getNextWaypoint();
-		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+		local dist_to_wp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
 
-		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z ) );
+		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 		local hf_wp = __RPL:getNextWaypoint();
-		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+		local dist_to_rp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
 
 		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true;	-- then use return path first
@@ -665,7 +665,7 @@ function main()
 				if( player.Returning ) then
 					-- Completed. Return to normal waypoints.
 					if( __RPL.CurrentWaypoint >= #__RPL.Waypoints ) then
-						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
+						__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z, player.Y));
 						if( __WPL.Mode == "wander" ) then
 							__WPL.OrigX = player.X;
 							__WPL.OrigZ = player.Z;
@@ -843,13 +843,13 @@ function resurrect()
 	player.Returning = nil;
 	if( __RPL and __WPL.Mode ~= "wander" ) then
 		-- compare closest waypoint with closest returnpath point
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 		local hf_wp = __WPL:getNextWaypoint();
-		local dist_to_wp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+		local dist_to_wp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
 
 		__RPL:setWaypointIndex(__RPL:getNearestWaypoint(player.X, player.Z) );
 		local hf_wp = __RPL:getNextWaypoint();
-		local dist_to_rp = distance(player.X, player.Z, hf_wp.X, hf_wp.Z)
+		local dist_to_rp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
 
 		if( dist_to_rp < dist_to_wp ) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true;	-- then use return path first
@@ -868,7 +868,7 @@ function resurrect()
 	-- not using returnpath, so we use the normal waypoint path
 	if( player.Returning == nil) then
 		player.Returning = false;
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z ) );
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z,player.Y ) );
 		cprintf(cli.green, language[112], 	-- using normal waypoint file
 		__WPL:getFileName() );
 	end
