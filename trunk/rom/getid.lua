@@ -34,7 +34,7 @@ function main()
 		mousePawn = CPawn(memoryReadIntPtr(getProc(),
 		addresses.staticbase_char, addresses.mousePtr_offset));
 		if( mousePawn.Address ~= 0) then
-			printf("\rObject found id %d %s distance %d\t\t", mousePawn.Id, mousePawn.Name, distance(player.X, player.Z, mousePawn.X, mousePawn.Z));
+			printf("\rObject found id %d %s distance %d\t\t", mousePawn.Id, mousePawn.Name, distance(player.X, player.Z, player.Y, mousePawn.X, mousePawn.Z, mousePawn.Y));
 		else
 			printf("\rNo id at current mouse location\t\t\t\t");
 		end

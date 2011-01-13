@@ -100,12 +100,12 @@ function CPlayer:harvest(_id, _second_try)
 					if( harvestThis == true ) then
 						local dist = distance(self.X, self.Z, obj.X, obj.Z);
 						if( closestHarvestable == nil ) then
-							if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) < settings.profile.options.HARVEST_DISTANCE ) then
 								closestHarvestable = obj;
 							end
 						else
-							if( distance(self.X, self.Z, obj.X, obj.Z) <
-								distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) ) then
+							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) <
+								distance(self.X, self.Z, self.Y, closestHarvestable.X, closestHarvestable.Z, closestHarvestable.Y) ) then
 								-- this node is closer
 								closestHarvestable = obj;
 							end
@@ -161,7 +161,7 @@ function CPlayer:harvest(_id, _second_try)
 
 		cprintf(cli.yellow, language[95], closestHarvestable.Name);
 
-		if( distance(self.X, self.Z, closestHarvestable.X, closestHarvestable.Z) > 80 ) then
+		if( distance(self.X, self.Z, self.Y, closestHarvestable.X, closestHarvestable.Z, closestHarvestable.Y) > 80 ) then
 			self:moveInRange(CWaypoint(closestHarvestable.X, closestHarvestable.Z), 39, true);
 		end
 
@@ -3080,14 +3080,14 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 			for __, _objnameorid in pairs(_objtable) do
 				if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
 					if( evalFunc(obj.Address) == true ) then
-						local dist = distance(self.X, self.Z, obj.X, obj.Z);
+						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then
-							if( distance(self.X, self.Z, obj.X, obj.Z ) < settings.profile.options.HARVEST_DISTANCE ) then
+							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) < settings.profile.options.HARVEST_DISTANCE ) then
 								closestObject = obj;
 							end
 						else
-							if( distance(self.X, self.Z, obj.X, obj.Z) <
-								distance(self.X, self.Z, closestObject.X, closestObject.Z) ) then
+							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) <
+								distance(self.X, self.Z, self.Y, closestObject.X, closestObject.Z, closestObject.Y) ) then
 								-- this node is closer
 								closestObject = obj;
 							end

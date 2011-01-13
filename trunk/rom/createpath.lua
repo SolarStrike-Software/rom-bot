@@ -104,7 +104,7 @@ function saveWaypoints(list)
 		error(err, 0);
 	end
 
-	local openformat = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\"%s>%s";
+	local openformat = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
 	local closeformat = "</waypoint>\n";
 
 	file:write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -115,17 +115,17 @@ function saveWaypoints(list)
 	for i,v in pairs(list) do
 		if( v.wp_type == "HP" ) then -- Harvest point
 			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_hp_type, p_harvest_command) .. closeformat;
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_hp_type, p_harvest_command) .. closeformat;
 			tag_open = false;
 		elseif( v.wp_type == "WP" ) then -- Waypoint
 			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type, "");
+			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type, "");
 			tag_open = true;
 		elseif( v.wp_type == "MER" ) then -- Merchant
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
 				tag_open = true;
 			end
@@ -133,7 +133,7 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_targetNPC_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_targetNPC_command, v.npc_name) ) .. "\n";
 				tag_open = true;
 			end
@@ -141,7 +141,7 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_choiceOption_command, v.co_num) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) ) .. "\n";
 				tag_open = true;
 			end
@@ -149,7 +149,7 @@ function saveWaypoints(list)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
 				tag_open = true;
 			end
@@ -255,7 +255,7 @@ function main()
 					running = false;
 					break;
 				end;
-				
+
 				if( hf_key == "RESET" ) then
 					clearScreen();
 					wpList = {}; -- DON'T save clear table
@@ -263,13 +263,14 @@ function main()
 					running = true; -- restart
 					break;
 				end;
-			
+
 
 				player:update();
 
 				local tmp = {}, hf_type;
 				tmp.X = player.X;
 				tmp.Z = player.Z;
+				tmp.Y = player.Y;
 				hf_type = "";
 
 
@@ -329,7 +330,7 @@ function main()
 					running = true; -- restart
 					break;
 				end;
-				
+
 
 				hf_key = nil;	-- clear last pressed key
 			end;
