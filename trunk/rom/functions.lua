@@ -1113,4 +1113,19 @@ function waitForLoadingScreen()
 	player:update()
 end
 
+-- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
+-- hmm, i whonder if we could get more information out of it than id, color and name.
+function parseItemLink(itemLink)
+	if itemLink == "" or itemLink == nil then
+		return;
+ 	end
+
+	local s,e, id, color, name = string.find(itemLink, "|Hitem:(%x+).*|h|c(%x+)%[(.+)%]|r|h");
+	id = id or "000000"; color = color or "000000";
+	id    = tonumber(tostring(id), 16) or 0;
+	color = tonumber(tostring(color), 16) or 0;
+	name = name or "<invalid>";
+
+	return id, color, name;
+end
 
