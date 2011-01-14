@@ -414,6 +414,65 @@ function CInventory:bestAvailableConsumable(type)
 	return bestItem;
 end
 
+-- buys 'quantity' of items by name, id or shop index.
+function CInventory:storeBuyItem(nameIdOrIndex, quantity)
+	if quantity == nil then
+		-- Assume they want to buy 1
+		quantity = 1
+	end
+
+	-- number of items in store
+	local sellItems = RoMScript("GetStoreSellItems()")
+	if sellItems == 0 then
+		-- Store not open
+		return false
+	end
+
+	-- First find the store index number
+	local buyIndex = 0
+	if type(nameIdOrIndex) == "number" and nameIdOrIndex <= sellItems then
+		-- buying by index
+		buyIndex = nameIdOrIndex
+	elseif type(nameIdOrIndex) == "number" or type(nameIdOrIndex) == "string" then
+		-- buying by id or name, search for id or name
+		for i = 1, sellItems do
+			local id, __, name = parseItemLink(RoMScript("GetStoreSellItemLink(".. i ..")"));
+			if nameIdOrIndex == id or nameIdOrIndex == name then
+				buyIndex = i
+				break
+			end
+		end
+	else
+		printf(cli.yellow,"Wrong first argument to 'storeBuyItem'.")
+		return false
+	end
+
+	if buyIndex == 0 then
+		-- Item not found
+		return false
+	end
+
+	-- Then get the maxheap
+	local __, __, __, __, __, __, buyMaxHeap = RoMScript("GetStoreSellItemInfo(".. buyIndex ..")")
+
+	-- Buy the item/s
+	printf(language[1001]);  -- Shopping
+	repeat
+		if quantity > buyMaxHeap then
+			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. buyMaxHeap .. ")")
+			quantity = quantity - buyMaxHeap
+		else
+			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. quantity .. ")")
+			quantity = 0
+		end
+		printf(" .")
+		yrest(1000)
+	until quantity == 0
+	printf("\n")
+
+	return true
+end
+
 -- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
 -- quantity is how many of them do we need, for example, for potions its 99 or 198
 -- but for arraws it might be 1 or 2
@@ -428,7 +487,7 @@ function CInventory:storeBuyConsumable(type, quantity)
 			break;
 		end
 
-		storeItemId, storeItemColor, storeItemName = CItem:parseItemLink(storeItemLink);
+		storeItemId, storeItemColor, storeItemName = parseItemLink(storeItemLink);
 --		printf("%s %s\n", storeItemId, storeItemName);
 
 		local consumable = database.consumables[storeItemId];
@@ -466,12 +525,7 @@ function CInventory:storeBuyConsumable(type, quantity)
 	-- See how many needed
 	if totalCount < quantity then
 	    numberToBuy = quantity - totalCount;
-	    printf(language[1001]);  -- Shopping
-	    for i = 1, numberToBuy, 1 do
-	    	RoMScript("StoreBuyItem("..bestItemSlot..")");
-	    	printf(".");
-		end
-		printf("\n");
+		self:storeBuyItem(bestItemSlot, numberToBuy)
 	end
 
 	return true;
