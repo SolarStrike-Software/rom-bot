@@ -9,6 +9,7 @@ include("classes/node.lua");
 include("settings.lua");
 include("functions.lua");
 include("macros.lua");
+include("classes/object.lua");
 
 settings.load();
 database.load();
@@ -28,6 +29,7 @@ p_hp_type = "";		-- type for harvest waypoints
 p_harvest_command = "player:harvest();";
 p_merchant_command = "player:merchant(\"%s\");";
 p_targetNPC_command = "player:target_NPC(\"%s\");";
+p_targetObj_command = "player:target_Object(\"%s\");";
 p_choiceOption_command = "sendMacro(\"ChoiceOption(%d);\");";
 p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";
 -- ********************************************************************
@@ -47,6 +49,8 @@ choiceOptionKey = key.VK_NUMPAD6; 	-- insert choiceOption
 mouseClickKey = key.VK_NUMPAD7; -- Save MouseClick
 restartKey = key.VK_NUMPAD9;	-- restart waypoints script
 resetKey = key.VK_NUMPAD8;	-- restart waypoints script and discard changes
+codeKey = key.VK_NUMPAD0;		-- add comment to last WP.
+targetObjKey = key.VK_DECIMAL;	-- target an object and action it.
 
 
 -- read arguments / forced profile perhaps
@@ -153,6 +157,22 @@ function saveWaypoints(list)
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
 				tag_open = true;
 			end
+		elseif( v.wp_type == "COD" ) then -- Code
+			if( tag_open ) then
+				hf_line = hf_line .. "\t\t" .. v.com .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				"\n\t\t" .. v.com ) .. "\n";
+				tag_open = true;
+			end
+		elseif( v.wp_type == "OBJ" ) then -- Target Object
+			if( tag_open ) then
+				hf_line = hf_line .. "\t\t" .. sprintf(p_targetObj_command, v.obj_name) .. "\n";
+			else
+				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				"\n\t\t" .. sprintf(p_targetObj_command, v.obj_name) ) .. "\n";
+				tag_open = true;
+			end
 		end
 	end
 
@@ -194,11 +214,14 @@ function main()
 			.. language[517]		-- Insert choiceOption command
 			.. language[510]		-- Insert Mouseclick Left command
 			.. language[518]		-- Reset script
-			.. language[506],		-- Save waypoints and restart
+			.. language[506]		-- Save waypoints and restart
+			.. language[519]		-- Insert comment command
+			.. language[522],		-- Insert comment command
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
 			getKeyName(merchantKey), getKeyName(targetNPCKey),
 			getKeyName(choiceOptionKey), getKeyName(mouseClickKey),
-			getKeyName(resetKey), getKeyName(restartKey) );
+			getKeyName(resetKey), getKeyName(restartKey),
+			getKeyName(codeKey), getKeyName(targetObjKey));
 
 		attach(getWin())
 		addMessage(language[501]);	-- -- RoM waypoint creator\n
@@ -232,6 +255,10 @@ function main()
 				hf_key_pressed = true;
 				hf_key = "CO";
 			end;
+			if( keyPressed(codeKey) ) then	-- choice option key pressed
+				hf_key_pressed = true;
+				hf_key = "COD";
+			end;
 			if( keyPressed(mouseClickKey) ) then	-- target MouseClick key pressed
 				hf_key_pressed = true;
 				hf_key = "MC";
@@ -243,6 +270,10 @@ function main()
 			if( keyPressed(resetKey) ) then	-- reset key pressed
 				hf_key_pressed = true;
 				hf_key = "RESET";
+			end;
+			if( keyPressed(targetObjKey) ) then	-- reset key pressed
+				hf_key_pressed = true;
+				hf_key = "OBJ";
 			end;
 
 			if( hf_key_pressed == false and 	-- key released, do the work
@@ -283,19 +314,19 @@ function main()
 					tmp.wp_type = "WP";
 					hf_type = "WP";
 					addMessage(sprintf(language[511], #wpList+1) ); -- waypoint added
-				elseif( hf_key == "MER" ) then
+				elseif( hf_key == "MER" ) then -- merchant command
 					tmp.wp_type = "MER";
 					local target = player:getTarget();	-- get target name
 					tmp.npc_name = target.Name;
 					hf_type = "target/merchant NPC "..tmp.npc_name;
 					addMessage(sprintf(language[513], #wpList+1, tmp.npc_name));
-				elseif( hf_key == "NPC" ) then
+				elseif( hf_key == "NPC" ) then -- target npc
 					tmp.wp_type = "NPC";
 					local target = player:getTarget();	-- get target name
 					tmp.npc_name = target.Name;
 					hf_type = "target/dialog NPC "..tmp.npc_name;
 					addMessage(sprintf(language[514], #wpList+1, tmp.npc_name));
-				elseif(	hf_key == "CO") then			-- normal waypoint
+				elseif(	hf_key == "CO") then			-- choose npc option
 					tmp.wp_type = "CO";
 
 					-- ask for option number
@@ -305,6 +336,16 @@ function main()
 					tmp.co_num = io.stdin:read();
 					hf_type = "choiceOpion "..tmp.co_num;
 					addMessage(sprintf(language[516], tmp.co_num ) ); -- choice option
+				elseif(	hf_key == "COD") then			-- enter code
+					tmp.wp_type = "COD";
+
+					-- ask for option number
+					keyboardBufferClear();
+					io.stdin:flush();
+					cprintf(cli.green, language[520]);	-- add code
+					tmp.com = io.stdin:read();
+					hf_type = tmp.com;
+					addMessage(sprintf(language[521], tmp.com ) ); -- code
 				elseif( hf_key == "MC" ) then 	-- is's a mouseclick?
 					tmp.wp_type = "MC";			-- it is a mouseclick
 					local x, y = mouseGetPos();
@@ -316,6 +357,12 @@ function main()
 					hf_type = sprintf("mouseclick %d,%d (%dx%d)", tmp.mx, tmp.my, tmp.wide, tmp.high );
 					addMessage(sprintf(language[515],
 					tmp.mx, tmp.my, tmp.wide, tmp.high )); -- Mouseclick
+				elseif( hf_key == "OBJ" ) then 	-- target object
+					tmp.wp_type = "OBJ";
+					local mouseObj = CObject(memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
+					tmp.obj_name = mouseObj.Name
+					hf_type = sprintf("target object %s", tmp.obj_name );
+					addMessage(sprintf(language[523],tmp.obj_name)); -- target object
 				end
 
 

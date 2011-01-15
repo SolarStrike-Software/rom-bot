@@ -188,6 +188,12 @@ language = {
 	[516] = "\'Choice Option(%d)\' command inserted.\n",
 	[517] = "  (%s)\tInsert \'ChoiceOption()\' command.\n",
 	[518] = "  (%s)\tReset waypoints and restart\n",
+	[519] = "  (%s)\tInsert lua code command.\n",
+	[520] = "Add any code you want to the previous Waypoint. > ",
+	[521] = "Code \'%s\' inserted.\n",
+	[522] = "  (%s)\tInsert target object command.\n",
+	[523] = "Insert \'player:target_object(\"%s\") command.\n",
+
 
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d minutes till level up",
 
