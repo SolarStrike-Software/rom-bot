@@ -61,8 +61,8 @@
 		<option name="EGGPET_CRAFT_SLOT"	value="1" />
 		<option name="EGGPET_ENABLE_ASSIST"	value="false" />
 		<option name="EGGPET_ASSIST_SLOT"	value="1" />
-		<option name="EGGPET_CRAFT"			value="mining,woodworking,herbalism" /> <!-- 'mining', 'woodworking', 'herbalism' or combination. -->
-		<option name="EGGPET_CRAFTINDEX"	value="" /> <!-- The level to craft. "" defaults to maximum -->
+		<option name="EGGPET_CRAFT_RATIO"	value="1:4:4" /> <!-- mining:woodworking:herbalism ratio to produce. -->
+		<option name="EGGPET_CRAFT_INDEXES"	value="" /> 	 <!-- override auto craft index for mining,woodworking,herbalism eg. "2,,"-->
 
 
 		<!-- Log out and resurrect settings -->

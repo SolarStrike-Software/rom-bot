@@ -2947,11 +2947,14 @@ function CPlayer:merchant(_npcname, _option)
 		if ( inventory:autoSell() ) then
 			inventory:update();
 		end
-		inventory:storeBuyConsumable("healing", settings.profile.options.HEALING_POTION);
-		inventory:storeBuyConsumable("mana", settings.profile.options.MANA_POTION);
-		inventory:storeBuyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
-		inventory:storeBuyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
-		inventory:storeBuyConsumable("poison", settings.profile.options.POISON);
+		store:buyConsumable("healing", settings.profile.options.HEALING_POTION);
+		store:buyConsumable("mana", settings.profile.options.MANA_POTION);
+		store:buyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
+		store:buyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
+		store:buyConsumable("poison", settings.profile.options.POISON);
+		store:buyConsumable("eggpet_hoe", settings.profile.options.EGGPET_HOE);
+		store:buyConsumable("eggpet_spade", settings.profile.options.EGGPET_SPADE);
+		store:buyConsumable("eggpet_hatchet", settings.profile.options.EGGPET_HATCHET);
 		inventory:update();
 	end
 

@@ -1,5 +1,6 @@
 <potions>
 	<!-- Healing potions -->
+	<potion type="healing" id="208213" level="61" name="Herbs of Omnipotence" />
 	<potion type="healing" id="207273" level="56" name="Infinite Herb" />
 	<potion type="healing" id="204889" level="51" name="Spirit Herb" />
 	<potion type="healing" id="200820" level="46" name="Ancestral Spirit Herbs" />
@@ -21,6 +22,7 @@
 	<potion type="healing" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
 
 	<!-- Mana potions -->
+	<potion type="mana" id="208214" level="61" name="Elemental Stone of Omnipotence" />
 	<potion type="mana" id="207274" level="56" name="Infinite Elemental Stone" />
 	<potion type="mana" id="204890" level="51" name="Elemental Spirit Stone" />
 	<potion type="mana" id="201061" level="46" name="Elemental Spirit Stone" />
@@ -93,5 +95,10 @@
 	<!-- Poison -->
 	<potion type="poison" id="200563" name="Poison Powder" level="1" />
 	<potion type="poison" id="200762" name="Poison Bottle" level="1" />
+
+	<!-- Pet Tools -->
+	<potion type="eggpet_hoe" 		id="204228" name="Small Hoe" level="1" />
+	<potion type="eggpet_spade" 	id="204230" name="Small Spade" level="1" />
+	<potion type="eggpet_hatchet" 	id="204232" name="Small Hatchet" level="1" />
 
 </potions>

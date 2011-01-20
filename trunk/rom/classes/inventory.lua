@@ -414,121 +414,14 @@ function CInventory:bestAvailableConsumable(type)
 	return bestItem;
 end
 
--- buys 'quantity' of items by name, id or shop index.
+-- Kept for backward compatibility. Use store:buyItem(nameIdOrIndex, quantity) instead
 function CInventory:storeBuyItem(nameIdOrIndex, quantity)
-	if quantity == nil then
-		-- Assume they want to buy 1
-		quantity = 1
-	end
-
-	-- number of items in store
-	local sellItems = RoMScript("GetStoreSellItems()")
-	if sellItems == 0 then
-		-- Store not open
-		return false
-	end
-
-	-- First find the store index number
-	local buyIndex = 0
-	if type(nameIdOrIndex) == "number" and nameIdOrIndex <= sellItems then
-		-- buying by index
-		buyIndex = nameIdOrIndex
-	elseif type(nameIdOrIndex) == "number" or type(nameIdOrIndex) == "string" then
-		-- buying by id or name, search for id or name
-		for i = 1, sellItems do
-			local id, __, name = parseItemLink(RoMScript("GetStoreSellItemLink(".. i ..")"));
-			if nameIdOrIndex == id or nameIdOrIndex == name then
-				buyIndex = i
-				break
-			end
-		end
-	else
-		printf(cli.yellow,"Wrong first argument to 'storeBuyItem'.")
-		return false
-	end
-
-	if buyIndex == 0 then
-		-- Item not found
-		return false
-	end
-
-	-- Then get the maxheap
-	local __, __, __, __, __, __, buyMaxHeap = RoMScript("GetStoreSellItemInfo(".. buyIndex ..")")
-
-	-- Buy the item/s
-	printf(language[1001]);  -- Shopping
-	repeat
-		if quantity > buyMaxHeap then
-			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. buyMaxHeap .. ")")
-			quantity = quantity - buyMaxHeap
-		else
-			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. quantity .. ")")
-			quantity = 0
-		end
-		printf(" .")
-		yrest(1000)
-	until quantity == 0
-	printf("\n")
-
-	return true
+	return store:buyItem(nameIdOrIndex, quantity)
 end
 
--- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
--- quantity is how many of them do we need, for example, for potions its 99 or 198
--- but for arraws it might be 1 or 2
--- type: healing|mana|arrow_quiver|thrown_bag|poison
+-- Kept for backward compatibility. Use store:buyConsumable(type, quantity) instead
 function CInventory:storeBuyConsumable(type, quantity)
-	-- Find best store item
-	local bestLevel = 0;
-	for storeSlot = 1, 28, 1 do
-		local storeItemLink, icon, name, storeItemCost = RoMScript("GetStoreSellItemLink("..storeSlot.."),GetStoreSellItemInfo("..storeSlot..")");
-
-		if (storeItemLink == "" or storeItemLink == nil) then
-			break;
-		end
-
-		storeItemId, storeItemColor, storeItemName = parseItemLink(storeItemLink);
---		printf("%s %s\n", storeItemId, storeItemName);
-
-		local consumable = database.consumables[storeItemId];
-
-		if( consumable
-		  and consumable.Type == type
-		  and consumable.Level <= player.Level ) then
-			if consumable.Level > bestLevel then
-				bestLevel = consumable.Level;
-				bestItem = storeItemId;
-				bestItemSlot = storeSlot;
-			end
-		end
-	end
-
-	if bestLevel == 0 then
-	    return false;
- 	end
-
-	-- Count number of better items in inventory
-	self:update();
-
-	local totalCount = 0;
- 	for slot,item in pairs(self.BagSlot) do
-		local consumable = database.consumables[item.Id];
-	    if item.Available and
-		  consumable and
-		  consumable.Type == type and
-		  consumable.Level >= bestLevel and
-		  consumable.Level <= player.Level then
-			totalCount = totalCount + item.ItemCount
-		end;
-	end;
-
-	-- See how many needed
-	if totalCount < quantity then
-	    numberToBuy = quantity - totalCount;
-		self:storeBuyItem(bestItemSlot, numberToBuy)
-	end
-
-	return true;
+	return store:buyConsumable(type, quantity)
 end
 
 function CInventory:deleteItemInSlot(slot)
@@ -564,6 +457,7 @@ function CInventory:autoSell()
 	if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
 		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
 		hf_ignore_table = explode( hf_explode, "\n" );	-- move ignore list
+		for i,v in pairs(hf_ignore_table) do local m = string.match(v,"^'(.*)'$") if m then hf_ignore_table[i] = m end end -- remove quotes
 	end
 
 	local hf_stats_nosell;
@@ -571,6 +465,7 @@ function CInventory:autoSell()
 	if( settings.profile.options.INV_AUTOSELL_STATS_NOSELL ) then
 		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
 		hf_stats_nosell = explode( hf_explode, "\n" );	-- move ignore list
+		for i,v in pairs(hf_stats_nosell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_nosell[i] = m end end -- remove quotes
 	end
 
 	local hf_stats_sell;
@@ -578,6 +473,7 @@ function CInventory:autoSell()
 	if( settings.profile.options.INV_AUTOSELL_STATS_SELL ) then
 		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
 		hf_stats_sell = explode( hf_explode, "\n" );	-- move ignore list
+		for i,v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
 	end
 
 

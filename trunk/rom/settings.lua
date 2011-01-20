@@ -63,13 +63,16 @@ settings_default = {
 			ARROW_QUIVER = 0,				-- shopping options, how many to buy/have in inventory
 			THROWN_BAG = 0,					-- shopping options, how many to buy/have in inventory
 			POISON = 0,						-- shopping options, how many to buy/have in inventory
+			EGGPET_HOE = 0,					-- shopping options, how many to buy/have in inventory
+			EGGPET_SPADE = 0,				-- shopping options, how many to buy/have in inventory
+			EGGPET_HATCHET = 0,				-- shopping options, how many to buy/have in inventory
 			RELOAD_AMMUNITION = false,		-- false|arrow|thrown
 			EGGPET_ENABLE_CRAFT = false,
 			EGGPET_CRAFT_SLOT = nil,
 			EGGPET_ENABLE_ASSIST = false,
 			EGGPET_ASSIST_SLOT = nil,
-			EGGPET_CRAFT = "mining,woodworking,herbalism",
-			EGGPET_CRAFTINDEX = "",
+			EGGPET_CRAFT_RATIO = "1:1:1",	-- mining:woodworking:herbalism ratio to use when crafting. '0' means do not craft that type.
+			EGGPET_CRAFT_INDEXES = ",,",	-- Index level override for mine:wood:herb eg. ",,1" will only create index level 1 herb items
 
 
 			-- expert options
