@@ -13,6 +13,7 @@ include("classes/node.lua");
 include("classes/object.lua");
 include("classes/objectlist.lua");
 include("classes/eggpet.lua");
+include("classes/store.lua");
 include("settings.lua");
 include("macros.lua");
 
@@ -168,6 +169,8 @@ function main()
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
 	player.level_detect_levelup = player.Level;	-- remember actual player level
+
+	store = CStore()
 
 	-- Install timer to continually close the chat (if open)
 	local function closeChatEntry()
@@ -629,7 +632,7 @@ function main()
 		else
 		-- don't fight, move to wp
 			-- First check up on eggpet
-			checkEggs()
+			checkEggPets()
 
 			local wp = nil; local wpnum = nil;
 

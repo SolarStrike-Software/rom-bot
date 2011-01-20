@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?><waypoints>
 <onLoad>
 proc = getProc()
-
+	cprintf(cli.lightgreen,"\n        RomBot command line\n")
+	print("Type in 'q' (without quotes) to quit.")
 	repeat
-		printf("\nEnter a command to execute ('q' to end): ");
+		cprintf(cli.lightblue,"Command> ");
 		local name = io.stdin:read();
-		if name == "q" then error("Closing.",0) end
+		if string.lower(name) == "q" then error("Closing.",0) end
 		funct=loadstring(name)
 		if type(funct) == "function" then
 			local status,err = pcall(funct);

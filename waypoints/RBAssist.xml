@@ -35,7 +35,7 @@
 		if attackMode == "disabled" then
 			attack = false
 		else
-			while keyPressed(triggerKEY) do
+			while keyPressedLocal(triggerKEY) do
 				trigger = true
 			end
 			if trigger == true then
@@ -66,6 +66,8 @@
 		player:checkSkills(true, target);
 
 		player:update()
+
+		checkEggPets()
 	end
 	</onLoad>
 </waypoints>

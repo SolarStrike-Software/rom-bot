@@ -16,13 +16,16 @@ local CRAFT_INDEX_LEVELS = {
 	[14] = 61,
 }
 
-local CRAFT_NOURISHMENT_LEVLES = {
+local FOOD_LEVLES = {
 	[204791] = 5, -- CAKE
 	[204925] = 10, -- CHEESE
 	[204924] = 20, -- MILK
 	[204234] = 30, -- BEEF
+	[204510] = 1, -- Desert of Happiness
+	[204511] = 10, -- Favorite Meal
 }
 
+local petInfoInstalled = nil
 
 CEggPet = class(
 	function (self, eggSlot)
@@ -75,6 +78,8 @@ function CEggPet:update()
 		self.Summoned = (memoryReadInt(getProc(), eggPetAddress + addresses.eggPetSummoned_offset) == 2)
 		self.Exp = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetExp_offset)
 		self.MaxExp = memoryReadIntPtr(getProc(), addresses.eggPetMaxExpTablePtr, 0x4 * self.Level)
+		self.TP = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetTP_offset)
+		self.MaxTP = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetMaxTP_offset)
 		self.Loyalty = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetLoyalty_offset)
 		self.Nourishment = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetNourishment_offset)
 		self.Aptitude = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetAptitude_offset)
@@ -154,7 +159,9 @@ function CEggPet:feed(foodNameOrId, number)
 	local originalFoodNumber = inventory:itemTotalCount(foodNameOrId)
 
 	-- 'number' can be "all" to feed all food.
-	if string.lower(number) == "all" then
+	if number == nil then
+		number = 1 -- default, use 1
+	elseif string.lower(number) == "all" then
 		number = originalFoodNumber
 	end
 
@@ -211,10 +218,11 @@ function CEggPet:Summon()
 	while self.EggId > 0 and self.Summoned == false do
 		RoMScript("SummonPet("..self.EggSlot..")")
 		repeat
+			yrest(500)
 			self:update()
 			player:update()
-			yrest(200)
-		until self.Summoned or player.Battling
+		until self.Summoned or player.Battling or player.Casting == false
+		yrest(500)
 		if player.Battling then
 			player:fight()
 		end
@@ -234,6 +242,14 @@ function CEggPet:Return()
 end
 
 function CEggPet:craft(_craftType, indexLevel)
+	-- Stop petInfo from auto replacing tools if installed
+	if petInfoInstalled == nil then -- so it only checks once
+		petInfoInstalled = RoMScript("PetInfo~=nil")
+		if petInfoInstalled then
+			RoMScript("PetInfoFrame:UnregisterEvent(\"PET_CRAFT_END\")")
+		end
+	end
+
 	self:update()
 
 	--Check if already crafting
@@ -245,57 +261,67 @@ function CEggPet:craft(_craftType, indexLevel)
 
 	-- Clear Harvest
 	self:harvest()
+	inventory:update()
 
 	-- Remove existing tool tool, even if the correct tool (resolves a bug in the game).
 	if self.Tool.Id ~= nil then
-		local emptyBagSlot = inventory:findItem(0)
+		local emptyBagSlot = inventory:findItem(0,"bags")
 		if emptyBagSlot == nil then
-			print("Run out of bag space.")
 			return
 		end
+
 		RoMScript("ClickPetCraftItem(".. self.EggSlot ..")")
 		RoMScript("PickupBagItem(".. emptyBagSlot.BagId ..")");
-		repeat
-			yrest(100)
+		-- wait for a maximum of 1 second
+		for i = 1, 4 do
+			yrest(250)
 			self:update()
-		until self.Tool.Id == nil
-	end
-
-	-- check '_craftType' value
-	if _craftType == nil or _craftType == "" then
-		-- Default to all
-		_craftType = "mining,woodworking,herbalism"
-	elseif type(_craftType) == "string" then
-		-- Make sure it's lower case
-		_craftType = string.lower(_craftType)
-	else
-		printf("Wrong value for _craftType. Defaulting to all crafts.\n")
-		_craftType = "mining,woodworking,herbalism"
-	end
-
-	-- Get tool item
-	local craftTool = nil
-	for __, findType in pairs({"Mining","Woodworking","Herbalism"}) do
-		if string.find(_craftType, string.lower(findType)) then -- User wants this one. See if we have tools.
-			craftTool = inventory:findItem(CRAFT_TOOLS[findType])
-			if craftTool ~= nil then
-				_craftType = findType
+			if self.Tool.Id == nil then
 				break
 			end
 		end
 	end
 
+	if self.Tool.Id ~= nil or self.Crafting then -- maybe an addon replaced the tools. Give up.
+		return
+	end
+
+	-- check '_craftType' value
+	if _craftType ~= nil and CRAFT_TOOLS[_craftType] == nil then
+		-- invalid type
+		return
+	elseif _craftType == nil then
+		-- then use profile settings
+
+		-- Which tool
+		local toolChoices = self:chooseToolByRatio()
+
+		-- Check if you have tools in inventory
+		local choice = 0
+		for i, Type in pairs(toolChoices) do
+			-- Check if you have tools
+			if inventory:itemTotalCount(Type.Id) > 0 then
+				choice = i
+				break
+			end
+		end
+
+		if choice  == 0 then -- no tools in inventory
+			return
+		end
+
+		_craftType = toolChoices[choice].Type
+	end
+
+	-- Get tool item
+	local craftTool = inventory:findItem(CRAFT_TOOLS[_craftType])
+
 	if craftTool == nil then
-		print("No crafting tools.")
 		return
 	end
 
 	-- Get pet craft Level
-	local petCraftLvl = 0
-	petCraftLvl = self[_craftType]
-	if petCraftLvl == nil then
-		printf("Wrong value for _craftType\n")
-	end
+	local petCraftLvl = self[_craftType]
 
 	-- Get highest possible craft level
 	local maxCraftIndex = 0
@@ -308,13 +334,27 @@ function CEggPet:craft(_craftType, indexLevel)
 	end
 
 	-- Check indexLevel
-	if indexLevel == nil or indexLevel > maxCraftIndex then
-		indexLevel = maxCraftIndex -- Default to highest level
+	if indexLevel == nil then
+		-- See if there is a user profile index override
+		if settings.profile.options.EGGPET_CRAFT_INDEXES then
+			local mIndex, wIndex, hIndex = string.match(settings.profile.options.EGGPET_CRAFT_INDEXES,"(%d*)%s*,%s*(%d*)%s*,%s*(%d*)")
+			print("_craftType",_craftType)
+			print("mIndex wIndex hIndex",mIndex,wIndex,hIndex)
+			if _craftType == "Mining" then
+				indexLevel = mIndex
+			elseif _craftType == "Woodworking" then
+				indexLevel = wIndex
+			elseif _craftType == "Herbalism" then
+				indexLevel = hIndex
+			end
+		end
+
+		-- convert to numbers
+		indexLevel = tonumber(indexLevel)
 	end
 
-	-- If pet out, return it.
-	if self.Summoned then
-		self:Return()
+	if indexLevel == nil or indexLevel > maxCraftIndex then
+		indexLevel = maxCraftIndex -- Default to highest level
 	end
 
 	-- Insert tool
@@ -324,11 +364,11 @@ function CEggPet:craft(_craftType, indexLevel)
 	yrest(1000)
 
 	-- Start crafting
+	RoMScript("SendSystemChat('Pet Crafting started.')")
 	RoMScript("PetCraftingStart(".. self.EggSlot ..",".. indexLevel ..")")
 
 	self:update()
 end
-
 
 function CEggPet:harvest()
 	if #self.Products ~= 0 then
@@ -336,7 +376,57 @@ function CEggPet:harvest()
 	end
 end
 
-function checkEggs()
+function CEggPet:chooseToolByRatio()
+	-- Returns the tool ids in order based on the user profile ratio setting and the pets crafting levels
+
+	-- Get user profile ratio settings
+	local mRatio, wRatio, hRatio = string.match(settings.profile.options.EGGPET_CRAFT_RATIO,"(%d*)%s*:%s*(%d*)%s*:%s*(%d*)")
+	-- check for nil values
+	if mRatio == nil or wRatio == nil or hRatio == nil then
+		return
+	end
+
+	-- convert to numbers
+	mRatio = tonumber(mRatio)
+	wRatio = tonumber(wRatio)
+	hRatio = tonumber(hRatio)
+
+	-- equilize values and add to tmpResult table
+	local tmpResults = {}
+	if mRatio > 0 then
+		local tmp = {}
+		tmp.Type = "Mining"
+		tmp.Id = CRAFT_TOOLS[tmp.Type]
+		tmp.Value = self.Mining/mRatio
+		table.insert(tmpResults,tmp)
+	end
+	if wRatio > 0 then
+		local tmp = {}
+		tmp.Type = "Woodworking"
+		tmp.Id = CRAFT_TOOLS[tmp.Type]
+		tmp.Value = self.Woodworking/wRatio
+		table.insert(tmpResults,tmp)
+	end
+	if hRatio > 0 then
+		local tmp = {}
+		tmp.Type = "Herbalism"
+		tmp.Id = CRAFT_TOOLS[tmp.Type]
+		tmp.Value = self.Herbalism/hRatio
+		table.insert(tmpResults,tmp)
+	end
+
+	-- Sort
+	table.sort(tmpResults, function(a,b) return a.Value < b.Value end)
+
+	results = {}
+	for k,v in pairs(tmpResults) do
+		results[k] = {Type = v.Type, Id = v.Id}
+	end
+
+	return results
+end
+
+function checkEggPets()
 	-- This function makes sure the pets are crafting and assisting as per the profile settings.
 
 	local assistEgg = nil
@@ -379,27 +469,45 @@ function checkEggs()
 
 		-- Check if needs to be fed
 
-		-- Get best food
+		-- Get best nourishment food
 		local foodId = 0
-		if assistEgg.Nourishment < 95 and inventory:itemTotalCount(204791) > 0 then -- use cake
+		if assistEgg.Nourishment <= 95 and inventory:itemTotalCount(204791) > 0 then -- use cake
 			foodId = 204791
-		elseif assistEgg.Nourishment < 90 and inventory:itemTotalCount(204925) > 0 then -- use cheese
+		elseif assistEgg.Nourishment <= 90 and inventory:itemTotalCount(204925) > 0 then -- use cheese
 			foodId = 204925
-		elseif assistEgg.Nourishment < 80 and inventory:itemTotalCount(204924) > 0 then -- use milk
+		elseif assistEgg.Nourishment <= 80 and inventory:itemTotalCount(204924) > 0 then -- use milk
 			foodId = 204924
-		elseif assistEgg.Nourishment < 70 and inventory:itemTotalCount(204234) > 0 then -- use beef
+		elseif assistEgg.Nourishment <= 70 and inventory:itemTotalCount(204234) > 0 then -- use beef
 			foodId = 204234
 		end
 
-		if CRAFT_NOURISHMENT_LEVLES[foodId] and assistEgg.Nourishment <= (100 - CRAFT_NOURISHMENT_LEVLES[foodId]) then
+		-- Get best loyalty food
+		local loyaltyFoodId = 0
+		if assistEgg.Loyalty <= 90 and inventory:itemTotalCount(204511) > 0 then -- Use Favorite Meal
+			loyaltyFoodId = 204511
+		elseif assistEgg.Loyalty <= 99 and inventory:itemTotalCount(204510) > 0 then -- Use Dessert of Happiness
+			loyaltyFoodId = 204510
+		end
+
+		if FOOD_LEVLES[foodId] and assistEgg.Nourishment <= (100 - FOOD_LEVLES[foodId]) or -- needs nourishment
+		   FOOD_LEVLES[loyaltyFoodId] and assistEgg.Loyalty <= (100 - FOOD_LEVLES[loyaltyFoodId]) then -- needs loyalty
 			if assistEgg.Summoned then
 				assistEgg:Return()
 			end
 
-			repeat
-				assistEgg:feed(foodId,1)
-				assistEgg:update()
-			until assistEgg.Nourishment > (100 - CRAFT_NOURISHMENT_LEVLES[foodId]) or inventory:itemTotalCount(foodId) == 0
+			-- feed nourishment
+			if foodId ~= 0 then
+				while assistEgg.Nourishment <= (100 - FOOD_LEVLES[foodId]) and inventory:itemTotalCount(foodId) > 0 do
+					assistEgg:feed(foodId)
+				end
+			end
+
+			-- feed loyalty
+			if loyaltyFoodId ~= 0 then
+				while assistEgg.Loyalty <= (100 - FOOD_LEVLES[loyaltyFoodId]) and inventory:itemTotalCount(loyaltyFoodId) > 0 do
+					assistEgg:feed(loyaltyFoodId)
+				end
+			end
 		end
 
 		-- Resummon pet
@@ -408,10 +516,9 @@ function checkEggs()
 		end
 	end
 
-	if craftEgg then
+	if craftEgg and not craftEgg.Crafting then
 		-- This is the craft egg. Craft ...
-		craftEgg:craft(settings.profile.options.EGGPET_CRAFT, settings.profile.options.EGGPET_CRAFTINDEX)
+
+		craftEgg:craft()
 	end
-
 end
-
