@@ -14,7 +14,7 @@ JUMP_TRUE = true		-- jump to break cast
 CPlayer = class(CPawn);
 
 function CPlayer.new()
-	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local playerAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	local np = CPlayer(playerAddress);
 	np:initialize();
 	np:update();
@@ -309,7 +309,7 @@ function CPlayer:target(pawnOrAddress)
 
 	if( address == nil ) then return; end;
 
-	local addressId = memoryReadUInt(getProc(), address + addresses.pawnId_offset) or 0;
+	local addressId = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset) or 0;
 
 	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
 		return
@@ -1792,7 +1792,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
 		if( newTarget ) then			-- find a new target
 			self:target(newTarget.Address);
-			local atkMask = memoryReadInt(getProc(), newTarget.Address + addresses.pawnAttackable_offset);
+			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
 			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
 			success = false;
 			failreason = WF_TARGET;
@@ -1960,7 +1960,7 @@ function CPlayer:faceDirection(dir)
 	local Vec2 = math.sin(dir);
 
 	if self.Mounted then
-		local tmpAddress = memoryReadInt(getProc(), self.Address + addresses.charPtrMounted_offset);
+		local tmpAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
 		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirXUVec_offset, Vec1);
 		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirYUVec_offset, Vec2);
 	else
@@ -2267,7 +2267,7 @@ end
 
 function CPlayer:update()
 	-- Ensure that our address hasn't changed. If it has, fix it.
-	local tmpAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
@@ -2275,10 +2275,10 @@ function CPlayer:update()
 
 
 	CPawn.update(self); -- run base function
-	self.Casting = (debugAssert(memoryReadIntPtr(getProc(), addresses.castingBarPtr, addresses.castingBar_offset), language[41]) ~= 0);
+	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
-	self.Battling = debugAssert(memoryReadBytePtr(getProc(), addresses.staticbase_char,
-	addresses.charBattle_offset), language[41]) == 1;
+	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char,
+	addresses.charBattle_offset) == 1;
 
 	-- remember aggro start time, used for timed ranged pull
 	if( self.Battling == true ) then
@@ -2289,8 +2289,8 @@ function CPlayer:update()
 		self.aggro_start_time = 0;
 	end
 
-	local Vec1 = debugAssert(memoryReadFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset), language[41]);
-	local Vec2 = debugAssert(memoryReadFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset), language[41]);
+	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
+	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
@@ -2302,7 +2302,7 @@ function CPlayer:update()
 		error("Error reading memory in CPlayer:update()");
 	end
 
-	self.PetPtr = debugAssert(memoryReadUInt(getProc(), self.Address + addresses.pawnPetPtr_offset), language[41]);
+	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset);
 	if( self.Pet == nil ) then
 		self.Pet = CPawn(self.PetPtr);
 	else
@@ -2317,8 +2317,8 @@ function CPlayer:update()
 		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
 		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
 
-		local newExp = memoryReadIntPtr(getProc(), addresses.charExp_address, 0) or 0;
-		local maxExp = memoryReadIntPtr(getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
+		local newExp = memoryReadRepeat("intptr", getProc(), addresses.charExp_address, 0) or 0;
+		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
 
 		self.LastExpUpdateTime = os.time();					-- Reset timer
 
@@ -2798,7 +2798,7 @@ function CPlayer:scan_for_NPC(_npcname)
 
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
-				mousePawn = CPawn(memoryReadIntPtr(getProc(),
+				mousePawn = CPawn(memoryReadRepeat("intptr", getProc(),
 				addresses.staticbase_char, addresses.mousePtr_offset));
 
 				-- id 110504 Waffenhersteller Dimar
