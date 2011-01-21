@@ -25,6 +25,8 @@ end
 local addondir = getDirectory(getExecutionPath() .. "/userfunctions/");
 for i,v in pairs(addondir) do
 	local match = string.match(v, "addon_(.*)%.lua");
+	if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
+
 	if( match ~= nil ) then
 		include("/userfunctions/" .. v);
 		logMessage("Bot addon \'" .. match .. "\' successfully loaded.");
@@ -60,6 +62,17 @@ function main()
 			include("update.lua");
 		end
 
+		if( args[i] == "debug" ) then
+			settings.options.DEBUGGING = true;
+			settings.options.DEBUGGING_MACRO = true;
+			--settings.profile.options.DEBUG_INV = true;
+			settings.profile.options.DEBUG_LOOT = true;
+			settings.profile.options.DEBUG_TARGET = true;
+			settings.profile.options.DEBUG_HARVEST = true;
+			settings.profile.options.DEBUG_WAYPOINT = true;
+			settings.profile.options.DEBUG_AUTOSELL = true;
+		end
+
 		local foundpos = string.find(args[i], ":", 1, true);
 		if( foundpos ) then
 			local var = string.sub(args[i], 1, foundpos-1);
@@ -79,7 +92,7 @@ function main()
 		end
 
 		-- check the options
-		if(not foundpos  and  args[i] ~= "update" ) then
+		if(not foundpos  and  args[i] ~= "update" and args[i] ~= "debug" ) then
 			local msg = sprintf(language[61], args[i]);
 			error(msg, 0 );
 		end;
