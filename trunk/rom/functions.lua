@@ -529,49 +529,66 @@ function RoMScript(script, default)
 	end
 
 	--- Macro length is max 255, and after we add the return code,
-	--- we are left with 120 character limit.
+	--- we are left with about 155 character limit.
 
-	local text = scriptDef.." r='' a={" .. script ..
-	"} for i=1,#a do r=r..tostring(a[i])" ..
-	"..'" .. string.char(9) .. "' end" ..
-	" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,r)";
+	local dataPart = 0
+	local raw = ""
+	repeat
+		-- Start of 'text'
+		local text = scriptDef.." r='' a={" .. script ..
+		"} for i=1,#a do r=r..tostring(a[i])" ..
+		"..'" .. string.char(9) .. "' end" ..
+		" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,"
 
-	-- Check to make sure length is within bounds
-	local len = string.len(text);
-	if( len > 254 ) then
-		error("Macro text too long.", 2);
-	end
+		-- End of 'text'
+		if dataPart == 0 then
+			text = text .. "r)";
+		else
+			text = text .. "string.sub(r,".. (1 + dataPart * 255) .."))";
+		end
 
-	-- Write the command macro
-	writeToMacro(commandMacro, text)
+		-- Check to make sure length is within bounds
+		local len = string.len(text);
+		if( len > 254 ) then
+			error("Macro text too long.", 2);
+		end
 
-	-- Write something on the first address, to see when its over written
-	memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
+		-- Write the command macro
+		writeToMacro(commandMacro, text)
 
-	--- Execute it
-	if( settings.profile.hotkeys.MACRO ) then
-		keyboardPress(settings.profile.hotkeys.MACRO.key);
-	end
+		-- Write something on the first address, to see when its over written
+		memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
 
-	-- A cheap version of a Mutex... wait till it is "released"
-	-- Use high-res timers to find out when to time-out
-	local startWaitTime = getTime();
-	while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
-		if( deltaTime(getTime(), startWaitTime) > 800 ) then
-			if( settings.options.DEBUGGING_MACRO ) then
-				cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
+		--- Execute it
+		if( settings.profile.hotkeys.MACRO ) then
+			keyboardPress(settings.profile.hotkeys.MACRO.key);
+		end
+
+		-- A cheap version of a Mutex... wait till it is "released"
+		-- Use high-res timers to find out when to time-out
+		local startWaitTime = getTime();
+		while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
+			if( deltaTime(getTime(), startWaitTime) > 800 ) then
+				if( settings.options.DEBUGGING_MACRO ) then
+					cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
+				end;
+				return default; -- Timed out
 			end;
-			return default; -- Timed out
-		end;
-		rest(1);
-	end
+			rest(1);
+		end
 
-	--- Read the outcome from the result macro
-	raw = readMacro(resultMacro)
+		--- Read the outcome from the result macro
+		local rawPart = readMacro(resultMacro)
+
+		raw = raw .. rawPart
+
+		dataPart = dataPart + 1
+	until string.len(rawPart) < 255
+
 	readsz = "";
 	ret = {};
 	cnt = 0;
-	for i = 1, 255, 1 do
+	for i = 1, string.len(raw), 1 do
 		local byte = string.byte(raw, i);
 
 		if( byte == 0 or byte == null) then -- Break on NULL terminator
