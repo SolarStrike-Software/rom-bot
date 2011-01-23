@@ -532,21 +532,21 @@ function RoMScript(script, default)
 	--- we are left with about 155 character limit.
 
 	local dataPart = 0 -- The part of the data to get
-	local raw = ""     -- Combined raw data from 'z'
+	local raw = ""     -- Combined raw data from 'R'
 	repeat
 		local text
 
 		-- The command macro
 		if dataPart == 0 then
 			-- The initial command macro
-			text = scriptDef.." z='' a={" .. script ..
-			"} for i=1,#a do z=z..tostring(a[i])" ..
+			text = scriptDef.." R='' a={" .. script ..
+			"} for i=1,#a do R=R..tostring(a[i])" ..
 			"..'" .. string.char(9) .. "' end" ..
-			" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,z)";
+			" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,R)";
 		else
-			-- command macro to get the rest of the data from 'z'
+			-- command macro to get the rest of the data from 'R'
 			text = scriptDef.." EditMacro("..resultMacro..",'"..
-			RESULT_MACRO_NAME.."',7,string.sub(z,".. (1 + dataPart * 255) .."))";
+			RESULT_MACRO_NAME.."',7,string.sub(R,".. (1 + dataPart * 255) .."))";
 		end
 
 		-- Check to make sure length is within bounds
