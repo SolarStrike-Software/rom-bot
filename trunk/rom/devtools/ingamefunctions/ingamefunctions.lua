@@ -17,9 +17,9 @@ function igf_GetTooltip(_side, _bagid)
 --	GameTooltip:Show()		-- ok
 --	GameTooltip:Hide()		-- ok
 
-	-- tooltip values for one side / we read only line 1-20 from 40, thats enough for tooltips  :-)
+	-- tooltip values for one side
 	local tt = {};
-	for i=1,20,1 do
+	for i=1,40,1 do
 		local lineobj, text = nil, nil;
 		lineobj = _G["GameTooltipText".._side..i];
 		if(lineobj) then
@@ -37,8 +37,7 @@ function igf_GetTooltip(_side, _bagid)
 	end
 
 	-- RoMScript can't handle tables, so we return single values
-	return tt[1],tt[2],tt[3],tt[4],tt[5],tt[6],tt[7],tt[8],tt[9],tt[10],
-	  tt[11],tt[12],tt[13],tt[14],tt[15],tt[16],tt[17],tt[18],tt[19],tt[20];
+	return unpack(tt)
 
 -- /script ReloadUI();
 -- /script GameTooltip:SetBagItem(68);

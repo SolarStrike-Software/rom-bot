@@ -11,7 +11,7 @@ proc = getProc()
 		if type(funct) == "function" then
 			local status,err = pcall(funct);
 			if status == false then
-				printf("onLoad error: %s", err);
+				printf("onLoad error: %s\n", err);
 			end
 
 		else

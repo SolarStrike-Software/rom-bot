@@ -1929,10 +1929,12 @@ end
 function CPlayer:moveInRange(target, range, ignoreCycleTargets)
 	-- calculates the closest waypoint that is distance "range" from target
 	local playerTargetDist = distance(self.X, self.Z, target.X, target.Z)
-	local ratio = (playerTargetDist - range)/playerTargetDist
-	local rx = self.X + (target.X - self.X) * ratio
-	local rz = self.Z + (target.Z - self.Z) * ratio
-	self:moveTo( CWaypoint(rx, rz), ignoreCycleTargets )
+	if playerTargetDist > range then
+		local ratio = (playerTargetDist - range)/playerTargetDist
+		local rx = self.X + (target.X - self.X) * ratio
+		local rz = self.Z + (target.Z - self.Z) * ratio
+		self:moveTo( CWaypoint(rx, rz), ignoreCycleTargets )
+	end
 end
 
 function CPlayer:waitForAggro()
