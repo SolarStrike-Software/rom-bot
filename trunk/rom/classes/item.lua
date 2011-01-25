@@ -67,6 +67,8 @@ CItem = class(
 		self.LastTimeUsed = 0;
 		self.MaxStack = 0;
 		self.ObjType = 0;
+		self.ObjSubType = 0;
+		self.ObjSubSubType = 0;
 
 		if ( self.Address ~= nil and self.Address ~= 0 ) then
 			self:update();
@@ -179,6 +181,8 @@ function CItem:update()
 		self.RequiredLvl = memoryReadInt( proc, self.BaseItemAddress + addresses.requiredLevelOffset );
 		self.MaxStack = memoryReadInt( proc, self.BaseItemAddress + addresses.maxStackOffset );
 		self.ObjType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset );
+		self.ObjSubType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset + 4);
+		self.ObjSubSubType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset + 8);
 
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
 			local skillItemId = memoryReadInt( proc, self.BaseItemAddress + addresses.realItemIdOffset );
@@ -432,4 +436,42 @@ function CItem:moveTo(bag)
 		RoMScript("PickupBagItem("..toItem.BagId..");");
 		inventory:update()
 	end
+end
+
+function CItem:isType(typename)
+	if not self.Available or self.Empty then
+		-- Not valid
+		return false
+	end
+
+	local itemtype, itemsubtype, itemsubsubtype = self:getTypes()
+
+	if itemtype == typename or
+		itemsubtype == typename or
+		itemsubsubtype == typename then
+		return true
+	else
+		return false
+	end
+end
+
+function CItem:getTypes()
+	if not self.Available or self.Empty then
+		-- Not valid
+		return false
+	end
+
+	local objtype = itemtypes[self.ObjType].Name
+
+	local objsubtype = nil
+	if self.ObjSubType ~= -1 then
+		objsubtype = itemtypes[self.ObjType][self.ObjSubType].Name
+	end
+
+	local objsubsubtype = nil
+	if self.ObjSubSubType ~= -1 then
+		objsubsubtype = itemtypes[self.ObjType][self.ObjSubType][self.ObjSubSubType].Name
+	end
+
+	return objtype, objsubtype, objsubsubtype
 end

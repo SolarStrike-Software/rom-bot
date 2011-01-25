@@ -2977,6 +2977,7 @@ function CPlayer:target_NPC(_npcname)
 
 	local npc = self:findNearestNameOrId(_npcname)
 	if npc then	-- we successfully found NPC
+		cprintf(cli.green, language[136], npc.Name);	-- we successfully target NPC
 		if( distance(self.X, self.Z, npc.X, npc.Z) > 39 ) then
 			self:moveInRange(CWaypoint(npc.X, npc.Z), 39, true);
 		end
