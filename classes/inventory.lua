@@ -469,13 +469,26 @@ function CInventory:autoSell()
 	end
 
 	local hf_stats_sell;
-	-- move ignore stats list into table
+	-- move stats list into table
 	if( settings.profile.options.INV_AUTOSELL_STATS_SELL ) then
 		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
 		hf_stats_sell = explode( hf_explode, "\n" );	-- move ignore list
 		for i,v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
 	end
 
+	local hf_type_sell;
+	-- move type list into table
+	if( settings.profile.options.INV_AUTOSELL_TYPES ) then
+		local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+		hf_type_sell = explode( hf_explode, "\n" );
+	end
+
+	local hf_type_nosell;
+	-- move type list into table
+	if( settings.profile.options.INV_AUTOSELL_TYPES_NOSELL ) then
+		local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+		hf_type_nosell = explode( hf_explode, "\n" );
+	end
 
 	--	ITEMCOLORS table is defined in item.lua
 	local function sellColor(_itemcolor)
@@ -483,6 +496,39 @@ function CInventory:autoSell()
 		for i,v in pairs(hf_quality_table) do
 
 			if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
+				return true
+			end
+		end
+
+		return false
+
+	end
+
+	local function isInTypeSell(_slotitem)
+
+		if ( not hf_type_sell  ) then
+			return true
+		end
+
+		for i,v in pairs(hf_type_sell) do
+
+			if _slotitem:isType(v) then
+				return true
+			end
+		end
+
+		return false
+
+	end
+
+	local function isInTypeNosell(_slotitem)
+
+		if ( not hf_type_nosell  ) then
+			return false
+		end
+
+		for i,v in pairs(hf_type_nosell) do
+			if _slotitem:isType(v) then
 				return true
 			end
 		end
@@ -596,7 +642,6 @@ function CInventory:autoSell()
 	end
 
 
-
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
 	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 60, settings.profile.options.INV_AUTOSELL_TOSLOT + 60, 1 do
@@ -613,6 +658,13 @@ function CInventory:autoSell()
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
 				sell_item = false;
+			end
+
+			-- check if on type sell lists
+			if (isInTypeSell(slotitem) == false ) then
+				sell_item = false
+			elseif (isInTypeNosell(slotitem) == true ) then
+				sell_item = false
 			end
 
 			-- check itemname against ignore list

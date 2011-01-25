@@ -14,6 +14,7 @@ include("classes/object.lua");
 include("classes/objectlist.lua");
 include("classes/eggpet.lua");
 include("classes/store.lua");
+include("classes/itemtypes.lua");
 include("settings.lua");
 include("macros.lua");
 
@@ -206,6 +207,8 @@ function main()
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
+
+	LoadItemTypes()     -- Needs macros to already be set up.
 
 	-- list waypoint files and files in folders
 	-- only files with filetype '.xml' are listed
