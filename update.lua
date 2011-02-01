@@ -123,9 +123,9 @@ pawnLootableOffsetUpdatePattern = string.char(0x8A, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF
 pawnLootableOffsetUpdateMask = "xx????xx????xx";
 pawnLootableOffsetUpdateOffset = 8;
 
-charPtrMountedOffsetUpdatePattern = string.char(0xCC, 0xCC, 0x8B, 0x41, 0xFF, 0xC3, 0xCC);
-charPtrMountedOffsetUpdateMask = "xxxx?xx";
-charPtrMountedOffsetUpdateOffset = 4;
+charPtrMountedOffsetUpdatePattern = string.char(0x83, 0x79, 0xFF, 0x00, 0x74, 0x0C, 0xF6, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74, 0x03, 0xB0, 0x01);
+charPtrMountedOffsetUpdateMask = "xx?xxxxx?????xxxx";
+charPtrMountedOffsetUpdateOffset = 2;
 
 realItemIdOffsetUpdatePattern = string.char(0x8B, 0xF0, 0xEB, 0xA5, 0x8B, 0x89, 0xFF, 0xFF, 0xFF, 0xFF, 0x85, 0xC9);
 realItemIdOffsetUpdateMask = "xxxxxx????xx";
@@ -160,9 +160,9 @@ pawnHPOffsetUpdatePattern = string.char(0x74, 0xFF, 0x8B, 0x88, 0xFF, 0xFF, 0xFF
 pawnHPOffsetUpdateMask = "x?xx????xx";
 pawnHPOffsetUpdateOffset = 4;
 
-pawnIdOffsetUpdatePattern = string.char(0x7F, 0xFF, 0x8B, 0x46, 0xFF, 0x50, 0xE8);
-pawnIdOffsetUpdateMask = "x?xx?xx";
-pawnIdOffsetUpdateOffset = 4;
+pawnIdOffsetUpdatePattern = string.char(0x55, 0x8B, 0x6C, 0x24, 0x08, 0x56, 0x8B, 0xF1, 0x39, 0x6E, 0xFF, 0x75, 0x07, 0x5E);
+pawnIdOffsetUpdateMask = "xxxxxxxxxx?xxx";
+pawnIdOffsetUpdateOffset = 10;
 
 pawnLevelOffsetUpdatePattern = string.char(0x56, 0x89, 0x81, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x91, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0x35);
 pawnLevelOffsetUpdateMask = "xxx????xx????xx";
@@ -333,7 +333,7 @@ function findOffsets()
 	update("pawnDirXUVec_offset", pawnDirXUVecOffsetUpdatePattern, pawnDirXUVecOffsetUpdateMask, pawnDirXUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
 	update("pawnDirYUVec_offset", pawnDirYUVecOffsetUpdatePattern, pawnDirYUVecOffsetUpdateMask, pawnDirYUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
 	update("pawnHP_offset", pawnHPOffsetUpdatePattern, pawnHPOffsetUpdateMask, pawnHPOffsetUpdateOffset, 0x7E0000, 0xA0000);
-	update("pawnId_offset", pawnIdOffsetUpdatePattern, pawnIdOffsetUpdateMask, pawnIdOffsetUpdateOffset, 0x850000, 0xA0000, 1);
+	update("pawnId_offset", pawnIdOffsetUpdatePattern, pawnIdOffsetUpdateMask, pawnIdOffsetUpdateOffset, 0x820000, 0xA0000, 1);
 	update("pawnLevel_offset", pawnLevelOffsetUpdatePattern, pawnLevelOffsetUpdateMask, pawnLevelOffsetUpdateOffset, 0x840000, 0xA0000);
 	update("pawnLevel2_offset", pawnLevel2OffsetUpdatePattern, pawnLevel2OffsetUpdateMask, pawnLevel2OffsetUpdateOffset, 0x840000, 0xA0000);
 	update("pawnMP_offset", pawnMPOffsetUpdatePattern, pawnMPOffsetUpdateMask, pawnMPOffsetUpdateOffset, 0x840000, 0xA0000);
