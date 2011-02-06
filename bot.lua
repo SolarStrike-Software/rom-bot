@@ -389,6 +389,8 @@ function main()
 		__WPL:reverse();
 	end;
 
+	player:update() -- update player coords
+
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
@@ -406,6 +408,8 @@ function main()
 		else
 			player.Returning = false;	-- use normale waypoint path
 		end;
+	else
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 	end;
 
 	-- Update inventory

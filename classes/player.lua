@@ -2954,9 +2954,24 @@ function CPlayer:merchant(_npcname, _option)
 		store:buyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
 		store:buyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
 		store:buyConsumable("poison", settings.profile.options.POISON);
-		store:buyConsumable("eggpet_hoe", settings.profile.options.EGGPET_HOE);
-		store:buyConsumable("eggpet_spade", settings.profile.options.EGGPET_SPADE);
-		store:buyConsumable("eggpet_hatchet", settings.profile.options.EGGPET_HATCHET);
+		if settings.profile.options.EGGPET_ENABLE_CRAFT then
+			if settings.profile.options.EGGPET_CRAFT_RATIO then
+				local mRatio, wRatio, hRatio = string.match(settings.profile.options.EGGPET_CRAFT_RATIO,"(%d*)%s*:%s*(%d*)%s*:%s*(%d*)")
+				if tonumber(mRatio) > 0 then
+					store:buyConsumable("eggpet_hoe", settings.profile.options.EGGPET_HOE);
+				end
+				if tonumber(wRatio) > 0 then
+					store:buyConsumable("eggpet_hatchet", settings.profile.options.EGGPET_HATCHET);
+				end
+				if tonumber(hRatio) > 0 then
+					store:buyConsumable("eggpet_spade", settings.profile.options.EGGPET_SPADE);
+				end
+			else
+				store:buyConsumable("eggpet_hoe", settings.profile.options.EGGPET_HOE);
+				store:buyConsumable("eggpet_hatchet", settings.profile.options.EGGPET_HATCHET);
+				store:buyConsumable("eggpet_spade", settings.profile.options.EGGPET_SPADE);
+			end
+		end
 		inventory:update();
 	end
 

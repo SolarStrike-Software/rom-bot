@@ -513,7 +513,6 @@ function sendMacro(_script)
 
 end
 
-
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
 
@@ -561,23 +560,25 @@ function RoMScript(script, default)
 		-- Write something on the first address, to see when its over written
 		memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
 
-		--- Execute it
-		if( settings.profile.hotkeys.MACRO ) then
-			keyboardPress(settings.profile.hotkeys.MACRO.key);
-		end
+		repeat
+			--- Execute it
+			if( settings.profile.hotkeys.MACRO ) then
+				keyboardPress(settings.profile.hotkeys.MACRO.key);
+			end
 
-		-- A cheap version of a Mutex... wait till it is "released"
-		-- Use high-res timers to find out when to time-out
-		local startWaitTime = getTime();
-		while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
-			if( deltaTime(getTime(), startWaitTime) > 800 ) then
-				if( settings.options.DEBUGGING_MACRO ) then
-					cprintf(cli.yellow, "[DEBUG] TIMEOUT in RoMScript ... \n");
+			local tryagain = false
+
+			-- A cheap version of a Mutex... wait till it is "released"
+			-- Use high-res timers to find out when to time-out
+			local startWaitTime = getTime();
+			while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
+				if( deltaTime(getTime(), startWaitTime) > 800 ) then
+					tryagain = true
+					break
 				end;
-				return default; -- Timed out
-			end;
-			rest(1);
-		end
+				rest(1);
+			end
+		until tryagain == false
 
 		--- Read the outcome from the result macro
 		local rawPart = readMacro(resultMacro)
