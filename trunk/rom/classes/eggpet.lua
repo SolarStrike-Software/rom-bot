@@ -294,23 +294,13 @@ function CEggPet:craft(_craftType, indexLevel)
 		-- then use profile settings
 
 		-- Which tool
-		local toolChoices = self:chooseToolByRatio()
+		local bestTool = self:getBestTool()
 
-		-- Check if you have tools in inventory
-		local choice = 0
-		for i, Type in pairs(toolChoices) do
-			-- Check if you have tools
-			if inventory:itemTotalCount(Type.Id) > 0 then
-				choice = i
-				break
-			end
-		end
-
-		if choice  == 0 then -- no tools in inventory
+		if bestTool == nil then -- no tools in inventory
 			return
 		end
 
-		_craftType = toolChoices[choice].Type
+		_craftType = bestTool.Type
 	end
 
 	-- Get tool item
@@ -338,8 +328,6 @@ function CEggPet:craft(_craftType, indexLevel)
 		-- See if there is a user profile index override
 		if settings.profile.options.EGGPET_CRAFT_INDEXES then
 			local mIndex, wIndex, hIndex = string.match(settings.profile.options.EGGPET_CRAFT_INDEXES,"(%d*)%s*,%s*(%d*)%s*,%s*(%d*)")
-			print("_craftType",_craftType)
-			print("mIndex wIndex hIndex",mIndex,wIndex,hIndex)
 			if _craftType == "Mining" then
 				indexLevel = mIndex
 			elseif _craftType == "Woodworking" then
@@ -373,17 +361,49 @@ end
 function CEggPet:harvest()
 	if #self.Products ~= 0 then
 		RoMScript("PetCraftHarvest(".. self.EggSlot.. ")")
+		self:update()
 	end
 end
 
-function CEggPet:chooseToolByRatio()
-	-- Returns the tool ids in order based on the user profile ratio setting and the pets crafting levels
+function CEggPet:getToolChoices()
+	-- Returns the tool ids in order based on the user profile ratio setting and the materials in your inventory
+
+	local function countMaterials(craft)
+		local t2
+		if craft == "Mining" then
+			t2 = 0
+		elseif craft == "Woodworking" then
+			t2 = 1
+		elseif craft == "Herbalism" then
+			t2 = 2
+		end
+
+		local count = 0
+		for k, item in pairs(inventory.BagSlot) do
+			if not item.Empty and item.Available and
+				item.ObjType == 3 and item.ObjSubType == t2 then
+				local tmpCount = item.ItemCount
+				if item.Quality > 0 then
+					tmpCount = tmpCount * 2
+				end
+				if item.Quality > 1 then
+					tmpCount = tmpCount * 6^(item.Quality - 1)
+				end
+				count = count + tmpCount
+			end
+		end
+		return count
+	end
 
 	-- Get user profile ratio settings
-	local mRatio, wRatio, hRatio = string.match(settings.profile.options.EGGPET_CRAFT_RATIO,"(%d*)%s*:%s*(%d*)%s*:%s*(%d*)")
+	local mRatio, wRatio, hRatio
+	if settings.profile.options.EGGPET_CRAFT_RATIO ~= nil then
+		mRatio, wRatio, hRatio = string.match(settings.profile.options.EGGPET_CRAFT_RATIO,"(%d*)%s*:%s*(%d*)%s*:%s*(%d*)")
+	end
+
 	-- check for nil values
 	if mRatio == nil or wRatio == nil or hRatio == nil then
-		return
+		mRatio, wRatio, hRatio = 1,1,1 -- default to 1:1:1 if no ratio given
 	end
 
 	-- convert to numbers
@@ -397,21 +417,21 @@ function CEggPet:chooseToolByRatio()
 		local tmp = {}
 		tmp.Type = "Mining"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
-		tmp.Value = self.Mining/mRatio
+		tmp.Value = countMaterials(tmp.Type)/mRatio
 		table.insert(tmpResults,tmp)
 	end
 	if wRatio > 0 then
 		local tmp = {}
 		tmp.Type = "Woodworking"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
-		tmp.Value = self.Woodworking/wRatio
+		tmp.Value = countMaterials(tmp.Type)/wRatio
 		table.insert(tmpResults,tmp)
 	end
 	if hRatio > 0 then
 		local tmp = {}
 		tmp.Type = "Herbalism"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
-		tmp.Value = self.Herbalism/hRatio
+		tmp.Value = countMaterials(tmp.Type)/hRatio
 		table.insert(tmpResults,tmp)
 	end
 
@@ -424,6 +444,20 @@ function CEggPet:chooseToolByRatio()
 	end
 
 	return results
+end
+
+function CEggPet:getBestTool()
+	local toolChoices = self:getToolChoices()
+	-- Check if you have tools in inventory
+	local toolSlot = self.Tool.Id
+
+	local choice = 0
+	for i, Type in pairs(toolChoices) do
+		-- Check if you have tools
+		if inventory:itemTotalCount(Type.Id) > 0 or Type.Id == self.Tool.Id then
+			return Type
+		end
+	end
 end
 
 function checkEggPets()
@@ -448,12 +482,25 @@ function checkEggPets()
 		if craftEgg.EggId == 0 then -- Bad edd
 			printf("Bad egg slot given to EGGPET_CRAFT_SLOT in profile.\n")
 			craftEgg = nil
+		elseif not craftEgg.Crafting then
+			craftEgg:harvest() -- This 'harvest' makes sure to harvest when the tools run out
 		end
 	end
 
 	-- Checks they are not the same
 	if assistEgg and craftEgg and (assistEgg.EggSlot == craftEgg.EggSlot) then
-		error("Cannot use the same egg pet to assist and craft at the same time. Please change you profile settings.")
+		-- if there are tools, craft, else assist
+
+		local choice = craftEgg:getBestTool()
+		-- Check if you have tools in inventory
+		if choice == nil and craftEgg.Tool.Id == nil then
+			-- No tools, disable craft
+			craftEgg = nil
+		else
+			-- Have tools, disable assist
+			assistEgg = nil
+		end
+
 	end
 
 	if assistEgg then

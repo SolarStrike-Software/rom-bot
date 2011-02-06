@@ -651,7 +651,7 @@ function CInventory:autoSell()
 		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available) then
 
 			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-			  "Check item so sell:", slotnumber, slotitem.Id, slotitem.Name);
+			  "Check item so sell:", slotNumber, slotitem.Id, slotitem.Name);
 
 			-- check item quality color
 			if( sellColor(slotitem.Color) == false ) then
@@ -674,7 +674,7 @@ function CInventory:autoSell()
 
 			-- read tooltip
 			local tooltip_right;
-			if( bot.IgfAddon == true ) then
+			if( bot.IgfAddon == true and (slotitem.ObjType == 0 or slotitem.ObjType == 1)) then
 				tooltip_right = slotitem:getGameTooltip("right");
 				if( tooltip_right == false ) then	-- error while reading tooltip
 					cprintf(cli.yellow, "Error reading tooltip for bagslot %s, %s %s\n",
