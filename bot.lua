@@ -383,6 +383,8 @@ function main()
 		end;
 	end;
 
+	player:update() -- update player coords
+
 	-- special option for use waypoint file from profile in a reverse order / not if forced path
 	if( settings.profile.options.WAYPOINTS_REVERSE == true  and
 	    not forcedPath  ) then
@@ -406,6 +408,8 @@ function main()
 		else
 			player.Returning = false;	-- use normale waypoint path
 		end;
+	else
+		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 	end;
 
 	-- Update inventory
@@ -741,13 +745,13 @@ function main()
 						cprintf(cli.yellow, language[55],
 						  player.Unstick_counter,
 						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
-						  
-						  
-						   					-- check if onUnstickFailure event is used in profile
-					if( type(settings.profile.events.onUnstickFailure) == "function" ) and 
+
+
+						-- check if onUnstickFailure event is used in profile
+						if( type(settings.profile.events.onUnstickFailure) == "function" ) and
 							player.Unstick_counter == settings.profile.options.MAX_UNSTICK_TRIALS + 1 then
 							pcall(settings.profile.events.onUnstickFailure);
-						
+
 						elseif( settings.profile.options.LOGOUT_WHEN_STUCK ) then
 							if settings.profile.options.CLOSE_WHEN_STUCK == false then
 								player:logout() -- doesn't close client
