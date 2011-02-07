@@ -389,8 +389,6 @@ function main()
 		__WPL:reverse();
 	end;
 
-	player:update() -- update player coords
-
 	-- look for the closest waypoint / return path point to start
 	if( __RPL and __WPL.Mode ~= "wander" ) then	-- return path points available ?
 		-- compare closest waypoint with closest returnpath point
@@ -408,8 +406,6 @@ function main()
 		else
 			player.Returning = false;	-- use normale waypoint path
 		end;
-	else
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
 	end;
 
 	-- Update inventory
@@ -745,7 +741,14 @@ function main()
 						cprintf(cli.yellow, language[55],
 						  player.Unstick_counter,
 						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
-						if( settings.profile.options.LOGOUT_WHEN_STUCK ) then
+						  
+						  
+						   					-- check if onUnstickFailure event is used in profile
+					if( type(settings.profile.events.onUnstickFailure) == "function" ) and 
+							player.Unstick_counter == settings.profile.options.MAX_UNSTICK_TRIALS + 1 then
+							pcall(settings.profile.events.onUnstickFailure);
+						
+						elseif( settings.profile.options.LOGOUT_WHEN_STUCK ) then
 							if settings.profile.options.CLOSE_WHEN_STUCK == false then
 								player:logout() -- doesn't close client
 							else
@@ -758,9 +761,7 @@ function main()
 							-- we should play a sound !
 							player.Unstick_counter = 0;
 						end
-					end;
-
-					if( player.Sleeping ~= true) then	-- not when to much trial and we go to sleep
+					elseif( player.Sleeping ~= true) then	-- not when to much trial and we go to sleep
 						-- unstick player und unstick message
 						cprintf(cli.red, language[9], player.X, player.Z, 	-- unsticking player... at position
 						   player.Unstick_counter, settings.profile.options.MAX_UNSTICK_TRIALS);

@@ -200,4 +200,8 @@
 		-- Note that returning 'false' here breaks out of harvesting completely;
 		-- You will not attempt to harvest other nearby nodes instead.
 	]]></onHarvest>
+
+	<onUnstickFailure><![CDATA[
+		-- Lua code to execute when MAX_UNSTICK_TRIALS is reached.
+	]]></onUnstickFailure>
 </profile>
