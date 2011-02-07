@@ -148,6 +148,7 @@ settings_default = {
 			onSkillCast = nil,
 			onLevelup = nil,
 			onHarvest = nil,
+			onUnstickFailure = nil,
 		}
 	},
 };
@@ -687,6 +688,20 @@ function settings.loadProfile(_name)
 		end
 	end
 
+	local loadonUnstickFailureEvent = function(node)
+		local luaCode = node:getValue();
+		if( luaCode == nil ) then return; end;
+
+		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
+			settings.profile.events.onUnstickFailure = loadstring(luaCode);
+			assert(settings.profile.events.onUnstickFailure, sprintf(language[151], "onUnstickFailure"));
+
+			if( type(settings.profile.events.onUnstickFailure) ~= "function" ) then
+				settings.profile.events.onUnstickFailure = nil;
+			end;
+		end
+	end
+
 	local skillSort = function(tab1, tab2)
 		if( tab2.priority < tab1.priority ) then
 			return true;
@@ -892,6 +907,8 @@ function settings.loadProfile(_name)
 			loadOnSkillCastEvent(v);
 		elseif( string.lower(name) == "onharvest" ) then
 			loadOnHarvestEvent(v);
+		elseif( string.lower(name) == "onunstickfailure" ) then
+			loadonUnstickFailureEvent(v);
 		elseif( string.lower(name) == "onpreskillcast" ) then
 			loadOnPreSkillCastEvent(v);
 		elseif( string.lower(name) == "skills_warrior"  and
