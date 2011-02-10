@@ -1093,6 +1093,11 @@ end
 
 -- Returns the point that is nearest to (X,Z) between segment (A,B) and (C,D)
 function getNearestSegmentPoint(x, z, a, b, c, d)
+
+	if a == c and b == d then
+		return CWaypoint(a, b)
+	end
+
 	local dx1 = x - a;
 	local dz1 = z - b;
 	local dx2 = c - a;
