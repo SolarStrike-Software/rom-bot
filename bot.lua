@@ -343,7 +343,13 @@ function main()
 	local wp_to_load, rp_to_load;
 	-- get wp filename to load
 	if( forcedPath ) then			-- waypointfile or 'wander'
-		wp_to_load = forcedPath;
+		local filename = getExecutionPath() .. "/waypoints/" .. string.gsub(forcedPath,".xml","") .. ".xml";
+		if fileExists(filename) or ( string.lower(forcedPath) == "wander" ) then
+			wp_to_load = forcedPath;
+		else
+			cprintf(cli.yellow,language[153], filename ); -- We can't find your waypoint file
+		end;
+
 	else
 		if( settings.profile.options.WAYPOINTS and __WPL == nil ) then
 			wp_to_load = settings.profile.options.WAYPOINTS;
