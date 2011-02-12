@@ -139,6 +139,7 @@ language = {
 	[150] = "Failed to compile and run Lua code for waypoint #%d",
 	[151] = "Failed to compile and run Lua code for %s in character profile.",
 	[152] = "Failed to compile and run Lua code for waypointlist onLoad event.",
+	[153] = "We can't find your waypoint file \'%s\'. Please choose one from the list.\n",
 
 	[160] = "Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
 	[161] = "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n",
