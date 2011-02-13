@@ -1,5 +1,14 @@
 BOT_VERSION = 3.29;
 
+BOT_REVISION = "<UNKNOWN>"
+local fname = getExecutionPath() .. "/.svn/entries"
+if( fileExists(fname) ) then
+	local dirfound = false
+	for line in io.lines(fname) do
+		if dirfound then BOT_REVISION = line break elseif line == "dir" then dirfound = true end
+	end
+end
+
 include("addresses.lua");
 include("database.lua");
 include("functions.lua");
@@ -49,7 +58,7 @@ __RPL = nil;	-- Return Point List
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
-	"RoM Bot Version %0.2f\n", BOT_VERSION);
+	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, BOT_REVISION);
 
 printPicture("logo", text, 4);
 
