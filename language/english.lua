@@ -140,6 +140,10 @@ language = {
 	[151] = "Failed to compile and run Lua code for %s in character profile.",
 	[152] = "Failed to compile and run Lua code for waypointlist onLoad event.",
 	[153] = "We can't find your waypoint file \'%s\'. Please choose one from the list.\n",
+	[154] = "You need to define both \'reqbuffname\' and \'reqbufftarget\' for skill %s in your profile \'%s.xml\'. Please correct or delete both!\n",
+	[155] = "You need to define both \'nobuffname\' and \'nobufftarget\' for skill %s in your profile \'%s.xml\'. Please correct or delete both!\n",
+	[156] = "You defined an wrong option reqbufftarget=\'%s\' at skill %s in your profile \'%s.xml\'. Only \'player\' and \'target\' is possible. Please delete or correct that line!\n",
+	[157] = "You defined an wrong option nobufftarget=\'%s\' at skill %s in your profile \'%s.xml\'. Only \'player\' and \'target\' is possible. Please delete or correct that line!\n",
 
 	[160] = "Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
 	[161] = "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n",

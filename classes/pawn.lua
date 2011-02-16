@@ -84,9 +84,7 @@ CPawn = class(
 		self.Lootable = false;
 		self.Aggressive = false;
 
-		self.LastBuffUpdateTime = getTime();
 		self.Buffs = {};
-		self.Debuffs = {};
 
 		-- Experience tracking variables
 		self.LastExpUpdateTime = os.time();
@@ -112,6 +110,7 @@ CPawn = class(
 		self.MaxEnergy = 0;
 		self.Concentration = 0;
 		self.MaxConcentration = 0;
+		self.Nature = 0;
 		self.PotionLastUseTime = 0;
 		self.PotionHpUsed = 0;			-- counts use of HP potions
 		self.PotionManaUsed = 0;		-- counts use of mana potions
@@ -217,7 +216,6 @@ function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";
 	local tmp;
-
 	tmp = memoryReadRepeat("byte", proc, self.Address + addresses.charAlive_offset);
 	self.Alive = not(tmp == 9 or tmp == 8);
 	self.HP = memoryReadRepeat("int", proc, self.Address + addresses.pawnHP_offset);
@@ -236,6 +234,8 @@ function CPawn:update()
 	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 3;
 	self.Harvesting = memoryReadRepeat("int", proc, self.Address + addresses.pawnHarvesting_offset) ~= 0;
 	self.Casting = (memoryReadRepeat("int", proc, self.Address + addresses.pawnCasting_offset) ~= 0);
+
+	self:updateBuffs()
 
 	tmp = memoryReadRepeat("int", proc, self.Address + addresses.pawnLootable_offset);
 	if( tmp ) then
@@ -376,8 +376,62 @@ function CPawn:update()
 	end
 end
 
-function CPawn:updateBuffs(target)
-	target = target or "player"; -- By default, assume player.
+function CPawn:updateBuffs()
+	local proc = getProc()
+	local buffStart = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsStart_offset);
+	local buffEnd = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsEnd_offset);
+
+	self.Buffs = {} -- clear old values
+	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
+	if (buffEnd - buffStart)/ 56 > 20 then -- Something wrong, too many buffs
+		return
+	end
+
+	for i = buffStart, buffEnd - 4, 56 do
+		local tmp = {}
+		--yrest(1)
+		tmp.Id = memoryReadRepeat("int", proc, i + addresses.pawnBuffId_offset);
+		local name = GetIdName(tmp.Id)
+
+		if name ~= nil and name ~= "" then
+
+			-- First try and find '(3)' type count in name
+			local count = string.match(name,"%((%d+)%)$")
+			if count then
+				tmp.Count = tonumber(count)
+				tmp.Name = string.match(name,"(.*)%s%(%d+%)$")
+			end
+
+			-- Next try and find roman numeral number
+			count = string.match(name,"%s([IVX]+)$")
+			if count then
+				-- Convert roman number to number
+				if count == "I" then tmp.Count = 1
+				elseif count == "II" then tmp.Count = 2
+				elseif count == "III" then tmp.Count = 3
+				elseif count == "IV" then tmp.Count = 4
+				elseif count == "V" then tmp.Count = 5
+				elseif count == "VI" then tmp.Count = 6
+				elseif count == "VII" then tmp.Count = 7
+				elseif count == "VIII" then tmp.Count = 8
+				elseif count == "IX" then tmp.Count = 9
+				elseif count == "X" then tmp.Count = 10
+				end
+				tmp.Name = string.match(name,"(.*)%s[IVX]+$")
+			end
+
+			-- Not stackable buff?
+			if tmp.Name == nil then
+				tmp.Name = name
+				tmp.Count = 1
+			end
+			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.pawnBuffTimeLeft_offset);
+			tmp.Level = memoryReadRepeat("int", proc, i + addresses.pawnBuffLevel_offset);
+
+			table.insert(self.Buffs,tmp)
+		end
+	end
+	--[[target = target or "player"; -- By default, assume player.
 	self.Buffs = {}; -- Flush old buffs/debuffs
 	self.Debuffs = {};
 
@@ -407,7 +461,7 @@ function CPawn:updateBuffs(target)
 		end
 	end
 
-	self.LastBuffUpdateTime = getTime();
+	self.LastBuffUpdateTime = getTime();]]
 end
 
 function CPawn:haveTarget()
@@ -460,24 +514,30 @@ function CPawn:distanceToTarget()
 	return math.sqrt( (tx-px)*(tx-px) + (ty-py)*(ty-py) + (tz-pz)*(tz-pz) );
 end
 
-function CPawn:hasBuff(buff)
-	if self.Address == player.TargetPtr then
-		self:updateBuffs("target")
+function CPawn:hasBuff(buffname, count)
+	local buff = self:getBuff(buffname, count)
+
+	if buff then
+		return true, buff.Count -- count returned for backward compatibility
 	else
-		self:updateBuffs("player")
+		return false
 	end
-	local bool = (self.Buffs[buff] ~= nil) -- exists or not, true or false
-	local count = (self.Buffs[buff] or 0) -- Buff count or 0
-	return bool, count
 end
 
-function CPawn:hasDebuff(deBuff)
-	if self.Address == player.TargetPtr then
-		self:updateBuffs("target")
-	else
-		self:updateBuffs("player")
+function CPawn:hasDebuff(deBuff, count)
+	return self:hasBuff(debuff, count)
+end
+
+function CPawn:getBuff(buffnames, count)
+	self:updateBuffs()
+
+	for i, buff in pairs(self.Buffs) do
+		for buffname in string.gmatch(buffnames,"[^,]+") do
+			if ( buffname == buff.Name or tonumber(buffname) == buff.Id ) and ( count == nil or buff.Count >= count ) then
+				return buff
+			end
+		end
 	end
-	local bool = (self.Debuffs[deBuff] ~= nil) -- exists or not, true or false
-	local count = (self.Debuffs[deBuff] or 0) -- Debuff count or 0
-	return bool, count
+
+	return false
 end

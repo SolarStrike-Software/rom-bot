@@ -4,112 +4,109 @@
 	<skill name="MAGE_LIGHTNING" aslevel="8" skilltab="2" skillnum="2" mana="20" manainc="2.0" range="150" minrange="75" priority="100" cooldown="20" type="damage" target="enemy" />
 	<skill name="MAGE_INTENSIFICATION" aslevel="16" skilltab="2" skillnum="4" mana="10" cooldown="20" type="buff" target="self" />
 	<skill name="MAGE_SILENCE" mana="50" range="150" cooldown="24" type="debuff" target="enemy" />
-	<skill name="MAGE_FIRE_WARD" mana="120" cooldown="600" type="buff" target="self" />
+	<skill name="MAGE_FIRE_WARD" mana="120" type="buff" buffname="500366" target="self" />
 	<skill name="MAGE_ELEMENTAL_CATALYST" cooldown="300" type="buff" target="self" />
 	<skill name="MAGE_FLAME" aslevel="1" skilltab="4" skillnum="2" mana="20" manainc="2.0" range="225" casttime="3" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTROSTATIC_CHARGE" aslevel="2" skilltab="4" skillnum="3" mana="75" manainc="7.5" cooldown="20" type="buff" target="self"  />
+	<skill name="MAGE_ELECTROSTATIC_CHARGE" aslevel="2" skilltab="4" skillnum="3" mana="75" manainc="7.5" cooldown="20" type="buff" buffname="501538" target="self"  />
 	<skill name="MAGE_PLASMA_ARROW" aslevel="2" skilltab="4" skillnum="4" mana="15" manainc="1.5" range="200" casttime="2" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTRIC_BOLT" aslevel="10" skilltab="4" skillnum="6" mana="30" manainc="3.0" range="200" casttime="1" type="dot" target="enemy" />
+	<skill name="MAGE_ELECTRIC_BOLT" aslevel="10" skilltab="4" skillnum="6" mana="30" manainc="3.0" range="200" casttime="1" type="dot" buffname="501550" target="enemy" />
 	<skill name="MAGE_GALAXY" mana="35" manainc="3.5" range="150" type="damage" target="enemy" />
-	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" manainc="3.25" cooldown="1800" range="200" type="buff" target="self" />
 
 	<!-- TODO: More info needed (mana increase per level) -->
-	<skill name="MAGE_DISCHARGE" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTRIC_EXPLOSION" mana="10" range="200" casttime="2" type="damage" target="enemy" />
-	<skill name="MAGE_PHOENIX" mana="40" range="120" cooldown="20" type="damage" target="enemy" />
-	<skill name="MAGE_ELECTRIC_COMPRESSION" type="buff" target="self" />
-	<skill name="MAGE_STATIC_FIELD" mana="20" range="150" casttime="1" type="stun" target="enemy" />
-	<skill name="MAGE_PURGATORY_FIRE" mana="50" type="damage" target="enemy" />
-	<skill name="MAGE_ENERGY_WELL" cooldown="120" type="buff" target="self" />
-	<skill name="MAGE_ELEMENTAL_WEAKNESS" mana="50" range="250" type="debuff" target="enemy" />
-	<skill name="MAGE_THUNDERSTORM" mana="70" range="180" type="damage" target="enemy" />
-	<skill name="MAGE_ENERGY_INFLUX" cooldown="120" type="buff" target="self" />
+	<skill name="MAGE_DISCHARGE" type="damage" target="enemy"  cooldown="15"/>
 	<skill name="MAGE_METEOR_SHOWER" mana="30" casttime="5" range="150" />
-	<skill name="MAGE_EARTH_SURGE" mana="48" range="200" minrange="80" cooldown="2"  />
+	<skill name="MAGE_ELECTRIC_EXPLOSION" mana="10" range="200" casttime="2" type="damage" target="enemy" reqbuffname="502270" reqbufftarget="player" />
+	<skill name="MAGE_PHOENIX" mana="40" range="120" cooldown="20" type="damage" target="enemy" />
+	<skill name="MAGE_ELECTRIC_COMPRESSION" type="buff" buffname="501554" target="self" reqbuffname="502270" reqbufftarget="player" />
+	<skill name="MAGE_STATIC_FIELD" mana="20" range="150" casttime="1" type="stun" buffname="501555" target="enemy" reqbuffname="501554" reqbufftarget="player" />
+	<skill name="MAGE_PURGATORY_FIRE" mana="50" type="damage" target="enemy" />
+	<skill name="MAGE_ENERGY_INFLUX" cooldown="120" type="buff" buffname="500296" target="self" />
+	<skill name="MAGE_ENERGY_WELL" cooldown="120" type="buff" buffname="500369" target="self" />
+	<skill name="MAGE_ELEMENTAL_WEAKNESS" mana="50" range="250" type="debuff" buffname="500365" target="enemy" />
+	<skill name="MAGE_THUNDERSTORM" mana="70" range="180" type="damage" target="enemy" />
 
 	<!-- Elite -->
-	<skill name="MAGE_MAGICAL_TALENT" rage="35" cooldown="300" type="buff" target="self" />
-	<skill name="MAGE_MAGICAL_ENLIGHTENMENT" rage="30" cooldown="300" type="buff" target="self" />
-	<skill name="MAGE_ELEMENTAL_EXPLOSION" rage="35" cooldown="300" type="buff" target="self" />
-	<skill name="MAGE_RAGE_MANA" rage="30" cooldown="120" type="buff" target="self" />
+	<skill name="MAGE_MAGICAL_TALENT" rage="20" type="buff" buffname="501947" target="self" />
+	<skill name="MAGE_MAGICAL_ENLIGHTENMENT" rage="35" type="buff" buffname="501948" target="self" />
+	<skill name="MAGE_ELEMENTAL_EXPLOSION" rage="35" type="buff" buffname="501949" target="self" />
+	<skill name="MAGE_RAGE_MANA" rage="35" cooldown="120" type="buff" target="self" />
 	<skill name="MAGE_ACTIVATE_MANA" mana="95" cooldown="90" type="buff" target="self" />
-	<skill name="MAGE_THUNDERCLAP" concentration="20" range="225" casttime="1" cooldown="10" priority="100" />
-	<skill name="MAGE_FIRE_ARROW" mana="30" cooldown="300" type="buff" target="self" />
-	<skill name="MAGE_FIRE_ROSE" mana="35" range="225" type="dot" />
-	<!-- TODO: Requires 3 fire rose seeds on target -->
-	<skill name="MAGE_FIRE_ROSE_EXPLOSION" mana="45" range="225" cooldown="10" />
+	<skill name="MAGE_THUNDERCLAP" concentration="20" range="225" casttime="1" cooldown="10" type="damage" target="target" />
+	<skill name="MAGE_FIRE_ARROW" mana="30" type="buff" buffname="501955" target="self" nobuffname="503187" nobufftarget="player"/>
+	<skill name="MAGE_FIRE_ROSE" mana="35" range="225" type="dot" target="target" nobuffname="501806,501814,501842" nobufftarget="target" nobuffcount="3" />
+	<skill name="MAGE_FIRE_ROSE_EXPLOSION" mana="45" range="225" cooldown="10" type="damage" target="enemy" reqbuffname="501806,501814,501842" reqbufftarget="target" reqbuffcount="3" />
 	<skill name="MAGE_FLAME_SPIRIT" mana="250" cooldown="180" type="buff" target="self" />
+	<skill name="MAGE_POWER_OF_THE_WIND" mana="30" type="buff" buffname="503187" target="self" nobuffname="501955" nobufftarget="player"/>
 	<skill name="MAGE_FLAME_OF_FIRE" mana="60" range="200" casttime="2" />
 	<!-- TODO: Cursed Fangs: cooldown? -->
-	<skill name="MAGE_CURSED_FANGS" energy="30" range="200" type="buff" target="self" />
-	<skill name="MAGE_KISS_OF_THE_VAMPIRE" mana="40" range="150" cooldown="60" />
-	<skill name="MAGE_DEMORALIZE" energy="30" range="150" cooldown="60" />
-	<skill name="MAGE_FANG_RITUAL" mana="30" type="buff" target="self" cooldown="600" />
-	<skill name="MAGE_DISTRACT" mana="70" cooldown="120" maxhpper="30" />
+	<skill name="MAGE_CURSED_FANGS" energy="30" type="buff" buffname="501960" target="self" />
+	<skill name="MAGE_KISS_OF_THE_VAMPIRE" mana="40" range="150" cooldown="60" type="damage" target="target" />
+	<skill name="MAGE_DEMORALIZE" energy="30" range="150" cooldown="60" type="damage" target="target" />
+	<skill name="MAGE_FANG_RITUAL" mana="30" type="buff" buffname="502036" target="self" />
+	<skill name="MAGE_DISTRACT" mana="70" cooldown="120" maxhpper="30" type="damage" target="target" />
 	<!-- TODO: Purify: Requires curse -->
+	<skill name="MAGE_ESSENCE_OF_MAGIC" mana="35" manainc="3.25" range="200" type="buff" buffname="501962" target="self" />
 	<skill name="MAGE_PURIFY" mana="150" range="200" cooldown="10" type="buff" target="self" />
-	<skill name="MAGE_HOLY_LIGHT_STRIKE" mana="15" range="150" casttime="2" />
+	<skill name="MAGE_MAGIC_DRAIN" mana="30" range="180" cooldown="60" type="damage" target="target" />
+	<skill name="MAGE_HOLY_LIGHT_STRIKE" mana="15" range="150" casttime="2" type="damage" target="target" />
 	<skill name="MAGE_STARS_OF_LIGHT" mana="30" range="200" cooldown="2" casttime="4" type="dot" />
-	<skill name="MAGE_MESSENGER_OF_LIGHT" mana="30" cooldown="600" type="buff" target="self" />
+	<!-- Not sure which buff id is correct -->
+	<skill name="MAGE_MESSENGER_OF_LIGHT" mana="30" type="buff" buffname="502034,503191" target="self" />
 	<skill name="MAGE_LIGHT_CHARGE" mana="30" range="150" minrange="80" cooldown="8" priority="100" />
-	<skill name="MAGE_PERCEPTION" mana="660" cooldown="900" range="200" type="buff" target="self" />
-	<skill name="MAGE_MAGIC_TARGET" mana="520" cooldown="900" range="200" type="buff" target="self" />
+	<skill name="MAGE_EARTH_SURGE" mana="48" range="200" minrange="80" cooldown="2"  />
+	<skill name="MAGE_PERCEPTION" mana="100" range="200" type="buff" buffname="504561" target="self" />
+	<skill name="MAGE_MAGIC_TARGET" mana="100" cooldown="900" range="200" type="504562" target="self" />
 
 
 	<!-- Priest Skills -->
-	<skill name="PRIEST_URGENT_HEAL" aslevel="1" skilltab="2" skillnum="2" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
 	<skill name="PRIEST_RISING_TIDE" aslevel="1" skilltab="2" skillnum="1" mana="15" manainc="1.09" range="217" casttime="2" type="damage" target="enemy" />
-	<skill name="PRIEST_REGENERATE" aslevel="4" skilltab="2" skillnum="3" mana="35" manainc="3.47" cooldown="15" range="180" type="hot" target="friendly" />
+	<skill name="PRIEST_URGENT_HEAL" aslevel="1" skilltab="2" skillnum="2" mana="25" manainc="2.5" range="250" casttime="1" type="heal" target="friendly" />
+	<skill name="PRIEST_REGENERATE" aslevel="4" skilltab="2" skillnum="3" mana="35" manainc="3.47" range="180" type="hot" buffname="500469" target="friendly" />
 	<skill name="PRIEST_HOLY_AURA" aslevel="8" skilltab="2" skillnum="4" mana="60" cooldown="120" type="buff" target="self" inbattle="true" maxhpper="30" />
-	<skill name="PRIEST_MAGIC_BARRIER" aslevel="12" skilltab="2" skillnum="5" mana="120" manainc="12.0" type="buff" cooldown="600" target="self" />
+	<skill name="PRIEST_MAGIC_BARRIER" aslevel="12" skilltab="2" skillnum="5" mana="120" manainc="12.0" type="buff" buffname="500548" target="self" />
 	<skill name="PRIEST_BLESSING_OF_RAIN" aslevel="16" mana="120" type="buff" cooldown="600" target="self" />	<!-- name outdated new: BLESSED_SPRING_WATER -->
-	<skill name="PRIEST_BLESSED_SPRING_WATER" aslevel="16" skilltab="2" skillnum="6" mana="120" type="buff" cooldown="600" target="self" />
+	<skill name="PRIEST_BLESSED_SPRING_WATER" aslevel="16" skilltab="2" skillnum="6" mana="120" type="buff" buffname="500536" target="self" />
 	<skill name="PRIEST_SOUL_SOURCE" aslevel="1" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
-	<skill name="PRIEST_WAVE_ARMOR" aslevel="2" skilltab="4" skillnum="2" mana="60" manainc="6.0" range="180" cooldown="30" type="buff" target="friendly" />
+	<skill name="PRIEST_WAVE_ARMOR" aslevel="2" skilltab="4" skillnum="2" mana="60" manainc="6.0" range="180" cooldown="20" type="buff" buffname="500478" target="friendly" />
 	<skill name="PRIEST_HEAL" aslevel="6" skilltab="4" skillnum="3" mana="40" manainc="4.0" casttime="3" range="250" type="heal" target="friendly" />
-	<skill name="PRIEST_BONE_CHILL" aslevel="8" skilltab="4" skillnum="4" mana="30" manainc="3" range="180" cooldown="12" type="dot" target="enemy" />
-	<skill name="PRIEST_ICE_FOG" aslevel="8" skilltab="4" skillnum="5" mana="44" range="240" casttime="3" cooldown="10" type="damage" target="enemy" />
+	<skill name="PRIEST_BONE_CHILL" aslevel="8" skilltab="4" skillnum="4" mana="30" manainc="3" range="180" buffname="501548" type="dot" target="enemy" />
+	<skill name="PRIEST_ICE_FOG" aslevel="8" skilltab="4" skillnum="5" mana="40" range="200" casttime="3" cooldown="15" type="damage" buffname="500485,500486,500487" target="enemy" />
 	<skill name="PRIEST_RESURRECTION" aslevel="10" skilltab="4" skillnum="6" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
-	<skill name="PRIEST_SOUL_BOND" aslevel="10" skilltab="4" skillnum="7" mana="500" range="225" type="buff" cooldown="1800" target="friendly" />
+	<skill name="PRIEST_SOUL_BOND" aslevel="10" skilltab="4" skillnum="7" mana="500" range="225" type="buff" buffname="500535" target="friendly" />
+	<skill name="PRIEST_GRACE_OF_LIFE" aslevel="14" skilltab="4" skillnum="9" mana="30" manainc="3.0" range="200" type="buff" buffname="500517" target="friendly" />
 	<skill name="PRIEST_GROUP_HEAL" aslevel="14" skilltab="4" skillnum="8" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
-	<skill name="PRIEST_GRACE_OF_LIFE" aslevel="14" skilltab="4" skillnum="9" mana="30" manainc="3.0" range="200" type="buff" target="friendly" cooldown="1800" />
 	<!-- manainc? -->
-	<skill name="PRIEST_CLEANSE" aslevel="18" skilltab="4" skillnum="10" mana="150" manainc="0.0" range="200" type="heal" target="friendly" cooldown="10" />
 	<skill name="PRIEST_CHAIN_OF_LIGHT" aslevel="18" skilltab="4" skillnum="11" mana="60" range="217" manainc="6.0" casttime="6" type="damage" target="enemy" />
-	<skill name="PRIEST_AMPLIFIED_ATTACK" aslevel="20" skilltab="4" skillnum="13" mana="36" manainc="3.5" range="150" type="buff" target="friendly" cooldown="1800" />
+	<skill name="PRIEST_CLEANSE" aslevel="18" skilltab="4" skillnum="10" mana="150" manainc="0.0" range="200" type="heal" target="friendly" cooldown="10" />
+	<skill name="PRIEST_AMPLIFIED_ATTACK" aslevel="20" skilltab="4" skillnum="13" mana="36" manainc="3.5" range="150" type="buff" buffname="500940" target="friendly" />
 
 	<!-- Elite -->
-	<skill name="PRIEST_BATTLE_MONK_STANCE" mana="20" cooldown="600" type="buff" target="self" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" mana="15" range="50" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_FIGHTING_SPIRIT_INATION" mana="30" range="50" cooldown="6" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_ASCENDING_DRAGON_STRIKE" rage="30" range="50" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_POWER_BUILD_UP" mana="40" cooldown="30" casttime="1" type="buff" target="self" />
-	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" mana="100" type="buff" target="self" cooldown="1800" />
+	<skill name="PRIEST_BATTLE_MONK_STANCE" mana="20" type="buff" buffname="501977" target="self" />
+	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" mana="15" range="50" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_FIGHTING_SPIRIT_COMBINATION" mana="30" range="50" cooldown="6" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_ASCENDING_DRAGON_STRIKE" rage="30" range="50" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_POWER_BUILD_UP" mana="40" cooldown="30" casttime="1" type="buff" buffname="502904" target="self" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" mana="100" type="buff" buffname="501778" target="self" />
 	<skill name="PRIEST_CURING_SHOT" mana="120" range="200" casttime="2" cooldown="6" type="heal" />
-	<skill name="PRIEST_SNAKE_CURSE" energy="30" range="180" casttime="1" cooldown="12" type="dot" />
+	<skill name="PRIEST_SNAKE_CURSE" energy="30" range="180" casttime="1" type="dot" buffname="502663" />
 	<skill name="PRIEST_INFECTIOUS_WOUND" energy="30" range="200" cooldown="12" />
 	<skill name="PRIEST_PURGE" mana="200" range="200" cooldown="20" />
-	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" energy="30" casttime="1" cooldown="120" range="150" priority="90" />
+	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" energy="30" casttime="1" cooldown="45" range="150" priority="90" />
 	<!-- TODO: don't attack while frozen -->
-	<skill name="PRIEST_FREEZE" mana="35" manainc="3.75" casttime="1" type="damage" target="enemy" />
+	<skill name="PRIEST_FREEZE" mana="35" manainc="3.75" casttime="1" type="damage" buffname="501961" target="enemy" />
 	<!-- TODO: Requires curse -->
 	<skill name="PRIEST_REMOVE_CURSE" mana="150" range="150" cooldown="10" target="self" type="buff" />
-	<skill name="PRIEST_ANGELS_BLESSING" mana="100" manainc="10.0" range="200" type="buff" target="friendly" cooldown="600" />
+	<skill name="PRIEST_ANGELS_BLESSING" mana="100" manainc="10.0" range="200" type="buff" buffname="502026" target="friendly" />
 	<!-- TODO: Low mana only -->
 	<skill name="PRIEST_ANGELS_CAROL" cooldown="180" type="buff" target="self" />
-	<skill name="PRIEST_LAST_PRAYER" mana="30" cooldown="120" type="buff" target="self" />
-	<!-- TODO: Divine Incarnation: cooldown ? -->
-	<skill name="PRIEST_DIVINE_INCARNATION" mana="30" type="buff" target="self" />
+	<skill name="PRIEST_LAST_PRAYER" mana="30" cooldown="120" type="buff" buffname="502030" target="self" />
+	<skill name="PRIEST_DIVINE_INCARNATION" mana="30" type="buff" buffname="501793" target="self" />
 	<skill name="PRIEST_CALM_HEART" mana="30" cooldown="60" range="150" type="buff" target="self" />
 	<skill name="PRIEST_ICEWIND_BLADE" mana="18" manainc="2" range="180" cooldown="3" type="damage" target="enemy" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_VINDICTIVE_STRIKE" rage="10" range="50" cooldown="30" />
-	<!-- TODO: Requires battle monk stance -->
-	<skill name="PRIEST_CONDENSED_RAGE" rage="25" cooldown="900" type="buff" casttime="1" target="self" />
+	<skill name="PRIEST_VINDICTIVE_STRIKE" rage="10" range="50" cooldown="30" reqbuffname="501977" reqbufftarget="player" />
+	<!-- TODO: need to add 30s debuff name unknown -->
+	<skill name="PRIEST_CONDENSED_RAGE" rage="25" type="buff" casttime="1" target="self" buffname="503280" reqbuffname="501977" reqbufftarget="player" />
+
 
 	<!-- Warrior skills -->
 	<skill name="WARRIOR_SLASH" aslevel="1" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
@@ -118,16 +115,14 @@
 	<skill name="WARRIOR_BERSERK" aslevel="12" rage="25" cooldown="60" type="buff" target="self" />
 	<skill name="WARRIOR_DEFENSIVE_FORMATION" aslevel="16" rage="25" cooldown="120" type="buff" target="self" />
 	<skill name="WARRIOR_FRENZY" range="25" type="buff" cooldown="300" target="self" />
-	<skill name="WARRIOR_OPEN_FLANK" aslevel="2" skilltab="4" skillnum="2" rage="10" debuff="vulnerable" range="50" type="damage" target="enemy" />
-	<skill name="WARRIOR_PROBING_ATTACK" aslevel="2" skilltab="4" skillnum="3" rage="20" range="50" cooldown="4" type="damage" target="enemy" />
+	<skill name="WARRIOR_PROBING_ATTACK" aslevel="2" skilltab="4" skillnum="3" rage="20" range="50" cooldown="4" type="damage" buffname="501502" target="enemy" />
+	<skill name="WARRIOR_OPEN_FLANK" aslevel="2" skilltab="4" skillnum="2" rage="10" range="50" type="damage" buffname="501503" target="enemy" />
 	<!-- TODO: Weak Spot requires cunning attack first! -->
-	<skill name="WARRIOR_TACTICAL_ATTACK" aslevel="4" skilltab="4" skillnum="4" rage="15" range="50" cooldown="5" type="damage" target="enemy" reqbufftype="debuff" reqbuffcount="1" reqbufftarget="target" reqbuffname="Bleed" />
-	<skill name="WARRIOR_THUNDER" aslevel="6" skilltab="4" skillnum="5" debuff="weakened" rage="15" range="50" cooldown="15" type="damage" target="enemy" />
-	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
+	<skill name="WARRIOR_TACTICAL_ATTACK" aslevel="4" skilltab="4" skillnum="4" rage="15" range="50" cooldown="5" type="damage" target="enemy" />
+	<skill name="WARRIOR_THUNDER" aslevel="6" skilltab="4" skillnum="5" rage="15" range="50" cooldown="15" type="damage" target="enemy" reqbuffname="501503" reqbufftarget="target" />
 	<skill name="WARRIOR_FEINT" aslevel="10" range="50" cooldown="2" type="damage" target="enemy" />
 	<!-- TODO: Feint can only be used after an enemy dodges an attack -->
 	<skill name="WARRIOR_SURPRISE_ATTACK" aslevel="14" minrange="60" range="150" cooldown="12" type="damage" target="enemy" inbattle="false" />
-	<skill name="WARRIOR_SNEAK_ATTACK" minrange="60" range="150" cooldown="10" type="damage" target="enemy" inbattle="false" /> <!-- outdated name ?-->
 	<skill name="WARRIOR_TAUNT" aslevel="18" range="50" cooldown="25" type="damage" target="enemy" />
 	<skill name="WARRIOR_MOON_CLEAVE" aslevel="22" rage="50" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="WARRIOR_SHOUT" aslevel="26" rage="30" range="50" cooldown="120" type="damage" target="enemy" />
@@ -136,210 +131,226 @@
 	<skill name="WARRIOR_SURVIVAL_INSTINCT" aslevel="36" maxhpper="25" cooldown="300" type="buff" target="self" />
 	<skill name="WARRIOR_GROUP_TAUNT" aslevel="38" cooldown="300" type="damage" target="enemy" />
 	<skill name="WARRIOR_BLASTING_CYCLONE" aslevel="40" rage="50" casttime="2" cooldown="30" type="damage" target="enemy" />
-	<skill name="WARRIOR_THUNDERING" range="50" cooldown="15" type="damage" target="enemy" />
-	<skill name="KNIGHT_CHARGE" range="120" cooldown="30" type="damage" target="enemy" />
-
 
 	<!-- Elite -->
-	<skill name="WARRIOR_SKULL_BREAKER" concentration="30" range="50" />
-	<skill name="WARRIOR_STUN_SHOT" concentration="30" range="150" cooldown="10" />
-	<skill name="WARRIOR_AIM_FOR_THE_WOUND" concentration="30" range="200" cooldown="10" />
-	<skill name="WARRIOR_SWORD_BREATH" concentration="25" range="150" cooldown="8" />
-	<skill name="WARRIOR_BLOOD_DANCE" range="50" cooldown="8" maxhpper="50" />
-	<skill name="WARRIOR_FRENZIED_ATTACK" energy="50" cooldown="120" target="self" type="buff" />
-	<skill name="WARRIOR_KEEN_ATTACK" energy="20" range="50" target="self" type="buff" />
-	<skill name="WARRIOR_ELECTRICAL_RAGE" rage="20" range="50" />
-	<skill name="WARRIOR_LIGHTNINGS_TOUCH" mana="30" range="50" />
-	<skill name="WARRIOR_SENSE_OF_DANGER" cooldown="300" mana="50" maxhpper="30" target="self" type="buff" />
-	<skill name="WARRIOR_THUNDER_SWORD" mana="30" range="150" cooldown="6" />
-	<skill name="WARRIOR_ELECTRIC_ATTACK" mana="40" cooldown="25" target="self" type="buff" />
-	<skill name="WARRIOR_DEFENDERS_ROAR" mana="30" cooldown="120" target="self" type="buff" />
-	<skill name="WARRIOR_INTERRUPTING_STRIKE" rage="30" cooldown="10" />
-	<skill name="WARRIOR_BLOODLUST" maxhpper="50" target="self" type="buff" />
-	<skill name="WARRIOR_OPPORTUNITY" rage="15" range="50" />
-	<skill name="WARRIOR_WHIRLWIND_SHIELD" mana="30" cooldown="6" />
-	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" cooldown="20" target="self" type="buff" />
+	<skill name="WARRIOR_SKULL_BREAKER" concentration="30" range="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_STUN_SHOT" concentration="30" range="150" cooldown="10" type="damage" target="enemy" />
+	<skill name="WARRIOR_AIM_FOR_THE_WOUND" concentration="30" range="200" cooldown="10" type="damage" target="enemy" />
+	<skill name="WARRIOR_SWORD_BREATH" concentration="25" range="150" cooldown="8" type="damage" target="enemy" />
+	<skill name="WARRIOR_THE_FINAL_BATTLE" rage="25" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="WARRIOR_BLOOD_DANCE" range="50" cooldown="8" maxhpper="-5" type="damage" target="enemy" />
+	<skill name="WARRIOR_FRENZIED_ATTACK" energy="50" cooldown="120" target="enemy" type="damage" />
+	<skill name="WARRIOR_KEEN_ATTACK" energy="20" range="50" target="enemy" type="damage" reqbuffname="501502" reqbufftarget="target"/>
+	<skill name="WARRIOR_SPLITTING_CHOP" RAGE="15" cooldown="15" range="50" target="enemy" type="damage" reqbuffname="501503" reqbufftarget="target"/>
+	<skill name="WARRIOR_ELECTRICAL_RAGE" rage="20" range="50" target="enemy" type="damage" nobuffname="501881,501882,501883" nobufftarget="self" nobuffcount="3" />
+	<skill name="WARRIOR_LIGHTNINGS_TOUCH" mana="30" range="50" type="damage" target="enemy" />
+	<skill name="WARRIOR_SENSE_OF_DANGER" cooldown="120" mana="50" maxhpper="30" target="self" type="buff" />
+	<skill name="WARRIOR_THUNDER_SWORD" mana="30" range="150" cooldown="6" target="enemy" type="damage" />
+	<!-- Not sure which buff id is correct -->
+	<skill name="WARRIOR_ELECTRIC_ATTACK" mana="40" target="self" type="buff" buffname="502886,503229" nobuffname="503163,503230" nobufftarget="self"/>
+	<!-- Not sure which buff id is correct -->
+	<skill name="WARRIOR_LAVA_WEAPON" mana="40" target="self" type="buff" buffname="503163,503230" nobuffname="502886,503229" nobufftarget="self"/>
+	<skill name="WARRIOR_DEFENDERS_ROAR" mana="30" cooldown="180" target="self" type="buff" buffname="501872"/>
+	<skill name="WARRIOR_INTERRUPTING_STRIKE" rage="30" cooldown="10" type="damage" target="enemy" />
+	<skill name="WARRIOR_BLOODLUST" maxhpper="-20" target="self" type="buff" />
+	<skill name="WARRIOR_OPPORTUNITY" rage="15" range="50" type="damage" target="enemy" reqbuffname="501503" reqbufftarget="target" />
+	<skill name="WARRIOR_THROW_SHIELD" mana="30" cooldown="6" type="damage" target="enemy" />
+	<!-- Not sure which buff id is correct -->
+	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" cooldown="20" target="self" type="buff" buffname="502007,503514"/>
 	<skill name="WARRIOR_IGNORE_PAIN" cooldown="300" target="self" type="buff" />
 	<skill name="WARRIOR_SHIELD_BASH" mana="30" range="50" />
-	<skill name="WARRIOR_SURPRISE_ATTACK" range="150" minrage="60" cooldown="12" />
+
+	<!-- Unknown skills or superseded names-->
+	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
+	<skill name="WARRIOR_SNEAK_ATTACK" minrange="60" range="150" cooldown="10" type="damage" target="enemy" inbattle="false" /> <!-- outdated name ?-->
+	<skill name="WARRIOR_THUNDERING" range="50" cooldown="15" type="damage" target="enemy" />
 
 
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" aslevel="1" skilltab="2" skillnum="1" energy="20" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_THROW" aslevel="4" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
+	<skill name="ROGUE_BLIND_STAB" aslevel="8" skilltab="2" skillnum="3" energy="35" range="50" cooldown="10" type="damage" target="enemy" />
+	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
+	<skill name="ROGUE_SHADOW_STEP" aslevel="28" energy="20" range="100" cooldown="20" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" aslevel="1" type="buff" cooldown="300" target="self" inbattle="true" />
 	<skill name="ROGUE_LOW_BLOW" aslevel="2" skilltab="4" skillnum="2" energy="30" range="50" type="damage" target="enemy" />
-	<skill name="ROGUE_THROW" aslevel="4" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" aslevel="6" skilltab="4" skillnum="3" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
-	<skill name="ROGUE_HIDE" aslevel="18" type="buff" target="self" inbattle="false" cooldown="30" />
-	<skill name="ROGUE_BLIND_STAB" aslevel="8" skilltab="2" skillnum="3" energy="35" range="50" cooldown="15" type="damage" target="enemy" />
-	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
-	<skill name="ROGUE_SHADOW_STEP" aslevel="28" energy="20" range="100" type="damage" target="enemy" />
 	<skill name="ROGUE_BLIND_SPOT" aslevel="14" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target -->
-	<skill name="ROGUE_NUMBING_DAGGER" consumable="1" range="150" casttime="1" type="damage" target="enemy" />
+	<skill name="ROGUE_NUMBING_DAGGER" consumable="1" range="150" casttime="1" type="damage" buffname="501494" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
-	<skill name="ROGUE_POISON" aslevel="16" consumable="1" cooldown="600" casttime="1" type="buff" target="self" />
+	<skill name="ROGUE_POISON" aslevel="16" consumable="1" casttime="1" type="buff" buffname="500715" target="self" />
+	<skill name="ROGUE_HIDE" aslevel="18" type="buff" target="self" inbattle="false" />
 	<skill name="ROGUE_PREMEDITATION" aslevel="18" energy="20" type="buff" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
-	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />
-	<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
+	<skill name="ROGUE_SNEAK_ATTACK" energy="20" range="50" cooldown="10"  type="damage" target="enemy" />
+	<!-- TODO: ROGUE_SNEAK_ATTACK Can only use when behind the target -->
 	<skill name="ROGUE_VANISH" aslevel="30" cooldown="600" type="buff" target="self" />
 	<skill name="ROGUE_SPRINT" aslevel="34" range="100" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_EVASION" aslevel="36" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COMBO_THROW" aslevel="38" consumable="1" range="150" cooldown="3.3" type="damage" target="enemy" />
-	<skill name="ROGUE_SHADOW_PRISON" aslevel="40" energy="49" range="180" type="damage" target="enemy" />
+	<skill name="ROGUE_SHADOW_PRISON" aslevel="40" energy="50" range="180" type="damage" buffname="500735" target="enemy" />
 	<skill name="ROGUE_INFORMER" aslevel="42" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" aslevel="44" cooldown="300" type="buff" target="self" />
 
-	<skill name="ROGUE_SEARING_LIGHT" mana="40" cooldown="600" type="buff" target="self" />
-
 	<!-- Elite -->
-	<skill name="ROGUE_DEATHS_TOUCH" rage="20" range="50" cooldown="10" />
-	<skill name="ROGUE_POISONOUS_INFECTION" rage="20" range="50" cooldown="15" />
+	<skill name="ROGUE_DEATHS_TOUCH" rage="15" range="50" cooldown="10" type="damage" target="enemy" />
+	<skill name="ROGUE_POISONOUS_INFECTION" rage="20" range="50" cooldown="15" type="damage" buffname="502894" target="enemy" reqbuffname="500715" reqbufftarget="player" />
+	<skill name="ROGUE_POISON_SPRAY" rage="15" range="50" cooldown="6" type="damage" target="enemy" reqbuffname="502894" reqbufftarget="target" />
+	<skill name="ROGUE_DECAY" rage="20" range="50" cooldown="32" type="damage" target="enemy" reqbuffname="500715" reqbufftarget="player" />
 	<skill name="ROGUE_ENERGY_THIEF" concentration="20" cooldown="120" type="buff" target="self" />
-	<skill name="ROGUE_COMBAT_MASTER" concentration="30" cooldown="600" type="buff" target="self" />
+	<skill name="ROGUE_COMBAT_MASTER" concentration="30" type="buff" buffname="501921" target="self" />
+	<skill name="ROGUE_SUBSTITUTE" concentration="30" cooldown="60" type="buff" target="self" />
+	<skill name="ROGUE_TONGUE_POISON" range="120" casttime="1" cooldown="30" type="damage" target="enemy" />
 	<skill name="ROGUE_POISON_TRAP" mana="30" manainc="3" cooldown="10" />
 	<skill name="ROGUE_BOOBY_TRAP" mana="30" manainc="3" cooldown="10" />
 	<skill name="ROGUE_PARALYSING_TRAP" mana="20" cooldown="20" />
 	<skill name="ROGUE_MAGIC_BREAKER" mana="200" range="150" cooldown="60" />
-	<!-- TODO: Poison Flame requires poisonous state -->
-	<skill name="ROGUE_POISON_FLAME" energy="25" range="50" cooldown="12" type="dot" />
-	<skill name="ROGUE_QUICKNESS_AURA" mana="27" manainc="3" type="buff" cooldown="600" target="self" />
-	<!-- TODO: Can only use when behind the target -->
-	<skill name="ROGUE_SNEAK_ATTACK" energy="20" range="50" cooldown="10" />
+	<skill name="ROGUE_POISON_FLAME" energy="25" range="50" cooldown="12" type="dot" reqbuffname="500715" reqbufftarget="player" />
+
+	<skill name="ROGUE_QUICKNESS_AURA" mana="27" manainc="3" type="buff" buffname="501932" target="self" />
 	<skill name="ROGUE_FEARLESS" mana="40" range="50" cooldown="60" type="buff" target="self" />
 	<skill name="ROGUE_KICK" energy="20" range="50" cooldown="15" />
 	<skill name="ROGUE_POISON_PROTECTION" mana="30" cooldown="120" type="buff" target="self" />
-	<skill name="ROGUE_LIONS_PROTECTION" mana="30" cooldown="600" type="buff" target="self" />
+	<skill name="ROGUE_LIONS_PROTECTION" mana="30" type="buff" buffname="501946" target="self" />
 	<skill name="ROGUE_HOLY_LIGHT_PROTECTION" mana="30" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COURAGEOUS_GUARD" mana="100" cooldown="180" type="buff" target="self" />
+	<skill name="ROGUE_SEARING_LIGHT" mana="40" type="buff" buffname="503268" target="self" nobuffname="500715" nobufftarget="player" />
+
+	<!-- Unknown skills or superseded names-->
+	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />
+	<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
 
 
 	<!-- Knight skills -->
-	<skill name="KNIGHT_HOLY_STRIKE" skilltab="2" skillnum="2" mana="15" manainc="1.4" range="50" type="damage" target="enemy" />
-	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" target="self" />
-	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" cooldown="300" type="buff" target="self" />
-	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
-	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />
-	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" target="self" />
-	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
+	<skill name="KNIGHT_HOLY_STRIKE" skilltab="2" skillnum="2" mana="15" manainc="1.4" range="50" type="damage" target="enemy" nobuffcount="3" nobufftarget="target" nobuffname="500137,500138,500139"/>
+	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" reqbuffcount="3" reqbufftarget="target" reqbuffname="500137,500138,500139" />
 	<skill name="KNIGHT_DISARMAMENT" mana="20" manainc="2.0" range="50" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
-	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" reqbufftype="debuff" reqbuffcount="3" reqbufftarget="target" reqbuffname="Light Seal III" />
-	<skill name="KNIGHT_SHIELD_BASH" mana="50" manainc="5.0" range="10" cooldown="1" type="damage" target="enemy" />
+	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" type="buff" buffname="500141" target="self" />
+	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" buffname="501772" target="self" />
+	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" buffname="501772" target="self" />
+	<skill name="KNIGHT_MANA_RETURN" range="100" />
+	<skill name="KNIGHT_WHIRLWIND_SHIELD" mana="20" cooldown="6" />
+	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
+	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />
+	<skill name="KNIGHT_CHARGE" range="120" cooldown="30" type="damage" target="enemy" />
+	<skill name="KNIGHT_THREATEN" mana="20" range="50" cooldown="8" type="damage" target="enemy" reqbuffname="501773,501774,501775,501776" reqbufftarget="target" reqbuffcount="3" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
 	<skill name="KNIGHT_SHIELD_OF_TRUTH" mana="150" cooldown="60" type="buff" target="self" inbattle="true" />
-	<!-- TODO: Must have at least 1 light seal on target -->
-	<skill name="KNIGHT_SHOCK" mana="25" cooldown="30" range="150" />
+	<skill name="KNIGHT_SHOCK" mana="25" cooldown="30" range="150" type="damage" target="enemy" reqbuffname="500137,500138,500139" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_HATRED_STRIKE" mana="50" cooldown="120" />
 	<skill name="KNIGHT_SHIELD_OF_DISCIPLINE" mana="99" cooldown="60" type="buff" target="self" inbattle="true" />
-	<skill name="KNIGHT_HALL_OF_DEAD_HEROES" cooldown="1800" maxhpper="30" />
+	<skill name="KNIGHT_HALL_OF_DEAD_HEROES" cooldown="1800" maxhpper="30" type="buff" buffname="500265" target="self" />
 
 	<!-- Elite -->
-	<skill name="KNIGHT_WHIRLWIND_SHIELD" mana="20" cooldown="6" />
 	<skill name="KNIGHT_QUICK_REFLEXES" rage="20" cooldown="120" type="buff" target="self" />
 	<skill name="KNIGHT_FEARLESS" rage="10" cooldown="60" type="buff" target="self" />
+	<skill name="KNIGHT_MASTER_OF_PARRY" rage="30" cooldown="120" type="buff" buffname="503192,503200" target="self" />
 	<skill name="KNIGHT_ARROW_OF_VENGEANCE" concentration="20" range="200" cooldown="120" />
 	<skill name="KNIGHT_HOLY_CHAINS" mana="20" range="150" priority="100" minrange="60" />
 	<skill name="KNIGHT_HEAVENLY_ARROW" concentration="20" range="200" cooldown="120" inbattle="false" />
 	<!-- TODO: Requires critical hit -->
 	<skill name="KNIGHT_SMASH" range="50" cooldown="8" />
-	<skill name="KNIGHT_CRAZY_BLADES" mana="20" type="buff" cooldown="20" target="self" />
+	<skill name="KNIGHT_CRAZY_BLADES" mana="20" type="buff" buffname="501796" target="self" />
 	<skill name="KNIGHT_DANCE_OF_TWO_BLADES" energy="35" range="50" cooldown="10" />
+	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="84" inbattle="true"/>
+	<!-- Not sure which buff id is correct -->
+	<skill name="KNIGHT_LIGHTNING_ARMOR" mana="30" type="buff" buffname="502096,503293" target="self" />
+	<skill name="KNIGHT_MANA_SHIELD" cooldown="120" type="buff" target="self" />
+	<skill name="KNIGHT_HOLY_LIGHTS_FURY" mana="30" range="100" type="dot" buffname="502074" target="target" />
+	<skill name="KNIGHT_HOLY_SMITE" mana="30" range="50" cooldown="8" type="damage" target="target" reqbuffname="502074" reqbufftarget="target" />
+	<skill name="KNIGHT_HOLY_PROTECTION" mana="30" range="150" type="buff" buffname="502108" target="self" />
+	<skill name="KNIGHT_FREE_WILL" mana="30" range="200" cooldown="120" type="buff" target="self" />
+
+	<!-- Unknown skills or superseded names-->
+	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
 	<!-- TODO: Holy Light Field: cooldown ? -->
 	<skill name="KNIGHT_HOLY_LIGHT_FIELD" mana="30" type="buff" target="self" cooldown="60" />
-	<!-- TODO: Lightning Armor: cooldown ? -->
-	<skill name="KNIGHT_LIGHTNING_ARMOR" mana="30" type="buff" target="self" cooldown="60" />
-	<skill name="KNIGHT_MANA_SHIELD" cooldown="300" type="buff" target="self" />
-	<!-- TODO: Requires 3 seals on target -->
-	<skill name="KNIGHT_MANA_RETURN" range="100" />
-	<skill name="KNIGHT_HOLY_LIGHTS_FURY" mana="30" range="100" cooldown="12" type="dot" />
-	<!-- TODO: Requires Holy Light's Fury -->
-	<skill name="KNIGHT_HOLY_SMITE" mana="30" range="50" cooldown="8" />
-	<skill name="KNIGHT_HOLY_PROTECTION" mana="30" range="150" cooldown="600" type="buff" target="self" />
-	<skill name="KNIGHT_FREE_WILL" mana="30" range="200" cooldown="120" type="buff" target="self" />
-	<skill name="KNIGHT_SHIELD_OF_VALOR" mana="30" cooldown="60" type="buff" target="self" inbattle="true" />
-	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="84" inbattle="true"/>
+
 
 	<!-- Scout skills -->
-	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2" type="damage" target="enemy" toggleable="true" />
 	<skill name="SCOUT_SHOT" aslevel="1" skilltab="2" skillnum="2" consumable="1" range="200" cooldown="2" type="damage" target="enemy" />
 	<skill name="SCOUT_VAMPIRE_ARROWS" aslevel="4" skilltab="2" skillnum="3" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
-	<skill name="SCOUT_JOINT_BLOW" aslevel="8" skilltab="4" skillnum="4" concentration="30" range="50" type="damage" target="enemy" />
-	<skill name="SCOUT_BLOOD_ARROW" aslevel="12" skilltab="4" skillnum="5" cooldown="60" type="buff" target="self" />
-	<skill name="SCOUT_THROAT_ATTACK" aslevel="16" concentration="30" range="50" type="damage" target="enemy" />
+	<skill name="SCOUT_JOINT_BLOW" aslevel="8" skilltab="4" skillnum="4" concentration="30" range="50" type="damage" buffname="500848" target="enemy" />
+	<skill name="SCOUT_BLOOD_ARROW" aslevel="12" skilltab="4" skillnum="5" type="buff" buffname="500871" target="self" />
+	<skill name="SCOUT_THROAT_ATTACK" aslevel="16" concentration="15" range="50" cooldown="12" type="damage" target="enemy" />
 	<skill name="SCOUT_WRIST_ATTACK" aslevel="20" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="SCOUT_ARROW_OF_ESSENCE" cooldown="300" type="buff" target="self" maxhpper="30" />
+	<skill name="SCOUT_AUTOSHOT" consumable="1" range="200" cooldown="2" type="damage" target="enemy" toggleable="true" />
 	<skill name="SCOUT_WIND_ARROWS" aslevel="2" skilltab="4" skillnum="3" concentration="15" range="225" type="damage" target="enemy" />
-	<skill name="SCOUT_RANGED_WEAPON_MASTERY" aslevel="6" skilltab="4" skillnum="4"  />
-	<skill name="SCOUT_FROST_ARROW" aslevel="10" skilltab="4" skillnum="5" concentration="20" cooldown="1800" type="buff" target="self" />
-	<skill name="SCOUT_MANA_DRAIN_SHOT" aslevel="12" skilltab="4" skillnum="6" concentration="20" range="180" cooldown="10" type="buff" target="enemy" />
-	<skill name="SCOUT_LASSO" aslevel="14" skilltab="4" skillnum="7" concentration="35" range="150" casttime="1" type="buff" target="enemy" />
-	<skill name="SCOUT_PIERCING_ARROW" aslevel="18" skilltab="4" skillnum="8" concentration="35" range="100" cooldown="15" type="damage" target="enemy" />
-	<skill name="SCOUT_SNIPE" consumable="1" range="240" casttime="4" cooldown="15" type="damage" target="enemy" />
-	<skill name="SCOUT_DETECTION" concentration="9" type="buff" target="self" />
-	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="180" cooldown="20" type="damage" target="enemy" />
-	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
-	<skill name="SCOUT_REFLECTED_SHOT" consumable="1" casttime="3" cooldown="20" type="damage" target="enemy" />
-	<skill name="SCOUT_CONCENTRATE" cooldown="360" type="buff" target="self" />
-	<skill name="SCOUT_INTENSIFY"  type="buff" target="self" />
+	<skill name="SCOUT_FROST_ARROW" aslevel="10" skilltab="4" skillnum="5" concentration="20" type="buff" buffname="501530" target="self" />
+	<skill name="SCOUT_MANA_DRAIN_SHOT" aslevel="12" skilltab="4" skillnum="6" concentration="35" range="180" cooldown="10" type="buff" target="enemy" />
+	<skill name="SCOUT_LASSO" aslevel="14" skilltab="4" skillnum="7" concentration="35" range="150" casttime="1" type="buff" buffname="500924" target="enemy" />
+	<skill name="SCOUT_PIERCING_ARROW" aslevel="18" skilltab="4" skillnum="8" range="240" cooldown="8" type="damage" target="enemy" />
+	<skill name="SCOUT_SNIPE" consumable="1" range="260" casttime="4" cooldown="15" type="damage" target="enemy" />
+	<skill name="SCOUT_DETECTION" concentration="9" type="buff" buffname="500933" target="self" />
+	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="200" cooldown="8" type="damage" target="enemy" />
+	<skill name="SCOUT_NECK_STRIKE" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
+	<skill name="SCOUT_REFLECTED_SHOT" consumable="1" cooldown="10" range="200" type="damage" target="enemy" />
+	<skill name="SCOUT_CONCENTRATE" cooldown="300" type="buff" target="self" />
+	<skill name="SCOUT_TARGET_AREA" concentration="3" type="buff" buffname="500934" target="self" />
 	<skill name="SCOUT_SERENITY" cooldown="480" type="buff" target="self" />
 
 	<!-- Elite -->
-	<skill name="SCOUT_BATTLE_INSTINCT" rage="30" cooldown="180" target="self" type="buff" />
-	<skill name="SCOUT_MENTAL_FOCUS" rage="30" cooldown="120" target="self" type="buff" />
+	<skill name="SCOUT_BATTLE_INSTINCT" rage="30" target="self" buffname="501821" type="buff" />
+	<skill name="SCOUT_MENTAL_FOCUS" rage="30" target="self" buffname="501892" type="buff" />
 	<skill name="SCOUT_TARGET_LOCK" cooldown="60" concentration="30" type="buff" target="self" />
-	<skill name="SCOUT_WEAK_SPOT" concentration="30" range="150" cooldown="15" />
-	<skill name="SCOUT_BLINDING_POWDER" energy="30" range="100" cooldown="60" />
-	<skill name="SCOUT_SAPPING_ARROW" energy="30" range="150" cooldown="20" />
-	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
-	<skill name="SCOUT_PURIFYING_ARROW" mana="150" range="150" cooldown="10" type="buff" target="self" />
-	<skill name="SCOUT_BLAZING_ENERGY" mana="30" target="self" type="buff" cooldown="600" />
+	<skill name="SCOUT_WEAK_SPOT" concentration="30" range="250" cooldown="15" />
+	<skill name="SCOUT_BLINDING_POWDER" energy="30" range="100" cooldown="60" type="buff" target="enemy" />
+	<skill name="SCOUT_SAPPING_ARROW" energy="30" range="250" cooldown="20" type="buff" target="enemy" />
+	<skill name="SCOUT_DEADLY_POISON_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
+	<skill name="SCOUT_PURIFYING_ARROW" mana="150" range="150" cooldown="10" />
+	<skill name="SCOUT_BLAZING_ENERGY" mana="30" target="self" buffname="501907" type="buff" />
 	<skill name="SCOUT_IGNITE" mana="40" range="150" />
-	<skill name="SCOUT_GONE_WITH_THE_WIND" mana="30" cooldown="120" casttime="2" maxhpper="20" /> <!-- Drop aggro -->
-	<skill name="SCOUT_CURSED_ARROW" mana="30" cooldown="15" casttime="2" type="dot" />
-	<skill name="SCOUT_PURIFYING_SHOT" range="150" mana="150" cooldown="10" />
-	<skill name="SCOUT_MANA_ARROWS" mana="30" range="150" cooldown="300" />
-	<skill name="SCOUT_SPIRITUAL_LEADER" mana="40" cooldown="480" type="buff" target="self" />
+	<skill name="SCOUT_GONE_WITH_THE_WIND" mana="30" cooldown="120" casttime="2" maxhpper="20" type="buff" target="self" /> <!-- Drop aggro -->
+	<skill name="SCOUT_CURSED_ARROW" mana="30" cooldown="10" casttime="2" type="dot" />
+	<skill name="SCOUT_PURIFYING_SHOT" range="250" mana="150" cooldown="10" type="buff" target="fiendly" />
+	<skill name="SCOUT_MANA_ARROWS" mana="30" range="150" cooldown="300" type="buff" target="fiendly" />
+	<skill name="SCOUT_SPIRITUAL_LEADER" mana="40" cooldown="300" type="buff" target="self" />
 	<skill name="SCOUT_REPELLING_ARROW" mana="30" range="150" cooldown="25" />
 	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" />
 	<skill name="SCOUT_MANA_CONVERSION" mana="50" cooldown="60" type="buff" target="self" />
-	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" type="heal" target="self" />
+
+	<!-- Unknown skills or superseded names-->
+	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
+	<skill name="SCOUT_INTENSIFY"  type="buff" target="self" />
+	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
 
 
 	<!-- Druid skills -->
-	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" cooldown="14" type="heal" target="friendly" />
+	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" type="heal" buffname="503797" target="friendly" />
 	<skill name="DRUID_ANTIDOTE" aslevel="4" skilltab="2" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
-	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" cooldown="600" type="buff" target="friendly" />
+	<skill name="DRUID_SAVAGE_BLESSING" aslevel="8" skilltab="2" skillnum="3" mana="50" range="180" type="buff" buffname="503800" target="friendly" />
 	<skill name="DRUID_EARTH_PULSE" aslevel="12" skilltab="2" skillnum="4" mana="40" manainc="4" range="180" cooldown="15" />
-	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="60" type="buff" target="friendly" />
+	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" aslevel="20" mana="100" range="150" cooldown="90" type="buff" buffname="503802" target="friendly" />
 	<skill name="DRUID_EARTH_ARROW" aslevel="1" skilltab="4" skillnum="1" mana="12" manainc="1.1" range="200" casttime="2" />
-	<skill name="DRUID_BRIAR_ENTWINEMENT" aslevel="2" skilltab="4" skillnum="3" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" />
+	<skill name="DRUID_BRIAR_ENTWINEMENT" aslevel="2" skilltab="4" skillnum="3" mana="15" manainc="1.5" range="180" cooldown="12" type="dot" buffname="503808"/>
 	<skill name="DRUID_DECURSE" aslevel="2" skilltab="4" skillnum="2" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
 	<skill name="DRUID_RESTORE_LIFE" aslevel="6" skilltab="4" skillnum="4" mana="40" manainc="4" range="250" casttime="2" type="heal" target="friendly" />
 	<skill name="DRUID_UNITY_WITH_MOTHER_EARTH" aslevel="10" skilltab="4" skillnum="5" cooldown="300" type="buff" target="self" />
-	<skill name="DRUID_BLOSSOMING_LIFE" aslevel="10" skilltab="4" skillnum="6" mana="35" manainc="4.12" range="200" type="hot" cooldown="20" target="friendly" />
+	<skill name="DRUID_BLOSSOMING_LIFE" aslevel="10" skilltab="4" skillnum="6" mana="35" manainc="4.12" range="200" type="hot" target="friendly" buffname="503795"/>
 	<skill name="DRUID_REBIRTH" mana="150" casttime="6" type="buff" target="friendly" />
-	<skill name="DRUID_WEAKENING_SEED" mana="50" manainc="5" nature="2" range="180" cooldown="20" type="dot" />
+	<skill name="DRUID_WEAKENING_SEED" mana="50" manainc="5" nature="2" range="180" cooldown="20" type="dot" buffname="503815"/>
 	<skill name="DRUID_ROCKSLIDE" mana="25" range="180" cooldown="8" />
 	<skill name="DRUID_BLINDING_SILENCE" mana="100" range="180" cooldown="30" />
-	<skill name="DRUID_CURING_SEED" mana="50" range="150" cooldown="30" type="buff" target="friendly" />
-	<skill name="DRUID_CONCENTRATION_PRAYER" mana="35" cooldown="600" type="buff" target="self" />
-	<skill name="DRUID_ROCK_PROTECTION" mana="60" nature="2" cooldown="180" type="buff" target="self" hpper="10" />
-	<skill name="DRUID_SPIRIT_GUIDANCE" mana="200" nature="5" range="180" casttime="1" cooldown="30" target="enemy" />
+	<skill name="DRUID_CURING_SEED" mana="50" range="150" cooldown="30" type="buff" target="friendly" buffname="503816"/>
+	<skill name="DRUID_CONCENTRATION_PRAYER" mana="35" type="buff" target="self" buffname="503799"/>
+	<skill name="DRUID_ROCK_PROTECTION" mana="60" nature="2" cooldown="180" type="buff" target="self" hpper="10" buffname="503813"/>
+	<skill name="DRUID_SPIRIT_GUIDANCE" mana="200" nature="5" range="180" casttime="1" cooldown="30" target="enemy" buffname="503805"/>
 	<skill name="DRUID_BODY_VITALIZATION" mana="100" nature="1" range="160" cooldown="120" type="buff" target="friendly" />
 	<skill name="DRUID_MOTHER_EARTHS_FOUNTAIN" mana="60" nature="2" range="200" cooldown="5" type="heal" target="self" />
-	<skill name="DRUID_WITHERING_SEED" mana="50" nature="2" range="180" cooldown="20" />
-	<skill name="DRUID_MOTHER_NATURES_WRATH" mana="65" nature="10" cooldown="12" type="dot" />
+	<skill name="DRUID_WITHERING_SEED" mana="50" nature="2" range="180" cooldown="20"/>
+	<skill name="DRUID_MOTHER_NATURES_WRATH" mana="65" nature="10" range="180" cooldown="15" type="dot" buffname="503819"/>
 	<skill name="DRUID_SUMMON_SANDSTORM" mana="70" nature="4" range="180" cooldown="8" />
 
 	<!-- Elite -->
 	<skill name="DRUID_CAMELLIA_FLOWER" mana="25" range="200" type="heal" target="friendly" />
-	
-	
+
+
 	<!-- Warden skills -->
 	<skill name="WARDEN_CHARGED_CHOP" skilltab="2" skillnum="1" mana="20" range="50" casttime="2" cooldown="3" />
-	<skill name="WARDEN_BRIAR_SHIELD" skilltab="2" skillnum="2" mana="30" type="buff" target="self" cooldown="300" />
+	<skill name="WARDEN_BRIAR_SHIELD" skilltab="2" skillnum="2" mana="30" type="buff" buffname="503958" target="self" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" skilltab="2" skillnum="3" mana="15" range="50" type="damage" target="enemy" />
 	<skill name="WARDEN_ELVEN_AMULET" mana="150" cooldown="60" type="buff" target="self" hpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" skilltab="2" skillnum="6" mana="150" cooldown="120" type="buff" target="self" inbattle="true" />
@@ -354,24 +365,24 @@
 	<skill name="WARDEN_MOVEMENT_RESTRICTION" skilltab="4" skillnum="6" mana="45" range="150" minrange="80" cooldown="45" />
 	<!-- TODO: Summon Nature Crystal uses 15% mana -->
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
-	<skill name="WARDEN_ANTI-MAGIC_ARROW" skilltab="4" skillnum="8" concentration="30" cooldown="6" range="250" type="damage" target="enemy" />
 	<!-- TODO: Damage Transfer requires pet -->
-	<skill name="WARDEN_DAMAGE_TRANSFER" mana="30" cooldown="180" />
-	<skill name="WARDEN_HEART_OF_THE_OAK" skilltab="4" skillnum="11" mana="55" cooldown="600" />
+	<skill name="WARDEN_DAMAGE_TRANSFER" mana="30" cooldown="180" type="buff" target="self" />
+	<skill name="WARDEN_HEART_OF_THE_OAK" skilltab="4" skillnum="11" mana="55" type="buff" buffname="503579" target="self" />
 	<skill name="WARDEN_FRANTIC_BRIAR" skilltab="4" skillnum="13" mana="70" casttime="2" />
 	<!-- TODO: Requires pet HP > 30% -->
 	<skill name="WARDEN_SOUL_ATTACK" skilltab="4" skillnum="14" range="150" casttime="2" cooldown="6" />
-	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_SUMMON_OAK_WALKER" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
-	<skill name="WARDEN_PROTECTION_OF_NATURE" skilltab="4" skillnum="17" mana="55" cooldown="600" type="buff" target="self" />
-	<skill name="WARDEN_NATURAL_LIFELINE" skilltab="4" skillnum="19" />
-	<skill name="WARDEN_NATURAL_LIFELINE" skilltab="4" skillnum="20" />
+	<skill name="WARDEN_PROTECTION_OF_NATURE" skilltab="4" skillnum="17" mana="55" type="buff" buffname="503581" target="self" />
 	<skill name="WARDEN_BANISH" mana="50" range="150" casttime="1" cooldown="60" hpper="15" />
-	<skill name="WARDEN_MORALE_BOOST" skilltab="4" skillnum="22" concentration="30" type="buff" target="self" cooldown="60" />
-	<skill name="WARDEN_POWER_OF_THE_OAK" skilltab="4" skillnum="24" mana="55" cooldown="600" type="buff" target="self" />
+	<skill name="WARDEN_POWER_OF_THE_OAK" skilltab="4" skillnum="24" mana="55" type="buff" buffname="503580" target="self" />
 	<!-- TODO: Explosion of Power requires pet -->
 	<skill name="WARDEN_EXPLOSION_OF_POWER" skilltab="4" skillnum="25" mana="50" cooldown="180" type="buff" target="self" />
 	<!-- TODO: Elven Guidance requires pet -->
 	<skill name="WARDEN_ELVEN_GUIDANCE" mana="30" cooldown="60" type="buff" target="self" />
 	<skill name="WARDEN_CROSS_CHOP" mana="50" cooldown="6" range="100" />
+
+	<!-- Elite -->
+	<skill name="WARDEN_ANTI-MAGIC_ARROW" skilltab="4" skillnum="8" concentration="30" cooldown="6" range="250" type="damage" target="enemy" />
+	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
+	<skill name="WARDEN_MORALE_BOOST" skilltab="4" skillnum="22" concentration="30" type="buff" target="self" cooldown="60" />
 </skills>

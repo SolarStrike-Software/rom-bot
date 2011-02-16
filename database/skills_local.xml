@@ -89,6 +89,7 @@
 	<PRIEST_INFECTIOUS_WOUND en="Infectious Wound" de="Infektiöse Wunde" />
 	<PRIEST_PURGE en="Purge" de="Läuterung" />
 	<PRIEST_LURE_OF_THE_SNAKE_WOMAN en="Lure of the Snake Woman" de="Verlockung der Schlangenfrau" />
+	<PRIEST_SHADOW_FURY en="Shadow Fury" de="Shadow Fury" />
 		<!-- TODO: don't attack while frozen -->
 	<PRIEST_FREEZE en="Freeze" de="Einfrieren" />
 		<!-- TODO: Requires curse -->
@@ -99,6 +100,8 @@
 	<PRIEST_DIVINE_INCARNATION en="Divine Incarnation" de="Göttliche Inkarnation" />
 	<PRIEST_CALM_HEART en="Calm Heart" de="Gelassenheit" />
 	<PRIEST_ICEWIND_BLADE en="Icewind Blade" de="Eiswindklinge" />
+	<PRIEST_ANGELS_BLESSING en="Angel\'s Blessing" de="Angel\'s Blessing" />
+	<PRIEST_ANGELS_CAROL en="Angel\'s Carol" de="Angel\'s Carol" />
 
 		<!-- Warrior skills -->
 	<WARRIOR_SLASH en="Slash" de="Hieb" />
@@ -124,7 +127,6 @@
 	<WARRIOR_SURVIVAL_INSTINCT en="Survival Instinct" de="Überlebenswille" />
 	<WARRIOR_GROUP_TAUNT en="Group Taunt" de="Gruppenspott" />
 	<WARRIOR_BLASTING_CYCLONE en="Blasting Cyclone" de="Zyklon" />
-	<KNIGHT_CHARGE en="Charge" de="Ansturm" />
 
 
 		<!-- Elite -->
@@ -201,6 +203,7 @@
 	<KNIGHT_ENHANCED_ARMOR en="Enhanced Armor" de="Rüstung Verstärken" />
 	<KNIGHT_SHACKLES_OF_LIGHT en="Shackles of Light" de="Lichtfesseln" />
 	<KNIGHT_RESOLUTION en="Resolution" de="Ruf der Pflicht" />
+	<KNIGHT_CHARGE en="Charge" de="Ansturm" />
 	<KNIGHT_HOLY_SEAL en="Holy Seal" de="Heiliges Siegel - Effekt" />
 	<KNIGHT_DISARMAMENT en="Disarmament" de="Abrüstung" />
 	<KNIGHT_SHIELD_OF_ATONEMENT en="Shield of Atonement" de="Schild der Sühne" />
@@ -301,7 +304,7 @@
 	<DRUID_BODY_VITALIZATION en="Body Vitalization" de="Körpervitalisierung" />
 	<DRUID_WITHERING_SEED en="Withering Seed" de="Samen des Verwelkens" />
 	<DRUID_SUMMON_SANDSTORM en="Summon Sandstorm" de="Sandsturm" />
-	
+
 	<!-- Elite -->
 	<DRUID_CAMELLIA_FLOWER en="Camellia Flower" de="Kamelienblüte" />
 
