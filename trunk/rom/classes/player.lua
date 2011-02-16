@@ -678,41 +678,14 @@ end
 
 -- Check if you can use any skills, and use them
 -- if they are needed.
-local _checkskills_last_targetbuffs = {};
-local _checkskills_last_targetdebuffs = {};
-local _checkskills_last_updatetime = 0;
 function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
 
 	self:update();
 
-	playerBuffsNeeded = false
-	targetBuffsNeeded = false
-	for i,v in pairs(settings.profile.skills) do
-		if v.ReqBuffName ~= "" then
-			if v.ReqBuffTarget == "player" then
-				playerBuffsNeeded = true
-			else
-				targetBuffsNeeded = true
-			end
-		end
-	end
-
-	if playerBuffsNeeded and ( deltaTime(getTime(), self.LastBuffUpdateTime) > 500 ) then
-		self:updateBuffs();
-	end;
-
 	local target = target or self:getTarget();
-	if targetBuffsNeeded and ( target ~= nil and _only_friendly ~= true ) then
-		if( _checkskills_last_updatetime == 0 or deltaTime(getTime(), _checkskills_last_updatetime) > 500 ) then
-			target:updateBuffs("target");
-			_checkskills_last_targetbuffs = target.Buffs;
-			_checkskills_last_targetdebuffs = target.Debuffs;
-			_checkskills_last_updatetime = getTime();
-		else
-			target.Buffs = _checkskills_last_targetbuffs;
-			target.Debuffs = _checkskills_last_targetdebuffs;
-		end
+	if ( target ~= nil and _only_friendly ~= true ) then
+			target:update();
 	end
 
 	local useQueue = true;
@@ -1879,6 +1852,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle);
 			camera:setRotation(angle);
+			player:update()
+			angleDif = angleDifference(angle, self.Direction);
 		end
 
 		if( angleDif > math.rad(15) ) then
@@ -2281,6 +2256,13 @@ function CPlayer:update()
 
 	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char,
 	addresses.charBattle_offset) == 1;
+
+	local tmp = self:getBuff(503827)
+	if tmp then -- has natures power
+		self.Nature = tmp.Level + 1
+	else
+		self.Nature = 0
+	end
 
 	-- remember aggro start time, used for timed ranged pull
 	if( self.Battling == true ) then

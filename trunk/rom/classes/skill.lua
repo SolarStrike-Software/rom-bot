@@ -22,6 +22,7 @@ CSkill = class(
 		self.Rage = 0;
 		self.Energy = 0;
 		self.Concentration = 0;
+		self.Nature = 0;
 		self.Range = 20;
 		self.MinRange = 0; -- Must be at least this far away to cast
 		self.CastTime = 0;
@@ -34,10 +35,13 @@ CSkill = class(
 		self.Level = 1;
 
 		-- Information about required buffs/debuffs
-		self.ReqBuffType = ""; -- Either 'buff' or 'debuff'
+		self.BuffName = "" -- name of buff if skill type is 'buff'
 		self.ReqBuffCount = 0;
 		self.ReqBuffTarget = "player";
 		self.ReqBuffName = ""; -- Name of the buff/debuff
+		self.NoBuffCount = 0;
+		self.NoBuffTarget = "player";
+		self.NoBuffName = ""; -- Name of the buff/debuff
 
 		self.AutoUse = true; -- Can be used automatically by the bot
 
@@ -68,6 +72,7 @@ CSkill = class(
 			self.Rage = copyfrom.Rage;
 			self.Energy = copyfrom.Energy;
 			self.Concentration = copyfrom.Concentration;
+			self.Nature = copyfrom.Nature;
 			self.Range = copyfrom.Range;
 			self.MinRange = copyfrom.MinRange;
 			self.CastTime = copyfrom.CastTime;
@@ -91,10 +96,13 @@ CSkill = class(
 			self.aslevel = copyfrom.aslevel;
 			self.skilltab = copyfrom.skilltab;
 			self.skillnum = copyfrom.skillnum;
-			self.ReqBuffType = copyfrom.ReqBuffType;
+			self.BuffName = copyfrom.BuffName;
 			self.ReqBuffCount = copyfrom.ReqBuffCount;
 			self.ReqBuffTarget = copyfrom.ReqBuffTarget;
 			self.ReqBuffName = copyfrom.ReqBuffName;
+			self.NoBuffCount = copyfrom.NoBuffCount;
+			self.NoBuffTarget = copyfrom.NoBuffTarget;
+			self.NoBuffName = copyfrom.NoBuffName;
 			self.Blocking = copyfrom.Blocking;
 
 		end
@@ -116,14 +124,14 @@ function CSkill:canUse(_only_friendly, target)
 	--	settings.profile.options.DEBUG_SKILLUSE.TIMEGAP = true;
 
 	local function debug_skilluse(_reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
-		
+
 		-- return if debugging / detail  is disabled
 		if( not settings.profile.options.DEBUG_SKILLUSE.ENABLE ) then return; end
 		if( settings.profile.options.DEBUG_SKILLUSE[_reason] == false ) 	then  return; end;
 --		if( _reason == "ONCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.ONCOOLDOWN ) 	then  return; end;
 --		if( _reason == "NOCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.NOCOOLDOWN ) 	then  return; end;
 --		if( _reason == "HPLOW" 		and  not settings.profile.options.DEBUG_SKILLUSE.HPLOW ) 		then  return; end;
-	
+
 		local function make_printable(_v)
 			if(_v == true) then
 				_v = "<true>";
@@ -139,7 +147,7 @@ function CSkill:canUse(_only_friendly, target)
 			end
 			return _v
 		end
-	
+
 		local hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 = "", "", "", "", "", "";
 		if(_arg1) then hf_arg1 = make_printable(_arg1); end;
 		if(_arg2) then hf_arg2 = make_printable(_arg2); end;
@@ -150,9 +158,9 @@ function CSkill:canUse(_only_friendly, target)
 
 
 		local msg = sprintf("[DEBUG] %s %s %s %s %s %s %s %s\n", _reason, self.Name, hf_arg1, hf_arg2, hf_arg3, hf_arg4, hf_arg5, hf_arg6 ) ;
-		
+
 		cprintf(cli.yellow, msg);
-		
+
 	end
 
 	--local target = player:getTarget();	-- get target fields
@@ -172,7 +180,7 @@ function CSkill:canUse(_only_friendly, target)
 	-- Still cooling down...
 	local prior = getSkillUsePrior();
 
-	if( deltaTime(getTime(), self.LastCastTime) < 
+	if( deltaTime(getTime(), self.LastCastTime) <
 		  (self.Cooldown*1000 - self.rebuffcut*1000 - prior) ) then	-- Cooldown is in sec
 		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;
@@ -218,7 +226,7 @@ function CSkill:canUse(_only_friendly, target)
 	if( not player.Battling and self.InBattle == true ) then
 		debug_skilluse("ONLYINBATTLE", player.Battling);
 		return false;
-	end   
+	end
 
 	-- check if hp below our HP_LOW level
 	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
@@ -294,7 +302,7 @@ function CSkill:canUse(_only_friendly, target)
 	    debug_skilluse("PULLONLY");
 		return false
 	end
-	
+
 	-- Not enough mana
 	if( player.Mana < math.ceil(self.Mana + (self.Level-1)*self.ManaInc) ) then
 		debug_skilluse("NOTENOUGHMANA", player.Mana, math.ceil(self.Mana + (self.Level-1)*self.ManaInc));
@@ -312,26 +320,73 @@ function CSkill:canUse(_only_friendly, target)
 		return false;
 	end
 
+	-- check if 'self' has buff
+	if self.BuffName ~= nil and self.Target == STARGET_SELF then
+		if player:hasBuff(self.BuffName) then
+			debug_skilluse("PLAYERHASBUFF");
+			return false
+		end
+	end
+
+	-- check if 'enemy' has buff
+	if self.BuffName ~= nil and self.Target == STARGET_ENEMY and
+		target and target.Type == PT_MONSTER then
+		if target:hasBuff(self.BuffName) then
+			debug_skilluse("TARGETHASBUFF");
+			return false
+		end
+	end
+
+	-- check if 'friendly' has buff
+	if self.BuffName ~= nil and self.Target == STARGET_FRIENDLY then
+		if target and target.Type == PT_PLAYER then
+			if target:hasBuff(self.BuffName) then
+				debug_skilluse("TARGETHASBUFF");
+				return false
+			end
+		else
+			if player:hasBuff(self.BuffName) then
+				debug_skilluse("PLAYERHASBUFF");
+				return false
+			end
+		end
+	end
+
 	-- Check required buffs/debuffs
 	if( self.ReqBuffName ~= "" ) then
-		local checktab;
-
+		local bool;
 		if( self.ReqBuffTarget == "player" ) then
-			if( self.ReqBuffType == "buff" ) then
-				checktab = player.Buffs;
-			else
-				checktab = player.Debuffs;
-			end;
-		elseif( self.ReqBuffTarget == "target" ) then
-			if( self.ReqBuffType == "buff" ) then
-				checktab = target.Buffs;
-			else
-				checktab = target.Debuffs;
-			end;
+			bool = player:hasBuff(self.ReqBuffName, self.ReqBuffCount)
+		elseif target and ( self.ReqBuffTarget == "target" ) then
+			bool = target:hasBuff(self.ReqBuffName, self.ReqBuffCount)
 		end
 
-		if( self.ReqBuffCount > (checktab[self.ReqBuffName] or 0) ) then			return false;
-		end;
+		if bool == false then
+			debug_skilluse("REQBUFF");
+			return false
+		end
+	end
+
+	-- Check non-required buffs/debuffs
+	if( self.NoBuffName ~= "" ) then
+		local bool;
+		if( self.NoBuffTarget == "player" ) then
+			bool = player:hasBuff(self.NoBuffName, self.NoBuffCount)
+		elseif target and ( self.NoBuffTarget == "target" ) then
+			bool = target:hasBuff(self.NoBuffName, self.NoBuffCount)
+		end
+
+		if bool == true then
+			debug_skilluse("NOBUFF");
+			return false
+		end
+	end
+
+	-- CHeck if enough Natures Power
+	if self.Nature > player.Nature and
+		not player:hasBuff(503817) then -- No need NP if has buff "Unity with Mother Earth"
+		debug_skilluse("NEEDMORENATURE");
+		return false
 	end
 
 	return true;
@@ -370,21 +425,21 @@ function CSkill:use()
 	-- at CPlayer:cast(skill): for the casting flag gone
 	-- at CPlayer:checkSkills(): for the casting flag gone
 	-- and here to have a minimum delay between the keypresses
-	-- 850/900 will work after skills without casting time, but will result in misses 
+	-- 850/900 will work after skills without casting time, but will result in misses
 	-- after skills that have a casting time
 	local prior = getSkillUsePrior();
 
-	while( deltaTime(getTime(), bot.LastSkillKeypressTime) < 
+	while( deltaTime(getTime(), bot.LastSkillKeypressTime) <
 		settings.profile.options.SKILL_GLOBALCOOLDOWN - prior ) do
 		yrest(10);
 	end
 
 	-- debug time gap between casts
 	if( settings.profile.options.DEBUG_SKILLUSE.ENABLE  and
-		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP ) then 
+		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP ) then
 		local hf_casting = "false";
 		if(player.Casting) then hf_casting = "true"; end;
-		local msg = sprintf("[DEBUG] gap between skilluse %d, pcasting=%s\n", 
+		local msg = sprintf("[DEBUG] gap between skilluse %d, pcasting=%s\n",
 		  deltaTime(getTime(), bot.LastSkillKeypressTime), hf_casting );
 		cprintf(cli.yellow, msg);
 	end
@@ -401,9 +456,9 @@ function CSkill:use()
 
 	bot.LastSkillKeypressTime = getTime();		-- remember time to check time-lag between casts
 
-	
+
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
-	
+
 		-- hopefully skillnames in enus and eneu are the same
 		local hf_langu;
 		if(bot.ClientLanguage == "ENUS" or bot.ClientLanguage == "ENEU") then
@@ -417,7 +472,7 @@ function CSkill:use()
 		elseif( self.skilltab ~= nil  and  self.skillnum ~= nil ) then
 			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
 		else
-			cprintf(cli.yellow, "No local skillname in skills_local.xml. Please maintenance the file and send it to the developers.\n", self.Name);	
+			cprintf(cli.yellow, "No local skillname in skills_local.xml. Please maintenance the file and send it to the developers.\n", self.Name);
 		end;
 	else
 		-- use the normal hotkeys

@@ -2,19 +2,20 @@ settings_default = {
 	hotkeys = {
 		MOVE_FORWARD = {key = _G.key.VK_W, modifier = nil},
 		MOVE_BACKWARD = {key = _G.key.VK_S, modifier = nil},
-		ROTATE_LEFT = {key = _G.key.VK_A, modifier = nil},
-		ROTATE_RIGHT = {key = _G.key.VK_D, modifier = nil},
-		STRAFF_LEFT = {key = _G.key.VK_Q, modifier = nil},
-		STRAFF_RIGHT = {key = _G.key.VK_E, modifier = nil},
+		ROTATE_LEFT = {key = _G.key.VK_Q, modifier = nil},
+		ROTATE_RIGHT = {key = _G.key.VK_E, modifier = nil},
+		STRAFF_LEFT = {key = _G.key.VK_A, modifier = nil},
+		STRAFF_RIGHT = {key = _G.key.VK_D, modifier = nil},
 		JUMP = {key = _G.key.VK_SPACE, modifier = nil},
 		TARGET = {key = _G.key.VK_TAB, modifier = nil},
 		TARGET_FRIEND = {key = _G.key.J, modifier = nil},
+		ESCAPE = {key = _G.key.VK_ESCAPE, modifier = nil},
 		START_BOT = {key = _G.key.VK_DELETE, modifier = nil},
 		STOP_BOT = {key = _G.key.VK_END, modifier = nil}
 	},
 	options = {
 		ENABLE_FIGHT_SLOW_TURN = false,
-		MELEE_DISTANCE = 45,
+		MELEE_DISTANCE = 50,
 		LANGUAGE = "english",
 		USE_CLIENT_LANGUAGE = true,		-- automatic use client language after loading the bot
 		DEBUGGING = false,
@@ -393,6 +394,7 @@ function settings.load()
 		check_keys["JUMP"] = nil;
 		check_keys["TARGET"] = nil;
 		check_keys["TARGET_FRIEND"] = nil;
+		check_keys["ESCAPE"] = nil;
 
 		-- Load bindings.txt into own table structure
 		bindings = { name = { } };
@@ -418,6 +420,7 @@ function settings.load()
 				JUMP = "JUMP",
 				TARGETNEARESTENEMY = "TARGET",
 				TARGETNEARESTFRIEND = "TARGET_FRIEND",
+				TOGGLEGAMEMENU = "ESCAPE",
 			};
 
 			local hotkeyName = bindingName;
@@ -460,6 +463,7 @@ function settings.load()
 		bindHotkey("JUMP");
 		bindHotkey("TARGETNEARESTENEMY");
 		bindHotkey("TARGETNEARESTFRIEND");
+		bindHotkey("TOGGLEGAMEMENU");
 	end
 
 	-- check ingame settings
@@ -548,6 +552,7 @@ function settings.load()
 	checkHotkeys("JUMP",           "JUMP");
 	checkHotkeys("TARGET",         "TARGETNEARESTENEMY");
 	checkHotkeys("TARGET_FRIEND",  "TARGETNEARESTFRIEND");
+	checkHotkeys("ESCAPE",         "TOGGLEGAMEMENU");
 
 end
 
@@ -733,6 +738,7 @@ function settings.loadProfile(_name)
 
 			-- Over-ride attributes
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
+			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")));
 			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")));
@@ -743,6 +749,12 @@ function settings.loadProfile(_name)
 			pullonly = v:getAttribute("pullonly");
 			maxuse = tonumber(v:getAttribute("maxuse"));
 			rebuffcut = tonumber(v:getAttribute("rebuffcut"));
+			reqbuffcount = tonumber(v:getAttribute("reqbuffcount"));
+			reqbufftarget = v:getAttribute("reqbufftarget");
+			reqbuffname = v:getAttribute("reqbuffname");
+			nobuffcount = tonumber(v:getAttribute("nobuffcount"));
+			nobufftarget = v:getAttribute("nobufftarget");
+			nobuffname = v:getAttribute("nobuffname");
 			autouse = v:getAttribute("autouse");
 		-- Ensure that autouse is a proper type.
 			if( not (autouse == true or autouse == false) ) then
@@ -809,6 +821,26 @@ function settings.loadProfile(_name)
 			tmp.modifier = modifier;
 			tmp.Level = level;
 
+			if (reqbuffname and not reqbufftarget) or (not reqbuffname and reqbufftarget) then
+				local msg = sprintf(language[154], name, _name);	-- need to define both
+				error(msg, 0);
+			end
+
+			if (nobuffname and not nobufftarget) or (not nobuffname and nobufftarget) then
+				local msg = sprintf(language[155], name, _name);	-- need to define both
+				error(msg, 0);
+			end
+
+			if reqbufftarget ~= nil and reqbufftarget ~= "target" and reqbufftarget ~="player" then
+				local msg = sprintf(language[156], reqbufftarget, name, _name);	-- needs to be 'target' or 'player'
+				error(msg, 0);
+			end
+
+			if nobufftarget ~= nil and nobufftarget ~= "target" and nobufftarget ~="player" then
+				local msg = sprintf(language[157], nobufftarget, name, _name);	-- needs to be 'target' or 'player'
+				error(msg, 0);
+			end
+
 			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
 			if( targetmaxhpper ) then tmp.TargetMaxHpPer = targetmaxhpper; end;
@@ -820,6 +852,12 @@ function settings.loadProfile(_name)
 			if( pullonly == true ) then tmp.pullonly = pullonly; end;
 			if( maxuse ) then tmp.maxuse = maxuse; end;
 			if( rebuffcut ) then tmp.rebuffcut = rebuffcut; end;
+			if( reqbuffcount ) then tmp.ReqBuffCount = reqbuffcount; end;
+			if( reqbufftarget ) then tmp.ReqBuffTarget = reqbufftarget; end;
+			if( reqbuffname ) then tmp.ReqBuffName = reqbuffname; end;
+			if( nobuffcount ) then tmp.NoBuffCount = nobuffcount; end;
+			if( nobufftarget ) then tmp.NoBuffTarget = nobufftarget; end;
+			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
 			if( autouse == false ) then tmp.AutoUse = false; end;
 
 			table.insert(settings.profile.skills, tmp);

@@ -13,16 +13,17 @@ function database.load()
 
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
-		local name, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration;
+		local name, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration, nature;
 		local range, minrange, casttime, cooldown, type, target;
 		local toggleable, minmanaper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
-		local reqbufftype, reqbuffcount, reqbufftarget, reqbuffname;
+		local buffname, reqbuffcount, reqbufftarget, reqbuffname, nobuffcount, nobufftarget, nobuffname;
 
 		name = v:getAttribute("name");
 		mana = v:getAttribute("mana");
 		rage = v:getAttribute("rage");
 		energy = v:getAttribute("energy");
 		concentration = v:getAttribute("concentration");
+		nature = v:getAttribute("nature");
 		range = v:getAttribute("range");
 		minrange = v:getAttribute("minrange");
 		casttime = v:getAttribute("casttime");
@@ -43,10 +44,13 @@ function database.load()
 		skilltab = v:getAttribute("skilltab");
 		skillnum = v:getAttribute("skillnum");
 
-		reqbufftype = string.lower(tostring(v:getAttribute("reqbufftype") or ""));
+		buffname = tostring(v:getAttribute("buffname") or "");
 		reqbuffcount = tonumber(v:getAttribute("reqbuffcount") or 0);
 		reqbufftarget = string.lower(tostring(v:getAttribute("reqbufftarget") or "player"));
 		reqbuffname = tostring(v:getAttribute("reqbuffname") or "");
+		nobuffcount = tonumber(v:getAttribute("nobuffcount") or 0);
+		nobufftarget = string.lower(tostring(v:getAttribute("nobufftarget") or "player"));
+		nobuffname = tostring(v:getAttribute("nobuffname") or "");
 
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
@@ -98,6 +102,7 @@ function database.load()
 		if(rage) then tmp.Rage = rage; end;
 		if(energy) then tmp.Energy = energy; end;
 		if(concentration) then tmp.Concentration = concentration; end;
+		if(nature) then tmp.Nature = nature end
 		if(range) then tmp.Range = range; end;
 		if(minrange) then tmp.MinRange = minrange; end;
 		if(casttime) then tmp.CastTime = casttime; end;
@@ -114,14 +119,17 @@ function database.load()
 		if(priority) then tmp.priority = priority; end;
 		if(manainc) then tmp.ManaInc = manainc; end;
 		if(level) then tmp.Level = level; end;
-		if(aslevel) then tmp.aslevel = aslevel; end;	
-		if(skilltab) then tmp.skilltab = skilltab; end;	
-		if(skillnum) then tmp.skillnum = skillnum; end;		
+		if(aslevel) then tmp.aslevel = aslevel; end;
+		if(skilltab) then tmp.skilltab = skilltab; end;
+		if(skillnum) then tmp.skillnum = skillnum; end;
 
-		if(reqbufftype == "buff" or reqbufftype == "debuff" ) then tmp.ReqBuffType = reqbufftype; end;
+		if(buffname ~= "") then tmp.BuffName = buffname; end;
 		if(reqbuffcount > 0 ) then tmp.ReqBuffCount = reqbuffcount; end;
 		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
 		if(reqbuffname ~= "") then tmp.ReqBuffName = reqbuffname; end;
+		if(nobuffcount > 0 ) then tmp.NoBuffCount = nobuffcount; end;
+		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
+		if(nobuffname ~= "") then tmp.NoBuffName = nobuffname; end;
 
 		database.skills[name] = tmp;
 	end
@@ -147,7 +155,7 @@ function database.load()
 	end
 
 
-	-- import nodes/ressouces 
+	-- import nodes/ressouces
 	root = xml.open(getExecutionPath() .. "/database/nodes.xml");
 	elements = root:getElements();
 
@@ -192,13 +200,13 @@ function database.load()
 		tmp.utf8_1 = utf8_1;
 		tmp.utf8_2 = utf8_2;
 		tmp.ascii = ascii;
-		tmp.dos_replace = dos_replace;		
+		tmp.dos_replace = dos_replace;
 
 		local key = utf8_1*1000 + utf8_2;
 		database.utf8_ascii[key] = tmp;
 	end
-	
-	
+
+
 	-- import consumables (potions, arrows, stones, ...)
 	root = xml.open(getExecutionPath() .. "/database/consumables.xml");
 	elements = root:getElements();
@@ -216,10 +224,10 @@ function database.load()
 		if (type) then tmp.Type = type; end;
 		if (name) then tmp.Name = name; end;
 		if (level) then tmp.Level = level; end;
-		if (potency) then 
-			tmp.Potency = potency; 
+		if (potency) then
+			tmp.Potency = potency;
 		else
-			tmp.Potency = 0; 
+			tmp.Potency = 0;
 		end;
 		if (id) then tmp.Id = id; end;
 
@@ -236,7 +244,7 @@ function database.load()
 
 		itemid = v:getAttribute("itemid");
 		type   = v:getAttribute("type");
-		armor  = v:getAttribute("armor");		
+		armor  = v:getAttribute("armor");
 		level  = v:getAttribute("level");
 		name   = v:getAttribute("name");
 
