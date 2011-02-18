@@ -10,6 +10,7 @@ include("settings.lua");
 include("functions.lua");
 include("macros.lua");
 include("classes/object.lua");
+include("classes/memorytable.lua");
 
 settings.load();
 database.load();

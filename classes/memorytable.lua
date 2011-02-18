@@ -246,6 +246,8 @@ function GetNextTableAddress( ptr )
 end;
 
 function GetTableForID( id )
+	-- If tables hasn't been loaded yet then exit
+	if #tables == 0 then return end
 
 	for _, _table in ipairs( tables ) do
 		if ( id >= _table.StartId and id <= _table.EndId ) then

@@ -50,6 +50,7 @@
 	<MAGE_STARS_OF_LIGHT en="Stars of Light" de="Lichtsterne" />
 	<MAGE_MESSENGER_OF_LIGHT en="Messenger of Light" de="Bote des Lichts" />
 	<MAGE_LIGHT_CHARGE en="Light Charge" de="Ansturm des Lichts" />
+	<MAGE_PERCEPTION en="Perception" de="Wahrnehmung" />
 
 
 
@@ -89,7 +90,7 @@
 	<PRIEST_INFECTIOUS_WOUND en="Infectious Wound" de="Infektiöse Wunde" />
 	<PRIEST_PURGE en="Purge" de="Läuterung" />
 	<PRIEST_LURE_OF_THE_SNAKE_WOMAN en="Lure of the Snake Woman" de="Verlockung der Schlangenfrau" />
-	<PRIEST_SHADOW_FURY en="Shadow Fury" de="Shadow Fury" />
+	<PRIEST_SHADOW_FURY en="Shadow Fury" />
 		<!-- TODO: don't attack while frozen -->
 	<PRIEST_FREEZE en="Freeze" de="Einfrieren" />
 		<!-- TODO: Requires curse -->
@@ -100,8 +101,8 @@
 	<PRIEST_DIVINE_INCARNATION en="Divine Incarnation" de="Göttliche Inkarnation" />
 	<PRIEST_CALM_HEART en="Calm Heart" de="Gelassenheit" />
 	<PRIEST_ICEWIND_BLADE en="Icewind Blade" de="Eiswindklinge" />
-	<PRIEST_ANGELS_BLESSING en="Angel\'s Blessing" de="Angel\'s Blessing" />
-	<PRIEST_ANGELS_CAROL en="Angel\'s Carol" de="Angel\'s Carol" />
+	<PRIEST_ANGELS_BLESSING en="Angel\'s Blessing" />
+	<PRIEST_ANGELS_CAROL en="Angel\'s Carol" />
 
 		<!-- Warrior skills -->
 	<WARRIOR_SLASH en="Slash" de="Hieb" />
@@ -127,6 +128,7 @@
 	<WARRIOR_SURVIVAL_INSTINCT en="Survival Instinct" de="Überlebenswille" />
 	<WARRIOR_GROUP_TAUNT en="Group Taunt" de="Gruppenspott" />
 	<WARRIOR_BLASTING_CYCLONE en="Blasting Cyclone" de="Zyklon" />
+	<WARRIOR_TOURNIQUET en="Tourniquet" de="Druckverband" />
 
 
 		<!-- Elite -->
@@ -195,7 +197,8 @@
 	<ROGUE_POISON_PROTECTION en="Poison Protection" de="Schutz vor Giften" />
 	<ROGUE_HOLY_LIGHT_PROTECTION en="Holy Light Protection" de="Schutz des heiligen Lichts" />
 	<ROGUE_COURAGEOUS_GUARD en="Courageous Guard" de="Tapfere Wache" />
-
+	<ROGUE_POWER_OF_THE_LION en="Power of the Lion" />
+	<ROGUE_SEARING_LIGHT en="Searing Light" />
 
 		<!-- Knight skills -->
 	<KNIGHT_HOLY_STRIKE en="Holy Strike" de="Heiliger Schlag" />
@@ -224,10 +227,12 @@
 	<KNIGHT_ARROW_OF_VENGEANCE en="Arrow of Vengeance" de="Pfeil der Rache" />
 	<KNIGHT_HOLY_CHAINS en="Holy Chains" de="Heilige Ketten" />
 	<KNIGHT_HEAVENLY_ARROW en="Heavenly Arrow" de="Himmlischer Pfeil" />
+	<KNIGHT_SACRED_RESISTANCE en="Sacred Resistance" />
 		<!-- TODO: Requires critical hit -->
 	<KNIGHT_SMASH en="Smash" de="Zerschmettern" />
 	<KNIGHT_CRAZY_BLADES en="Crazy Blades" de="Verrückte Klingen" />
 	<KNIGHT_DANCE_OF_TWO_BLADES en="Dance of Two Blades" de="Tanz der zwei Klingen" />
+	<KNIGHT_LEOPARD_INSTINCT en="Leopard Instinct" />
 		<!-- TODO: Holy Light Field: cooldown ? -->
 		<!-- TODO: Lightning Armor: cooldown ? -->
 	<KNIGHT_LIGHTNING_ARMOR en="Lightning Armor" de="Rüstung der Blitze" />
