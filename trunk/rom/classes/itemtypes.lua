@@ -6,10 +6,16 @@ function LoadItemTypes()
 	local fname = CACHE_PATH .. "/itemtypestable.lua";
 	if( fileExists(fname) ) then
 		LoadItemTypes_cached(fname)
-	else
-		LoadItemTypes_memory()
-		CacheItemTypes();
+		if itemtypes_language == string.sub(RoMScript("GetLanguage()"),1,2) then
+			-- data good
+			return
+		else
+			printf("Client Language changed.\n")
+		end
 	end
+
+	LoadItemTypes_memory()
+	CacheItemTypes();
 end
 
 function LoadItemTypes_cached(filename)
@@ -75,6 +81,8 @@ function LoadItemTypes_memory()
 	printf("\n")
 
 	itemtypes =  data
+
+	itemtypes_language = string.sub(RoMScript("GetLanguage()"),1,2)
 	--print("time",os.clock() - starttime)
 end
 
@@ -126,6 +134,8 @@ function CacheItemTypes()
 	end
 
 	outFile:write("}\n");
+
+	outFile:write("itemtypes_language = \"" .. itemtypes_language .. "\"\n")
 	outFile:close()
 end
 

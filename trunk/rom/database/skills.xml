@@ -19,7 +19,7 @@
 	<skill name="MAGE_PHOENIX" mana="40" range="120" cooldown="20" type="damage" target="enemy" />
 	<skill name="MAGE_ELECTRIC_COMPRESSION" type="buff" buffname="501554" target="self" reqbuffname="502270" reqbufftarget="player" />
 	<skill name="MAGE_STATIC_FIELD" mana="20" range="150" casttime="1" type="stun" buffname="501555" target="enemy" reqbuffname="501554" reqbufftarget="player" />
-	<skill name="MAGE_PURGATORY_FIRE" mana="50" type="damage" target="enemy" />
+	<skill name="MAGE_PURGATORY_FIRE" mana="50" range="50" type="damage" target="enemy" />
 	<skill name="MAGE_ENERGY_INFLUX" cooldown="120" type="buff" buffname="500296" target="self" />
 	<skill name="MAGE_ENERGY_WELL" cooldown="120" type="buff" buffname="500369" target="self" />
 	<skill name="MAGE_ELEMENTAL_WEAKNESS" mana="50" range="250" type="debuff" buffname="500365" target="enemy" />
@@ -73,7 +73,7 @@
 	<skill name="PRIEST_ICE_FOG" aslevel="8" skilltab="4" skillnum="5" mana="40" range="200" casttime="3" cooldown="15" type="damage" buffname="500485,500486,500487" target="enemy" />
 	<skill name="PRIEST_RESURRECTION" aslevel="10" skilltab="4" skillnum="6" mana="150" range="150" casttime="5" type="ressurection" target="friendly" />
 	<skill name="PRIEST_SOUL_BOND" aslevel="10" skilltab="4" skillnum="7" mana="500" range="225" type="buff" buffname="500535" target="friendly" />
-	<skill name="PRIEST_GRACE_OF_LIFE" aslevel="14" skilltab="4" skillnum="9" mana="30" manainc="3.0" range="200" type="buff" buffname="500517" target="friendly" />
+	<skill name="PRIEST_GRACE_OF_LIFE" aslevel="14" skilltab="4" skillnum="9" mana="30" manainc="3.0" range="200" type="buff" buffname="500517,502033" target="friendly" />
 	<skill name="PRIEST_GROUP_HEAL" aslevel="14" skilltab="4" skillnum="8" mana="70" manainc="7.0" casttime="4" type="heal" target="self" />
 	<!-- manainc? -->
 	<skill name="PRIEST_CHAIN_OF_LIGHT" aslevel="18" skilltab="4" skillnum="11" mana="60" range="217" manainc="6.0" casttime="6" type="damage" target="enemy" />
@@ -156,9 +156,12 @@
 	<skill name="WARRIOR_OPPORTUNITY" rage="15" range="50" type="damage" target="enemy" reqbuffname="501503" reqbufftarget="target" />
 	<skill name="WARRIOR_THROW_SHIELD" mana="30" cooldown="6" type="damage" target="enemy" />
 	<!-- Not sure which buff id is correct -->
-	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" cooldown="20" target="self" type="buff" buffname="502007,503514"/>
+	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" target="self" type="buff" buffname="502007,503514"/>
 	<skill name="WARRIOR_IGNORE_PAIN" cooldown="300" target="self" type="buff" />
 	<skill name="WARRIOR_SHIELD_BASH" mana="30" range="50" />
+
+	<!-- Itemset skills -->
+	<skill name="WARRIOR_TOURNIQUET" target="self" cooldown="90" type="hot" buffname="506522" />
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
@@ -215,6 +218,7 @@
 	<skill name="ROGUE_LIONS_PROTECTION" mana="30" type="buff" buffname="501946" target="self" />
 	<skill name="ROGUE_HOLY_LIGHT_PROTECTION" mana="30" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COURAGEOUS_GUARD" mana="100" cooldown="180" type="buff" target="self" />
+	<skill name="ROGUE_POWER_OF_THE_LION" cooldown="60" type="buff" target="self" reqbuffname="501946" reqbufftarget="player"/>
 	<skill name="ROGUE_SEARING_LIGHT" mana="40" type="buff" buffname="503268" target="self" nobuffname="500715" nobufftarget="player" />
 
 	<!-- Unknown skills or superseded names-->
@@ -227,7 +231,7 @@
 	<skill name="KNIGHT_PUNISHMENT" skilltab="2" skillnum="1" mana="20" manainc="2.0" range="50" cooldown="8" type="damage" target="enemy" reqbuffcount="3" reqbufftarget="target" reqbuffname="500137,500138,500139" />
 	<skill name="KNIGHT_DISARMAMENT" mana="20" manainc="2.0" range="50" cooldown="1" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
-	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" type="buff" buffname="500141" target="self" />
+	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" type="buff" buffname="500141,501823" target="self" />
 	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" buffname="501772" target="self" />
 	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" buffname="501772" target="self" />
 	<skill name="KNIGHT_MANA_RETURN" range="100" />
@@ -250,10 +254,12 @@
 	<skill name="KNIGHT_ARROW_OF_VENGEANCE" concentration="20" range="200" cooldown="120" />
 	<skill name="KNIGHT_HOLY_CHAINS" mana="20" range="150" priority="100" minrange="60" />
 	<skill name="KNIGHT_HEAVENLY_ARROW" concentration="20" range="200" cooldown="120" inbattle="false" />
+	<skill name="KNIGHT_SACRED_RESISTANCE" concentration="20" range="180" type="damage" target="enemy" />
 	<!-- TODO: Requires critical hit -->
 	<skill name="KNIGHT_SMASH" range="50" cooldown="8" />
 	<skill name="KNIGHT_CRAZY_BLADES" mana="20" type="buff" buffname="501796" target="self" />
 	<skill name="KNIGHT_DANCE_OF_TWO_BLADES" energy="35" range="50" cooldown="10" />
+	<skill name="KNIGHT_LEOPARD_INSTINCT" energy="30" type="buff" target="self" cooldown="120" />
 	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="84" inbattle="true"/>
 	<!-- Not sure which buff id is correct -->
 	<skill name="KNIGHT_LIGHTNING_ARMOR" mana="30" type="buff" buffname="502096,503293" target="self" />
