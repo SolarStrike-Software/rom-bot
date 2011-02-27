@@ -260,7 +260,7 @@
 	<skill name="KNIGHT_CRAZY_BLADES" mana="20" type="buff" buffname="501796" target="self" />
 	<skill name="KNIGHT_DANCE_OF_TWO_BLADES" energy="35" range="50" cooldown="10" />
 	<skill name="KNIGHT_LEOPARD_INSTINCT" energy="30" type="buff" target="self" cooldown="120" />
-	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="84" inbattle="true"/>
+	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" mana="30" cooldown="6" type="damage" target="enemy" range="50" buffname="502051,503226" />
 	<!-- Not sure which buff id is correct -->
 	<skill name="KNIGHT_LIGHTNING_ARMOR" mana="30" type="buff" buffname="502096,503293" target="self" />
 	<skill name="KNIGHT_MANA_SHIELD" cooldown="120" type="buff" target="self" />
@@ -294,7 +294,7 @@
 	<skill name="SCOUT_COMBO_SHOT" consumable="3" range="200" cooldown="8" type="damage" target="enemy" />
 	<skill name="SCOUT_NECK_STRIKE" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_REFLECTED_SHOT" consumable="1" cooldown="10" range="200" type="damage" target="enemy" />
-	<skill name="SCOUT_CONCENTRATE" cooldown="300" type="buff" target="self" />
+	<skill name="SCOUT_CONCENTRATION" cooldown="300" type="buff" target="self" inbattle="true" />
 	<skill name="SCOUT_TARGET_AREA" concentration="3" type="buff" buffname="500934" target="self" />
 	<skill name="SCOUT_SERENITY" cooldown="480" type="buff" target="self" />
 
@@ -322,6 +322,7 @@
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_INTENSIFY"  type="buff" target="self" />
 	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
+	<skill name="SCOUT_CONCENTRATE" cooldown="300" type="buff" target="self" />
 
 
 	<!-- Druid skills -->
