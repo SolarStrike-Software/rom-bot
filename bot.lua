@@ -560,7 +560,6 @@ function main()
 
 			if( os.difftime(os.time(), aggroWaitStart) > 4 ) then
 				cprintf(cli.red, language[34]);		-- Aggro wait time out
-				player.LastAggroTimout = os.time();	-- remember aggro timeout
 				break;
 			end;
 

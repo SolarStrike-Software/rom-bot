@@ -6,7 +6,7 @@ include("classes/player.lua");
 include("classes/node.lua");
 include("settings.lua");
 include("functions.lua");
-
+include("classes/memorytable.lua");
 
 setStartKey(0);
 setStopKey(0);

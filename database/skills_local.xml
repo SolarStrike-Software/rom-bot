@@ -136,6 +136,7 @@
 	<WARRIOR_STUN_SHOT en="Stun Shot" de="Betäubungsschuss" />
 	<WARRIOR_AIM_FOR_THE_WOUND en="Aim for the Wound" de="Salz in die Wunde" />
 	<WARRIOR_SWORD_BREATH en="Sword Breath" de="Schwertatem" />
+	<WARRIOR_THE_FINAL_BATTLE en="The Final Battle" />
 	<WARRIOR_BLOOD_DANCE en="Blood Dance" de="Bluttanz" />
 	<WARRIOR_FRENZIED_ATTACK en="Frenzied Attack" de="Wütender Angriff" />
 	<WARRIOR_KEEN_ATTACK en="Keen Attack" de="Kühne Attacke" />
@@ -233,6 +234,7 @@
 	<KNIGHT_CRAZY_BLADES en="Crazy Blades" de="Verrückte Klingen" />
 	<KNIGHT_DANCE_OF_TWO_BLADES en="Dance of Two Blades" de="Tanz der zwei Klingen" />
 	<KNIGHT_LEOPARD_INSTINCT en="Leopard Instinct" />
+	<KNIGHT_HOLY_LIGHT_DOMAIN en="Holy Light Domain" />
 		<!-- TODO: Holy Light Field: cooldown ? -->
 		<!-- TODO: Lightning Armor: cooldown ? -->
 	<KNIGHT_LIGHTNING_ARMOR en="Lightning Armor" de="Rüstung der Blitze" />
@@ -265,6 +267,7 @@
 	<SCOUT_DETECTION en="Detection" de="Entdeckung" />
 	<SCOUT_COMBO_SHOT en="Combo Shot" de="Salve" />
 	<SCOUT_REFLECTED_SHOT en="Reflected Shot" de="Querschläger" />
+	<SCOUT_CONCENTRATION en="Concentration" />
 	<SCOUT_SERENITY en="Serenity" de="Klarheit" />
 
 		<!-- Elite -->

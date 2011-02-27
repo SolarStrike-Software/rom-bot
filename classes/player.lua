@@ -1782,6 +1782,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	if self.Mounted then
 		successDist = 30.0 -- so we don't overpass it and double back when mounted
 	end
+
+	local turning = false
 	while( dist > successDist ) do
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
@@ -1795,19 +1797,19 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	 	-- only if not in the fight stuff coding (means self.Fighting == false )
 	 	if( self.Battling and 				-- we have aggro
 	 	    self.Fighting == false  and		-- we are not coming from the fight routines (bec. as melee we should move in fight)
-			waypoint.Type ~= WPT_TRAVEL and	-- only stop if not waypoint type TRAVEL
-	 	    os.difftime(os.time(), player.LastAggroTimout ) > 10 ) then		-- dont stop 10sec after last aggro wait timeout
-			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			success = false;
-			failreason = WF_COMBAT;
-			break;
+			waypoint.Type ~= WPT_TRAVEL ) then	-- only stop if not waypoint type TRAVEL
+			if self:findEnemy(true, nil, evalTargetDefault) then
+				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+				success = false;
+				failreason = WF_COMBAT;
+				break;
+			end
 		end;
 
-
 		-- look for a new target while moving
-		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) ) then
+		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) and (not turning) ) then
 			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
 			if( newTarget ) then	-- find a new target
 				self:target(newTarget);
@@ -1869,6 +1871,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
 					yrest(100);
 			end
+			turning = true
 		elseif( angleDif > math.rad(1) ) then
 			if( settings.profile.options.QUICK_TURN ) then
 				camera:setRotation(angle);
@@ -1878,6 +1881,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+			turning = false
 		else
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		end
@@ -1885,6 +1889,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		yrest(100);
 		self:update();
+		camera:setRotation(self.Direction);
 		waypoint:update();
 
 	end
