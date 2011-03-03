@@ -1145,6 +1145,8 @@ function waitForLoadingScreen()
 	repeat
 		yrest(1000)
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
+
+	yrest(2000)
 	player:update()
 end
 

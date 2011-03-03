@@ -1889,7 +1889,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		yrest(100);
 		self:update();
-		camera:setRotation(self.Direction);
 		waypoint:update();
 
 	end
