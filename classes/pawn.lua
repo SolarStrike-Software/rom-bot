@@ -217,18 +217,18 @@ function CPawn:update()
 	local tmp;
 	tmp = memoryReadRepeat("byte", proc, self.Address + addresses.charAlive_offset);
 	self.Alive = not(tmp == 9 or tmp == 8);
-	self.HP = memoryReadRepeat("int", proc, self.Address + addresses.pawnHP_offset);
+	self.HP = memoryReadRepeat("int", proc, self.Address + addresses.pawnHP_offset) or self.HP;
 
-	self.MaxHP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxHP_offset);
-	self.MP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP_offset);
-	self.MaxMP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP_offset);
-	self.MP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP2_offset);
-	self.MaxMP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP2_offset);
+	self.MaxHP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxHP_offset) or self.MaxHP;
+	self.MP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP_offset) or self.MP;
+	self.MaxMP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP_offset) or self.MaxMP;
+	self.MP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP2_offset) or self.MP2;
+	self.MaxMP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP2_offset) or self.MaxMP2;
 
-	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset);
+	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
 
-	self.Id = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset);
-	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset);
+	self.Id = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset) or self.Id;
+	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
 
 	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 3;
 	self.Harvesting = memoryReadRepeat("int", proc, self.Address + addresses.pawnHarvesting_offset) ~= 0;
@@ -276,14 +276,14 @@ function CPawn:update()
 --		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) );
 	end
 
-	self.Level = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel_offset);
-	self.Level2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel2_offset);
+	self.Level = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel_offset) or self.Level;
+	self.Level2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel2_offset) or self.Level2;
 
-	self.TargetPtr = memoryReadRepeat("int", proc, self.Address + addresses.pawnTargetPtr_offset);
+	self.TargetPtr = memoryReadRepeat("int", proc, self.Address + addresses.pawnTargetPtr_offset) or self.TargetPtr;
 
-	self.X = memoryReadRepeat("float", proc, self.Address + addresses.pawnX_offset);
-	self.Y = memoryReadRepeat("float", proc, self.Address + addresses.pawnY_offset);
-	self.Z = memoryReadRepeat("float", proc, self.Address + addresses.pawnZ_offset);
+	self.X = memoryReadRepeat("float", proc, self.Address + addresses.pawnX_offset) or self.X;
+	self.Y = memoryReadRepeat("float", proc, self.Address + addresses.pawnY_offset) or self.Y;
+	self.Z = memoryReadRepeat("float", proc, self.Address + addresses.pawnZ_offset) or self.Z;
 
 	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 
@@ -310,8 +310,8 @@ function CPawn:update()
 		end]]
 	end
 
-	self.Class1 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass1_offset);
-	self.Class2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass2_offset);
+	self.Class1 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass1_offset) or self.Class1;
+	self.Class2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass2_offset) or self.Class2;
 
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana

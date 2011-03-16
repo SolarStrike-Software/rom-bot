@@ -516,16 +516,6 @@ end
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
 
-	-- Check that an edit box in game doesn't have focus
-	if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-		keyboardPress(settings.hotkeys.ESCAPE.key);
-	end
-
-	-- Check if edit box still has focus
-	if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-		error("An edit box in game has focus. Please close it before restarting the bot.",0)
-	end
-
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
 
@@ -583,6 +573,9 @@ function RoMScript(script, default)
 			local startWaitTime = getTime();
 			while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
 				if( deltaTime(getTime(), startWaitTime) > 800 ) then
+					if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+						keyboardPress(settings.hotkeys.ESCAPE.key);
+					end
 					tryagain = true
 					break
 				end;
