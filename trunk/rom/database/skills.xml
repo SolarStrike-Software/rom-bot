@@ -130,7 +130,7 @@
 	<skill name="WARRIOR_AGGRESSIVENESS" aslevel="34" cooldown="180" type="buff" target="self" />
 	<skill name="WARRIOR_SURVIVAL_INSTINCT" aslevel="36" maxhpper="25" cooldown="300" type="buff" target="self" />
 	<skill name="WARRIOR_GROUP_TAUNT" aslevel="38" cooldown="300" type="damage" target="enemy" />
-	<skill name="WARRIOR_BLASTING_CYCLONE" aslevel="40" rage="50" casttime="2" cooldown="30" type="damage" target="enemy" />
+	<skill name="WARRIOR_BLASTING_CYCLONE" aslevel="40" rage="35" cooldown="12" type="damage" target="enemy" />
 
 	<!-- Elite -->
 	<skill name="WARRIOR_SKULL_BREAKER" concentration="30" range="50" type="damage" target="enemy" />
