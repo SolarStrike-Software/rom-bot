@@ -89,6 +89,7 @@ addresses = {
 	pawnClass2_offset = 0x304,
 	pawnDirXUVec_offset = 0x34,
 	pawnDirYUVec_offset = 0x3C,
+	pawnGUID_offset = 0x20,
 	pawnHP_offset = 0x2C8,
 	pawnHarvesting_offset = 0x160,
 	pawnId_offset = 0x14,
