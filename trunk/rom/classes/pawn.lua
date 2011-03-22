@@ -57,6 +57,7 @@ CPawn = class(
 		self.Address = ptr;
 		self.Name = "<UNKNOWN>";
 		self.Id = 0;
+		self.GUID  = 0;
 		self.Type = PT_NONE;
 		self.Class1 = CLASS_NONE;
 		self.Class2 = CLASS_NONE;
@@ -228,6 +229,7 @@ function CPawn:update()
 	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
 
 	self.Id = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset) or self.Id;
+	self.GUID = memoryReadShort(proc, self.Address + addresses.pawnGUID_offset) or self.GUID;
 	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
 
 	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 3;
