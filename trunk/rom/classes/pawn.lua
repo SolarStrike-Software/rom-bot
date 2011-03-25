@@ -525,7 +525,7 @@ function CPawn:hasBuff(buffname, count)
 	end
 end
 
-function CPawn:hasDebuff(deBuff, count)
+function CPawn:hasDebuff(debuff, count)
 	return self:hasBuff(debuff, count)
 end
 
