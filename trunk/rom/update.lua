@@ -152,9 +152,9 @@ pawnDirXUVecOffsetUpdatePattern = string.char(0xCC, 0x8B, 0x44, 0x24, 0xFF, 0xD9
 pawnDirXUVecOffsetUpdateMask = "xxxx?xx?xxxx?xx?xx?xx?xxxxxxxxxxxx";
 pawnDirXUVecOffsetUpdateOffset = 7;
 
-pawnDirYUVecOffsetUpdatePattern = string.char(0xD9, 0x58, 0xFF, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xC2, 0x04, 0x00, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xF3);
-pawnDirYUVecOffsetUpdateMask = "xx?xx?xx?xxxxxxxxxxxx";
-pawnDirYUVecOffsetUpdateOffset = 5;
+pawnDirZUVecOffsetUpdatePattern = string.char(0xD9, 0x58, 0xFF, 0xD9, 0x41, 0xFF, 0xD9, 0x58, 0xFF, 0xC2, 0x04, 0x00, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xF3);
+pawnDirZUVecOffsetUpdateMask = "xx?xx?xx?xxxxxxxxxxxx";
+pawnDirZUVecOffsetUpdateOffset = 5;
 
 pawnHPOffsetUpdatePattern = string.char(0x74, 0xFF, 0x8B, 0x88, 0xFF, 0xFF, 0xFF, 0xFF, 0x2B, 0x88);
 pawnHPOffsetUpdateMask = "x?xx????xx";
@@ -331,7 +331,7 @@ function findOffsets()
 	update("pawnClass1_offset", pawnClass1OffsetUpdatePattern, pawnClass1OffsetUpdateMask, pawnClass1OffsetUpdateOffset, 0x5E0000, 0xA0000);
 	update("pawnClass2_offset", pawnClass2OffsetUpdatePattern, pawnClass2OffsetUpdateMask, pawnClass2OffsetUpdateOffset, 0x5E0000, 0xA0000);
 	update("pawnDirXUVec_offset", pawnDirXUVecOffsetUpdatePattern, pawnDirXUVecOffsetUpdateMask, pawnDirXUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
-	update("pawnDirYUVec_offset", pawnDirYUVecOffsetUpdatePattern, pawnDirYUVecOffsetUpdateMask, pawnDirYUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
+	update("pawnDirZUVec_offset", pawnDirZUVecOffsetUpdatePattern, pawnDirZUVecOffsetUpdateMask, pawnDirZUVecOffsetUpdateOffset, 0x840000, 0xA0000, 1);
 	update("pawnHP_offset", pawnHPOffsetUpdatePattern, pawnHPOffsetUpdateMask, pawnHPOffsetUpdateOffset, 0x7E0000, 0xA0000);
 	update("pawnId_offset", pawnIdOffsetUpdatePattern, pawnIdOffsetUpdateMask, pawnIdOffsetUpdateOffset, 0x820000, 0xA0000, 1);
 	update("pawnLevel_offset", pawnLevelOffsetUpdatePattern, pawnLevelOffsetUpdateMask, pawnLevelOffsetUpdateOffset, 0x840000, 0xA0000);

@@ -32,7 +32,7 @@ function main()
 		yrest(500);
 		player:update();
 
-		printf("\rPosition: (%d, %d)\t", player.X, player.Z);
+		printf("\rPosition: (%d, %d, %d)\t", player.X, player.Z, player.Y);
 	end
 end
 startMacro(main, true);
