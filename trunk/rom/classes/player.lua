@@ -1931,7 +1931,10 @@ function CPlayer:moveInRange(target, range, ignoreCycleTargets)
 		local ratio = (playerTargetDist - range)/playerTargetDist
 		local rx = self.X + (target.X - self.X) * ratio
 		local rz = self.Z + (target.Z - self.Z) * ratio
-		local ry = self.Y + (target.Y - self.Y) * ratio
+		local ry = player.Y -- default value
+		if target.Y ~= nil then
+			ry = self.Y + (target.Y - self.Y) * ratio
+		end
 		self:moveTo( CWaypoint(rx, rz, ry), ignoreCycleTargets )
 	end
 end
