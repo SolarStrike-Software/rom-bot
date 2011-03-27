@@ -1138,12 +1138,16 @@ function CPlayer:fight()
 
 		if( settings.profile.options.QUICK_TURN ) then
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
-			self:faceDirection(angle);
+			local yangle = math.atan2(target.Y - self.Y, ((target.X - self.X)^2 + (target.Z - self.Z)^2)^.5 );
+			self:faceDirection(angle, yangle);
+
 			camera:setRotation(angle);
 			yrest(50);
 		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
 			-- Make sure we're facing the enemy
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
+			local yangle = math.atan2(target.Y - self.Y, ((target.X - self.X)^2 + (target.Z - self.Z)^2)^.5 );
+			self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
 			local angleDif = angleDifference(angle, self.Direction);
 			local correctingAngle = false;
 			local startTime = os.time();
@@ -1413,12 +1417,15 @@ function CPlayer:loot()
 	local sigil = getNearestSigil();
 	--while( sigil ) do
 	if( sigil ) then
-		local dist = distance(self.X, self.Z, sigil.X, sigil.Z);
+		local dist = distance(self.X, self.Z, self.Y, sigil.X, sigil.Z, sigil.Y);
 		local angle = math.atan2(sigil.Z - self.Z, sigil.X - self.X);
-		local nX = self.X + math.cos(angle) * (dist + 15);
-		local nZ = self.Z + math.sin(angle) * (dist + 15);
+		local yangle = math.atan2(sigil.Y - self.Y, ((sigil.X - self.X)^2 + (sigil.Z - self.Z)^2)^.5 );
+		local nY = self.Y + math.sin(yangle) * (dist + 15);
+		local hypotenuse = (1 - math.sin(yangle)^2)^.5
+		local nX = self.X + math.cos(angle) * (dist + 15) * hypotenuse;
+		local nZ = self.Z + math.sin(angle) * (dist + 15) * hypotenuse;
 
-		self:moveTo( CWaypoint(nX, nZ), true );
+		self:moveTo( CWaypoint(nX, nZ, nY), true );
 		yrest(500);
 		self:update();
 		sigil = getNearestSigil();
@@ -1667,6 +1674,10 @@ end
 function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	self:update();
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
+	local yangle = 0
+	if waypoint.Y ~= nil then
+		yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
+	end
 	local angleDif = angleDifference(angle, self.Direction);
 	local canTarget = false;
 	local startTime = os.time();
@@ -1713,10 +1724,12 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 	-- QUICK_TURN only
 	if( settings.profile.options.QUICK_TURN == true ) then
-		self:faceDirection(angle);
+		self:faceDirection(angle, yangle);
 		camera:setRotation(angle);
 		self:update();
 		angleDif = angleDifference(angle, self.Direction);
+	else
+		self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
 	end
 
 	-- If more than X degrees off, correct before moving.
@@ -1774,7 +1787,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 	end;
 
 	local success, failreason = true, WF_NONE;
-	local dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
+	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
@@ -1848,14 +1861,19 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
+		if waypoint.Y ~= nil then
+			yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
+		end
 		angleDif = angleDifference(angle, self.Direction);
 
 		-- Continue to make sure we're facing the right direction
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
-			self:faceDirection(angle);
+			self:faceDirection(angle, yangle);
 			camera:setRotation(angle);
 			player:update()
 			angleDif = angleDifference(angle, self.Direction);
+		else
+			self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
 		end
 
 		if( angleDif > math.rad(15) ) then
@@ -1877,7 +1895,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 				camera:setRotation(angle);
 			end
 
-			self:faceDirection(angle);
+			self:faceDirection(angle, yangle);
 			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
@@ -1892,6 +1910,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		waypoint:update();
 
 	end
+
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
@@ -1912,7 +1931,8 @@ function CPlayer:moveInRange(target, range, ignoreCycleTargets)
 		local ratio = (playerTargetDist - range)/playerTargetDist
 		local rx = self.X + (target.X - self.X) * ratio
 		local rz = self.Z + (target.Z - self.Z) * ratio
-		self:moveTo( CWaypoint(rx, rz), ignoreCycleTargets )
+		local ry = self.Y + (target.Y - self.Y) * ratio
+		self:moveTo( CWaypoint(rx, rz, ry), ignoreCycleTargets )
 	end
 end
 
@@ -1936,17 +1956,26 @@ end
 
 -- Forces the player to face a direction.
 -- 'dir' should be in radians
-function CPlayer:faceDirection(dir)
-	local Vec1 = math.cos(dir);
-	local Vec2 = math.sin(dir);
+function CPlayer:faceDirection(dir,diry)
+	local Vec3 = 0
+	if diry then
+		Vec3 = math.sin(diry);
+	else
+		Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+	end
+	local hypotenuse = (1 - Vec3^2)^.5
+	local Vec1 = math.cos(dir) * hypotenuse;
+	local Vec2 = math.sin(dir) * hypotenuse;
 
 	if self.Mounted then
 		local tmpAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
 		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirXUVec_offset, Vec1);
-		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirYUVec_offset, Vec2);
+		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirZUVec_offset, Vec2);
+		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirYUVec_offset, Vec3);
 	else
 		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
-		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec2);
+		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirZUVec_offset, Vec2);
+		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec3);
 	end
 end
 
@@ -2278,12 +2307,15 @@ function CPlayer:update()
 	end
 
 	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
-	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirZUVec_offset);
+	local Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
 
 	if( Vec1 == nil ) then Vec1 = 0.0; end;
 	if( Vec2 == nil ) then Vec2 = 0.0; end;
+	if( Vec3 == nil ) then Vec3 = 0.0; end;
 
 	self.Direction = math.atan2(Vec2, Vec1);
+	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
 
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
