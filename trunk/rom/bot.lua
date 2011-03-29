@@ -682,7 +682,7 @@ function main()
 
 			player.Current_waypoint_type = wp.Type;		-- remember current waypoint type
 
-			local success, reason = player:moveTo(wp);
+			local success, reason = player:moveTo(wp,nil,true);
 
 			if( player.TargetPtr ~= 0 and (not player:haveTarget()) ) then
 				player:clearTarget();
@@ -715,7 +715,8 @@ function main()
 					end
 
 					-- Execute it's action, if it has one.
-					if( wp.Action and type(wp.Action) == "string" ) then
+					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
+						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
 						local actionchunk = loadstring(wp.Action);
 						assert( actionchunk,  sprintf(language[150], __RPL.CurrentWaypoint) );
 						actionchunk();
@@ -723,7 +724,8 @@ function main()
 				else
 					__WPL:advance();
 					-- Execute it's action, if it has one.
-					if( wp.Action and type(wp.Action) == "string" ) then
+					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
+						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
 						local actionchunk = loadstring(wp.Action);
 						assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );
 						actionchunk();
