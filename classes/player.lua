@@ -1671,7 +1671,7 @@ function evalTargetDefault(address)
 	return true;
 end
 
-function CPlayer:moveTo(waypoint, ignoreCycleTargets)
+function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 	self:update();
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 	local yangle = 0
@@ -1910,16 +1910,18 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets)
 		waypoint:update();
 
 	end
-
-	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+	if dontStopAtEnd ~=true then
+		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+	end
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
+	--[[ Not needed as it is checked in loop, WPT_RUN isn't correct anyway.
 	if( self.Battling and
 		 waypoint.Type ~= WPT_RUN ) then
 		--self:waitForAggro();
 		self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
-	end
+	end]]
 
 	return success, failreason;
 end
