@@ -266,10 +266,11 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 				local dist = distance(self.X, self.Z, obj.X, obj.Z);
 				local pawn = CPawn(obj.Address);
 				pawn:update();
+				local _target = pawn:getTarget();
 
 				if( evalFunc(obj.Address) == true ) then
 					if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
-					(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0)) and
+					(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or (_target.Name == GetPartyMemberName(1) )  or (_target.Name == GetPartyMemberName(2) ) or (_target.Name == GetPartyMemberName(3) ) or (_target.Name == GetPartyMemberName(4) ) or (_target.Name == GetPartyMemberName(5) ) ) and
 					aggroOnly == true) or aggroOnly == false) ) then
 						local currentScore = 0;
 						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
@@ -278,7 +279,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 						if( pawn.Aggressive ) then
 							currentScore = currentScore + SCORE_AGGRESSIVE;
 						end;
-
+						if( (_target.Name == GetPartyMemberName(1) ) or (_target.Name == GetPartyMemberName(2) )or (_target.Name == GetPartyMemberName(3) )or (_target.Name == GetPartyMemberName(4) )or (_target.Name == GetPartyMemberName(5) ) ) then currentScore = currentScore + 5000 end
 						if( bestEnemy == nil ) then
 							bestEnemy = obj;
 							bestScore = currentScore;
@@ -646,7 +647,7 @@ function CPlayer:cast(skill)
 
 		-- print HP of our target
 		-- we do it later, because the client needs some time to change the values
-		local target = self:getTarget();
+		 target = self:getTarget();
 		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
 
 		-- the check was only done after every complete skill round
@@ -931,7 +932,12 @@ function CPlayer:fight()
 	if( not self:haveTarget() ) then
 		return false;
 	end
-
+		
+	if ( settings.profile.options.PARTY ) then sendMacro('SetRaidTarget("target", 1);')
+	if (not settings.profile.options.PARTY_ICONS) then printf("Raid Icons not set in character profile.\n") end
+	if (not sendMacro("IsPartyLeader()")) then printf("Not set to leader.\n") end	
+	end
+	
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
 	self.Fighting = true;
@@ -1006,7 +1012,7 @@ function CPlayer:fight()
 			break;
 		end;
 
-		target = self:getTarget();
+		local target = self:getTarget();
 
 		if( target.HP ~= lastTargetHP ) then
 			self.lastHitTime = os.time();
@@ -1084,7 +1090,12 @@ function CPlayer:fight()
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
 			target.Name ~= "Tatus"	and
 		    target.TargetPtr ~= self.Address and
-			target.TargetPtr ~= self.Pet.Address ) then	-- but not from that mob
+			target.TargetPtr ~= self.Pet.Address and
+			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(1)  and
+			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(2)  and
+			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(3)  and
+			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(4)  and
+			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(5) ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
 			self:clearTarget();
 			break_fight = true;
@@ -1622,6 +1633,7 @@ function evalTargetDefault(address)
 	end;
 
 	-- target is to strong for us
+	if (not settings.profile.options.PARTY_INSTANCE ) == true then
 	if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 		if ( player.Battling == false ) then	-- if we don't have aggro then
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
@@ -1636,6 +1648,7 @@ function evalTargetDefault(address)
 			return false;
 		end;
 	end;
+	end
 
 	-- don't target NPCs
 	if( target.Type == PT_NPC ) then      -- NPCs are type == 4
@@ -2014,17 +2027,23 @@ end
 function CPlayer:unstick()
 -- after 2x unsuccesfull unsticks try to reach last waypoint
 	if( self.Unstick_counter == 3 ) then
-		if( self.Returning ) then
+	if unStick3 then
+  			unStick3()
+	elseif( self.Returning ) then
 			__RPL:backward();
 		else
 			__WPL:backward();
 		end;
 		return;
-	end;
+	
+	end
+
 
 -- after 5x unsuccesfull unsticks try to reach next waypoint after sticky one
 	if( self.Unstick_counter == 6 ) then
-		if( self.Returning ) then
+	if unStick6 then
+  			unStick6()
+	elseif( self.Returning ) then
 			__RPL:advance();	-- forward to sticky wp
 			__RPL:advance();	-- and one more
 		else
@@ -2032,10 +2051,15 @@ function CPlayer:unstick()
 			__WPL:advance();	-- and one more
 		end;
 		return;
-	end;
+	
+	end
+
 
 -- after 8x unstick try to run away a little and then go to the nearest waypoint
 	if( self.Unstick_counter == 9 ) then
+	if unStick9 then
+  			unStick9()
+	else
 	 	-- turn and move back for 10 seconds
 		keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
 		yrest(1900);
@@ -2051,6 +2075,7 @@ function CPlayer:unstick()
 		end;
 		return;
 	end;
+	end
 
  	-- Move back for x seconds
 	keyboardHold(settings.hotkeys.MOVE_BACKWARD.key);
@@ -2090,8 +2115,10 @@ function CPlayer:unstick()
 end
 
 function CPlayer:haveTarget()
-	if( CPawn.haveTarget(self) ) then
 
+	if( CPawn.haveTarget(self) ) then
+		local target = self:getTarget();
+			 local targettarget = CPawn(target.TargetPtr)
 		local function debug_target(_place)
 			if( settings.profile.options.DEBUG_TARGET and
 				self.TargetPtr ~= self.LastTargetPtr ) then
@@ -2108,7 +2135,7 @@ function CPlayer:haveTarget()
 		end
 
 
-		local target = self:getTarget();
+
 
 		if( target == nil ) then
 			return false;
@@ -2123,7 +2150,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then	-- but not from that mob
 				debug_target("target lvl above/below profile settings with battling from other mob")
 				return false;
 			end;
@@ -2140,7 +2167,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then	-- but not from that mob
 				debug_target("we have aggro from another mob")
 				return false;
 			end;
@@ -2154,7 +2181,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1))  and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5))  ) then	-- but not from that mob
 				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
 				return false;
 			end;
@@ -2169,7 +2196,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and         -- we have aggro
-				target.TargetPtr ~= self.Address ) then   -- but not from the PK player
+				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1))  and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from the PK player
 				debug_target("PK player, aggro, but he don't target us")
 				return false;
 			end;
@@ -2183,7 +2210,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address ) then   -- but not from that target
+				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from that target
 				debug_target("target is in friends, aggro, but not from that target")
 				return false;
 			end;
@@ -2204,7 +2231,7 @@ function CPlayer:haveTarget()
 				end;
 
 				if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-					target.TargetPtr ~= self.Address ) then   -- but not from that target
+					target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from that target
 					debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
 					return false;
 				end;
@@ -2220,7 +2247,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address ) then		-- but not from that target
+				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then		-- but not from that target
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 				return false;
@@ -2232,7 +2259,7 @@ function CPlayer:haveTarget()
 			debug_target("thats a NPC, he should be friendly and not attackable")
 			return false;         -- he is not a valid target
 		end;
-
+			local targettarget = CPawn(target.TargetPtr)
 		if( settings.profile.options.ANTI_KS ) then
 -- why do we check the attackable flag only within the ANTI_KS?
 -- I delete it because of the PK player bug (not attackable) / d003232 17.10.09
@@ -2247,7 +2274,7 @@ function CPlayer:haveTarget()
 			-- If they aren't targeting us, and they have less than full HP
 			-- then they must be fighting somebody else.
 			-- If it's a friend, then it is a valid target; help them.
-			if( target.TargetPtr ~= self.Address ) then
+			if( target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then
 
 				-- If the target's TargetPtr is 0,
 				-- that doesn't necessarily mean they don't
@@ -2524,7 +2551,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	    self.TargetPtr == self.Address) then
 		return false;
 	end
-
+		if (not settings.profile.options.PARTY ) then
 	-- check if the target is attacking us, if not we can break and take the other mob
 	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
 	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
@@ -2542,7 +2569,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end;
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
-
+		end
 		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
 		if( self:findTarget() ) then	-- we found a target
 			target = self:getTarget();
@@ -2827,7 +2854,7 @@ function CPlayer:scan_for_NPC(_npcname)
 				addresses.staticbase_char, addresses.mousePtr_offset));
 
 				-- id 110504 Waffenhersteller Dimar
-				-- id 110502 Dan (Gemischtwarenhändler
+				-- id 110502 Dan (Gemischtwarenhï¿½ndler
 				-- id 1000, 1001 Player
 				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NPC
 					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
