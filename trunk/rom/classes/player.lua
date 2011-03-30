@@ -1923,9 +1923,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 		waypoint:update();
 
 	end
+if (settings.profile.options.WP_NO_STOP) then
 	if dontStopAtEnd ~=true then
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 	end
+else 
+	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+end
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
@@ -2239,6 +2243,7 @@ function CPlayer:haveTarget()
 		end;
 
 		-- target is to strong for us
+	if (not settings.profile.options.PARTY_INSTANCE ) == true then
 		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
@@ -2253,6 +2258,7 @@ function CPlayer:haveTarget()
 				return false;
 			end;
 		end;
+	end
 
 		-- don't target NPCs
 		if( target.Type == PT_NPC ) then      -- NPCs are type == 4
