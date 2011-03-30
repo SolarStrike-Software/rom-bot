@@ -477,7 +477,8 @@ function CPawn:haveTarget()
 	local tmp = CPawn(self.TargetPtr);
 
 	-- You can't be your own target!
-	if( self.TargetPtr == self.Address ) then
+	if( self.TargetPtr == self.Address or tmp.Name == GetPartyMemberName(1) or tmp.Name == GetPartyMemberName(2) or tmp.Name == GetPartyMemberName(3) or tmp.Name == GetPartyMemberName(4) or tmp.Name == GetPartyMemberName(5) ) then
+--	print("can't target yourself or party members.\n")
 		return false;
 	end
 
@@ -541,4 +542,17 @@ function CPawn:getBuff(buffnames, count)
 	end
 
 	return false
+end
+
+PartyIconList_base = 0xA11B88
+PartyIconList_offset = 0xC
+
+function CPawn:GetPartyIcon()
+   local listStart = memoryReadRepeat("intptr", getProc(), PartyIconList_base, PartyIconList_offset)
+   for i = 0, 6 do
+      local guid = memoryReadShort(getProc(), listStart + i * 12)
+      if guid == self.GUID then
+         return i + 1
+      end
+   end
 end

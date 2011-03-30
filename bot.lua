@@ -23,6 +23,7 @@ include("classes/object.lua");
 include("classes/objectlist.lua");
 include("classes/eggpet.lua");
 include("classes/store.lua");
+include("classes/party.lua");
 include("classes/itemtypes.lua");
 include("settings.lua");
 include("macros.lua");
@@ -541,6 +542,8 @@ function main()
 				break;
 			end;
 
+			if (not settings.profile.options.PARTY ) then
+
 			player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
 
 			-- wait a second with the aggro message to avoid wrong msg
@@ -565,9 +568,36 @@ function main()
 
 			yrest(10);
 			player:update();
+		
+			else 
+					player:target(player:findEnemy(true, nil, nil, nil));
+								local target = player:getTarget();
+							if( os.difftime(os.time(), aggroWaitStart) > 5 ) then
+								cprintf(cli.red, language[34]);		-- Aggro wait time out
+							break;
+							end;
+				if player:haveTarget() then 
+							if( settings.profile.options.ANTI_KS ) then
+							if( target:haveTarget() and
+				  				target:getTarget().Address ~= player.Address and
+				 				 (not player:isFriend(CPawn(target.TargetPtr))) and
+				  				target:getTarget().Address ~= 0 -- because of distance limitation
+				  				and ( targettarget.Name ~= GetPartyMemberName(1)) and ( targettarget.Name ~= GetPartyMemberName(2)) and ( targettarget.Name ~= GetPartyMemberName(3)) and ( targettarget.Name ~= GetPartyMemberName(4))  and ( targettarget.Name ~= GetPartyMemberName(5)) )then
+									cprintf(cli.red, language[5], target.Name);
+							else
+							--	printf("Should be fighting, 581\n")
+								player:fight();
+							end
+
+				else
+						player:fight();
+				end
+			yrest(10);
+			player:update();
+			end
 		end
-
-
+		end
+		
 		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
 			-- only fight back if it's not a TRAVEL waypoint
 
@@ -579,7 +609,7 @@ function main()
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and
 				  target:getTarget().Address ~= player.Address and
-				  (not player:isFriend(CPawn(target.TargetPtr))) ) then
+				  (not player:isFriend(CPawn(target.TargetPtr))) and ( targettarget.Name ~= GetPartyMemberName(1))  and ( targettarget.Name ~= GetPartyMemberName(2))  and ( targettarget.Name ~= GetPartyMemberName(3))  and ( targettarget.Name ~= GetPartyMemberName(4))  and ( targettarget.Name ~= GetPartyMemberName(5)) ) then
 					cprintf(cli.red, language[5], target.Name);
 				else
 					player:fight();
