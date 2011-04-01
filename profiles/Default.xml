@@ -73,6 +73,12 @@
 		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
 		<option name="MAX_DEATHS" value="10" /> <!-- Log out after this many deaths -->
 
+		<!-- Party Bot options  -->
+		<!-- <option name="PARTY"			value="true" /> -->
+		<!-- <option name="PARTY_ICONS"			value="true" /> -->
+		<!-- <option name="PARTY_INSTANCE"		value="true" /> -->
+
+
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
 
