@@ -187,14 +187,14 @@ function printPicture(pic, text, textColor)
 	newline = false;
 	for y = 1, height, 1 do
 		for x = 1, width, 1 do
-		    nextchar = "¤";
+		    nextchar = "ï¿½";
 		    if not newline and not (a > string.len(text)) then
 		    	nextchar = string.char(string.byte(text, a));
 				a = a + 1;
 			end
 
 		    if nextchar == "\n" then
-		        nextchar = "¤";
+		        nextchar = "ï¿½";
 		        newline = true;
 			end
 
@@ -224,7 +224,7 @@ function printPicture(pic, text, textColor)
       		    col = 11
 			end
 
-			if nextchar == "¤" then
+			if nextchar == "ï¿½" then
 				cprintf(col*16+col, nextchar);
 				--cprintf(col*16, col);
    			else
@@ -724,13 +724,13 @@ function utf8ToAscii_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceUtf8(_str, 195164);		-- ä
-	_str = replaceUtf8(_str, 195132);		-- Ä
-	_str = replaceUtf8(_str, 195182);		-- ö
-	_str = replaceUtf8(_str, 195150);		-- Ö
-	_str = replaceUtf8(_str, 195188);		-- ü
-	_str = replaceUtf8(_str, 195156);		-- Ü
-	_str = replaceUtf8(_str, 195159);		-- ß
+	_str = replaceUtf8(_str, 195164);		-- ï¿½
+	_str = replaceUtf8(_str, 195132);		-- ï¿½
+	_str = replaceUtf8(_str, 195182);		-- ï¿½
+	_str = replaceUtf8(_str, 195150);		-- ï¿½
+	_str = replaceUtf8(_str, 195188);		-- ï¿½
+	_str = replaceUtf8(_str, 195156);		-- ï¿½
+	_str = replaceUtf8(_str, 195159);		-- ï¿½
 	return _str;
 end
 
@@ -747,13 +747,13 @@ function asciiToUtf8_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceAscii(_str, 195164);		-- ä
-	_str = replaceAscii(_str, 195132);		-- Ä
-	_str = replaceAscii(_str, 195182);		-- ö
-	_str = replaceAscii(_str, 195150);		-- Ö
-	_str = replaceAscii(_str, 195188);		-- ü
-	_str = replaceAscii(_str, 195156);		-- Ü
-	_str = replaceAscii(_str, 195159);		-- ß
+	_str = replaceAscii(_str, 195164);		-- ï¿½
+	_str = replaceAscii(_str, 195132);		-- ï¿½
+	_str = replaceAscii(_str, 195182);		-- ï¿½
+	_str = replaceAscii(_str, 195150);		-- ï¿½
+	_str = replaceAscii(_str, 195188);		-- ï¿½
+	_str = replaceAscii(_str, 195156);		-- ï¿½
+	_str = replaceAscii(_str, 195159);		-- ï¿½
 	return _str;
 end
 
@@ -978,7 +978,7 @@ function convertProfileName(_profilename)
 	-- convert player/profile name from UTF-8 to ASCII
 	load_profile_name = convert_utf8_ascii(_profilename);
 
-	-- replace special ASCII characters like öüäú / hence open.XML() can't handle them
+	-- replace special ASCII characters like ï¿½ï¿½ï¿½ï¿½ / hence open.XML() can't handle them
 	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
 
 	if( hf_convert ) then		-- we replace some special characters
@@ -1122,7 +1122,7 @@ function getNearestSegmentPoint(x, z, a, b, c, d)
 		nx = a + param * dx2;
 		nz = b + param * dz2;
 	end
-
+	
 	return CWaypoint(nx, nz);
 end
 
@@ -1159,3 +1159,45 @@ function parseItemLink(itemLink)
 	return id, color, name;
 end
 
+
+
+partyMemberList_address = 0x9DD9E8
+partyMemberList_offset = 0x134
+
+function GetPartyMemberName(_number)
+
+	if type(_number) ~= "number" or _number < 1 then
+		print("GetPartyMemberName(number): incorrect value for 'number'.")
+		return
+	end
+
+	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
+	local memberAddress = listAddress + (_number - 1) * 0x60
+
+	-- Check if that number exists
+	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
+
+		return nil
+	end
+
+	return memoryReadRepeat("string", getProc(), memberAddress + 8 )
+end
+
+function GetPartyMemberAddress(_number)
+
+	if type(_number) ~= "number" or _number < 1 then
+		print("GetPartyMemberName(number): incorrect value for 'number'.")
+		return
+	end
+
+	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
+	local memberAddress = listAddress + (_number - 1) * 0x60
+
+	-- Check if that number exists
+	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
+
+		return
+	end
+		local memberName = memoryReadRepeat("string", getProc(), memberAddress + 8 )
+	return player:findNearestNameOrId(memberName)
+end

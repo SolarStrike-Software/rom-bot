@@ -1,47 +1,7 @@
 include("pawn.lua");
 include("player.lua");
 
-partyMemberList_address = 0x9DD9E8
-partyMemberList_offset = 0x134
 
-function GetPartyMemberName(_number)
-
-	if type(_number) ~= "number" or _number < 1 then
-		print("GetPartyMemberName(number): incorrect value for 'number'.")
-		return
-	end
-
-	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
-	local memberAddress = listAddress + (_number - 1) * 0x60
-
-	-- Check if that number exists
-	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
-
-		return nil
-	end
-
-	return memoryReadRepeat("string", getProc(), memberAddress + 8 )
-end
-
-
-function GetPartyMemberAddress(_number)
-
-	if type(_number) ~= "number" or _number < 1 then
-		print("GetPartyMemberName(number): incorrect value for 'number'.")
-		return
-	end
-
-	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
-	local memberAddress = listAddress + (_number - 1) * 0x60
-
-	-- Check if that number exists
-	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
-
-		return
-	end
-		local memberName = memoryReadRepeat("string", getProc(), memberAddress + 8 )
-	return player:findNearestNameOrId(memberName)
-end
 
 function PartyHeals()
 		local partymember={}

@@ -932,6 +932,11 @@ function CPlayer:fight()
 	if( not self:haveTarget() ) then
 		return false;
 	end
+	
+	keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+	keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
+	keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
+	keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
 		
 	if ( settings.profile.options.PARTY ) then sendMacro('SetRaidTarget("target", 1);')
 	if (not settings.profile.options.PARTY_ICONS) then printf("Raid Icons not set in character profile.\n") end
@@ -2537,11 +2542,14 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 -- works also if target is not visible and we get aggro from another mob
 -- _jump = true       abort cast with jump hotkey
 
+		
 	self:update();
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
-
+	
+	if ((settings.profile.options.PARTY) and (self.Battling == true )) then return false end
+		
 	-- don't break friendly skills
 	if( _skill_type == STYPE_HEAL  or
 	    _skill_type == STYPE_BUFF  or
@@ -2557,7 +2565,8 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	    self.TargetPtr == self.Address) then
 		return false;
 	end
-		if (not settings.profile.options.PARTY ) then
+
+		
 	-- check if the target is attacking us, if not we can break and take the other mob
 	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
 	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
@@ -2588,7 +2597,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end
 
 		return true;
-	end;
+	
 end
 
 -- find a target with the ingame target key
