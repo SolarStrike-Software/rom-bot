@@ -933,16 +933,11 @@ function CPlayer:fight()
 		return false;
 	end
 	
-	keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-	keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
-	keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
-	keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
-		
 	if ( settings.profile.options.PARTY ) then sendMacro('SetRaidTarget("target", 1);')
 	if (not settings.profile.options.PARTY_ICONS) then printf("Raid Icons not set in character profile.\n") end
 	if (not sendMacro("IsPartyLeader()")) then printf("Not set to leader.\n") end	
 	end
-	
+
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
 	self.Fighting = true;
@@ -1928,11 +1923,11 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 		waypoint:update();
 
 	end
-if (settings.profile.options.WP_NO_STOP) then
-	if dontStopAtEnd ~=true then
+if (settings.profile.options.WP_NO_STOP ~= false) then
+	if (success == false) or (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 	end
-else 
+else
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 end
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
@@ -2044,7 +2039,7 @@ function CPlayer:unstick()
 			__WPL:backward();
 		end;
 		return;
-	
+
 	end
 
 
@@ -2060,7 +2055,7 @@ function CPlayer:unstick()
 			__WPL:advance();	-- and one more
 		end;
 		return;
-	
+
 	end
 
 
