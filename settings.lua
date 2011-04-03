@@ -1160,6 +1160,13 @@ function settings.loadProfile(_name)
 		bot.IgfAddon = false;
 	end
 
+	-- check if igf event addon is active
+	if ( RoMScript("IGFEVENTS_INSTALLED") == true ) then
+		bot.IgfEventAddon = true;
+	else
+		bot.IgfEventAddon = false;
+	end
+
 	-- error if igf (ingamefunctions) addon isn't installed and options are set
 	if( bot.IgfAddon == false	and
 		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or

@@ -187,14 +187,14 @@ function printPicture(pic, text, textColor)
 	newline = false;
 	for y = 1, height, 1 do
 		for x = 1, width, 1 do
-		    nextchar = "ï¿½";
+		    nextchar = "¤";
 		    if not newline and not (a > string.len(text)) then
 		    	nextchar = string.char(string.byte(text, a));
 				a = a + 1;
 			end
 
 		    if nextchar == "\n" then
-		        nextchar = "ï¿½";
+		        nextchar = "¤";
 		        newline = true;
 			end
 
@@ -224,7 +224,7 @@ function printPicture(pic, text, textColor)
       		    col = 11
 			end
 
-			if nextchar == "ï¿½" then
+			if nextchar == "¤" then
 				cprintf(col*16+col, nextchar);
 				--cprintf(col*16, col);
    			else
@@ -724,13 +724,13 @@ function utf8ToAscii_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceUtf8(_str, 195164);		-- ï¿½
-	_str = replaceUtf8(_str, 195132);		-- ï¿½
-	_str = replaceUtf8(_str, 195182);		-- ï¿½
-	_str = replaceUtf8(_str, 195150);		-- ï¿½
-	_str = replaceUtf8(_str, 195188);		-- ï¿½
-	_str = replaceUtf8(_str, 195156);		-- ï¿½
-	_str = replaceUtf8(_str, 195159);		-- ï¿½
+	_str = replaceUtf8(_str, 195164);		-- ä
+	_str = replaceUtf8(_str, 195132);		-- Ä
+	_str = replaceUtf8(_str, 195182);		-- ö
+	_str = replaceUtf8(_str, 195150);		-- Ö
+	_str = replaceUtf8(_str, 195188);		-- ü
+	_str = replaceUtf8(_str, 195156);		-- Ü
+	_str = replaceUtf8(_str, 195159);		-- ß
 	return _str;
 end
 
@@ -747,13 +747,13 @@ function asciiToUtf8_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceAscii(_str, 195164);		-- ï¿½
-	_str = replaceAscii(_str, 195132);		-- ï¿½
-	_str = replaceAscii(_str, 195182);		-- ï¿½
-	_str = replaceAscii(_str, 195150);		-- ï¿½
-	_str = replaceAscii(_str, 195188);		-- ï¿½
-	_str = replaceAscii(_str, 195156);		-- ï¿½
-	_str = replaceAscii(_str, 195159);		-- ï¿½
+	_str = replaceAscii(_str, 195164);		-- ä
+	_str = replaceAscii(_str, 195132);		-- Ä
+	_str = replaceAscii(_str, 195182);		-- ö
+	_str = replaceAscii(_str, 195150);		-- Ö
+	_str = replaceAscii(_str, 195188);		-- ü
+	_str = replaceAscii(_str, 195156);		-- Ü
+	_str = replaceAscii(_str, 195159);		-- ß
 	return _str;
 end
 
@@ -978,7 +978,7 @@ function convertProfileName(_profilename)
 	-- convert player/profile name from UTF-8 to ASCII
 	load_profile_name = convert_utf8_ascii(_profilename);
 
-	-- replace special ASCII characters like ï¿½ï¿½ï¿½ï¿½ / hence open.XML() can't handle them
+	-- replace special ASCII characters like öüäú / hence open.XML() can't handle them
 	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
 
 	if( hf_convert ) then		-- we replace some special characters
@@ -1122,14 +1122,20 @@ function getNearestSegmentPoint(x, z, a, b, c, d)
 		nx = a + param * dx2;
 		nz = b + param * dz2;
 	end
-	
+
 	return CWaypoint(nx, nz);
 end
 
-function waitForLoadingScreen()
+function waitForLoadingScreen(_maxWaitTime)
+	local startTime = os.time()
 	-- wait for loading screen to appear
 	if memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 then
 		repeat
+			if (_maxWaitTime ~= nil and os.difftime(os.time(),startTime) > _maxWaitTime ) then
+				-- Loading screen didn't appear, we return false so waypoint file can try and take alternate action to recover
+				cprintf(cli.yellow,"The loading screen didn't appear...\n")
+				return false
+			end
 			yrest(1000)
 		until memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 1
 	end
@@ -1141,6 +1147,7 @@ function waitForLoadingScreen()
 
 	yrest(2000)
 	player:update()
+	return true
 end
 
 -- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
@@ -1200,4 +1207,80 @@ function GetPartyMemberAddress(_number)
 	end
 		local memberName = memoryReadRepeat("string", getProc(), memberAddress + 8 )
 	return player:findNearestNameOrId(memberName)
+end
+
+function EventMonitorStart(monitorName, event, filter)
+	-- 'monitorName' (string) - A unique name to identify the monitor.
+	-- 'event' (string) - The event to register and monitor.
+	-- 'filter' (table) - A table of values to compare with the returned arguments from a triggered event.
+	--		eg. {nil,nil,nil,"random"} will only save events that have the word "random" in the 4th argument.
+
+	-- warning if igf events addon is missing
+	if bot.IgfEventAddon == false then
+		cprintf(cli.yellow, language[183])	-- Ingamefunctions event addon is not installed or igf needs updating.
+		return false
+	end
+
+	if filter then
+		RoMScript("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\',\'"..filter.."\')")
+	else
+		RoMScript("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\')")
+	end
+end
+
+function EventMonitorStop(monitorName)
+	-- warning if igf events addon is missing
+	if bot.IgfEventAddon == false then
+		cprintf(cli.yellow, language[183])	-- Ingamefunctions event addon is not installed or igf needs updating.
+		return false
+	end
+
+	RoMScript("igf_events:StopMonitor(\'"..monitorName.."\')")
+end
+
+function EventMonitorPause(monitorName)
+	-- warning if igf events addon is missing
+	if bot.IgfEventAddon == false then
+		cprintf(cli.yellow, language[183])	-- Ingamefunctions event addon is not installed or igf needs updating.
+		return false
+	end
+
+	RoMScript("igf_events:PauseMonitor(\'"..monitorName.."\')")
+end
+
+function EventMonitorResume(monitorName)
+	-- warning if igf events addon is missing
+	if bot.IgfEventAddon == false then
+		cprintf(cli.yellow, language[183])	-- Ingamefunctions event addon is not installed or igf needs updating.
+		return false
+	end
+
+	RoMScript("igf_events:ResumeMonitor(\'"..monitorName.."\')")
+end
+
+function EventMonitorCheck(monitorName, returnFilter, lastEntryOnly)
+	-- 'monitorName' (string) - The name of the monitor you want to get the event data from.
+	-- 'returnFilter' (string) - A comma separated string of numbers representing the arguments you wish to get.
+	--		eg. '1,4' will return the 1st and 4th argument from the event.
+	-- 'lastEntryOnly' (string) - Will only return the latest logged triggered event ignoring older ones.
+
+	-- warning if igf events addon is missing
+	if bot.IgfEventAddon == false then
+		cprintf(cli.yellow, language[183])	-- Ingamefunctions event addon is not installed or igf needs updating.
+		return false
+	end
+
+	if returnFilter then
+		returnFilter = ",\'" .. returnFilter .. "\'"
+	else
+		returnFilter = ", nil"
+	end
+
+	if lastEntryOnly ~= nil then
+		lastEntryOnly = "," .. tostring(lastEntryOnly)
+	else
+		lastEntryOnly = ", nil"
+	end
+
+	return RoMScript("igf_events:GetLogEvent(\'" .. monitorName .. "\'" .. returnFilter .. lastEntryOnly .. ")")
 end

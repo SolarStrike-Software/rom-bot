@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+    <Script file="igf_events.lua"/>
+    <Frame name="igf_events_Frame" parent="UIParent" enableMouse="true" hidden="true">
+		<Scripts>
+
+            <OnEvent>
+                -- call the OnEvent method on our Addon (runs every time an event fires)
+                igf_events:OnEvent(this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+            </OnEvent>
+
+            <OnLoad>
+				SendSystemChat("igf Event Monitor loaded.")
+                -- call the OnLoad code of our Addon (runs when the game does a load/reload)
+                igf_events:OnLoad(this)
+            </OnLoad>
+
+        </Scripts>
+    </Frame>
+</Ui>
