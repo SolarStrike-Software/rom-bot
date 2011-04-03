@@ -709,8 +709,12 @@ function CInventory:autoSell()
 
 			-- sell the item
 			if( sell_item == true ) then
-				hf_wesell = true;
-				slotitem:use();
+				if RoMScript("StoreFrame:IsVisible()") then
+					hf_wesell = true;
+					slotitem:use();
+				else
+					break
+				end
 			end
 
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
