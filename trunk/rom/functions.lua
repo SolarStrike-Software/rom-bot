@@ -574,8 +574,15 @@ function RoMScript(script, default)
 			while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
 				if( deltaTime(getTime(), startWaitTime) > 800 ) then
 					if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-						keyboardPress(settings.hotkeys.ESCAPE.key);
+						keyboardPress(settings.hotkeys.ESCAPE.key); yrest(200)
+						if RoMScript("GameMenuFrame:IsVisible()") then
+							-- Clear the game menu and reset editbox focus
+							keyboardPress(settings.hotkeys.ESCAPE.key); yrest(200)
+							RoMScript("GetKeyboardFocus():ClearFocus()")
+						end
 					end
+
+
 					tryagain = true
 					break
 				end;

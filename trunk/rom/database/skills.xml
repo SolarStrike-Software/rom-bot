@@ -92,6 +92,7 @@
 	<skill name="PRIEST_INFECTIOUS_WOUND" energy="30" range="200" cooldown="12" />
 	<skill name="PRIEST_PURGE" mana="200" range="200" cooldown="20" />
 	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" energy="30" casttime="1" cooldown="45" range="150" priority="90" />
+	<skill name="PRIEST_SHADOW_FURY" mana="100"  manainc="10" type="buff" target="self" buffname="503196" />
 	<!-- TODO: don't attack while frozen -->
 	<skill name="PRIEST_FREEZE" mana="35" manainc="3.75" casttime="1" type="damage" buffname="501961" target="enemy" />
 	<!-- TODO: Requires curse -->

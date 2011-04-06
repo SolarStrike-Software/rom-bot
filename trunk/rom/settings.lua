@@ -139,6 +139,7 @@ settings_default = {
 		},
 		hotkeys = {  },
 		skills = {},
+		skillsData = {},
 		friends = {},
 		mobs = {},
 		events = {
@@ -716,6 +717,14 @@ function settings.loadProfile(_name)
 	end
 
 	local loadSkills = function(node)
+		local className = string.upper(node:getName())
+		local classNum = 0
+		if className ~= "SKILLS" then
+			className = string.gsub(className,"SKILLS","CLASS")
+			classNum = _G[className]
+		end
+		settings.profile.skillsData[classNum] = {}
+
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
@@ -860,10 +869,18 @@ function settings.loadProfile(_name)
 			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
 			if( autouse == false ) then tmp.AutoUse = false; end;
 
-			table.insert(settings.profile.skills, tmp);
+			table.insert(settings.profile.skillsData[classNum], tmp);
+
+			-- Add general and class specific skills to 'Skills'
+			if classNum == 0 or classNum == player.Class1 then
+				table.insert(settings.profile.skills, tmp);
+			end
+
+
 		end
 
 		table.sort(settings.profile.skills, skillSort);
+
 	end
 
 	local loadFriends = function(node)
@@ -922,7 +939,6 @@ function settings.loadProfile(_name)
 
 	for i,v in pairs(elements) do
 		local name = v:getName();
-
 		if( string.lower(name) == "options" ) then
 			loadOptions(v);
 		elseif( string.lower(name) == "hotkeys" ) then
@@ -949,30 +965,15 @@ function settings.loadProfile(_name)
 			loadonUnstickFailureEvent(v);
 		elseif( string.lower(name) == "onpreskillcast" ) then
 			loadOnPreSkillCastEvent(v);
-		elseif( string.lower(name) == "skills_warrior"  and
-		        player.Class1 == CLASS_WARRIOR ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_scout"  and
-		        player.Class1 == CLASS_SCOUT ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_rogue"  and
-		        player.Class1 == CLASS_ROGUE ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_mage"  and
-		        player.Class1 == CLASS_MAGE ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_priest"  and
-		        player.Class1 == CLASS_PRIEST ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_knight"  and
-		        player.Class1 == CLASS_KNIGHT ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_warden"  and
-		        player.Class1 == CLASS_WARDEN ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "skills_druid"  and
-		        player.Class1 == CLASS_DRUID ) then
-			loadSkills(v);
+		elseif( string.lower(name) == "skills_warrior"  or
+			string.lower(name) == "skills_scout"  or
+			string.lower(name) == "skills_rogue"  or
+			string.lower(name) == "skills_mage"  or
+			string.lower(name) == "skills_priest"  or
+			string.lower(name) == "skills_knight"  or
+			string.lower(name) == "skills_warden"  or
+			string.lower(name) == "skills_druid" ) then
+				loadSkills(v);
 		else		-- warning for other stuff and misspellings
 			if ( string.lower(name) ~= "skills_warrior"     and
 			     string.lower(name) ~= "skills_scout"       and
@@ -988,7 +989,6 @@ function settings.loadProfile(_name)
 		end
 	end
 
-
 	-- checks for MACRO hotkey
 	-- print error if new macro option isn't defined
 	if( not settings.profile.hotkeys.MACRO ) then
@@ -1001,7 +1001,7 @@ function settings.loadProfile(_name)
 		error(msg, 0);
 	end
 
-	-- Setup the macros ans action key.
+	-- Setup the macros and action key.
 	setupMacros()
 
 	-- check if new macro option is working / ingame macro defined and assigned
@@ -1081,7 +1081,6 @@ function settings.loadProfile(_name)
 
 
 	-- now we can do all other setting checks
-
 
 	-- Check if the player has any ranged damage skills
 	local rangedSkills = false;
@@ -1180,4 +1179,34 @@ function settings.loadProfile(_name)
 	end
 
 
+end
+
+function settings.loadSkillSet(class)
+	-- return if player not initialized yet.
+	if not player then return end
+
+	local skillSort = function(tab1, tab2)
+		if( tab2.priority < tab1.priority ) then
+			return true;
+		end;
+
+		return false;
+	end
+
+	settings.profile.skills = {}
+	if type(settings.profile.skillsData[0]) == "table" then
+		for k,v in pairs(settings.profile.skillsData[0]) do -- general skills
+			table.insert(settings.profile.skills, v)
+		end
+	end
+	if type(settings.profile.skillsData[class]) == "table" then
+		for k,v in pairs(settings.profile.skillsData[class]) do -- class skills
+			table.insert(settings.profile.skills, v)
+		end
+	end
+
+	table.sort(settings.profile.skills, skillSort);
+
+	-- Setup the macros and action key.
+	setupMacros()
 end
