@@ -741,10 +741,6 @@ function settings.loadProfile(_name)
 				hotkey = key[v:getAttribute("hotkey")];	-- read the virtual key numer
 			end
 
-			checkKeySettings( v:getAttribute("name"),
-			  v:getAttribute("hotkey"),
-			  v:getAttribute("modifier") );
-
 			-- Over-ride attributes
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
 			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget
@@ -873,6 +869,9 @@ function settings.loadProfile(_name)
 
 			-- Add general and class specific skills to 'Skills'
 			if classNum == 0 or classNum == player.Class1 then
+				checkKeySettings( v:getAttribute("name"),
+				  v:getAttribute("hotkey"),
+				  v:getAttribute("modifier") );
 				table.insert(settings.profile.skills, tmp);
 			end
 
