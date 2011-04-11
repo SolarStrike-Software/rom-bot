@@ -647,7 +647,7 @@ function CPlayer:cast(skill)
 
 		-- print HP of our target
 		-- we do it later, because the client needs some time to change the values
-		 target = self:getTarget();
+		 local target = self:getTarget();
 		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
 
 		-- the check was only done after every complete skill round
@@ -933,9 +933,9 @@ function CPlayer:fight()
 		return false;
 	end
 
-	if ( settings.profile.options.PARTY ) then sendMacro('SetRaidTarget("target", 1);')
-	if (not settings.profile.options.PARTY_ICONS) then printf("Raid Icons not set in character profile.\n") end
-	if (not sendMacro("IsPartyLeader()")) then printf("Not set to leader.\n") end
+	if ( settings.profile.options.PARTY == true ) then sendMacro('SetRaidTarget("target", 1);')
+	if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
+	-- if (not sendMacro("IsPartyLeader()")) then printf("Not set to leader.\n") end
 	end
 
 	local target = self:getTarget();
@@ -1097,6 +1097,7 @@ function CPlayer:fight()
 			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(4)  and
 			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(5) ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
+			printf("test this line 1100")
 			self:clearTarget();
 			break_fight = true;
 			break;
@@ -1206,7 +1207,7 @@ function CPlayer:fight()
 
 		yrest(100);
 		self:update();
-		target = self:getTarget();
+		local target = self:getTarget();
 
 
 		-- do we need that? Because the DO statement is allready a
@@ -1368,7 +1369,7 @@ function CPlayer:loot()
 
 	-- check for loot problems to give a noob mesassage
 	self:update();
-	target = self:getTarget();
+	local target = self:getTarget();
 	dist = distance(self.X, self.Z, target.X, target.Z);
 	if( dist > 50 and -- We would need to be further away to be able to move to the target
 		self.X == hf_x  and	-- we didn't move, seems attack key is not defined
@@ -1633,7 +1634,7 @@ function evalTargetDefault(address)
 	end;
 
 	-- target is to strong for us
-	if (not settings.profile.options.PARTY_INSTANCE ) == true then
+	if (settings.profile.options.PARTY_INSTANCE ~= true ) then
 	if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 		if ( player.Battling == false ) then	-- if we don't have aggro then
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
@@ -2243,7 +2244,7 @@ function CPlayer:haveTarget()
 		end;
 
 		-- target is to strong for us
-	if (not settings.profile.options.PARTY_INSTANCE ) == true then
+	if  (settings.profile.options.PARTY_INSTANCE ~= true) then
 		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
@@ -2543,13 +2544,25 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 -- works also if target is not visible and we get aggro from another mob
 -- _jump = true       abort cast with jump hotkey
 
-
 	self:update();
+	local target = self:getTarget();
+	local targettarget = CPawn(target.TargetPtr)
+	
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
+	
 
-	if ((settings.profile.options.PARTY) and (self.Battling == true )) then return false end
+		
+	if target.TargetPtr == self.Address or 
+	(targettarget.Name == GetPartyMemberName(1) ) or 
+	(targettarget.Name == GetPartyMemberName(2) ) or 
+	(targettarget.Name == GetPartyMemberName(3) ) or 
+	(targettarget.Name == GetPartyMemberName(4) ) or 
+	(targettarget.Name == GetPartyMemberName(5) ) then
+		return false;
+	end
+	
 
 	-- don't break friendly skills
 	if( _skill_type == STYPE_HEAL  or
@@ -2569,6 +2582,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 
 
 	-- check if the target is attacking us, if not we can break and take the other mob
+
 	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
 	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
 	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
@@ -2588,7 +2602,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end
 		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
 		if( self:findTarget() ) then	-- we found a target
-			target = self:getTarget();
+			local target = self:getTarget();
 			if( target.TargetPtr == self.Address ) then	-- it is the right aggressor
 				cprintf(cli.green, "%s is attacking us, we take that target.\n", target.Name);	-- attacking us
 			else
