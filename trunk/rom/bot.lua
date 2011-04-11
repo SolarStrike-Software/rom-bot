@@ -542,7 +542,7 @@ function main()
 				break;
 			end;
 
-			if (not settings.profile.options.PARTY ) then
+			if ( settings.profile.options.PARTY == false  ) then
 
 			player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
 

@@ -318,12 +318,17 @@
 	<skill name="SCOUT_REPELLING_ARROW" mana="30" range="150" cooldown="25" />
 	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" />
 	<skill name="SCOUT_MANA_CONVERSION" mana="50" cooldown="60" type="buff" target="self" />
+	<skill name="SCOUT_THORN_ARROW" mana="30" manainc="3" range="200" cooldown="6" />
+	<skill name="SCOUT_ENTLING_OFFERING" type="buff" target="self" buffname="504547"/>
+	<skill name="SCOUT_REFLECTED_SHOT" range="180" cooldown="10" />
+	<skill name="SCOUT_CONCENTRATION" cooldown="300" type="buff" target="self" buffname="500930" />
+
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_INTENSIFY"  type="buff" target="self" />
 	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
-	<skill name="SCOUT_CONCENTRATE" cooldown="300" type="buff" target="self" />
+
 
 
 	<!-- Druid skills -->

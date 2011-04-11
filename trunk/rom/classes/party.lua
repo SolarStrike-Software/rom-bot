@@ -84,6 +84,7 @@ end
 
 function PartyDPS()
 player:update();
+if settings.profile.options.PARTY ~= true then settings.profile.options.PARTY = false end
  
 	player:target(player:findEnemy(true, nil, nil, nil))
 	local target = player:getTarget();
