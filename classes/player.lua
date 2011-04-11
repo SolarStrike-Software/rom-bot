@@ -2552,7 +2552,12 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		return false;
 	end;
 	
-
+		-- don't break friendly skills
+	if( _skill_type == STYPE_HEAL  or
+	    _skill_type == STYPE_BUFF  or
+	    _skill_type == STYPE_HOT ) then
+		return false;
+	end
 		
 	if target.TargetPtr == self.Address or 
 	(targettarget.Name == GetPartyMemberName(1) ) or 
@@ -2563,14 +2568,6 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		return false;
 	end
 	
-
-	-- don't break friendly skills
-	if( _skill_type == STYPE_HEAL  or
-	    _skill_type == STYPE_BUFF  or
-	    _skill_type == STYPE_HOT ) then
-		return false;
-	end
-
 	local target = self:getTarget();
 	if( self.TargetPtr ~= 0 ) then  target:update(); end;
 
