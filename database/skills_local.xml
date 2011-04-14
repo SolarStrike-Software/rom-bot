@@ -51,6 +51,7 @@
 	<MAGE_MESSENGER_OF_LIGHT en="Messenger of Light" de="Bote des Lichts" />
 	<MAGE_LIGHT_CHARGE en="Light Charge" de="Ansturm des Lichts" />
 	<MAGE_PERCEPTION en="Perception" de="Wahrnehmung" />
+	<MAGE_MAGMA_BLADE en="Magma Blade" />
 
 
 
@@ -74,6 +75,7 @@
 	<PRIEST_CLEANSE en="Cleanse" de="Reinigung" />
 	<PRIEST_CHAIN_OF_LIGHT en="Chain of Light" de="Kette des Lichts" />
 	<PRIEST_AMPLIFIED_ATTACK en="Amplified Attack" de="Verstärkter Angriff" />
+	<PRIEST_HEALING_SALVE en="Healing Salve" />
 
 		<!-- Elite -->
 	<PRIEST_BATTLE_MONK_STANCE en="Battle Monk Stance" de="Kampfmönch-Haltung" />
