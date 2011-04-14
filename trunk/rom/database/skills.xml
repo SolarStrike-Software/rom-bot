@@ -54,8 +54,9 @@
 	<skill name="MAGE_MESSENGER_OF_LIGHT" mana="30" type="buff" buffname="502034,503191" target="self" />
 	<skill name="MAGE_LIGHT_CHARGE" mana="30" range="150" minrange="80" cooldown="8" priority="100" />
 	<skill name="MAGE_EARTH_SURGE" mana="48" range="200" minrange="80" cooldown="2"  />
-	<skill name="MAGE_PERCEPTION" mana="100" range="200" type="buff" buffname="504561" target="self" />
-	<skill name="MAGE_MAGIC_TARGET" mana="100" cooldown="900" range="200" type="504562" target="self" />
+	<skill name="MAGE_PERCEPTION" aslevel="15" mana="100" range="200" type="buff" buffname="504561" target="self" />
+	<skill name="MAGE_MAGIC_TARGET" aslevel="20" mana="100" cooldown="900" range="200" type="504562" target="self" />
+	<skill name="MAGE_MAGMA_BLADE" aslevel="35" mana="30" manainc="3.5" range="250" cooldown="6" type="damage" target="target" />>
 
 
 	<!-- Priest Skills -->
@@ -79,6 +80,7 @@
 	<skill name="PRIEST_CHAIN_OF_LIGHT" aslevel="18" skilltab="4" skillnum="11" mana="60" range="217" manainc="6.0" casttime="6" type="damage" target="enemy" />
 	<skill name="PRIEST_CLEANSE" aslevel="18" skilltab="4" skillnum="10" mana="150" manainc="0.0" range="200" type="heal" target="friendly" cooldown="10" />
 	<skill name="PRIEST_AMPLIFIED_ATTACK" aslevel="20" skilltab="4" skillnum="13" mana="36" manainc="3.5" range="150" type="buff" buffname="500940" target="friendly" />
+	<skill name="PRIEST_HEALING_SALVE" aslevel="28" mana="50" manainc="5" range="150" type="buff" buffname="500527" target="friendly" cooldown="30" />
 
 	<!-- Elite -->
 	<skill name="PRIEST_BATTLE_MONK_STANCE" mana="20" type="buff" buffname="501977" target="self" />

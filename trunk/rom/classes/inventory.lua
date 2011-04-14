@@ -55,9 +55,9 @@ function CInventory:updateEquipment()
 		self.EquipSlots[ slotNumber ]:update();
 	end
 
---	if( settings.profile.options.DEBUG_INV ) then
+	if( settings.profile.options.DEBUG_INV ) then
 		printf( "Equipment update took: %d\n", deltaTime( getTime(), timeStart ) );
---	end;
+	end;
 end;
 
 function CInventory:getAmmunitionCount()

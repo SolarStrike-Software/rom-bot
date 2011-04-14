@@ -11,14 +11,14 @@ language = {
 	[9] = "Odblokowywanie gracza... na pozycji %d,%d. Pr\162ba %d spo\152r\162d maksymalnie %d pr\162b\n",
 	[10] = "MAKRO: U\190ywanie mikstury HP %s/%s (%d%%): %s (pozosta\136o %s)\n",
 	[11] = "MAKRO: U\190ywanie mikstury MP %s/%s (%d%%): %s (pozosta\136o %s)\n",
-	[12] = "\152cie\190ka powrotna jest bli\190ej ni\190 zwyk\136a. Rozpoczynanie od \152cie\190ki powrotnej!\n",	
+	[12] = "\152cie\190ka powrotna jest bli\190ej ni\190 zwyk\136a. Rozpoczynanie od \152cie\190ki powrotnej!\n",
 	[13] = "Przemieszczanie do punktu nawigacyjnego \152cie\190ki powrotnej #%d, (%d, %d)\n",
 	[14] = "Zebrali\152my aggro. Przemieszczanie przerwane i oczekiwanie na cel.\n",
 	[15] = "Punkt nawigacyjny #%d jest bli\190ej ni\190 #1. Wi\169c p\162jdziemy do #%d.\n",
 	[16] = "Brak (zdatnych do u\190ycia) mikstur many w slotach 1 do %d\n",
 	[17] = "Brak (zdatnych do u\190ycia) mikstur HP w slotach 1 do %d\n",
 	[18] = "Informacja: Przedmiot niedopasowany (%s~=%s); aktualizowanie informacji o przedmiocie (nie panikuj!).\n",
-	
+
 
 	[20] = "Zako\241czono czarowanie\n",
 	[21] = "U\190yj %s: %s",
@@ -39,7 +39,7 @@ language = {
 	[36] = "Aggro podczas pierwszego uderzenia, anulowanie tego typu uderzenia na dany cel: %s\n",
 	[37] = "Wybrano nowy cel %s na dystansie %d\n",
 	[38] = "Odpoczywanie do %s w celu uzupe\136nienia many i HP.\n",
-	[39] = "Przerwanie odpoczenia ze wzgl\169du na aggro.\n",	
+	[39] = "Przerwanie odpoczenia ze wzgl\169du na aggro.\n",
 
 	[40] = "Adres gracza zmieni\136 si\169 na: 0x%X\n",
 	[41] = "B\136\165d odczytu pami\169ci",
@@ -49,22 +49,22 @@ language = {
 	[45] = "Wykryto wiele okien RoM. Utrzymaj to okno, do kt\162rego chcesz zaaplikowa\134 bota i naci\152nij %s.\n",
 	[46] = "Zatrzymany. (%s) aby kontynuowa\134, (CTRL+L) aby wyj\152\134 do pow\136oki, (CTRL+C) aby zamkn\165\134\n",
 	[47] = "Nie znaleziono okna RoM! Najpierw uruchom RoM.",
-	[48] = "B\136\165d przy odczycie adresu \'%s\'. Co\152 w grze wydaje si\169 zmienione!!! Uruchom \'rom/bot.lua update\' i-lub zainstaluj now\165 wersj\169 RoM Bota!",	
+	[48] = "B\136\165d przy odczycie adresu \'%s\'. Co\152 w grze wydaje si\169 zmienione!!! Uruchom \'rom/bot.lua update\' i-lub zainstaluj now\165 wersj\169 RoM Bota!",
 
 	[50] = "%s  Automatyczne wylogowywanie.\n",
 	[51] = "Wy\136\165czanie systemu.\n",
 	[52] = "Okno stracone (B\136\165d klienta gry, b\165d\171 klient zamkni\169ty?). Uruchom skrypt ponownie.",
 	[53] = "Sko\241czono czas %d wyznaczony do zbierania %d. Zostaniesz wylogowany.\n",
-	[54] = "Przekroczono limit \152mierci %d ustalony do zbieraniu %d. Zostaniesz wylogowany.\n",	
-	[55] = "Przekroczono limit odblokowa\241 gracza %d ustalony do zbierania %d.\n",		
+	[54] = "Przekroczono limit \152mierci %d ustalony do zbieraniu %d. Zostaniesz wylogowany.\n",
+	[55] = "Przekroczono limit odblokowa\241 gracza %d ustalony do zbierania %d.\n",
 
 	[60] = "Nieznany tag %s znale\171iony w profilu %s.xml. Pros\190\169 sprawdzi\134 sw\162j profil!\n",
 	[61] = "Nieprawid\136owa opcja \'%s\' dla bot.lua\n\nSk\136adnia: rom/bot.lua [profile:nazwaprofilu] [path:nazwa\152cie\190ki] [retpath:nazwa\152cie\190kipowrotnej]\n\nprofile:nazwaprofilu\twymusza u\190ycie profilu \'nazwaprofilu.xml\'\npath:nazwa\152cie\190ki\t\twymusza u\190ycie \152cie\190ki \'nazwa\152cie\190ki.xml\'\nretpath:nazwa\152cie\190kipowrotnej\t\twymusza u\190ycie \152cie\190ki powrotnej \'nazwa\152cie\190kipowrotnej.xml\'\n",
 	[62] = "B\136\165d odczytu jezyka u\190ywanego przez klienta gry. Masz przydzielone puste MAKRO w grze? Uruchom ponownie bota i-lub klienta gry.",
-	
+
 	[70] = "Odpoczynek uko\241czono po %s sekundach.\n",
 	[71] = "Odpoczywanie przez %s sekund.\n",
-	
+
 	[80] = "Przybli\190anie si\169\n",
 	[81] = "Niespodziewane przerwanie zbierania. Spr\162bujemy ponownie.\n",
 	[82] = "=>   * anulowane *\n",
@@ -134,17 +134,17 @@ language = {
 	[147] = "Nie w\136a\152ciwy wyb\162r. Sprawd\171 i wybierz ponownie!\n",
 	[148] = "Przejdziemy w tryb u\152pienia tu\190 po zako\241czeniu walki / gdy tylko b\169dzie to mo\190liwe.\n",
 	[149] = "Zgin\165\136e\152... Przeprosiny.\n",
-	
+
 	[150] = "Kompilacja i wykonanie kodu LUA dla punktu nawigacyjnego #%d nie powiod\136y si\169",
 	[151] = "Kompilacja i wykonanie kodu LUA dla %s w Twoim profilu - nie powiod\136y si\169.",
-	
+
 	[160] = "Wykonywanie skryptu spauzowane dop\162ki sam si\169 nie wskrzesisz. Naci\152nij %s gdy b\169dziesz gotowy, aby kontynuowa\134.\n",
 	[161] = "Musisz sprecyzowa\134 \152cie\190k\169, b\165d\171 \152cie\190k\169 powrotn\165, aby u\190y\134 funkcji load_paths(). \189adne \152cie\190ki nie zosta\136y za\136adowane!\n",
 	[162] = "\151cie\190ka powrotna odnaleziona wed\136ug nazwy domy\152lnej: %s\n",
 	[163] = "Nie znaleziono \152cie\190ki powrotnej wed\136ug nazwy domy\152lnej.\n",
 	[164] = "Przychodzimy ze \152cie\190ki powrotnej. Wi\169c b\169dziemy kontynuowa\134 \152cie\190k\165 powrotn\165 %s.\n",
 	[165] = "Teraz u\190yjemy zwyk\136ej \152cie\190ki %s.\n",
-	[166] = "Prosz\169 ustawi\134 now\165 opcj\169 w swoim profilu <hotkey name=\"MACRO\" key=\"VK_7\" /> aby m\162c u\190ywa\134 funkcji automatycznego wskrzeszania.\n",	
+	[166] = "Prosz\169 ustawi\134 now\165 opcj\169 w swoim profilu <hotkey name=\"MACRO\" key=\"VK_7\" /> aby m\162c u\190ywa\134 funkcji automatycznego wskrzeszania.\n",
 	[167] = "Ustawienia klawiatury pobrane z %s:",
 	[168] = "B\169dziemy si\169 b\136\165ka\134 w promieniu %d.\n",
 	[169] = "U\190ycie %s: Wykonywanie skryptu gry \"%s\".\n",
@@ -160,7 +160,7 @@ language = {
 	[179] = "Maksymalny zasi\169g umiej\169tno\152ci dystansowych jest mniejszy ni\190 COMBAT_DISTANCE=%d. Zredukuj ustawienie COMBAT_DISTANCE.\n",
 
 	[200] = "Brak umiej\169tno\152ci dystansowych w profilu; Wy\136\165czanie COMBAT_RANGED_PULL.\n",
-	
+
 
 	-- createpath.lua
 	[500] = "Jak chcesz nazwa\134 swoj\165 \152cie\190k\169 (bez .xml)?\nNazwa> ",
@@ -180,18 +180,18 @@ language = {
 	[514] = "%d: Punkt nawigacyjny dodany. Wskazanie rozpocz\169cia dialogu z NPC (BN).\n",
 	[515] = "\'mouseclickL()\' polecenie wstawione (%d,%d).\n",
 	[516] = "\'Choice Option(%d)\' polecenie wstawione.\n",
-	[517] = "  (%s)\tWstaw polecenie \'ChoiceOption()\'.\n",	
-	[518] = "  (%s)\tusun\261 \152cie\190k\169 i uruchom ponownie\n",
+	[517] = "  (%s)\tWstaw polecenie \'ChoiceOption()\'.\n",
+	[518] = "  (%s)\tusun \152cie\190k\169 i uruchom ponownie\n",
 
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d xp/min, %d minut do zdobycia nowego poziomu",
 
 	[900] = "U\190yjemy nowego makra do komunikacji z klientem gry.\n",
 	[901] = "Zdefiniuj nowy skr\162t klawiaturowy:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
-	[902] = "w swoim profilu. Mo\190esz skasowa\134 stare skr\162ty klawiaturowe dla:\n",	
+	[902] = "w swoim profilu. Mo\190esz skasowa\134 stare skr\162ty klawiaturowe dla:\n",
 	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
 	[904] = "W grze utw\162rz nowe, puste makro na PIERWSZYM miejscu i zdefiniuj skr\162t klawiaturowy dla MACRO \'%s\'.\n",
 	[905] = "Popraw profil \'%s\' i ponownie uruchom bota.\n",
-	[906] = "Komunikacja z gr\165 poprzez funkcj\169 MACRO wydaje si\169 nie dzia\136a\134.\n",		
+	[906] = "Komunikacja z gr\165 poprzez funkcj\169 MACRO wydaje si\169 nie dzia\136a\134.\n",
 
 	-- Inventory.lua
 	[1000] = "Skanowanie plecak\162w (bagslot 1 to %d)...\n",
@@ -199,5 +199,5 @@ language = {
 	[1002] = "Nast\169pne pe\136ne skanowanie plecak\162w nie wcze\152niej ni\190 za %d sekund.\n",
 	[1003] = "INV_MAX_SLOTS (%d) jest mniejsze ni\190 INV_AUTOSELL_TOSLOT (%d). Mo\190esz sprzedawa\134 tylko te przedmioty, kt\162re znajduj\165 si\169 w zasi\169gu skanowania. Dostosuj opcj\169 INV_MAX_SLOTS.\n",
 	[1004] = "Addon ingamefunctions (igf) nie zainstalowany! U\190y\136e\152 opcji, kt\162re wymagaj\165 igf. Nie sprzedamy przedmiot\162w! Zainstaluj igf (skopiuj folder 'ingamefunctions' z 'rom/devtools' do folderu klienta GRY, do katalogu '/interface/addons' ) lub skasuj opcje sprzedawania INV_AUTOSELL_NOSELL_DURA i INV_AUTOSELL_STATS_NOSELL ze swojego profilu.\n",
-	
+
 };
