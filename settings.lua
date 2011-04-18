@@ -38,6 +38,8 @@ settings_default = {
 			WANDER_RADIUS = 500,
 			WAYPOINT_DEVIATION = 0,
 			LOOT = true,
+			LOOT_ALL = false,
+			LOOT_IGNORE_LIST_SIZE = 10,
 			LOOT_TIME = 2000,
 			LOOT_AGAIN = 2000,				-- second loot try if rooted after x ms
 			LOOT_IN_COMBAT = true,
@@ -167,9 +169,12 @@ if( table.copy == nil ) then
 	table.copy = function (_other)
 		local t = {};
 		for i,v in pairs(_other) do
-			t[i] = v;
+			if type(v) == "table" then
+				t[i] = table.copy(v)
+			else
+				t[i] = v;
+			end
 		end
-
 		return t;
 	end
 end
@@ -311,6 +316,7 @@ function settings.load()
 	local filename = getExecutionPath() .. "/settings.xml";
 	local root = xml.open(filename);
 	local elements = root:getElements();
+
 	check_keys = { };	-- clear table, because of restart from createpath.lua
 
 	-- Specific to loading the hotkeys section of the file
