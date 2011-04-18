@@ -327,7 +327,7 @@ function CEggPet:craft(_craftType, indexLevel)
 	if indexLevel == nil then
 		-- See if there is a user profile index override
 		if settings.profile.options.EGGPET_CRAFT_INDEXES then
-			local mIndex, wIndex, hIndex = string.match(settings.profile.options.EGGPET_CRAFT_INDEXES,"(%d*)%s*,%s*(%d*)%s*,%s*(%d*)")
+			local mIndex, wIndex, hIndex = string.match(settings.profile.options.EGGPET_CRAFT_INDEXES,"(%w*)%s*,%s*(%w*)%s*,%s*(%w*)")
 			if _craftType == "Mining" then
 				indexLevel = mIndex
 			elseif _craftType == "Woodworking" then
@@ -336,7 +336,6 @@ function CEggPet:craft(_craftType, indexLevel)
 				indexLevel = hIndex
 			end
 		end
-
 		-- convert to numbers
 		indexLevel = tonumber(indexLevel)
 	end

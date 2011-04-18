@@ -46,6 +46,7 @@
 
 		<!-- Loot settings -->
 		<option name="LOOT"               value="true" />
+		<option name="LOOT_ALL"			  value="false" />  <!-- Loot all nearby dead mobs after combat -->
 		<option name="LOOT_IN_COMBAT"     value="true" />
 		<option name="LOOT_DISTANCE"      value="100" />
 		<option name="LOOT_PAUSE_AFTER"   value="0" />		<!-- probability in % for a short rest -->
@@ -61,7 +62,7 @@
 		<option name="EGGPET_CRAFT_SLOT"	value="1" />
 		<option name="EGGPET_ENABLE_ASSIST"	value="false" />
 		<option name="EGGPET_ASSIST_SLOT"	value="1" />
-		<option name="EGGPET_CRAFT_RATIO"	value="1:4:4" /> <!-- mining:woodworking:herbalism ratio to produce. -->
+		<option name="EGGPET_CRAFT_RATIO"	value="1:1:1" /> <!-- mining:woodworking:herbalism ratio to produce. -->
 		<option name="EGGPET_CRAFT_INDEXES"	value="" /> 	 <!-- override auto craft index for mining,woodworking,herbalism eg. "2,,"-->
 
 

@@ -871,9 +871,9 @@ function CPlayer:checkPotions()
 				cprintf(cli.yellow, language[17], inventory.MaxSlots); 		-- No more (usable) hp potions
 				self.PotionLastHpEmptyTime = os.time();
 				-- full inventory update if potions empty
-				if( os.difftime(os.time(), player.InventoryLastUpdate) >
+				if( os.difftime(os.time(), self.InventoryLastUpdate) >
 				  settings.profile.options.INV_UPDATE_INTERVAL ) then
-					player.InventoryDoUpdate = true;
+					self.InventoryDoUpdate = true;
 				end
 			end;
 		end
@@ -914,9 +914,9 @@ function CPlayer:checkPotions()
 					cprintf(cli.yellow, language[16], inventory.MaxSlots); 		-- No more (usable) mana potions
 					self.PotionLastManaEmptyTime = os.time();
 					-- full inventory update if potions empty
-					if( os.difftime(os.time(), player.InventoryLastUpdate) >
+					if( os.difftime(os.time(), self.InventoryLastUpdate) >
 					  settings.profile.options.INV_UPDATE_INTERVAL ) then
-						player.InventoryDoUpdate = true;
+						self.InventoryDoUpdate = true;
 					end
 				end;
 			end;
@@ -1022,8 +1022,8 @@ function CPlayer:fight()
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), self.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf(language[83]);			-- Taking too long to damage target
-			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
-			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
+			self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
+			self.Last_ignore_target_time = os.time();		-- and the time we break the fight
 			self:clearTarget();
 
 			if( self.Battling ) then
@@ -1061,7 +1061,7 @@ function CPlayer:fight()
 		end
 
 		-- We're a bit TOO close...
-		if( dist < 5.0 and not player.Casting ) then
+		if( dist < 5.0 and not self.Casting ) then
 			printf(language[24]);
 			keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 			yrest(200);
@@ -1103,7 +1103,7 @@ function CPlayer:fight()
 			break;
 		end;
 
-		if( dist > suggestedRange and not player.Casting ) then
+		if( dist > suggestedRange and not self.Casting ) then
 
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
@@ -1270,6 +1270,12 @@ function CPlayer:fight()
 	self:update();
 	if( not break_fight ) then
 		self:loot();
+	end
+
+	-- Loot any other dead monsters nearby
+	self:update()
+	if not self.Battling then
+		self:lootAll()
 	end
 
 	if( self.TargetPtr ~= 0 ) then
@@ -1443,6 +1449,141 @@ function CPlayer:loot()
 		sigil = getNearestSigil();
 	end
 
+end
+
+local lootIgnoreList = {}
+local lootIgnoreListPos = 0
+
+function evalTargetLootable(address)
+
+	local target = CPawn(address);
+
+	-- Check if lootable
+	if not ( target.Lootable ) then
+		return false;
+	end
+
+	-- Check if in lootIgnoreList
+	for __, addr in pairs(lootIgnoreList) do
+		if target.Address == addr then
+			return false
+		end
+	end
+
+	-- Check height difference
+	if( math.abs(target.Y - player.Y) > 45 ) then
+		return false;
+	end
+
+	-- check distance to target
+	local dist = distance(player.X, player.Z, player.Y, target.X, target.Z, target.Y);
+	local lootdist = 100;
+
+	-- Set to combat distance; update later if loot distance is set
+	if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+		lootdist = settings.profile.options.COMBAT_DISTANCE;
+	end
+
+	if( settings.profile.options.LOOT_DISTANCE ) then
+		lootdist = settings.profile.options.LOOT_DISTANCE;
+	end
+
+	if( dist > lootdist ) then 	-- only loot when close by
+		return false
+	end
+
+	-- check target distance to path against MAX_TARGET_DIST
+	local wpl; -- this is the waypoint list we're using
+	local V; -- this is the point we will use for distance checking
+
+	if( player.Returning ) then
+		wpl = __RPL;
+	else
+		wpl = __WPL;
+	end
+
+	if (__WPL:getMode() == "waypoints") then
+		local pA = wpl.Waypoints[wpl.LastWaypoint]
+		local pB = wpl.Waypoints[wpl.CurrentWaypoint]
+
+		V = getNearestSegmentPoint(player.X, player.Z, pA.X, pA.Z, pB.X, pB.Z);
+	else
+		V = CWaypoint(player.X, player.Z); -- Distance check from player in wander mode
+	end
+
+	-- use a bounding box first to avoid sqrt when not needed (sqrt is expensive)
+	if( target.X > (V.X - settings.profile.options.MAX_TARGET_DIST) and
+		target.X < (V.X + settings.profile.options.MAX_TARGET_DIST) and
+		target.Z > (V.Z - settings.profile.options.MAX_TARGET_DIST) and
+		target.Z < (V.Z + settings.profile.options.MAX_TARGET_DIST) ) then
+
+		if( distance(V.X, V.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
+			debug_target("unlooted monster dist > MAX_TARGET_DIST")
+			return false;			-- he is not a valid target
+		end;
+	else
+		-- must be too far away
+		debug_target("unlooted monster dist > MAX_TARGET_DIST")
+		return false;
+	end
+	return true
+end
+
+function CPlayer:lootAll()
+	if( settings.profile.options.LOOT ~= true ) then
+		if( settings.profile.options.DEBUG_LOOT) then
+			cprintf(cli.yellow, "[DEBUG] don't loot all reason: settings.profile.options.LOOT ~= true\n");
+		end;
+		return
+	end
+
+	if( settings.profile.options.LOOT_ALL ~= true ) then
+		if( settings.profile.options.DEBUG_LOOT) then
+			cprintf(cli.yellow, "[DEBUG] don't loot all reason: settings.profile.options.LOOT_ALL ~= true\n");
+		end;
+		return
+	end
+
+	-- Warn user if they still have 'lootbodies()' userfunction installed.
+	if type(lootBodies) == "function" then
+		cprintf(cli.yellow,"The userfunction 'lootBodies()' is obsolete and might interfere with the bots 'lootAll()' function. Please delete the 'addon_lootbodies.lua' file from the 'userfunctions' folder.\n")
+	end
+
+	-- Check if inventory is full. We don't loot if inventory is full.
+	if inventory:itemTotalCount(0) == 0 then
+		if( settings.profile.options.DEBUG_LOOT) then
+			cprintf(cli.yellow, "[DEBUG] don't loot all reason: inventory is full\n");
+		end;
+		return
+	end
+
+	while true do
+		self:update()
+		if( self.Battling  and
+			self:findEnemy(true,nil,evalTargetDefault)) then
+			break
+		end
+
+		local Lootable = self:findEnemy(false, nil, evalTargetLootable)
+
+		if Lootable == nil then
+			break
+		end
+
+		self:target(Lootable)
+		self:update()
+		if self.TargetPtr ~= 0 then -- Target's still there.
+			self:loot()
+			yrest(50)
+			Lootable:update();
+			if Lootable.Lootable == true then
+				-- Failed to loot. Add to ignore list
+				lootIgnoreListPos = lootIgnoreListPos + 1
+				if lootIgnoreListPos > settings.profile.options.LOOT_IGNORE_LIST_SIZE then lootIgnoreListPos = 1 end
+				lootIgnoreList[lootIgnoreListPos] = Lootable.Address
+			end
+		end
+	end
 end
 
 -- Basic target evaluation.
@@ -1731,8 +1872,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 		-- we will not move back to WP if wander and radius = 0
 		-- so one can move the character manual and use the bot only as fight support
 		-- there we set the WP to the actual player position
-		waypoint.Z = player.Z;
-		waypoint.X = player.X;
+		waypoint.Z = self.Z;
+		waypoint.X = self.X;
 
 	end;
 
@@ -1884,7 +2025,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle, yangle);
 			camera:setRotation(angle);
-			player:update()
+			self:update()
 			angleDif = angleDifference(angle, self.Direction);
 		else
 			self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
@@ -1951,7 +2092,7 @@ function CPlayer:moveInRange(target, range, ignoreCycleTargets)
 		local ratio = (playerTargetDist - range)/playerTargetDist
 		local rx = self.X + (target.X - self.X) * ratio
 		local rz = self.Z + (target.Z - self.Z) * ratio
-		local ry = player.Y -- default value
+		local ry = self.Y -- default value
 		if target.Y ~= nil then
 			ry = self.Y + (target.Y - self.Y) * ratio
 		end
@@ -2073,7 +2214,7 @@ function CPlayer:unstick()
 		yrest(10000);
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 		self:update();
-		if( player.Returning ) then
+		if( self.Returning ) then
 			__RPL:setWaypointIndex(__RPL:getNearestWaypoint(self.X, self.Z));
 		else
 			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(self.X, self.Z));
@@ -2162,11 +2303,11 @@ function CPlayer:haveTarget()
 		end;
 
 		-- check if we just ignored that target / ignore it for 10 sec
-		if(self.TargetPtr == player.Last_ignore_target_ptr  and
-		   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then
+		if(self.TargetPtr == self.Last_ignore_target_ptr  and
+		   os.difftime(os.time(), self.Last_ignore_target_time)  < 10 )then
 			if ( self.Battling == false ) then	-- if we don't have aggro then
 				cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
-				   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
+				   10-os.difftime(os.time(), self.Last_ignore_target_time ) );
 				debug_target("ignore that target for 10 sec (e.g. after doing no damage")
 				return false;			-- he is not a valid target
 			end;
@@ -2547,27 +2688,27 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	self:update();
 	local target = self:getTarget();
 	local targettarget = CPawn(target.TargetPtr)
-	
+
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
-	
+
 		-- don't break friendly skills
 	if( _skill_type == STYPE_HEAL  or
 	    _skill_type == STYPE_BUFF  or
 	    _skill_type == STYPE_HOT ) then
 		return false;
 	end
-		
-	if target.TargetPtr == self.Address or 
-	(targettarget.Name == GetPartyMemberName(1) ) or 
-	(targettarget.Name == GetPartyMemberName(2) ) or 
-	(targettarget.Name == GetPartyMemberName(3) ) or 
-	(targettarget.Name == GetPartyMemberName(4) ) or 
+
+	if target.TargetPtr == self.Address or
+	(targettarget.Name == GetPartyMemberName(1) ) or
+	(targettarget.Name == GetPartyMemberName(2) ) or
+	(targettarget.Name == GetPartyMemberName(3) ) or
+	(targettarget.Name == GetPartyMemberName(4) ) or
 	(targettarget.Name == GetPartyMemberName(5) ) then
 		return false;
 	end
-	
+
 	local target = self:getTarget();
 	if( self.TargetPtr ~= 0 ) then  target:update(); end;
 
@@ -2685,8 +2826,8 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	else _restaddrnd  = math.random( _restaddrnd ); end;
 
 	-- some classes dont have mana, in that cases Player.mana = 0
-	local hf_mana_rest = (player.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
-	local hf_hp_rest   = (player.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
+	local hf_mana_rest = (self.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
+	local hf_hp_rest   = (self.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
 
 	local restStart = os.time();		-- set start timer
 
@@ -2727,8 +2868,8 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		end;
 
 		-- check if HP/Mana full
-		if( player.Mana == player.MaxMana  and		-- some chars have MaxMana = 0
- 	 	    player.HP   == player.MaxHP    and
+		if( self.Mana == self.MaxMana  and		-- some chars have MaxMana = 0
+ 	 	    self.HP   == self.MaxHP    and
  	 	    _resttype   == "full" ) then		-- Mana and HP are full
 			local restAddStart = os.time();		-- set additional rest timer
 			while ( true ) do	-- rnd addition
@@ -3224,7 +3365,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 		repeat
 			interrupted = false
 			if _donotignore == false then
-				obj = self:findNearestNameOrId(_objname, player.LastTargetPtr, evalFunc)
+				obj = self:findNearestNameOrId(_objname, self.LastTargetPtr, evalFunc)
 			else
 				obj = self:findNearestNameOrId(_objname, nil, evalFunc)
 			end
@@ -3266,13 +3407,13 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 							interrupted = true
 						end
 					end
-				until deltaTime(getTime(),timeStart) > _waittime and player.Casting == false
+				until deltaTime(getTime(),timeStart) > _waittime and self.Casting == false
 			end
 		until interrupted == false
 
 		if obj then -- harvest again
 			if _donotignore ~= true then
-				player.LastTargetPtr = obj.Address -- Default ignore this address in next search
+				self.LastTargetPtr = obj.Address -- Default ignore this address in next search
 			end
 			if _harvestall == false then -- No more harvesting
 				return objFound
@@ -3310,8 +3451,8 @@ function CPlayer:mount()
 			repeat
 				yrest(100);
 				self:update();
-			until player.Casting == false
-		until player.Mounted
+			until self.Casting == false
+		until self.Mounted
 	end
 end
 
