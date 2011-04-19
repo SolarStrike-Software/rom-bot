@@ -1518,12 +1518,16 @@ function evalTargetLootable(address)
 		target.Z < (V.Z + settings.profile.options.MAX_TARGET_DIST) ) then
 
 		if( distance(V.X, V.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
-			debug_target("unlooted monster dist > MAX_TARGET_DIST")
+			if( settings.profile.options.DEBUG_LOOT) then
+				cprintf(cli.yellow, "unlooted monster dist > MAX_TARGET_DIST")
+			end
 			return false;			-- he is not a valid target
 		end;
 	else
 		-- must be too far away
-		debug_target("unlooted monster dist > MAX_TARGET_DIST")
+		if( settings.profile.options.DEBUG_LOOT) then
+			cprintf(cli.yellow, "unlooted monster dist > MAX_TARGET_DIST")
+		end
 		return false;
 	end
 	return true
