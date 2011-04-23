@@ -954,6 +954,29 @@ function changeProfileOption(_option, _value)
 
 end
 
+-- change profile skill value and print values in MM protocol
+function changeProfileSkill(_skill, _option, _value)
+
+	local skill = nil
+	for k,v in pairs(settings.profile.skills) do
+		if v.Name == _skill then
+			skill = v
+			break
+		end
+	end
+
+	if skill == nil then
+		cprintf(cli.green, language[184], _skill );	-- Unknown profile skill
+		return;
+	end
+
+	local hf_old_value = skill[_option]
+	if hf_old_value == nil then hf_old_value = "nil" end
+	skill[_option] = _value;
+
+	cprintf(cli.lightblue, language[185], _option, _skill, hf_old_value, _value );	-- We change the option
+
+end
 
 function convertProfileName(_profilename)
 

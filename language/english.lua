@@ -169,6 +169,8 @@ language = {
 	[181] = "target_Object(): Please give an Object name for using that function.\n",
 	[182] = "Unable to carry out specified action, item is in unrented bag",
 	[183] = "The ingamefunctions addon (igf) is not installed or needs updating. You can not monitor in-game events until you do so.",
+	[184] = "Unknown profile skill \'%s\'. The skill is not part of your profile. Please check your settings.\n",
+	[185] = "We changed the option \'%s\' for skill \'%s\' from \'%s\' to \'%s\'.\n",
 
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 
