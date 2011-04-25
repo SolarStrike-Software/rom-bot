@@ -551,7 +551,7 @@ function RoMScript(script, default)
 		-- Check to make sure length is within bounds
 		local len = string.len(text);
 		if( len > 254 ) then
-			error("Macro text too long.", 2);
+			error("Macro text too long by "..(len - 254), 2);
 		end
 
 		-- Write the command macro
@@ -1033,7 +1033,7 @@ function convertProfileName(_profilename)
 end
 
 
-local lastDisplayBlocks = 0;
+local lastDisplayBlocks = nil;
 function displayProgressBar(percent, size)
 	size = size or 10;
 	local blocksFilled = math.floor(size*percent/100);
@@ -1045,6 +1045,7 @@ function displayProgressBar(percent, size)
 		printf(string.rep("-", blocksUnfilled) .. "]");
 
 		lastDisplayBlocks = blocksFilled;
+		if blocksFilled == size then printf("\n") end
 	end
 end
 
