@@ -554,13 +554,13 @@ function RoMScript(script, default)
 			error("Macro text too long by "..(len - 254), 2);
 		end
 
-		-- Write the command macro
-		writeToMacro(commandMacro, text)
-
-		-- Write something on the first address, to see when its over written
-		memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
-
 		repeat
+			-- Write the command macro
+			writeToMacro(commandMacro, text)
+
+			-- Write something on the first address, to see when its over written
+			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
+
 			--- Execute it
 			if( settings.profile.hotkeys.MACRO ) then
 				keyboardPress(settings.profile.hotkeys.MACRO.key);
