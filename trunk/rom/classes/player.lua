@@ -675,6 +675,14 @@ function CPlayer:cast(skill)
 	else
 		continue = true;
 	end
+
+	-- Wait for casting to finish if out of combat instead of using the undercut system.
+	if not player.Fighting then
+		while player.Casting do
+			yrest(50)
+			player:update()
+		end
+	end
 end
 
 -- Check if you can use any skills, and use them
