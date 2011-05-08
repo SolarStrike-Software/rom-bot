@@ -105,6 +105,8 @@
 	<PRIEST_ICEWIND_BLADE en="Icewind Blade" de="Eiswindklinge" />
 	<PRIEST_ANGELS_BLESSING en="Angel\'s Blessing" />
 	<PRIEST_ANGELS_CAROL en="Angel\'s Carol" />
+		<!-- Itemset Skills -->
+	<PRIEST_FROST_SCARS en="Frost Scars" />
 
 		<!-- Warrior skills -->
 	<WARRIOR_SLASH en="Slash" de="Hieb" />
@@ -130,6 +132,7 @@
 	<WARRIOR_SURVIVAL_INSTINCT en="Survival Instinct" de="Überlebenswille" />
 	<WARRIOR_GROUP_TAUNT en="Group Taunt" de="Gruppenspott" />
 	<WARRIOR_BLASTING_CYCLONE en="Blasting Cyclone" de="Zyklon" />
+		<!-- Itemset Skills -->
 	<WARRIOR_TOURNIQUET en="Tourniquet" de="Druckverband" />
 
 
@@ -154,6 +157,7 @@
 	<WARRIOR_IGNORE_PAIN en="Ignore Pain" de="Schmerz ignorieren" />
 	<WARRIOR_SHIELD_BASH en="Shield Bash" de="Schildschlag" />
 	<WARRIOR_SURPRISE_ATTACK en="Surprise Attack" de="Überraschungsangriff" />
+	<WARRIOR_ROSE_VINE en="Rose Vine" />
 
 
 		<!-- Rogue skills -->

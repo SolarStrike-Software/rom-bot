@@ -565,6 +565,8 @@ end
 
 
 function settings.loadProfile(_name)
+	printf(language[186], _name)
+
 	-- Delete old profile settings (if they even exist), restore defaults
 	settings.profile = table.copy(settings_default.profile);
 

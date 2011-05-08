@@ -979,6 +979,18 @@ function changeProfileSkill(_skill, _option, _value)
 end
 
 function convertProfileName(_profilename)
+	--local usingPlayerName = false
+	--if _profilename == player.Name then
+	--	usingPlayerName = true
+	--end
+
+	local function check_for_userdefault_profile()
+		if _profilename == player.Name then
+			return ( fileExists(getExecutionPath() .. "/profiles/userdefault.xml") )
+		else
+			return false
+		end
+	end
 
 	-- local functions to replace special ASCII characters (e.g. in player name)
 	local function replace_special_ascii_character( _str, _v )
@@ -1017,15 +1029,25 @@ function convertProfileName(_profilename)
 		if( fileExists(getExecutionPath() .. "/profiles/" .. new_profile_name..".xml") ) then
 			load_profile_name = new_profile_name;
 		else
-			local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
-			        load_profile_name, new_profile_name);
-			error(msg, 0);
+			-- check if userdefault profile exists
+			if check_for_userdefault_profile() then
+				load_profile_name = "userdefault"
+			else
+				local msg = sprintf(language[101], -- we can't use the character/profile name \'%s\' as a profile name
+						load_profile_name, new_profile_name);
+				error(msg, 0);
+			end
 		end;
 	else
 		-- check if profile exist
 		if( not fileExists(getExecutionPath() .. "/profiles/" .. load_profile_name..".xml" ) ) then
-			local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
-			error(msg, 0);
+			-- check if userdefault profile exists
+			if check_for_userdefault_profile() then
+				load_profile_name = "userdefault"
+			else
+				local msg = sprintf(language[102], load_profile_name ); -- We can't find your profile
+				error(msg, 0);
+			end
 		end
 	end;
 
