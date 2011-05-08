@@ -110,6 +110,9 @@
 	<!-- TODO: need to add 30s debuff name unknown -->
 	<skill name="PRIEST_CONDENSED_RAGE" rage="25" type="buff" casttime="1" target="self" buffname="503280" reqbuffname="501977" reqbufftarget="player" />
 
+	<!-- Itemset skills -->
+	<skill name="PRIEST_FROST_SCARS" rage="200" mana="180" cooldown="4" type="damaga" target="enemy" />
+
 
 	<!-- Warrior skills -->
 	<skill name="WARRIOR_SLASH" aslevel="1" skilltab="2" skillnum="2" rage="25" range="50" type="damage" cooldown="1" target="enemy" />
@@ -162,6 +165,7 @@
 	<skill name="WARRIOR_BLOCKING_STANCE" mana="20" target="self" type="buff" buffname="502007,503514"/>
 	<skill name="WARRIOR_IGNORE_PAIN" cooldown="300" target="self" type="buff" />
 	<skill name="WARRIOR_SHIELD_BASH" mana="30" range="50" />
+	<skill name="WARRIOR_ROSE_VINE" type="buff" target="self" buffname="504543"/>
 
 	<!-- Itemset skills -->
 	<skill name="WARRIOR_TOURNIQUET" target="self" cooldown="90" type="hot" buffname="506522" />

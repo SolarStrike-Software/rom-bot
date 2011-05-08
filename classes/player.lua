@@ -675,14 +675,6 @@ function CPlayer:cast(skill)
 	else
 		continue = true;
 	end
-
-	-- Wait for casting to finish if out of combat instead of using the undercut system.
-	if not player.Fighting then
-		while player.Casting do
-			yrest(50)
-			player:update()
-		end
-	end
 end
 
 -- Check if you can use any skills, and use them
@@ -1586,6 +1578,10 @@ function CPlayer:lootAll()
 		self:update()
 		if self.TargetPtr ~= 0 then -- Target's still there.
 			self:loot()
+			if self:findEnemy(true, nil, evalTargetDefault) then
+				-- not looting because of aggro
+				return
+			end
 			yrest(50)
 			Lootable:update();
 			if Lootable.Lootable == true then
@@ -1839,6 +1835,12 @@ function evalTargetDefault(address)
 end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
+	-- Wait for casting to finish if still casting last skill
+	while self.Casting do
+		yrest(50)
+		self:update()
+	end
+
 	self:update();
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 	local yangle = 0

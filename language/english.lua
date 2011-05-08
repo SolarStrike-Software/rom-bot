@@ -88,7 +88,7 @@ language = {
 	[99] = "Ranged pulling finished. Mob not really moving.\n",
 	[100] = "We didn't move to the loot!? Root buff? Missing \'click to move\' option?\n",
 	[101] = "Due to technical reasons, we can't use the character/profile name \'%s\' as a profile name. Please use profile name \'%s.xml\' instead or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
-	[102] = "We can't find your profile \'%s.xml'\. Please create a valid profile within the folder \'rom\\profiles\' or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
+	[102] = "We can't find your profile \'%s.xml'\. Please create a valid character profile within the folder \'rom\\profiles\' or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'. If you wish the bot to load a default profile when no valid character profile exists and a forced profile is not used, then create a default profile \'userdefault.xml\'.\nBot finished due to errors above.",
 	[103] = "If you want to use automatic resurrection then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' within your profile.\n",
 	[104] = "We will try to resurrect in 10 seconds.\n",
 	[105] = "Try to resurrect at the place of death ...\n",
@@ -171,6 +171,7 @@ language = {
 	[183] = "The ingamefunctions addon (igf) is not installed or needs updating. You can not monitor in-game events until you do so.",
 	[184] = "Unknown profile skill \'%s\'. The skill is not part of your profile. Please check your settings.\n",
 	[185] = "We changed the option \'%s\' for skill \'%s\' from \'%s\' to \'%s\'.\n",
+	[186] = "Loading profile %s.xml\n",
 
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 
