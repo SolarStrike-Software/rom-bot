@@ -13,7 +13,7 @@
 	<skill name="MAGE_GALAXY" mana="35" manainc="3.5" range="150" type="damage" target="enemy" />
 
 	<!-- TODO: More info needed (mana increase per level) -->
-	<skill name="MAGE_DISCHARGE" type="damage" target="enemy"  cooldown="15"/>
+	<skill name="MAGE_DISCHARGE" range="70" type="damage" target="enemy"  cooldown="15"/>
 	<skill name="MAGE_METEOR_SHOWER" mana="30" casttime="5" range="150" />
 	<skill name="MAGE_ELECTRIC_EXPLOSION" mana="10" range="200" casttime="2" type="damage" target="enemy" reqbuffname="502270" reqbufftarget="player" />
 	<skill name="MAGE_PHOENIX" mana="40" range="120" cooldown="20" type="damage" target="enemy" />
@@ -241,7 +241,7 @@
 	<skill name="KNIGHT_ENHANCED_ARMOR" mana="20" manainc="2.0" type="buff" buffname="500141,501823" target="self" />
 	<skill name="KNIGHT_HOLY_SHIELD" cooldown="300" type="buff" buffname="501772" target="self" />
 	<skill name="KNIGHT_HOLY_SEAL" mana="30" cooldown="300" type="buff" buffname="501772" target="self" />
-	<skill name="KNIGHT_MANA_RETURN" range="100" />
+	<skill name="KNIGHT_MANA_RETURN" range="100" cooldown="8" type="damage" target="enemy" reqbuffname="501773,501774,501775,501776" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_WHIRLWIND_SHIELD" mana="20" cooldown="6" />
 	<skill name="KNIGHT_SHACKLES_OF_LIGHT" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
 	<skill name="KNIGHT_RESOLUTION" mana="120" manainc="11.9" cooldown="180" type="damage" target="self" />

@@ -7,6 +7,7 @@
 	<MAGE_INTENSIFICATION en="Intensification" de="Intensivierung" />
 	<MAGE_SILENCE en="Silence" de="Stille" />
 	<MAGE_FIRE_WARD en="Fire Ward" de="Brandschutz" />
+	<MAGE_ELEMENTAL_CATALYST en="Elemental Catalysis" />
 	<MAGE_FLAME en="Flame" de="Flammenstoß" />
 	<MAGE_ELECTROSTATIC_CHARGE en="Electrostatic Charge" de="Statische Aufladung" />
 	<MAGE_PLASMA_ARROW en="Plasma Arrow" de="Plasmapfeil" />
@@ -15,11 +16,13 @@
 
 		<!-- TODO: More info needed (mana increase per level) -->
 	<MAGE_DISCHARGE en="Discharge" de="Entladung" />
+	<MAGE_METEOR_SHOWER en="Meteor Shower" />
 	<MAGE_ELECTRIC_EXPLOSION en="Electric Explosion" de="Elektrische Explosion" />
 	<MAGE_PHOENIX en="Phoenix" de="Phönix" />
 	<MAGE_ELECTRIC_COMPRESSION en="Electric Compression" de="Elektrische Kompression" />
 	<MAGE_STATIC_FIELD en="Static Field" de="Statisches Feld" />
 	<MAGE_PURGATORY_FIRE en="Purgatory Fire" de="Fegefeuer" />
+	<MAGE_ENERGY_INFLUX en="Energy InFlux" />
 	<MAGE_ENERGY_WELL en="Energy Well" de="Energiebrunnen" />
 	<MAGE_ELEMENTAL_WEAKNESS en="Elemental Weakness" de="Elementarschwäche" />
 	<MAGE_THUNDERSTORM en="Thunderstorm" de="Gewitter" />

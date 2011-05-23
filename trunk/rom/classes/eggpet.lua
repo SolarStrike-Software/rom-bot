@@ -360,6 +360,7 @@ end
 function CEggPet:harvest()
 	if #self.Products ~= 0 then
 		RoMScript("PetCraftHarvest(".. self.EggSlot.. ")")
+		yrest(2000)
 		self:update()
 	end
 end
