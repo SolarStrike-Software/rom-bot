@@ -568,21 +568,21 @@ function main()
 
 			yrest(10);
 			player:update();
-		
-			else 
+
+			else
 					player:target(player:findEnemy(true, nil, nil, nil));
 								local target = player:getTarget();
 							if( os.difftime(os.time(), aggroWaitStart) > 5 ) then
 								cprintf(cli.red, language[34]);		-- Aggro wait time out
 							break;
 							end;
-				if player:haveTarget() then 
+				if player:haveTarget() then
 							if( settings.profile.options.ANTI_KS ) then
 							if( target:haveTarget() and
 				  				target:getTarget().Address ~= player.Address and
 				 				 (not player:isFriend(CPawn(target.TargetPtr))) and
 				  				target:getTarget().Address ~= 0 -- because of distance limitation
-				  				and ( targettarget.Name ~= GetPartyMemberName(1)) and ( targettarget.Name ~= GetPartyMemberName(2)) and ( targettarget.Name ~= GetPartyMemberName(3)) and ( targettarget.Name ~= GetPartyMemberName(4))  and ( targettarget.Name ~= GetPartyMemberName(5)) )then
+				  				and ( target:getTarget().Name ~= GetPartyMemberName(1)) and ( target:getTarget().Name ~= GetPartyMemberName(2)) and ( target:getTarget().Name ~= GetPartyMemberName(3)) and ( target:getTarget().Name ~= GetPartyMemberName(4))  and ( target:getTarget().Name ~= GetPartyMemberName(5)) )then
 									cprintf(cli.red, language[5], target.Name);
 							else
 							--	printf("Should be fighting, 581\n")
@@ -597,7 +597,7 @@ function main()
 			end
 		end
 		end
-		
+
 		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
 			-- only fight back if it's not a TRAVEL waypoint
 
@@ -609,7 +609,7 @@ function main()
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and
 				  target:getTarget().Address ~= player.Address and
-				  (not player:isFriend(CPawn(target.TargetPtr))) and ( targettarget.Name ~= GetPartyMemberName(1))  and ( targettarget.Name ~= GetPartyMemberName(2))  and ( targettarget.Name ~= GetPartyMemberName(3))  and ( targettarget.Name ~= GetPartyMemberName(4))  and ( targettarget.Name ~= GetPartyMemberName(5)) ) then
+				  (not player:isFriend(CPawn(target.TargetPtr))) and ( target:getTarget().Name ~= GetPartyMemberName(1))  and ( target:getTarget().Name ~= GetPartyMemberName(2))  and ( target:getTarget().Name ~= GetPartyMemberName(3))  and ( target:getTarget().Name ~= GetPartyMemberName(4))  and ( target:getTarget().Name ~= GetPartyMemberName(5)) ) then
 					cprintf(cli.red, language[5], target.Name);
 				else
 					player:fight();

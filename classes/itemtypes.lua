@@ -76,6 +76,10 @@ function LoadItemTypes_memory()
 		end
 	end
 
+	-- Get exceptions
+	-- Exceptions:
+	data[3][5] = {Name = RoMScript("TEXT(\"SYS_ITEMTYPE_14\")")} -- Prepared Materials
+
 	displayProgressBar(100, 20);
 
 	printf("\n")

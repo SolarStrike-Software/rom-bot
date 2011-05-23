@@ -544,11 +544,8 @@ function CPawn:getBuff(buffnames, count)
 	return false
 end
 
-PartyIconList_base = 0xA11B88
-PartyIconList_offset = 0xC
-
 function CPawn:GetPartyIcon()
-   local listStart = memoryReadRepeat("intptr", getProc(), PartyIconList_base, PartyIconList_offset)
+   local listStart = memoryReadRepeat("intptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
    for i = 0, 6 do
       local guid = memoryReadShort(getProc(), listStart + i * 12)
       if guid == self.GUID then
