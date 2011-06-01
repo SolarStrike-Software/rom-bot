@@ -260,56 +260,61 @@ function GetTableForID( id )
 end;
 
 function GetItemAddress( id )
-   local _table = GetTableForID( id );
-   local _address;
-   local tmpAddress;
+	local _table = GetTableForID( id );
+	local _address;
+	local tmpAddress;
 
-   if _table ~= nil then
-      for _, _range in ipairs( _table.Ranges ) do
-         if ( id >= _range.Start and id <= _range.End ) then
-            tmp = id - _range.Start;
-            -- We substract 32 bytes (itemSize) multiplied by the the number that is the difference between the id we get and the range start
-            _address = _range.StartAddress - ( tmp * 32 );
-            if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-               cprintf( cli.yellow, "We got id: %d\range starts at: %d and ends at: %d\n", id, _range.Start, _range.End );
-            end;
-            -- We check if this is the right one, there are mixed ids, don't know why i think is just instantiation of tables problem...
-            tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-            local tmpId = memoryReadInt( proc, tmpAddress );
-            if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-               cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-            end;
-            if ( id ~= tmpId and IdIsInRange( tmpId, id, idThreshold ) ) then
-               -- Look forward
-               for i = 1, idThreshold do
-                  _address = _range.StartAddress - ( ( tmp - i ) * 32 );
-                  tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-                  tmpId = memoryReadInt( proc, tmpAddress );
-                  if ( id == tmpId ) then
-                     break;
-                  elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-                     cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-                  end;
-               end;
-               -- Look backwards
-               for i = 1, idThreshold do
-                  _address = _range.StartAddress - ( ( tmp + i ) * 32 );
-                  tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-                  tmpId = memoryReadInt( proc, tmpAddress );
-                  if ( id == tmpId ) then
-                     break;
-                  elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-                     cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-                  end;
-               end;
-               -- Couldn't find it, we give up...
-               _address = nil;
-            end;
-         end;
-      end;
-   end;
+	if _table ~= nil then
+		for _, _range in ipairs( _table.Ranges ) do
+			if ( id >= _range.Start and id <= _range.End ) then
+				tmp = id - _range.Start;
+				-- We substract 32 bytes (itemSize) multiplied by the the number that is the difference between the id we get and the range start
+				_address = _range.StartAddress - ( tmp * 32 );
+				if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
+					cprintf( cli.yellow, "We got id: %d\range starts at: %d and ends at: %d\n", id, _range.Start, _range.End );
+				end;
+				-- We check if this is the right one, there are mixed ids, don't know why i think is just instantiation of tables problem...
+				tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
+				local tmpId = memoryReadInt( proc, tmpAddress );
+				if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
+					cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
+				end;
+				if ( id ~= tmpId and IdIsInRange( tmpId, id, idThreshold ) ) or tmpId == nil then
+					local found = false
+					for i = 1, idThreshold do
+						-- Look forward
+						_address = _range.StartAddress - ( ( tmp - i ) * 32 );
+						tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
+						tmpId = memoryReadInt( proc, tmpAddress );
+						if ( id == tmpId ) then
+							found = true
+							break;
+						elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
+							cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
+						end;
+
+						-- Look backwards
+						_address = _range.StartAddress - ( ( tmp + i ) * 32 );
+						tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
+						tmpId = memoryReadInt( proc, tmpAddress );
+						if ( id == tmpId ) then
+							found = true
+							break;
+						elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
+							cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
+						end;
+					end
+					-- Couldn't find it, we give up...
+					if found == false then
+						_address = nil;
+					end
+				end;
+			end;
+		end;
+	end;
+
    if ( _address ~= nil ) then
-      _address = tmpAddress;
+	  _address = tmpAddress;
    end;
    return _address;
 end;

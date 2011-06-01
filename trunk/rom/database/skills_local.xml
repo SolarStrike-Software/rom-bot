@@ -91,6 +91,7 @@
 		<!-- TODO: Requires battle monk stance -->
 	<PRIEST_EMBRACE_OF_THE_WATER_SPIRIT en="Embrace of the Water Spirit" de="Umarmung des Wassergeistes" />
 	<PRIEST_CURING_SHOT en="Curing Shot" de="Pfeil der Genesung" />
+	<PRIEST_ICE_BLADE en="Ice Blade" />
 	<PRIEST_SNAKE_CURSE en="Snake Curse" de="Schlangenfluch" />
 	<PRIEST_INFECTIOUS_WOUND en="Infectious Wound" de="Infektiöse Wunde" />
 	<PRIEST_PURGE en="Purge" de="Läuterung" />
