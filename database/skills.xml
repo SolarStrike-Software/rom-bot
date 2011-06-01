@@ -90,6 +90,7 @@
 	<skill name="PRIEST_POWER_BUILD_UP" mana="40" cooldown="30" casttime="1" type="buff" buffname="502904" target="self" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" mana="100" type="buff" buffname="501778" target="self" />
 	<skill name="PRIEST_CURING_SHOT" mana="120" range="200" casttime="2" cooldown="6" type="heal" />
+	<skill name="PRIEST_ICE_BLADE" mana="30" manainc="3" range="200" type="damage" />
 	<skill name="PRIEST_SNAKE_CURSE" energy="30" range="180" casttime="1" type="dot" buffname="502663" />
 	<skill name="PRIEST_INFECTIOUS_WOUND" energy="30" range="200" cooldown="12" />
 	<skill name="PRIEST_PURGE" mana="200" range="200" cooldown="20" />
