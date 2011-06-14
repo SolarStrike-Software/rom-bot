@@ -67,7 +67,7 @@ end
 -- Ask witch character does the user want to be, from the open windows.
 function selectGame()
 	-- Get list of windows in an array
-	local windowList = findWindowList("Runes of Magic", "Radiant Arcana");
+	local windowList = findWindowList("*", "Radiant Arcana");
 
 	if( #windowList == 0 ) then
 		print("You need to run rom first!");

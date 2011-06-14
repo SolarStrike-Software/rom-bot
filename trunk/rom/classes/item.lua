@@ -10,6 +10,8 @@ ITEM_TOOLTIP_DURABILITY = {
 	RU		= "\143\224\174\231\173\174\225\226\236",
 	PL		= "Trwa\136o\152\143",
 	ES		= "Durabilidad",
+	SA 		= "Durabilidad",
+	ENAR 	= "Durability",
 };
 
 -- itemquality -> color code
