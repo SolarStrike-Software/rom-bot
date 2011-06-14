@@ -18,7 +18,6 @@ function CPlayer.new()
 	local np = CPlayer(playerAddress);
 	np:initialize();
 	np:update();
-
 	return np;
 end
 
@@ -932,10 +931,11 @@ function CPlayer:fight()
 	if( not self:haveTarget() ) then
 		return false;
 	end
+	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
-	if ( settings.profile.options.PARTY == true ) then sendMacro('SetRaidTarget("target", 1);')
-	if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
-	-- if (not sendMacro("IsPartyLeader()")) then printf("Not set to leader.\n") end
+	if ( settings.profile.options.PARTY == true ) and (settings.profile.options.PARTY_ICONS == true) then 
+		sendMacro('SetRaidTarget("target", 1);')
+		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
 
 	local target = self:getTarget();

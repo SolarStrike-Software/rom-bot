@@ -322,21 +322,24 @@
 	<skill name="SCOUT_PURIFYING_SHOT" range="250" mana="150" cooldown="10" type="buff" target="fiendly" />
 	<skill name="SCOUT_MANA_ARROWS" mana="30" range="150" cooldown="300" type="buff" target="fiendly" />
 	<skill name="SCOUT_SPIRITUAL_LEADER" mana="40" cooldown="300" type="buff" target="self" />
-	<skill name="SCOUT_REPELLING_ARROW" mana="30" range="150" cooldown="25" />
-	<skill name="SCOUT_HEALING_SHOT" mana="20" range="150" cooldown="8" />
-	<skill name="SCOUT_MANA_CONVERSION" mana="50" cooldown="60" type="buff" target="self" />
+	<skill name="SCOUT_REPELLING_ARROW" mana="30" manainc="3.0" range="150" cooldown="25" />
+	<skill name="SCOUT_HEALING_SHOT" mana="20" manainc="2.0" range="150" cooldown="8" />
+	<skill name="SCOUT_MANA_CONVERSION" mana="50" manainc="5.0" cooldown="60" type="buff" target="self" />
 	<skill name="SCOUT_THORN_ARROW" mana="30" manainc="3" range="200" cooldown="6" />
 	<skill name="SCOUT_ENTLING_OFFERING" type="buff" target="self" buffname="504547"/>
 	<skill name="SCOUT_REFLECTED_SHOT" range="180" cooldown="10" />
 	<skill name="SCOUT_CONCENTRATION" cooldown="300" type="buff" target="self" buffname="500930" />
+	<skill name="SCOUT_HIDDEN_PERIL" consumable="1" concentration="30" range="180" cooldown="10" type="damage" target="enemy" />
 
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_INTENSIFY"  type="buff" target="self" />
 	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
-
-
+	<skill name="SCOUT_ARCHERS_GLORY" concentration="35" cooldown="180" type="buff" buffname="506451" target="self" />
+	<skill name="SCOUT_SHATTERSTAR_STORM" concentration="30" cooldown="60" range="120" type="damage" target="enemy" />
+	<!-- <skill name="SCOUT_DETECTION" concentration="9" type="buff" buffname="500933" target="self" /> -->
+	<!-- <skill name="SCOUT_TARGET_AREA" concentration="3" type="buff" buffname="500934" target="self" /> -->
 
 	<!-- Druid skills -->
 	<skill name="DRUID_RECOVER" aslevel="1" skilltab="2" skillnum="1" mana="56" manainc="5.4" range="250" casttime="2" type="heal" buffname="503797" target="friendly" />
