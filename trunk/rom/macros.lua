@@ -237,7 +237,7 @@ function findActionKeyForId(id)
 		local keyId, type = getActionKeyInfo(i)
 		if keyId == id  and type ~= 0 then -- need 'type' to be valid
 			-- Check the hotkey and modifier
-			local hotkey, modifier = getHotkey(i + 87) -- actionbars hotkeys start at 88 in the hotkeys list
+			local hotkey, modifier = getHotkey(i + 88) -- actionbars hotkeys start at 89 in the hotkeys list
 			if hotkey ~= 0 and modifier == null then
 				return i, hotkey
 			end
@@ -259,7 +259,7 @@ function findUsableActionKey()
 		if type == 0 then
 
 			-- And has hotkey with no modifier
-			hotkey, modifier = getHotkey(i + 87) -- actionbars hotkeys start at 88 in the hotkeys list
+			hotkey, modifier = getHotkey(i + 88) -- actionbars hotkeys start at 89 in the hotkeys list
 			if hotkey ~= 0 and modifier == null then
 				-- Best choice is an empty with users chosen hotkey.
 				if hotkey == settings.profile.hotkeys.MACRO.key then
