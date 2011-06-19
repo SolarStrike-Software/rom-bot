@@ -110,6 +110,10 @@ end
 -- but for arraws it might be 1 or 2
 -- type: healing|mana|arrow_quiver|thrown_bag|poison
 function CStore:buyConsumable(type, quantity)
+	if quantity == nil or quantity == "" then
+		return
+	end
+
 	self:update()
 
 	-- Find best store item
