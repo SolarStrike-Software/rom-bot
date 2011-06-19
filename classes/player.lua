@@ -933,7 +933,7 @@ function CPlayer:fight()
 	end
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
-	if ( settings.profile.options.PARTY == true ) and (settings.profile.options.PARTY_ICONS == true) then 
+	if ( settings.profile.options.PARTY == true ) and (settings.profile.options.PARTY_ICONS == true) then
 		sendMacro('SetRaidTarget("target", 1);')
 		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
@@ -1274,7 +1274,7 @@ function CPlayer:fight()
 
 	-- Loot any other dead monsters nearby
 	self:update()
-	if not self.Battling then
+	if not self.Battling or not self:findEnemy(true,nil,evalTargetDefault) then
 		self:lootAll()
 	end
 
@@ -1835,11 +1835,6 @@ function evalTargetDefault(address)
 end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
-	-- Wait for casting to finish if still casting last skill
-	while self.Casting do
-		yrest(50)
-		self:update()
-	end
 
 	self:update();
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
@@ -2026,6 +2021,13 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
+
+			-- Wait for casting to finish if still casting last skill
+			while self.Casting do
+				yrest(50)
+				self:update()
+			end
+
 		end
 
 		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
@@ -3451,7 +3453,7 @@ function CPlayer:mount()
 
 	local mount = inventory:getMount();
 	if( mount ) then
-		repeat
+		--repeat
 			while( self.Battling ) do
 				self:target(self:findEnemy(true, nil, nil, nil));
 				self:update();
@@ -3466,7 +3468,7 @@ function CPlayer:mount()
 				yrest(100);
 				self:update();
 			until self.Casting == false
-		until self.Mounted
+		--until self.Mounted
 	end
 end
 
