@@ -1221,8 +1221,10 @@ end
 
 
 
-partyMemberList_address = 0x9DD9E8
-partyMemberList_offset = 0x134
+--partyMemberList_address = 0x9DD9E8 3.0.11
+--partyMemberList_address = 0x9E6F38 -- 4.0.0
+--partyMemberList_offset = 0x134
+--== addresses moved to addresses.lua ==--
 
 function GetPartyMemberName(_number)
 
@@ -1231,7 +1233,7 @@ function GetPartyMemberName(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
+	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists
@@ -1250,7 +1252,7 @@ function GetPartyMemberAddress(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("int", getProc(), partyMemberList_address ) + partyMemberList_offset
+	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists
