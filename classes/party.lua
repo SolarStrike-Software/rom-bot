@@ -12,9 +12,14 @@ function PartyHeals()
 		table.insert(partymemberObj,1, player:findNearestNameOrId(partymemberName[1]))
 		table.insert(partymember,1, CPawn(partymemberObj[1].Address))
 for i = 1, 5 do
-
+		if GetPartyMemberName(i) ~= nil then
+		cprintf(cli.yellow,"Party member "..i.." has the name of ")
+		cprintf(cli.red, GetPartyMemberName(i).."\n")
+		else
+		printf("No information for party member "..i.."\n")
+		end
+		
 	if GetPartyMemberName(i) then
-
 		table.insert(partymemberName,i + 1, GetPartyMemberName(i))
 		table.insert(partymemberObj,i + 1, player:findNearestNameOrId(partymemberName[i]))
 		table.insert(partymember,i + 1, CPawn(partymemberObj[i].Address))
