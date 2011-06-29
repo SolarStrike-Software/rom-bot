@@ -198,16 +198,16 @@ function CItem:update()
 		end;
 
 		-- Special case for cards
-		if ( self.Id >= 770000 and self.Id <= 771000 ) then
+		if ( self.Id >= 770000 and self.Id <= 772000 ) then
 			-- We need to get info from NPC...
-			tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idCardNPCOffset );
+			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idCardNPCOffset );
 			npcInfoAddress = GetItemAddress( tmp );
 			nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
 			self.Name = "Card - "; -- We should add a string so we can localize this
 		elseif ( self.Id >= 550000 and self.Id <=552000 ) then
 			-- We need to get info from item...
-			tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idRecipeItemOffset );
-			itemInfoAddress = GetItemAddress( tmp );
+			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idRecipeItemOffset )
+			itemInfoAddress = GetItemAddress(  tmp );
 			nameAddress = memoryReadInt( proc, itemInfoAddress + addresses.nameOffset );
 			self.Name = "Recipe - "; -- We should add a string so we can localize this
 		else

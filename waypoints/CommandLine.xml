@@ -3,6 +3,7 @@
 proc = getProc()
 	cprintf(cli.lightgreen,"\n        RomBot command line\n")
 	print("Type in 'q' (without quotes) to quit.")
+	keyboardBufferClear()
 	repeat
 		cprintf(cli.lightblue,"Command> ");
 		local name = io.stdin:read();

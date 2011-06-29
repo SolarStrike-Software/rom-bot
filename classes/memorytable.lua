@@ -1,324 +1,142 @@
-local tablePointer;
-local endTablePointer;
-local itemSize = 32;
-local proc = getProc();
-local tables = {};
-local threshold = 150; -- We look back a maximum of "threshold" items to check if the table continues
-local idThreshold = 50; -- How many items we look back or forward to get the right address for a skill, i would like to keep this as small as we can to get better performance...
-
--- Internal debuging use only...
-local debugTableIndexes = false;
-local debugTableRanges = false;
-
-local CACHE_PATH = getExecutionPath() .. "/../cache";
+local proc = getProc()
+local tablePointer = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset )
+local itemSize = 0x20
+local tables = {}
+local threshold = 10 -- We look back a maximum of "threshold" items to check if the table continues
+local maxId = 800000
+local CACHE_PATH = getExecutionPath() .. "/../cache"
 
 CTRange = class(
 	function(self, _start, _end, startAddress)
-		self.Start = _start;
-		self.End = _end;
-		self.StartAddress = startAddress;
+		self.Start = _start
+		self.End = _end
+		self.StartAddress = startAddress
 	end
-);
+)
 
+-- This function searches for the address where the current range continues
+-- It accepts the last address of the last item and returns the address where the range continues or nil.
+function GetNextTableAddress( lastStartAddress, ptr )
 
-CTDef = class(
-	function (self, ptr)
-		self.Address = ptr;
-		self.EnAddress = 0;
-		self.StartId = 0;
-		self.EndId = 0;
-		self.Name = "<UNKNOWN>";
-		self.Ranges = {};
+	local lastId = memoryReadInt( proc,  ptr + addresses.idOffset ) -- 12 bytes offset id
+	local _address
+	local tmpID
 
-		if( self.Address ~= nil and self.Address ~= 0 ) then self:Update(); end;
-	end
-);
-
-function CTDef:Update()
-	self.StartId = memoryReadInt(proc, self.Address + addresses.idOffset );
-	if( self.StartId == nil ) then return; end;
-
-	if ( self.StartId > 800000 ) then -- Special case for one table that starts 32 bytes before...
-		self.Address = self.Address - 32;
-		self.StartId = memoryReadInt(proc, self.Address + addresses.idOffset );
-	end;
-	self.EndId = 0;
-	local lastId = self.StartId;
-	local currId;
-	local lastStartId = self.StartId;
-	local lastStartDir = self.Address;
-	local currItemDir = self.Address;
-	local lastItemDir = self.Address;
-	local dupeIdCheck;
-
-	if ( debugTableIndexes ) then
-		printf("Table starts with id: %d\t\t Dir: %X\n", self.StartId, self.Address);
-	end;
-
-	while ( lastId ~= nil and lastId ~= 0 ) do
-		currItemDir = currItemDir - itemSize; -- We move itemSize bytes up to go to next one
-		currId = memoryReadInt(proc, currItemDir + addresses.idOffset ); -- 12 bytes offset id object
-
-		if ( currId == nil or currId == 0 or dupeIdCheck == currId or ( ( currId > ( lastId + 3 ) ) or ( currId < ( lastId - 3 ) ) ) ) then
-			-- Fiors we add the recently found range if its needed...
-			local found = false;
-			for _, _table in ipairs(tables) do
-				if ( lastStartId >= _table.StartId and lastId <= _table.EndId ) then
-					found = true;
-					break;
-				end;
-			end;
-			for _, _range in ipairs(self.Ranges) do
-				if ( lastStartId >= _range.Start and lastId <= _range.End ) then
-					found = true;
-					break;
-				end;
-			end;
-
-			if ( (lastId and not self.EndId) or self.EndId < lastId ) then
-				self.EndId = lastId;
-			end;
-
-			if ( found == false ) then
-				-- We dind't find any more ids in range, add this one to the table
-				table.insert(self.Ranges, CTRange(lastStartId, lastId, lastStartDir));
-				if ( debugTableRanges ) then
-					cprintf( cli.yellow, "Adding range. Start: %d\tEnd: %d\tAddress: %X\tTable#: %d\n", lastStartId, lastId, lastStartDir, #tables );
-				end;
-			end;
-
-			currItemDir = GetNextTableAddress( lastItemDir );
-
-			if ( currItemDir ~= nil ) then
-				currId = memoryReadInt(proc, currItemDir + addresses.idOffset ); -- 12 bytes offset object id
-				if ( currId == nil or currId == 0 or ( ( currId > ( lastId + 3 ) ) or ( currId < ( lastId - 3 ) ) ) ) then
-					-- no more ids for current table
-					break;
-				else
-					self.EndId = currId;
-					lastStartId = currId;
-					lastStartDir = currItemDir;
-				end;
-			else
-				break;
-			end;
-		end;
-
-		if ( currId and currItemDir and self.StartId > currId ) then
-			lastStartId = currId;
-			lastStartDir = currItemDir;
-			self.StartId = currId;
-			self.Address = currItemDir;
-		end;
-
-		dupeIdCheck = lastId;
-		lastId = currId;
-		lastItemDir = currItemDir;
-	end;
-end;
-
-function GetTablesPointers()
-	local tablePointerDir = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset );
-	tablePointer = tablePointerDir;
-	endTablePointer = memoryReadInt(proc, tablePointerDir + 0x4);
-	-- cprintf(cli.yellow, "Tables dir: %x \t Final: %X\n\n\n", tablePointer, endTablePointer);
-end;
-
-function IdIsInRange( newId, lastId, _threshold )
-	if ( newId == nil ) then
-		return false;
-	end;
-	if ( _threshold == nil ) then
-		_threshold = threshold;
-	end;
-	if ( newId > lastId and newId < ( lastId + _threshold ) ) then
-		return true;
-	end;
-
-	return false;
-end;
-
-function GetNextTableAddress( ptr )
-	local _address;
-	local lastId = memoryReadInt( proc,  ptr + addresses.idOffset ); -- 12 bytes offset id
-	local found = true;
-	local tmpID;
-
+	-- This function checks an address to see if the 4 and 8 offset hold the address where the range continues.
+	-- It returns this range if found or returns nil.
 	local function CheckAddress( addressToCheck )
-		local tmp = memoryReadInt( proc, addressToCheck + 0x4 );
-		local tmpOffset, tmpOffset4;
 
-		if ( tmp ~= nil ) then
-			tmpOffset = memoryReadInt( proc, tmp ) or 0;
-			tmpOffset4 = memoryReadInt( proc, tmp + 0x4 ) or 0;
-			tmpID = memoryReadInt( proc, tmp + addresses.idOffset ) or 0;
+		-- Check the 0x4 offset address
+		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x4 )
+		if ( tmpAddress ~= nil ) then
+			if tmpAddress > lastStartAddress then
+				return tmpAddress
+			end
+		end
 
-			if debugTableIndexes then
-				cprintf( cli.green, "Readed from %X\t at 0x4 %X\tOriginal pointer: %X\n", addressToCheck, tmp, ptr );
-				if tmpOffset ~= addressToCheck and tmpOffset4 ~= addressToCheck then
-					printf( cli.red, "Offset at 0x0 points to: %X\tOffset at 0x4 points to: %X\n", tmpOffset or 0, tmpOffset4 or 0 );
-				end;
-			end;
+		-- Check the 0x8 offset address
+		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x8 )
+		if ( tmpAddress ~= nil ) then
+			if tmpAddress > lastStartAddress then
+				return tmpAddress
+			end
+		end
 
-			if ( ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
-				if debugTableIndexes then
-					cprintf( cli.lightblue, "Returning: %X\n", tmp );
-				end;
-				return tmp;
-			end;
-		end;
-		tmp = memoryReadInt( proc, addressToCheck + 0x8 );
-
-		if ( tmp ~= nil ) then
-			tmpOffset = memoryReadInt( proc, tmp );
-			tmpOffset4 = memoryReadInt( proc, tmp + 0x4 );
-			tmpID = memoryReadInt( proc, tmp + addresses.idOffset );
-
-			if debugTableIndexes then
-				cprintf( cli.green, "Readed at %X\t in 0x8 %X\tID: %d\n", addressToCheck, tmp, tmpID or 0 );
-				if tmpOffset ~= addressToCheck and tmpOffset4 ~= addressToCheck then
-					printf( cli.red, "Offset at 0x0 points to: %X\tOffset at 0x4 points to: %X\n", tmpOffset or 0, tmpOffset4 or 0 );
-				end;
-			end;
-
-			if ( ( tmp ~= addressToCheck and tmp ~= ptr ) and ( tmpOffset == addressToCheck or tmpOffset4 == addressToCheck ) and IdIsInRange( tmpID, lastId ) ) then
-				if debugTableIndexes then
-					cprintf( cli.lightblue, "Returning: %X\n", tmp );
-				end;
-				return tmp;
-			end;
-		end;
-
-		if debugTableIndexes then
-			cprintf( cli.turquoise, "Returning NIL\n" );
-		end;
-		return nil;
-	end;
-
-	_address = CheckAddress( ptr );
-
-	if _address == nil then -- Lets try to find an addres backwards
-		found = false;
-		for i = 1, threshold do
-			_address = CheckAddress( ( ptr + ( i * itemSize ) ) );
-			if _address ~= nil then
-				found = true;
-				break;
-			end; -- found a match
-		end;
+		return nil
 	end
 
-	if found then -- we found an address now check if id is in the right range
-		tmpID = memoryReadInt( proc,  _address + addresses.idOffset ); -- 12 bytes id offset
+	-- Find address pointing to where the range continues
+	-- The address pointing to where the range continues may not be in the last item so we search backwards for it
+	for t = 0, threshold do
+		_address = CheckAddress( ( ptr + ( t * itemSize ) ) )
+		if _address ~= nil then
+			break
+		end -- found a match
+	end
 
-		if ( tmpID ~= ( lastId + 1 ) ) then
-			if debugTableIndexes then
-				print("Falla 3\n");
-				printf("\rTenemos ID: %d\tEn dir: %X\n", lastId or 0, _address );
-			end;
-			found = false;
-			for i = 1, threshold do -- 10 lines should be enough...
-				_address = _address + itemSize; -- we go back one item to see if it fits the id we are looking for
-				tmpID = memoryReadInt( proc, _address + addresses.idOffset ); -- 12 bytes offset del id
-				if debugTableIndexes then
-					printf("\rReaded 2: %d\n", tmpID or 0 );
-				end;
-				if ( tmpID == ( lastId + 1 ) ) then
-					-- We found it, we can exit and return the address.
-					found = true;
-					if debugTableIndexes then
-						print("Found by brute force 2\n");
-					end;
-					return _address;
-				end;
-			end;
-		end;
-	end;
+	-- The new address might not point to the first item so we look back until we find the first one
+	if _address then
+		for i = 0, threshold do -- 10 lines should be enough...
+			local tmpID = memoryReadInt( proc, _address + addresses.idOffset ) -- 12 bytes offset del id
+			if ( tmpID == ( lastId + 1 ) ) then
+				-- We found it, we can exit and return the address.
+				return _address
+			end
+			_address = _address + itemSize -- we search back to find first id that continues range
+		end
 
-	if not found then
-		_address = nil;
-	end;
+		-- Continuing id not found
+		_address = nil
+	end
 
-	if debugTableIndexes then
-		cprintf( cli.red, "Received: %X\tReturning: %X\n" ,ptr, _address or 0 );
-	end;
-	return _address;
-end;
+	return _address
+end
 
-function GetTableForID( id )
+-- This function finds which subtable and range the id belongs to
+function GetRangeForID( id )
 	-- If tables hasn't been loaded yet then exit
 	if #tables == 0 then return end
 
 	for _, _table in ipairs( tables ) do
 		if ( id >= _table.StartId and id <= _table.EndId ) then
-			return _table;
-		end;
-	end;
+			-- make sure the id is in one of the ranges
+			for _, _range in pairs(_table.Ranges) do
+				if ( id >= _range.Start and id <= _range.End ) then
+					return _range
+				end
+			end
+		end
+	end
 
-	printf( "Table not found for ID: %d\n", id );
-	return nil;
-end;
+	printf( "Table range not found for ID: %d\n", id )
+	return nil
+end
 
+-- This function returns the address where the item info is located.
 function GetItemAddress( id )
-	local _table = GetTableForID( id );
-	local _address;
-	local tmpAddress;
+	-- Gets the address for the item
+	local function GetTmpAddress( _address, _id )
+		local address = memoryReadIntPtr(proc, _address + 0x10, 0x8)
+		if address == 0 then
+			-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
+			RoMScript("GetCraftRequestItem(".._id..", -1)")
+			address = memoryReadIntPtr(proc, _address + 0x10, 0x8)
+		end
+		return address
+	end
 
-	if _table ~= nil then
-		for _, _range in ipairs( _table.Ranges ) do
-			if ( id >= _range.Start and id <= _range.End ) then
-				tmp = id - _range.Start;
-				-- We substract 32 bytes (itemSize) multiplied by the the number that is the difference between the id we get and the range start
-				_address = _range.StartAddress - ( tmp * 32 );
-				if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-					cprintf( cli.yellow, "We got id: %d\range starts at: %d and ends at: %d\n", id, _range.Start, _range.End );
-				end;
-				-- We check if this is the right one, there are mixed ids, don't know why i think is just instantiation of tables problem...
-				tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-				local tmpId = memoryReadInt( proc, tmpAddress );
-				if ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-					cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-				end;
-				if ( id ~= tmpId and IdIsInRange( tmpId, id, idThreshold ) ) or tmpId == nil then
-					local found = false
-					for i = 1, idThreshold do
-						-- Look forward
-						_address = _range.StartAddress - ( ( tmp - i ) * 32 );
-						tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-						tmpId = memoryReadInt( proc, tmpAddress );
-						if ( id == tmpId ) then
-							found = true
-							break;
-						elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-							cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-						end;
+	local _range = GetRangeForID( id )
 
-						-- Look backwards
-						_address = _range.StartAddress - ( ( tmp + i ) * 32 );
-						tmpAddress = memoryReadIntPtr(proc, _address + 0x10, 0x8);
-						tmpId = memoryReadInt( proc, tmpAddress );
-						if ( id == tmpId ) then
-							found = true
-							break;
-						elseif ( debugTableIndexes and id >= 550000 and id <= 560000 ) then
-							cprintf( cli.yellow, "We readed id: %d\tat address; %X\n", id, tmpAddress );
-						end;
-					end
-					-- Couldn't find it, we give up...
-					if found == false then
-						_address = nil;
-					end
-				end;
-			end;
-		end;
-	end;
+	if _range ~= nil then
+		local _address
 
-   if ( _address ~= nil ) then
-	  _address = tmpAddress;
-   end;
-   return _address;
-end;
+		-- Get the address. Check that it's the right one, else check the one before and after it.
+		for _,i in pairs({ 0, -1, 1 }) do
+			local tmpAddress = _range.StartAddress - (id - _range.Start + i) * itemSize
+			local testId = memoryReadInt(proc, tmpAddress + addresses.idOffset)
+			if testId == id then -- right address
+				_address = tmpAddress
+				break
+			end
+		end
 
+		if _address == nil then
+			printf("Failed to find correct address in range for id %d.\n", id)
+			return
+		end
+
+		local itemAddress = GetTmpAddress( _address, id )
+		local itemId = memoryReadInt( proc, itemAddress )
+
+		if itemId == id then
+			return itemAddress
+		else
+			printf("Failed to find correct item address for id %d.\n", id)
+		end
+	end
+end
+
+-- Returns the name for a given id
 function GetIdName(itemId)
 	if itemId ~= nil and itemId > 0 then
 		local itemAddress = GetItemAddress(itemId)
@@ -328,153 +146,175 @@ function GetIdName(itemId)
 	end
 end
 
+-- This function loads 'tables' from cache file.
 function LoadTables_cached(filename)
-	GetTablesPointers();
-
-	local status, err = pcall(dofile, filename);
+	local status, err = pcall(dofile, filename)
 	if( not status ) then
 		-- Failed to load the cache file.
-		cprintf(cli.red, "[DEBUG] Failed to load cache file; Dropping bad file.\n");
+		cprintf(cli.red, "[DEBUG] Failed to load cache file; Dropping bad file.\n")
 
-		--[[		Disables: unnecessary (file will be re-created, anyways)
-		local function fixSlashes(path)
-			--path = string.gsub(path, "\\+", "/");
-			path = string.gsub(path, "/+", "\\");
-
-			return path;
-		end
-		system("del " .. fixSlashes(CACHE_PATH .. "/" .. filename));
-		]]
-		LoadTables_memory();
-		CacheTables();
-		return;
+		LoadTables_memory()
+		CacheTables()
+		return
 	end
 
-	tables = {};
+	tables = {}
 	for i,v in pairs(cached_tables) do
-		local nt = CTDef();
-		nt.Address = v.Address;
-		nt.EnAddress = v.EnAddress;
-		nt.StartId = v.StartId;
-		nt.EndId = v.EndId;
-		nt.Name = v.Name;
-		nt.Ranges = {};
-		for i,v in pairs(v.Ranges) do
-			table.insert(nt.Ranges, CTRange(v.Start, v.End, v.StartAddress));
-		end
-		nt:Update();
-		if( nt.Address and nt.StartId ) then
-			table.insert(tables, nt);
-		else
-			warning("StartId invalid; not inserting broken CTDef.");
+		tables[i] = {
+			StartId = v.StartId,
+			EndId = v.EndId,
+			Name = v.Name,
+			Ranges = {},
+		}
+
+		for k,v in pairs(v.Ranges) do
+			table.insert(tables[i].Ranges, CTRange(v.Start, v.End, v.StartAddress))
 		end
 	end
-
-	cached_tables = nil;
+	cached_tables = nil
 end
 
+-- This function creates the 'tables' table from memory.
 function LoadTables_memory()
-	GetTablesPointers();
+	tables = {}
 
-	local realTablePointer = memoryReadInt(proc, tablePointer);
-	local punteroTablaDatos;
+	-- Get start addresses, names and startids for the 27 subTables
+	for i = 1, 27 do
+		tables[i] = {}
 
-	if( not settings.profile.options.DEBUG_INV ) then
-		cprintf( cli.yellow, "Loading items tables.\n" );
-	end;
+		displayProgressBar( i / 27 * 100, 50)
 
-		local i = 0;
-	while ( i < 28 ) do
-		local name = memoryReadString( proc, realTablePointer + 38 ); -- This isn't really necessary but is here for debuging purposes...
+		-- Get initial address
+		local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
+		local initialAddress = memoryReadIntPtr( proc, tablePointer + (4 * (i - 1)), startAddressOffsets) - 0x20
 
-		if debugTableIndexes or debugTableRanges then
-			printf("Name: %s\n", name);
-		end;
+		-- Get start id but check first 2 because they could be back-to-front.
+		local id1 = memoryReadInt( proc, initialAddress + addresses.idOffset )
+		local id2 = memoryReadInt( proc, initialAddress - itemSize + addresses.idOffset)
 
-		if( not settings.profile.options.DEBUG_INV ) then
-			displayProgressBar( ( i + 1 ) / 28 * 100, 50);
-		end;
+		-- In at least 1 case the table starts 1 up from here
+		if id1 == 0 or id1 == nil or id1 > maxId then
+			initialAddress = initialAddress - itemSize
+			id1 = memoryReadInt( proc, initialAddress - itemSize + addresses.idOffset )
+		end
 
-		local dataPointerTemporal = memoryReadIntPtr( proc, realTablePointer, addresses.tableStartPtrOffset );
-		if dataPointerTemporal ~= nil then
-			local dataPointer = memoryReadInt( proc, dataPointerTemporal + addresses.tableDataStartPtrOffset );
-			-- We move up 32 bytes from the name line
-			dataPointer = dataPointer - itemSize;
-			local primerId = memoryReadInt( proc, dataPointer + addresses.idOffset ); -- 12 bytes offset del id de objeto
-			local _table = CTDef(dataPointer);
-			_table.Name = name;
-			_table:Update();
-			if( _table.Address and _table.StartId ) then
-				table.insert( tables, _table);
+		-- Set lowest id as StartId
+		if id1 > id2 then
+			tables[i].StartId = id2
+			tables[i].EndId = id1
+		else
+			tables[i].StartId = id1
+			tables[i].EndId = id2
+		end
+
+		-- Get name - isn't really necessary but is here for debuging purposes...
+		tables[i].Name = memoryReadStringPtr( proc, tablePointer + (4 * (i - 1)), 40)
+
+		-- Scan for ranges
+		tables[i].Ranges = {}
+
+		local lastStartAddress = initialAddress
+		local lastStartId = tables[i].StartId
+		local rangeHighestAddress = initialAddress
+		local count = 1 -- skip first 2 because they could be back-to-front.
+		repeat
+			count = count + 1
+			local currAddress = lastStartAddress - itemSize * count
+			local currId = memoryReadInt( proc, currAddress + addresses.idOffset )
+
+			-- End of range detetection
+			local lastId = lastStartId + count - 1
+			if currId == nil or currId == 0 or currId ~= (lastStartId + count) then
+				-- Save range
+				table.insert(tables[i].Ranges,CTRange(lastStartId, lastId, lastStartAddress))
+
+				-- Check min and max table values
+				if lastStartId < tables[i].StartId then tables[i].StartId = lastStartId end
+				if lastId > tables[i].EndId then tables[i].EndId = lastId end
+
+				-- Does another range immediately follow
+				if currId ~= nil and currId ~= 0 and currId > tables[i].StartId and currId < maxId then
+					lastStartAddress = currAddress
+					lastStartId = currId
+				else -- Search if the range continues at another address
+					lastStartAddress = GetNextTableAddress( rangeHighestAddress, currAddress + itemSize ) -- search for next address from last address
+					if lastStartAddress ~= nil then
+						rangeHighestAddress = lastStartAddress
+						lastStartId = memoryReadInt( proc, lastStartAddress + addresses.idOffset )
+					end
+				end
+
+				count = 0
 			end
-		end;
-		i = i + 1;
-		realTablePointer = memoryReadInt( proc, tablePointer + ( i * 4 ) );
-	end;
-end;
-
-function LoadTables()
-	FlushOldCachedTables();
-	local fname = CACHE_PATH .. "/itemstables." .. getWin() .. ".lua";
-	if( fileExists(fname) ) then
-		LoadTables_cached(fname);
-	else
-		LoadTables_memory();
-		CacheTables();
+		until lastStartAddress == nil
 	end
 end
 
+-- This function decides whether to load the 'tables' data from file or from memory.
+function LoadTables()
+	FlushOldCachedTables()
+	local fname = CACHE_PATH .. "/itemstables." .. getWin() .. ".lua"
+	if( fileExists(fname) ) then
+		LoadTables_cached(fname)
+	else
+		LoadTables_memory()
+		CacheTables()
+	end
+end
+
+-- This function deletes any cache files that are no longer needed
 function FlushOldCachedTables()
-	local dir = getDirectory(CACHE_PATH);
+	local dir = getDirectory(CACHE_PATH)
 	if( not dir ) then
-		return;
+		return
 	end
 
 	for i,v in pairs(dir) do
-		local valid = true;
-		local win = string.match(v, "^itemstables.(%d+).lua");
+		local valid = true
+		local win = string.match(v, "^itemstables.(%d+).lua")
 		if( win ) then
 			if( windowValid(win) ) then
 				if( getWindowClassName(win) ~= "Radiant Arcana" ) then
-					valid = false;
+					valid = false
 				end
 			else
-				valid = false;
+				valid = false
 			end
 		end
 
 		-- if not valid, delete it.
 		if( valid == false ) then
 			local function fixSlashes(path)
-				--path = string.gsub(path, "\\+", "/");
-				path = string.gsub(path, "/+", "\\");
+				--path = string.gsub(path, "\\+", "/")
+				path = string.gsub(path, "/+", "\\")
 
-				return path;
+				return path
 			end
 
 			if( system and allowSystemCommands ) then
-				printf("Deleting %s (old cache file)\n", v);
-				system("del \"" .. fixSlashes(CACHE_PATH .. "/" .. v) .. "\"");
+				printf("Deleting %s (old cache file)\n", v)
+				system("del \"" .. fixSlashes(CACHE_PATH .. "/" .. v) .. "\"")
 			end
 		end
 	end
 end
 
+-- This function saves 'tables' to the cache file.
 function CacheTables()
-	local outFile = io.open(CACHE_PATH .. "/itemstables." .. getWin() .. ".lua", "w");
+	local outFile = io.open(CACHE_PATH .. "/itemstables." .. getWin() .. ".lua", "w")
 	if( not outFile ) then
-		return;
+		return
 	end
 
-	outFile:write("cached_tables = {\n");
+	outFile:write("cached_tables = {\n")
 	for i,v in pairs(tables) do
-		local rangesString = "";
+		local rangesString = ""
 		for i,v in pairs(v.Ranges) do
-			rangesString = rangesString .. sprintf("{Start = 0x%X, End = 0x%X, StartAddress = 0x%X}, ", v.Start, v.End, v.StartAddress);
+			rangesString = rangesString .. sprintf("\t\t{Start = %d, End = %d, StartAddress = 0x%X},\n", v.Start, v.End, v.StartAddress)
 		end
-		outFile:write(sprintf("\t{Address = 0x%X, EnAddress = 0x%x, StartId = 0x%X, EndId = 0x%x, Name = \"%s\", Ranges = {%s}},\n",
-			v.Address, v.EnAddress, v.StartId, v.EndId, v.Name, rangesString));
+		outFile:write(sprintf("\t{StartId = %d, EndId = %d, Name = \"%s\", Ranges = {\n%s\t}},\n",
+			v.StartId, v.EndId, v.Name, rangesString))
 	end
-	outFile:write(sprintf("}\n\n"));
+	outFile:write(sprintf("}\n\n"))
+	outFile:close()
 end
--- LoadTables();
