@@ -16,7 +16,7 @@ CTRange = class(
 
 -- This function searches for the address where the current range continues
 -- It accepts the last address of the last item and returns the address where the range continues or nil.
-function GetNextTableAddress( lastStartAddress, ptr )
+function GetNextTableAddress( highestAddress, ptr )
 
 	local lastId = memoryReadInt( proc,  ptr + addresses.idOffset ) -- 12 bytes offset id
 	local _address
@@ -29,7 +29,7 @@ function GetNextTableAddress( lastStartAddress, ptr )
 		-- Check the 0x4 offset address
 		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x4 )
 		if ( tmpAddress ~= nil ) then
-			if tmpAddress > lastStartAddress then
+			if tmpAddress > highestAddress then
 				return tmpAddress
 			end
 		end
@@ -37,7 +37,7 @@ function GetNextTableAddress( lastStartAddress, ptr )
 		-- Check the 0x8 offset address
 		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x8 )
 		if ( tmpAddress ~= nil ) then
-			if tmpAddress > lastStartAddress then
+			if tmpAddress > highestAddress then
 				return tmpAddress
 			end
 		end
@@ -56,13 +56,29 @@ function GetNextTableAddress( lastStartAddress, ptr )
 
 	-- The new address might not point to the first item so we look back until we find the first one
 	if _address then
-		for i = 0, threshold do -- 10 lines should be enough...
-			local tmpID = memoryReadInt( proc, _address + addresses.idOffset ) -- 12 bytes offset del id
+		local tmpID = memoryReadInt( proc, _address + addresses.idOffset )
+
+		-- See if we already found it
+		if tmpID == ( lastId + 1 ) then
+			-- We found it, we can exit and return the address.
+			return _address
+		end
+
+		-- Jump to where the start should be, given the id found at this address
+		_address = _address + (tmpID - lastId - 1) * itemSize
+
+		-- Now search forward and back until correct id is found.
+		for i = 0, threshold do
+			tmpID = memoryReadInt( proc, _address + i*itemSize + addresses.idOffset )
 			if ( tmpID == ( lastId + 1 ) ) then
 				-- We found it, we can exit and return the address.
-				return _address
+				return _address + i*itemSize
 			end
-			_address = _address + itemSize -- we search back to find first id that continues range
+			tmpID = memoryReadInt( proc, _address - i*itemSize + addresses.idOffset )
+			if ( tmpID == ( lastId + 1 ) ) then
+				-- We found it, we can exit and return the address.
+				return _address - i*itemSize
+			end
 		end
 
 		-- Continuing id not found
