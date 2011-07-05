@@ -15,9 +15,10 @@ STARGET_PET = 3
 CSkill = class(
 	function (self, copyfrom)
 		self.Name = "";
+		self.Id = 0;
+		self.TPToLevel = 0;
+		self.Level = 1;
 		self.aslevel = 0;		-- player level, >= that skill can be used
-		self.skilltab = nil;	-- skill tab number
-		self.skillnum = nil;	-- number of the skill at that skill tab
 		self.Mana = 0;
 		self.Rage = 0;
 		self.Energy = 0;
@@ -32,7 +33,6 @@ CSkill = class(
 		self.Target = STARGET_ENEMY;
 		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
 		self.ManaInc = 0; -- Increase in mana per level
-		self.Level = 1;
 
 		-- Information about required buffs/debuffs
 		self.BuffName = "" -- name of buff if skill type is 'buff'
@@ -68,6 +68,10 @@ CSkill = class(
 
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
+			self.Id = copyfrom.Id;
+			self.TPToLevel = copyfrom.TPToLevel;
+			self.Level = copyfrom.Level;
+			self.aslevel = copyfrom.aslevel;
 			self.Mana = copyfrom.Mana;
 			self.Rage = copyfrom.Rage;
 			self.Energy = copyfrom.Energy;
@@ -93,9 +97,6 @@ CSkill = class(
 			self.pullonly = copyfrom.pullonly;
 			self.maxuse = copyfrom.maxuse;
 			self.rebuffcut = copyfrom.rebuffcut;
-			self.aslevel = copyfrom.aslevel;
-			self.skilltab = copyfrom.skilltab;
-			self.skillnum = copyfrom.skillnum;
 			self.BuffName = copyfrom.BuffName;
 			self.ReqBuffCount = copyfrom.ReqBuffCount;
 			self.ReqBuffTarget = copyfrom.ReqBuffTarget;
@@ -111,6 +112,10 @@ CSkill = class(
 
 
 function CSkill:canUse(_only_friendly, target)
+	if not self.Available then
+		return false
+	end
+
 	if( target == nil ) then
 		player:update();
 		target = player:getTarget();
@@ -164,6 +169,12 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	--local target = player:getTarget();	-- get target fields
+
+	-- Is player level more than or equal to aslevel
+	if player.Level < self.aslevel then
+		debug_skilluse("ASLEVEL", player.Level, self.aslevel);
+		return false
+	end
 
 	-- only friendly skill types?
 	if( _only_friendly ) then
@@ -458,22 +469,11 @@ function CSkill:use()
 
 
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
+		-- Get skill name
+		local skillName = GetIdName(self.Id)
 
-		-- hopefully skillnames in enus and eneu are the same
-		local hf_langu;
-		if(bot.ClientLanguage == "ENUS" or bot.ClientLanguage == "ENEU") then
-			hf_langu = "en";
-		else
-			hf_langu = string.lower(bot.ClientLanguage);
-		end
-
-		if( database.skills[self.Name][hf_langu] ) then		-- is local skill name available?
-			RoMScript("CastSpellByName('"..database.skills[self.Name][hf_langu].."');");
-		elseif( self.skilltab ~= nil  and  self.skillnum ~= nil ) then
-			RoMScript("UseSkill("..self.skilltab..","..self.skillnum..");");
-		else
-			cprintf(cli.yellow, "No local skillname in skills_local.xml. Please maintenance the file and send it to the developers.\n", self.Name);
-		end;
+		-- Cast skill
+		RoMScript("CastSpellByName(\""..skillName.."\");");
 	else
 		-- use the normal hotkeys
 		keyboardPress(self.hotkey, self.modifier);

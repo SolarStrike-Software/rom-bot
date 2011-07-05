@@ -144,6 +144,7 @@ language = {
 	[155] = "You need to define both \'nobuffname\' and \'nobufftarget\' for skill %s in your profile \'%s.xml\'. Please correct or delete both!\n",
 	[156] = "You defined an wrong option reqbufftarget=\'%s\' at skill %s in your profile \'%s.xml\'. Only \'player\' and \'target\' is possible. Please delete or correct that line!\n",
 	[157] = "You defined an wrong option nobufftarget=\'%s\' at skill %s in your profile \'%s.xml\'. Only \'player\' and \'target\' is possible. Please delete or correct that line!\n",
+	[158] = "There is no skill 'id' for skill %s in the skills database. You need to supply an id or use a valid hotkey in your profile.",
 
 	[160] = "Script paused until you revive yourself. Press %s when you\'re ready to continue.\n",
 	[161] = "You have to specify either a waypoint path or a return path to use the function load_paths(). No paths loaded!\n",
@@ -164,7 +165,7 @@ language = {
 	[176] = "Ranged skill found: %s\n",
 	[177] = "Current fight aborted.\n",
 	[178] = "Loot skipped because of aggro.\n",
-	[179] = "Maximum range of range attack skills is less then COMBAT_DISTANCE=%d. Please reduce your combat distance settings.\n",
+	[179] = "Maximum range of range attack skills is less than COMBAT_DISTANCE %d. Reducing COMBAT_DISTANCE setting to %d.\n",
 	[180] = "=>   * Failed to cast *\n",
 	[181] = "target_Object(): Please give an Object name for using that function.\n",
 	[182] = "Unable to carry out specified action, item is in unrented bag",

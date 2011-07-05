@@ -395,37 +395,7 @@ function CPawn:updateBuffs()
 		local name = GetIdName(tmp.Id)
 
 		if name ~= nil and name ~= "" then
-
-			-- First try and find '(3)' type count in name
-			local count = string.match(name,"%((%d+)%)$")
-			if count then
-				tmp.Count = tonumber(count)
-				tmp.Name = string.match(name,"(.*)%s%(%d+%)$")
-			end
-
-			-- Next try and find roman numeral number
-			count = string.match(name,"%s([IVX]+)$")
-			if count then
-				-- Convert roman number to number
-				if count == "I" then tmp.Count = 1
-				elseif count == "II" then tmp.Count = 2
-				elseif count == "III" then tmp.Count = 3
-				elseif count == "IV" then tmp.Count = 4
-				elseif count == "V" then tmp.Count = 5
-				elseif count == "VI" then tmp.Count = 6
-				elseif count == "VII" then tmp.Count = 7
-				elseif count == "VIII" then tmp.Count = 8
-				elseif count == "IX" then tmp.Count = 9
-				elseif count == "X" then tmp.Count = 10
-				end
-				tmp.Name = string.match(name,"(.*)%s[IVX]+$")
-			end
-
-			-- Not stackable buff?
-			if tmp.Name == nil then
-				tmp.Name = name
-				tmp.Count = 1
-			end
+			tmp.Name, tmp.Count = parseBuffName(name)
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.pawnBuffTimeLeft_offset);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.pawnBuffLevel_offset);
 
@@ -530,18 +500,62 @@ function CPawn:hasDebuff(debuff, count)
 	return self:hasBuff(debuff, count)
 end
 
-function CPawn:getBuff(buffnames, count)
+function CPawn:getBuff(buffnamesorids, count)
 	self:updateBuffs()
 
+	-- for each buff the pawn has
 	for i, buff in pairs(self.Buffs) do
-		for buffname in string.gmatch(buffnames,"[^,]+") do
-			if ( buffname == buff.Name or tonumber(buffname) == buff.Id ) and ( count == nil or buff.Count >= count ) then
+		-- compare against each 'buffname'
+		for buffname in string.gmatch(buffnamesorids,"[^,]+") do
+			if type(tonumber(buffname)) == "number" then
+				-- Get name from id
+				buffname = GetIdName(tonumber(buffname))
+				-- Take of end numbers
+				buffname = parseBuffName(buffname)
+			end
+			if buffname == buff.Name and ( count == nil or buff.Count >= count ) then
 				return buff
 			end
 		end
 	end
 
 	return false
+end
+
+function parseBuffName(buffname)
+	if buffname == nil then return end
+
+	local name, count
+
+	-- First try and find '(3)' type count in name
+	local tmpCount = string.match(buffname,"%((%d+)%)$")
+	if tmpCount then
+		count = tonumber(tmpCount)
+		name = string.match(buffname,"(.*)%s%(%d+%)$")
+		return name, count
+	end
+
+	-- Next try and find roman numeral number
+	tmpCount = string.match(buffname,"%s([IVX]+)$")
+	if tmpCount then
+		-- Convert roman number to number
+		if tmpCount == "I" then count = 1
+		elseif tmpCount == "II" then count = 2
+		elseif tmpCount == "III" then count = 3
+		elseif tmpCount == "IV" then count = 4
+		elseif tmpCount == "V" then count = 5
+		elseif tmpCount == "VI" then count = 6
+		elseif tmpCount == "VII" then count = 7
+		elseif tmpCount == "VIII" then count = 8
+		elseif tmpCount == "IX" then count = 9
+		elseif tmpCount == "X" then count = 10
+		end
+		name = string.match(buffname,"(.*)%s[IVX]+$")
+		return name, count
+	end
+
+	-- Buff not stackable
+	return buffname, 1
 end
 
 function CPawn:GetPartyIcon()
