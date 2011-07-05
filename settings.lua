@@ -1144,7 +1144,9 @@ function settings.loadSkillSet(class)
 	table.sort(settings.profile.skills, skillSort);
 
 	-- Setup the macros and action key.
-	setupMacros()
+	if settings.profile.hotkeys.MACRO ~= nil then
+		setupMacros()
+	end
 
 	-- Updates skill availability and some values(Id,Level,aslevel,TPToLevel)
 	settings.updateSkillsAvailability()
