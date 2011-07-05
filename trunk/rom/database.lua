@@ -13,12 +13,13 @@ function database.load()
 
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
-		local name, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration, nature;
+		local name, id, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration, nature;
 		local range, minrange, casttime, cooldown, type, target;
 		local toggleable, minmanaper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
 		local buffname, reqbuffcount, reqbufftarget, reqbuffname, nobuffcount, nobufftarget, nobuffname;
 
 		name = v:getAttribute("name");
+		id = v:getAttribute("id");
 		mana = v:getAttribute("mana");
 		rage = v:getAttribute("rage");
 		energy = v:getAttribute("energy");
@@ -98,6 +99,7 @@ function database.load()
 		if( target == "friendly" ) then target = STARGET_FRIENDLY; end;
 
 		if(name) then tmp.Name = name; end;
+		if(id) then tmp.Id = id; end;
 		if(mana) then tmp.Mana = mana; end;
 		if(rage) then tmp.Rage = rage; end;
 		if(energy) then tmp.Energy = energy; end;
@@ -132,26 +134,6 @@ function database.load()
 		if(nobuffname ~= "") then tmp.NoBuffName = nobuffname; end;
 
 		database.skills[name] = tmp;
-	end
-
-
-	-- import local skill file
-	-- used to use skills by name with RoMScript and CastSpellByName()
-	cprintf(cli.red, "OPENING LOCAL SKILLS DB!\n");
-	local root = xml.open(getExecutionPath() .. "/database/skills_local.xml");
-	local elements = root:getElements();
-
-	for i,v in pairs(elements) do
-	  local skill_name = v:getName(); -- This is the TAG name; ie. MAGE_FIREBALL
-
-	  -- Make sure the skill is in the database (and that the database is loaded)
-	  if( database.skills[skill_name] ) then
-		database.skills[skill_name].en = v:getAttribute("en");
-		database.skills[skill_name].de = v:getAttribute("de");
-		database.skills[skill_name].fr = v:getAttribute("fr");
-		database.skills[skill_name].ru = v:getAttribute("ru");
-		database.skills[skill_name].es = v:getAttribute("es");
-	  end
 	end
 
 

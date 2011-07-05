@@ -1955,9 +1955,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
-	local successDist = 20.0 -- Distance to consider successfully reaching the target location
+	local successDist = 30.0 -- Distance to consider successfully reaching the target location
 	if self.Mounted then
-		successDist = 30.0 -- so we don't overpass it and double back when mounted
+		successDist = 40.0 -- so we don't overpass it and double back when mounted
 	end
 
 	local turning = false
@@ -2483,7 +2483,7 @@ function CPlayer:update()
 	local oldclass = self.Class1
 
 	CPawn.update(self); -- run base function
-	if self.Class1 ~= oldclass then
+	if self.Class1 ~= oldclass or #settings.profile.skills == 0 then
 		settings.loadSkillSet(self.Class1)
 	end
 
@@ -3441,18 +3441,27 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 end
 
 function CPlayer:mount()
-	if( not inventory ) then
-		printf("Inventory is not mapped. Cannot mount unil it is mapped.\n");
-		return;
-	end
-
 	if( self.Mounted ) then
 		printf("Already mounted.\n");
 		return;
 	end
 
-	local mount = inventory:getMount();
-	if( mount ) then
+	local mountMethod = false
+	local mount
+
+	--     First find mount
+	-- Look in partner bag first
+	if RoMScript("PartnerFrame_GetPartnerCount(2)") > 0 then
+		-- There is a mount in the bag. Assign the mountmethod.
+		mountMethod = "partner"
+	elseif inventory then -- Make sure inventory has been mapped.
+		mount = inventory:getMount();
+		if mount then
+			mountMethod = "inventory"
+		end
+	end
+
+	if( mountMethod ) then -- mount found
 		--repeat
 			while( self.Battling ) do
 				self:target(self:findEnemy(true, nil, nil, nil));
@@ -3462,7 +3471,13 @@ function CPlayer:mount()
 				end
 			end
 
-			mount:use();
+			-- mount
+			if mountMethod == "partner" then
+				RoMScript("PartnerFrame_CallPartner(2,1)")
+			else
+				mount:use()
+			end
+
 			yrest(500)
 			repeat
 				yrest(100);

@@ -516,6 +516,10 @@ end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
+	if commandMacro == 0 then
+		-- setupMacros() hasn't run yet
+		return
+	end
 
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
@@ -835,6 +839,11 @@ function levelupSkill(_skillname, _times)
 		sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
 		hf_return = true;
 	end
+
+	if hf_return == true then
+		settings.updateSkillsAvailability()
+	end
+
 	return hf_return;
 
 end
@@ -1340,3 +1349,32 @@ function EventMonitorCheck(monitorName, returnFilter, lastEntryOnly)
 
 	return RoMScript("igf_events:GetLogEvent(\'" .. monitorName .. "\'" .. returnFilter .. lastEntryOnly .. ")")
 end
+
+function CallPartner(nameOrId)
+	-- Seach each tab
+	for tab = 1, 2 do
+		-- Get number of pets/mounts
+		local count = RoMScript("PartnerFrame_GetPartnerCount("..tab..")")
+		-- Check each
+		for i = 1, count do
+			local _, id, name = RoMScript("PartnerFrame_GetPartnerInfo(".. tab ..",".. i ..")")
+			if id == nameOrId or name == nameOrId then -- found
+				RoMScript("PartnerFrame_CallPartner(".. tab ..",".. i ..")")
+				yrest(500)
+				repeat player:update() yrest(1000) until not player.Casting
+				return
+			end
+		end
+	end
+
+	printf("Partner %s not found.\n",nameOrId)
+end
+
+function AddPartner(nameOrId)
+	local partner = inventory:findItem(nameOrId, "all")
+	if partner then
+		RoMScript("PartnerFrame_AddPartner(".. partner.BagId ..")")
+	end
+end
+
+

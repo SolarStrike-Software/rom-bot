@@ -122,6 +122,9 @@ function main()
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
+	-- load memory tables
+	LoadTables();
+
 	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
@@ -219,6 +222,7 @@ function main()
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
 
 	LoadItemTypes()     -- Needs macros to already be set up.
+
 
 	-- list waypoint files and files in folders
 	-- only files with filetype '.xml' are listed
@@ -512,6 +516,8 @@ function main()
 					error(msg);
 				end
 			end
+
+			settings.updateSkillsAvailability()     -- Also needs macros to already be set up.
 		end
 
 

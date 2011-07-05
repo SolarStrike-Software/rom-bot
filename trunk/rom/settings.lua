@@ -736,11 +736,10 @@ function settings.loadProfile(_name)
 		local elements = node:getElements();
 
 		for i,v in pairs(elements) do
-			local name, hotkey, modifier, level;
+			local name, hotkey, modifier
 			name = v:getAttribute("name");
 --			hotkey = key[v:getAttribute("hotkey")];
 			modifier = key[v:getAttribute("modifier")];
-			level = v:getAttribute("level");
 
 			-- using the MACRO key as hotkey is also a valid key
 			if( string.upper( tostring(v:getAttribute("hotkey")) ) == "MACRO" ) then
@@ -832,7 +831,11 @@ function settings.loadProfile(_name)
 			local tmp = CSkill(database.skills[name]);
 			tmp.hotkey = hotkey;
 			tmp.modifier = modifier;
-			tmp.Level = level;
+
+			if (tmp.hotkey == "MACRO" or tmp.hotkey == "" or tmp.hotkey == nil ) and tmp.Id == 0 then
+				local msg = sprintf(language[158],tmp.Name);    -- Can't use "MACRO" without skill id.
+				error(msg,0);
+			end
 
 			if (reqbuffname and not reqbufftarget) or (not reqbuffname and reqbufftarget) then
 				local msg = sprintf(language[154], name, _name);	-- need to define both
@@ -875,19 +878,9 @@ function settings.loadProfile(_name)
 
 			table.insert(settings.profile.skillsData[classNum], tmp);
 
-			-- Add general and class specific skills to 'Skills'
-			if classNum == 0 or classNum == player.Class1 then
-				checkKeySettings( v:getAttribute("name"),
-				  v:getAttribute("hotkey"),
-				  v:getAttribute("modifier") );
-				table.insert(settings.profile.skills, tmp);
-			end
-
-
 		end
 
 		table.sort(settings.profile.skills, skillSort);
-
 	end
 
 	local loadFriends = function(node)
@@ -1089,70 +1082,6 @@ function settings.loadProfile(_name)
 
 	-- now we can do all other setting checks
 
-	-- Check if the player has any ranged damage skills
-	local rangedSkills = false;
-	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > 100  and
-			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) ) then
-			rangedSkills = true;
-			printf(language[176], v.Name);		-- Ranged skill found
-			break;
-		end
-	end
-
-	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
-		cprintf(cli.yellow, language[200]);
-		settings.profile.options.COMBAT_RANGED_PULL = false;
-	end
-
-
---	function checkProfileHotkeys(name)
---		if( not settings.profile.hotkeys[name] ) then
---			error("ERROR: Hotkey not set for this profile: " ..name, 0);
---		end
---	end
-
-
-	-- default combat type if not in profile defined
-	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and
-	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
-		if( player.Class1 == CLASS_WARRIOR or
-		    player.Class1 == CLASS_ROGUE   or
-		    player.Class1 == CLASS_WARDEN  or
-		    player.Class1 == CLASS_KNIGHT  ) then
-			settings.profile.options.COMBAT_TYPE  = "melee";
-		elseif(
-		    player.Class1 == CLASS_PRIEST  or
-		    player.Class1 == CLASS_SCOUT   or
-		    player.Class1 == CLASS_DRUID   or
-		    player.Class1 == CLASS_MAGE    ) then
-			settings.profile.options.COMBAT_TYPE  = "ranged";
-		else
-			error("undefined player.Class1 in settings.lua", 0);
-		end;
-	end
-
-
-	-- check if range attack range and combat distance fit together
-	local best_range = 0;
-	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > best_range and
-			( v.Type == STYPE_DAMAGE or
-			  v.Type == STYPE_DOT ) ) then
-			best_range = v.Range;
-		end
-	end
-
-	-- check is combat distance is greater then maximum ranged attack
-	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
-		(settings.profile.options.COMBAT_TYPE == "ranged" or
-		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
-		local msg = sprintf(language[179], settings.profile.options.COMBAT_DISTANCE);	-- Maximum range of range attack skills is lesser
-		error(msg, 0);
-	end
-
-
 	-- warning if not all inventory slots are updated
 	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
 		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
@@ -1216,4 +1145,147 @@ function settings.loadSkillSet(class)
 
 	-- Setup the macros and action key.
 	setupMacros()
+
+	-- Updates skill availability and some values(Id,Level,aslevel,TPToLevel)
+	settings.updateSkillsAvailability()
+
+	-- Check if the player has any ranged damage skills
+	local rangedSkills = false;
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Range > 100  and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) and
+			  v.Available) then
+			rangedSkills = true;
+			printf(language[176], v.Name);		-- Ranged skill found
+			break;
+		end
+	end
+
+	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
+		cprintf(cli.yellow, language[200]);
+		settings.profile.options.COMBAT_RANGED_PULL = false;
+	end
+
+	-- default combat type if not in profile defined
+	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and
+	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
+		if( player.Class1 == CLASS_WARRIOR or
+		    player.Class1 == CLASS_ROGUE   or
+		    player.Class1 == CLASS_WARDEN  or
+		    player.Class1 == CLASS_KNIGHT  ) then
+			settings.profile.options.COMBAT_TYPE  = "melee";
+		elseif(
+		    player.Class1 == CLASS_PRIEST  or
+		    player.Class1 == CLASS_SCOUT   or
+		    player.Class1 == CLASS_DRUID   or
+		    player.Class1 == CLASS_MAGE    ) then
+			settings.profile.options.COMBAT_TYPE  = "ranged";
+		else
+			error("undefined player.Class1 in settings.lua", 0);
+		end;
+	end
+
+
+	-- check if range attack range and combat distance fit together
+	local best_range = 0;
+	for i,v in pairs(settings.profile.skills) do
+		if( v.Range > best_range and
+			( v.Type == STYPE_DAMAGE or
+			  v.Type == STYPE_DOT ) and
+			  v.Available) then
+			best_range = v.Range;
+		end
+	end
+
+	-- check is combat distance is greater then maximum ranged attack
+	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
+		(settings.profile.options.COMBAT_TYPE == "ranged" or
+		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
+		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE, best_range);	-- Maximum range of range attack skills is lesser
+		settings.profile.options.COMBAT_DISTANCE = best_range
+	end
+end
+
+function settings.updateSkillsAvailability()
+	-- Adds or updates skills values;
+	--   Id
+	--   TPToLevel
+	--   Level
+	--   aslevel
+	--   Available
+
+	local proc = getProc()
+	local skillsTableTabSize = 0x10
+	local skillSize = 0x4c
+
+	local function GetSkillInfo (address)
+		local tmp = {}
+		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
+		tmp.Name = GetIdName(tmp.Id)
+		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
+		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
+		tmp.AsLevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
+
+		return tmp
+	end
+
+	-- First collect tab skill info
+	local tabData = {}
+	for tab = 2,4 do -- tabs of interest 2,3 and 4
+		local tabBaseAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
+		local tabEndAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
+
+		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
+			for skilladdress = tabBaseAddress, tabEndAddress-1, skillSize do
+				tmpData = GetSkillInfo(skilladdress)
+				if tmpData.Name ~= nil and tmpData.Name ~= "" then
+					tabData[tmpData.Name] = {
+						Id = tmpData.Id,
+					    TPToLevel = tmpData.TPToLevel,
+						Level = tmpData.Level,
+						AsLevel = tmpData.AsLevel,
+					}
+				end
+			end
+		end
+	end
+
+	-- Next go through the profile skills and see which are available
+	for _, skill in pairs(settings.profile.skills) do
+		-- Check Id
+		if skill.Id == 0 or skill.Id == nil then
+			if skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil then
+				-- Skill unusable without id or hotkey
+				skill.Available = false
+			else
+				-- Might be user custom macro. Alow it.
+				skill.Available = true
+				-- No other values to set
+			end
+		else
+			local realName = GetIdName(skill.Id)
+			-- Do we currently have this skill?
+			if tabData[realName] ~= nil then
+				-- update profile values
+				skill.Id = tabData[realName].Id
+				skill.TPToLevel = tabData[realName].TPToLevel
+				skill.Level = tabData[realName].Level
+				skill.aslevel = tabData[realName].AsLevel
+				-- update database values(some functions access the database values)
+				database.skills[skill.Name].Id = tabData[realName].Id
+				database.skills[skill.Name].Level = tabData[realName].Level
+				database.skills[skill.Name].aslevel = tabData[realName].AsLevel
+
+				-- Check if available
+				if skill.aslevel > player.Level then
+					skill.Available = false
+				else
+					skill.Available = true
+				end
+			else
+				skill.Available = false
+			end
+		end
+	end
 end

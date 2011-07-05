@@ -1,5 +1,6 @@
 <potions>
 	<!-- Healing potions -->
+	<potion type="healing" id="208473" level="66" name="Herbs of Hope" />
 	<potion type="healing" id="208213" level="61" name="Herbs of Omnipotence" />
 	<potion type="healing" id="207273" level="56" name="Infinite Herb" />
 	<potion type="healing" id="204889" level="51" name="Spirit Herb" />
@@ -22,6 +23,7 @@
 	<potion type="healing" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
 
 	<!-- Mana potions -->
+	<potion type="mana" id="208480" level="66" name="Rare Magic Stone" />
 	<potion type="mana" id="208214" level="61" name="Elemental Stone of Omnipotence" />
 	<potion type="mana" id="207274" level="56" name="Infinite Elemental Stone" />
 	<potion type="mana" id="204890" level="51" name="Elemental Spirit Stone" />
