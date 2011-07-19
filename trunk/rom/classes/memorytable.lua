@@ -32,12 +32,20 @@ function GetNextTableAddress( highestAddress, ptr )
 			if tmpAddress > highestAddress then
 				return tmpAddress
 			end
+			local tmpId = memoryReadInt( proc, tmpAddress + addresses.idOffset )
+			if tmpId > lastId and tmpId < 999999 then
+				return tmpAddress
+			end
 		end
 
 		-- Check the 0x8 offset address
 		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x8 )
 		if ( tmpAddress ~= nil ) then
 			if tmpAddress > highestAddress then
+				return tmpAddress
+			end
+			local tmpId = memoryReadInt( proc, tmpAddress + addresses.idOffset )
+			if tmpId > lastId and tmpId < 999999 then
 				return tmpAddress
 			end
 		end
