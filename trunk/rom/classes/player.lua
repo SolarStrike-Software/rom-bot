@@ -2612,8 +2612,7 @@ function CPlayer:isFriend(pawn)
 	pawn:update();
 
 	for i,v in pairs(settings.profile.friends) do
-		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) then
---		if(string.lower(pawn.Name) == string.lower(v)) then
+		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) or tonumber(v) == pawn.Id then
 			return true;
 		end
 	end
@@ -2630,7 +2629,7 @@ function CPlayer:isInMobs(pawn)
 
 	for i,v in pairs(settings.profile.mobs) do
 		mobs_defined = true;
-		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) then
+		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) or tonumber(v) == pawn.Id then
 			return true;
 		end
 	end
@@ -2824,6 +2823,9 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 --
 	self:update();
 	if( self.Battling == true) then return; end;		-- if aggro, go back
+
+	-- Stop if moving
+	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 
 	local hf_resttime;
 
@@ -3345,9 +3347,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 					if( evalFunc(obj.Address) == true ) then
 						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then
-							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) < settings.profile.options.HARVEST_DISTANCE ) then
-								closestObject = obj;
-							end
+							closestObject = obj;
 						else
 							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) <
 								distance(self.X, self.Z, self.Y, closestObject.X, closestObject.Z, closestObject.Y) ) then
@@ -3386,7 +3386,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				obj = self:findNearestNameOrId(_objname, nil, evalFunc)
 			end
 
-			if obj then -- object found, target
+			if obj and ( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) < settings.profile.options.HARVEST_DISTANCE ) then -- object found, target
 				if self.LastTargetPtr ~= obj.Address then
 					cprintf(cli.yellow, language[95], obj.Name); -- We found object and will harvest it
 					self.LastTargetPtr = obj.Address;		-- remember target address to avoid msg spam
@@ -3489,6 +3489,7 @@ end
 
 -- Waits till casting ends minus SKILL_USE_PRIOR.
 function CPlayer:waitTillCastingEnds()
+	self:update()
 	while(self.Casting) do
 		-- break cast with jump if aggro before casting finished
 		if( self:check_aggro_before_cast(JUMP_TRUE, self.LastSkillType)) then	--  with jump

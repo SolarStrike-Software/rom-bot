@@ -55,6 +55,9 @@
 			end
 
 			if (player.Battling == true) or (attack == true) then
+				if player:getTarget().Address == player.Address then
+					player:clearTarget()
+				end
 				player:fight()
 			end
 		end
