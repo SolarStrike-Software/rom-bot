@@ -197,7 +197,7 @@ language = {
 	[1000] = "Skanowanie plecak\162w (bagslot 1 to %d)...\n",
 	[1001] = "Kupowanie",
 	[1002] = "Nast\169pne pe\136ne skanowanie plecak\162w nie wcze\152niej ni\190 za %d sekund.\n",
-
+	[1003] = "INV_MAX_SLOTS (%d) jest mniejsze ni\190 INV_AUTOSELL_TOSLOT (%d). Mo\190esz sprzedawa\134 tylko te przedmioty, kt\162re znajduj\165 si\169 w zasi\169gu skanowania. Dostosuj opcj\169 INV_MAX_SLOTS.\n",
 	[1004] = "Addon ingamefunctions (igf) nie zainstalowany! U\190y\136e\152 opcji, kt\162re wymagaj\165 igf. Nie sprzedamy przedmiot\162w! Zainstaluj igf (skopiuj folder 'ingamefunctions' z 'rom/devtools' do folderu klienta GRY, do katalogu '/interface/addons' ) lub skasuj opcje sprzedawania INV_AUTOSELL_NOSELL_DURA i INV_AUTOSELL_STATS_NOSELL ze swojego profilu.\n",
 
 };
