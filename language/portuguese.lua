@@ -204,7 +204,7 @@ language = {
 	[1000] = "A mapear o invent\160rio (posi\135\1418es 1 to %d)...\n",
 	[1001] = "A comprar",
 	[1002] = "So actualizamos o invent\160rio totalmente nos pr\132ximos %d segundos.\n",
-	[1003] = "INV_MAX_SLOTS (%d) \130 menro que INV_AUTOSELL_TOSLOT (%d). S\162 pode vender items que est\132o a ser actualizados. Por favor ajuste a op\135\132o INV_MAX_SLOTS.\n",
+
 	[1004] = "O addon ingamefunctions (igf) n\132o est\160 intalado! Definiu op\135\148es que necessitam do igf. N\132o venderemos items! Pr favor instale igf (copiar a pasta 'ingamefunctions' de 'rom/devtools' para a sua pasta de instala\135\132o do RoM '/interface/addons' ) ou apague as op\135\148es INV_AUTOSELL_NOSELL_DURA e INV_AUTOSELL_STATS_NOSELL do seu perfil.\n",
 	[1005] = "N\132o \160 poss\161vel vender: a linguagem do cliente n\132o \130 suportada.",
 };

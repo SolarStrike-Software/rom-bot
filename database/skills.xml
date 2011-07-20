@@ -145,7 +145,7 @@
 	<skill name="WARRIOR_AIM_FOR_THE_WOUND" id="491451" concentration="30" range="200" cooldown="10" type="damage" target="enemy" />
 	<skill name="WARRIOR_SWORD_BREATH" id="492615" concentration="25" range="150" cooldown="8" type="damage" target="enemy" />
 	<skill name="WARRIOR_THE_FINAL_BATTLE" id="493247" rage="25" range="50" cooldown="6" type="damage" target="enemy" />
-	<skill name="WARRIOR_BLOOD_DANCE" id="491329" range="50" cooldown="8" maxhpper="!20" type="damage" target="enemy" />
+	<skill name="WARRIOR_BLOOD_DANCE" id="491329" range="50" cooldown="8" maxhpper="-20" type="damage" target="enemy" />
 	<skill name="WARRIOR_FRENZIED_ATTACK" id="491330" energy="50" cooldown="120" target="enemy" type="damage" />
 	<skill name="WARRIOR_KEEN_ATTACK" id="492619" energy="20" range="50" target="enemy" type="damage" reqbuffname="501502" reqbufftarget="target"/>
 	<skill name="WARRIOR_SPLITTING_CHOP" id="492911" RAGE="15" cooldown="15" range="50" target="enemy" type="damage" reqbuffname="501503" reqbufftarget="target"/>

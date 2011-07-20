@@ -126,7 +126,6 @@ settings_default = {
 				},
 
 			-- expert inventar
-			INV_MAX_SLOTS = 60,	 			-- maximal slots to update in the inventory:update()
 			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
 			INV_AUTOSELL_ENABLE = false,	-- autosell items at merchant true|false
 			INV_AUTOSELL_FROMSLOT = 0,		-- autosell from slot #
@@ -1081,12 +1080,6 @@ function settings.loadProfile(_name)
 
 
 	-- now we can do all other setting checks
-
-	-- warning if not all inventory slots are updated
-	if( settings.profile.options.INV_AUTOSELL_TOSLOT > settings.profile.options.INV_MAX_SLOTS ) then
-		cprintf(cli.yellow, language[1003], settings.profile.options.INV_MAX_SLOTS, settings.profile.options.INV_AUTOSELL_TOSLOT);
-	end
-
 
 	-- check if igf addon is active
 	if ( RoMScript("IGF_INSTALLED") == true ) then

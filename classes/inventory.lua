@@ -131,7 +131,13 @@ end;
 function CInventory:itemTotalCount(itemNameOrId, range)
 	local first, last = getInventoryRange(range) -- get bag slot range
 	if first == nil then
-		first , last = 61, 240 -- default, search only bags
+		-- Default values - 1-240 for items, 61-240 for empties.
+		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
+			first = 61
+		else
+			first = 1
+		end
+		last = 240 -- default, search only bags
 	end
 
 	self:update();
