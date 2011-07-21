@@ -1220,7 +1220,7 @@ function settings.updateSkillsAvailability()
 		tmp.Name = GetIdName(tmp.Id)
 		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
 		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
-		tmp.AsLevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
+		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
 
 		return tmp
 	end
@@ -1232,14 +1232,17 @@ function settings.updateSkillsAvailability()
 		local tabEndAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
 
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
-			for skilladdress = tabBaseAddress, tabEndAddress-1, skillSize do
+			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
+			local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData.Name ~= nil and tmpData.Name ~= "" then
 					tabData[tmpData.Name] = {
 						Id = tmpData.Id,
 					    TPToLevel = tmpData.TPToLevel,
 						Level = tmpData.Level,
-						AsLevel = tmpData.AsLevel,
+						aslevel = tmpData.aslevel,
+						skilltab = tab,
+						skillnum = num,
 					}
 				end
 			end
@@ -1266,11 +1269,15 @@ function settings.updateSkillsAvailability()
 				skill.Id = tabData[realName].Id
 				skill.TPToLevel = tabData[realName].TPToLevel
 				skill.Level = tabData[realName].Level
-				skill.aslevel = tabData[realName].AsLevel
+				skill.aslevel = tabData[realName].aslevel
+				skill.skilltab = tabData[realName].skilltab
+				skill.skillnum = tabData[realName].skillnum
 				-- update database values(some functions access the database values)
 				database.skills[skill.Name].Id = tabData[realName].Id
 				database.skills[skill.Name].Level = tabData[realName].Level
-				database.skills[skill.Name].aslevel = tabData[realName].AsLevel
+				database.skills[skill.Name].aslevel = tabData[realName].aslevel
+				database.skills[skill.Name].skilltab = tabData[realName].skilltab
+				database.skills[skill.Name].skillnum = tabData[realName].skillnum
 
 				-- Check if available
 				if skill.aslevel > player.Level then
