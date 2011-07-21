@@ -33,6 +33,8 @@ CSkill = class(
 		self.Target = STARGET_ENEMY;
 		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
 		self.ManaInc = 0; -- Increase in mana per level
+		self.skilltab = 0;
+		self.skillnum = 0;
 
 		-- Information about required buffs/debuffs
 		self.BuffName = "" -- name of buff if skill type is 'buff'
@@ -85,6 +87,8 @@ CSkill = class(
 			self.Target = copyfrom.Target;
 			self.InBattle = copyfrom.InBattle;
 			self.ManaInc = copyfrom.ManaInc;
+			self.skilltab = copyfrom.skilltab;
+			self.skillnum = copyfrom.skillnum;
 			self.TargetMaxHpPer = copyfrom.TargetMaxHpPer;
 			self.TargetMaxHp = copyfrom.TargetMaxHp;
 			self.MaxHpPer = copyfrom.MaxHpPer;
