@@ -3398,7 +3398,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				end
 				yrest(100)
 				RoMScript("UseSkill(1,1)"); yrest(50);
-				timeStart = getTime()
+				local timeStart = getTime()
 
 				--Wait minimum time
 				repeat

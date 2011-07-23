@@ -3,7 +3,6 @@ addresses = {
 	actionBarPtr = 0xA19A8C,
 	actionKeyId_offset = 0x10,
 	actionKeyType_offset = 0xC,
-	amountOffset = 0x10,
 	boundStatusOffset = 0x40,
 	camPtr_offset = 0x46C,
 	camXUVec_offset = 0x128,
