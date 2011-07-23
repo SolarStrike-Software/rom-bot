@@ -202,29 +202,34 @@ function CItem:update()
 			-- We need to get info from NPC...
 			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idCardNPCOffset );
 			npcInfoAddress = GetItemAddress( tmp );
-			nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
+			if npcInfoAddress then
+				nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
+			else
+				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
+			end
 			self.Name = "Card - "; -- We should add a string so we can localize this
 		elseif ( self.Id >= 550000 and self.Id <=552000 ) then
 			-- We need to get info from item...
 			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idRecipeItemOffset )
 			itemInfoAddress = GetItemAddress(  tmp );
-			nameAddress = memoryReadInt( proc, itemInfoAddress + addresses.nameOffset );
+			if itemInfoAddress then
+				nameAddress = memoryReadInt( proc, itemInfoAddress + addresses.nameOffset );
+			else
+				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
+			end
 			self.Name = "Recipe - "; -- We should add a string so we can localize this
 		else
 			nameAddress = memoryReadInt( proc, self.BaseItemAddress + addresses.nameOffset );
 		end;
 
 		if( nameAddress == nil or nameAddress == 0 ) then
-			tmp = nil;
+			tmp = "<EMPTY>";
 		else
 			tmp = memoryReadString(proc, nameAddress);
 		end;
 
-		if tmp ~= nil then
-			self.Name = self.Name .. tmp;
-		else
-			self.Name = "<EMPTY>";
-		end;
+
+		self.Name = self.Name .. tmp;
 
 		self.Quality = memoryReadInt( proc, self.BaseItemAddress + addresses.qualityBaseOffset );
 		local plusQuality = memoryReadByte( proc, self.Address + addresses.qualityTierOffset );

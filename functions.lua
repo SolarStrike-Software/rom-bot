@@ -1190,18 +1190,19 @@ function getNearestSegmentPoint(x, z, a, b, c, d)
 end
 
 function waitForLoadingScreen(_maxWaitTime)
+	local oldAddress = player.Address
+
 	local startTime = os.time()
-	-- wait for loading screen to appear
-	if memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 then
-		repeat
-			if (_maxWaitTime ~= nil and os.difftime(os.time(),startTime) > _maxWaitTime ) then
-				-- Loading screen didn't appear, we return false so waypoint file can try and take alternate action to recover
-				cprintf(cli.yellow,"The loading screen didn't appear...\n")
-				return false
-			end
-			yrest(1000)
-		until memoryReadBytePtr(getProc(), addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 1
-	end
+	-- wait for player address to change
+	repeat
+		if (_maxWaitTime ~= nil and os.difftime(os.time(),startTime) > _maxWaitTime ) then
+			-- Loading screen didn't appear, we return false so waypoint file can try and take alternate action to recover
+			cprintf(cli.yellow,"The loading screen didn't appear...\n")
+			return false
+		end
+		yrest(1000)
+		local newAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+	until newAddress ~= oldAddress and newAddress ~= 0
 
 	-- wait until loading screen is gone
 	repeat

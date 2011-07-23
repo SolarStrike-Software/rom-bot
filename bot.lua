@@ -435,10 +435,19 @@ function main()
 	-- Update inventory
 	inventory:update();
 
-	-- onLoad event
+	-- Profile onLoad event
 	-- possibility for users to overwrite profile settings
 	if( type(settings.profile.events.onLoad) == "function" ) then
 		local status,err = pcall(settings.profile.events.onLoad);
+		if( status == false ) then
+			local msg = sprintf("onLoad error: %s", err);
+			error(msg);
+		end
+	end
+
+	-- Waypoint onLoad event should follow profile onload
+	if( type(__WPL.onLoadEvent) == "function" ) then
+		local status,err = pcall(__WPL.onLoadEvent);
 		if( status == false ) then
 			local msg = sprintf("onLoad error: %s", err);
 			error(msg);

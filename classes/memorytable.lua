@@ -2,7 +2,7 @@ local proc = getProc()
 local tablePointer = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset )
 local itemSize = 0x20
 local tables = {}
-local threshold = 10 -- We look back a maximum of "threshold" items to check if the table continues
+local threshold = 256 -- We look back a maximum of "threshold" items to check if the table continues
 local maxId = 800000
 local CACHE_PATH = getExecutionPath() .. "/../cache"
 

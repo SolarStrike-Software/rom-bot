@@ -77,11 +77,11 @@ function CWaypointList:load(filename)
 			table.insert(self.Waypoints, tmp);
 		elseif( string.lower(name) == "onload" ) then
 			if( string.len(action) > 0 and string.find(action, "%w") ) then
-				onLoadEvent = loadstring(action);
-				assert(onLoadEvent, sprintf(language[152]));
+				self.onLoadEvent = loadstring(action);
+				assert(self.onLoadEvent, sprintf(language[152]));
 
-				if( _G.type(onLoadEvent) ~= "function" ) then
-					onLoadEvent = nil;
+				if( _G.type(self.onLoadEvent) ~= "function" ) then
+					self.onLoadEvent = nil;
 				end;
 			end
 		end
@@ -96,9 +96,6 @@ function CWaypointList:load(filename)
 		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 	end
 
-	if( onLoadEvent ) then
-		onLoadEvent();
-	end
 end
 
 
