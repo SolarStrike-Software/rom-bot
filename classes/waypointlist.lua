@@ -96,6 +96,9 @@ function CWaypointList:load(filename)
 		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 	end
 
+	if( self.onLoadEvent ) and not bot_starting_skip_waypoint_onload then
+		self.onLoadEvent();
+	end
 end
 
 

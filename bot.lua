@@ -391,7 +391,7 @@ function main()
 		while( wp_to_load == nil or wp_to_load == "" or wp_to_load == false	or wp_to_load == " " ) do
 			wp_to_load = list_waypoint_files();
 		end;
-
+		bot_starting_skip_waypoint_onload = true
 		if( wp_to_load == "wander" ) then
 			--__WPL = CWaypointListWander();
 			loadPaths("wander", rp_to_load);
@@ -401,6 +401,7 @@ function main()
 		else
 			loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 		end;
+		bot_starting_skip_waypoint_onload = false
 	end;
 
 	player:update() -- update player coords
