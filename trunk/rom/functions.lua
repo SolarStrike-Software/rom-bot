@@ -514,6 +514,27 @@ function sendMacro(_script)
 
 end
 
+-- Execute a slash command
+function SlashCommand(script)
+	if commandMacro == 0 then
+		-- setupMacros() hasn't run yet
+		return
+	end
+
+	-- add slash if needed
+	if string.match(script,"^.") ~= "/" then
+		script = "/" .. script
+	end
+
+	-- write to macro
+	writeToMacro(commandMacro, script)
+
+	--- Execute it
+	if( settings.profile.hotkeys.MACRO ) then
+		keyboardPress(settings.profile.hotkeys.MACRO.key);
+	end
+end
+
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
 	if commandMacro == 0 then
