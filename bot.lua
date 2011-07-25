@@ -869,11 +869,13 @@ function resurrect()
 	end
 
 	-- msg how to activate automatic resurrection
-	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == false ) then
+	if settings.profile.options.RES_AUTOMATIC_AFTER_DEATH ~= nil then 
+	settings.profile.options.RES_AFTER_DEATH = settings.profile.options.RES_AUTOMATIC_AFTER_DEATH end -- backward compatability
+	if( settings.profile.options.RES_AFTER_DEATH == false ) then
 		cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection
 	end
 
-	if( settings.profile.options.RES_AUTOMATIC_AFTER_DEATH == true ) then
+	if( settings.profile.options.RES_AFTER_DEATH == true ) then
 		cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 
 		-- try mouseclick to reanimate
