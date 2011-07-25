@@ -25,36 +25,11 @@ for i = 1, 5 do
 		table.insert(partymember,i + 1, CPawn(partymemberObj[i].Address))
 	end
 end
+end
 
 
 function healing()
 	local target = player:getTarget();
-if player.Class1 == 5 then -- priest
--- 70% to 90% HP
-         	if (90 > target.HP/target.MaxHP*100 and 
-            	target.HP/target.MaxHP*100 > 70 and
-            	( not target:hasBuff("Regenerate")) ) then
-               player:cast("PRIEST_REGENERATE")
-          	end
--- 50% to 70% HP
-      		if (70 > target.HP/target.MaxHP*100 and 
-            target.HP/target.MaxHP*100 > 50) then
-                player:cast("PRIEST_URGENT_HEAL") 
-            end          
--- 30% to 50% HP
-      		if (50 > target.HP/target.MaxHP*100 and 
-            target.HP/target.MaxHP*100 > 30) then
-                player:cast("PRIEST_HEAL") 
-            end 
-                        
--- 10% to 30% HP
-      		if (30 > target.HP/target.MaxHP*100 and 
-            target.HP/target.MaxHP*100 > 10) then
-                player:cast("PRIEST_SOUL_SOURCE") 
-            end
-            if 30 > player.HP/player.MaxHP*100 then player:cast("PRIEST_HOLY_AURA") end      
-end
-end 
 	while(true) do
 	
 		for i,v in ipairs(partymember) do

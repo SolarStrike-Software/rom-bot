@@ -46,7 +46,7 @@
 		<option name="LOGOUT_TIME"			value="0" />		<!-- in minutes, 0 = timer disabled -->
 		<option name="LOGOUT_SHUTDOWN"		value="false" />
 		<option name="LOGOUT_WHEN_STUCK"	value="true" />
-		<option name="RES_AUTOMATIC_AFTER_DEATH" value="true" />
+		<option name="RES_AFTER_DEATH" value="true" />
 
 
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->

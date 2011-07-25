@@ -301,6 +301,7 @@
 	<skill name="SCOUT_SERENITY" id="490465" cooldown="480" type="buff" target="self" />
 
 	<!-- Elite -->
+	<skill name="SCOUT_SHOOT" id="494070" consumable="1" range="180" cooldown="2" type="damage" target="enemy" />
 	<skill name="SCOUT_BATTLE_INSTINCT" id="491337" rage="30" target="self" buffname="501821" type="buff" />
 	<skill name="SCOUT_MENTAL_FOCUS" id="491491" rage="30" target="self" buffname="501892" type="buff" />
 	<skill name="SCOUT_TARGET_LOCK" id="492620" cooldown="60" concentration="30" type="buff" target="self" />

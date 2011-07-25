@@ -827,6 +827,95 @@ end
 function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
 
+	if settings.profile.options.USE_PHIRIUS_POTION == true then
+		-- If we need to use a health potion
+		if( (self.HP/self.MaxHP*100) < settings.profile.options.PHIRIUS_HP_LOW  and
+			os.difftime(os.time(), self.PhiriusLastUseTime) > 19 )  then
+			item = inventory:bestAvailablePhirius("phirushealing");
+			if( item ) then
+				if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
+				local checkItemName = item.Name;
+				item:update();
+				if( checkItemName ~= item.Name ) then
+					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+					item:update();
+				else
+					item:use();
+					self.PhiriusHpUsed = self.PhiriusHpUsed + 1;			-- counts use of HP potions
+
+					cprintf(cli.green, language[10], 		-- Using HP potion
+					   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
+					   item.Name, item.ItemCount);
+					   yrest(1000)
+					if( self.Fighting ) then
+						yrest(1000);
+					end
+
+					self.PhiriusLastUseTime = os.time();
+				end
+
+				return true;
+			else		-- potions empty
+				if( os.difftime(os.time(), self.PhiriusLastHpEmptyTime) > 16 ) then
+					cprintf(cli.yellow, "No more usable HP Phirius pots", inventory.MaxSlots); 
+					self.PhiriusLastHpEmptyTime = os.time();
+					-- full inventory update if potions empty
+					if( os.difftime(os.time(), self.InventoryLastUpdate) >
+					  settings.profile.options.INV_UPDATE_INTERVAL ) then
+						self.InventoryDoUpdate = true;
+					end
+				end;
+			end
+		end
+
+		-- If we need to use a mana potion(if we even have mana)
+		if( self.MaxMana > 0 ) then
+			if( (self.Mana/self.MaxMana*100) < settings.profile.options.PHIRIUS_MP_LOW  and
+				os.difftime(os.time(), self.PhiriusLastUseTime) > 19 )  then
+				item = inventory:bestAvailableConsumable("phirusmana");
+				if( item ) then
+					if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
+					local checkItemName = item.Name;
+					item:update();
+					if( checkItemName ~= item.Name ) then
+						cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+						item:update();
+					else
+						item:use();
+						self.PhiriusManaUsed = self.PhiriusManaUsed + 1;		-- counts use of mana potions
+
+						cprintf(cli.green, language[11], 		-- Using MP potion
+							self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
+							item.Name, item.ItemCount);
+							yrest(1000)
+						if( self.Fighting ) then
+							yrest(1000);
+						end
+
+						self.PhiriusLastUseTime = os.time();
+					end
+
+					return true;		-- avoid invalid/use count of
+				else	-- potions empty
+					if( os.difftime(os.time(), self.PhiriusLastManaEmptyTime) > 16 ) then
+						cprintf(cli.yellow, "No more usable MP Phirius pots", inventory.MaxSlots); 
+						self.PhiriusLastManaEmptyTime = os.time();
+						-- full inventory update if potions empty
+						if( os.difftime(os.time(), self.InventoryLastUpdate) >
+						  settings.profile.options.INV_UPDATE_INTERVAL ) then
+							self.InventoryDoUpdate = true;
+						end
+					end;
+				end;
+			end
+		end
+	end
+	
+	self:update()
+	
+	--== Normal Potions after checking for phirius ==--
+	
+	
 	-- set general potion cooldown time
 	local cooldown_hp = settings.profile.options.POTION_COOLDOWN
 	local cooldown_mana = settings.profile.options.POTION_COOLDOWN

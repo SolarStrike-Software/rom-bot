@@ -102,5 +102,29 @@
 	<potion type="eggpet_hoe" 		id="204228" name="Small Hoe" level="1" />
 	<potion type="eggpet_spade" 	id="204230" name="Small Spade" level="1" />
 	<potion type="eggpet_hatchet" 	id="204232" name="Small Hatchet" level="1" />
+	
+	<!-- Phirius Potions -->
+	<potion type="phirusboth" 		id="203489" name="Phirius Special Water - Type A" potency="20" /> 	<!-- 20% -->	
+	<potion type="phirusboth" 		id="203490" name="Phirius Special Water - Type B" potency="30" /> 	<!-- 30% -->	
+	<potion type="phirusboth" 		id="203491" name="Phirius Special Water - Type C" potency="40" /> 	<!-- 40% -->
+	<potion type="phirusboth" 		id="203492" name="Phirius Special Water - Type D" potency="50" /> 	<!-- 50% -->
+	<potion type="phirusboth" 		id="203493" name="Phirius Special Water - Type E" potency="60" /> 	<!-- 60% -->	
+	
+	
+	<potion type="phirushealing" 	id="203494" name="Phirius Potion - Type A" potency="20" />			<!-- 20% -->
+	<potion type="phirushealing" 	id="203495" name="Phirius Potion - Type B" potency="30" />			<!-- 30% -->
+	<potion type="phirushealing" 	id="203496" name="Phirius Potion - Type C" potency="40" />			<!-- 40% -->
+	<potion type="phirushealing" 	id="203497" name="Phirius Potion - Type D" potency="50" />			<!-- 50% -->
+	<potion type="phirushealing" 	id="203498" name="Phirius Potion - Type E" potency="60" />			<!-- 60% -->
+	
+	
+	<potion type="phirusmana" 		id="203499" name="Phirius Elixir - Type A" potency="20" />			<!-- 20% -->
+	<potion type="phirusmana" 		id="203500" name="Phirius Elixir - Type B" potency="30" />			<!-- 30% -->
+	<potion type="phirusmana" 		id="203501" name="Phirius Elixir - Type C" potency="40" />			<!-- 40% -->
+	<potion type="phirusmana" 		id="203502" name="Phirius Elixir - Type D" potency="50" />			<!-- 50% -->
+	<potion type="phirusmana" 		id="203503" name="Phirius Elixir - Type E" potency="60" />			<!-- 60% -->
+	
+	
+
 
 </potions>

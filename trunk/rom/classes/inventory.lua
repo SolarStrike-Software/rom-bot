@@ -837,3 +837,60 @@ function getInventoryRange(range)
 		return 61, 240
 	end
 end
+
+-- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
+function CInventory:bestAvailablePhirius(type)
+
+	local bestPer = 0;		-- power of a potion
+	local bestItem = false;
+	local select_strategy = "best";
+
+	self:update();
+	-- check item slots slot by slot
+	for slot,item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id];
+
+		if consumable  and							-- item in database
+		    (consumable.Type == type and	-- right type (mana, hp, both)
+		 	item.ItemCount > 0 and					-- use only if some available
+			item.Available) then			-- not in unrented bag
+
+			if( consumable.Potency > bestPer) then
+				bestPer = consumable.Potency;
+				bestSmallStack = item.ItemCount;
+				bestItem = item;
+			-- same/same but select smaller stack
+			elseif( consumable.Potency == bestPer  and
+				item.ItemCount < bestSmallStack ) then
+				bestPer = consumable.Potency;
+				bestSmallStack = item.ItemCount;
+				bestItem = item;
+			end
+			
+		end
+	end
+	
+	if bestItem == false then
+		for slot,item in pairs(self.BagSlot) do
+			local consumable = database.consumables[item.Id];
+			if consumable  and							-- item in database
+				(consumable.Type == "phirusboth" and	-- right type (mana, hp, both)
+				item.ItemCount > 0 and					-- use only if some available
+				item.Available) then			-- not in unrented bag
+
+				if( consumable.Potency > bestPer) then
+					bestPer = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				-- same/same but select smaller stack
+				elseif( consumable.Potency == bestPer  and
+					item.ItemCount < bestSmallStack ) then
+					bestPer = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				end
+			end
+		end
+	end
+	return bestItem;
+end
