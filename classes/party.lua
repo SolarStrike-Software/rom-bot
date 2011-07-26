@@ -25,11 +25,9 @@ for i = 1, 5 do
 		table.insert(partymember,i + 1, CPawn(partymemberObj[i].Address))
 	end
 end
-end
 
 
-function healing()
-	local target = player:getTarget();
+
 	while(true) do
 	
 		for i,v in ipairs(partymember) do
@@ -41,17 +39,15 @@ function healing()
 		if i == 6 then keyboardPress(key.VK_F6); end
 
 			partymember[i]:update()
-						
-			partymember[i]:updateBuffs()
+			player:update()
 			
-			player:checkPotions()
+			partymember[i]:updateBuffs()
 			
 			player:checkSkills(true);
 			
-			partymember[i]:update()
-							
-			healing()
-			yrest(1000)
+			player:checkPotions()
+								
+			yrest(500)
 				
  
 		if (not player.Battling) then 
