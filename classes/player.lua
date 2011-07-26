@@ -2576,8 +2576,6 @@ function CPlayer:update()
 		settings.loadSkillSet(self.Class1)
 	end
 
-	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
-
 	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char,
 	addresses.charBattle_offset) == 1;
 
