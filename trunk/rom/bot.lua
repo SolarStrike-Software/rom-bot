@@ -115,12 +115,12 @@ function main()
 	database.load();
 	attach(getWin());
 
-	--[[if( not checkExecutableCompatible() ) then
+	if( not checkExecutableCompatible() ) then
 		cprintf(cli.yellow, "!! Notice: !!\n");
 		printf(language[43]);	-- is recommended that you run rom/update.lua
 
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
-	end]]--
+	end
 
 	-- load memory tables
 	LoadTables();
@@ -869,7 +869,7 @@ function resurrect()
 	end
 
 	-- msg how to activate automatic resurrection
-	if settings.profile.options.RES_AUTOMATIC_AFTER_DEATH ~= nil then 
+	if settings.profile.options.RES_AUTOMATIC_AFTER_DEATH ~= nil then
 	settings.profile.options.RES_AFTER_DEATH = settings.profile.options.RES_AUTOMATIC_AFTER_DEATH end -- backward compatability
 	if( settings.profile.options.RES_AFTER_DEATH == false ) then
 		cprintf(cli.yellow, language[103]); -- If you want to use automatic resurrection

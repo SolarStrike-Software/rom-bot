@@ -857,7 +857,7 @@ function CPlayer:checkPotions()
 				return true;
 			else		-- potions empty
 				if( os.difftime(os.time(), self.PhiriusLastHpEmptyTime) > 16 ) then
-					cprintf(cli.yellow, "No more usable HP Phirius pots", inventory.MaxSlots); 
+					cprintf(cli.yellow, "No more usable HP Phirius pots", inventory.MaxSlots);
 					self.PhiriusLastHpEmptyTime = os.time();
 					-- full inventory update if potions empty
 					if( os.difftime(os.time(), self.InventoryLastUpdate) >
@@ -898,7 +898,7 @@ function CPlayer:checkPotions()
 					return true;		-- avoid invalid/use count of
 				else	-- potions empty
 					if( os.difftime(os.time(), self.PhiriusLastManaEmptyTime) > 16 ) then
-						cprintf(cli.yellow, "No more usable MP Phirius pots", inventory.MaxSlots); 
+						cprintf(cli.yellow, "No more usable MP Phirius pots", inventory.MaxSlots);
 						self.PhiriusLastManaEmptyTime = os.time();
 						-- full inventory update if potions empty
 						if( os.difftime(os.time(), self.InventoryLastUpdate) >
@@ -910,12 +910,12 @@ function CPlayer:checkPotions()
 			end
 		end
 	end
-	
+
 	self:update()
-	
+
 	--== Normal Potions after checking for phirius ==--
-	
-	
+
+
 	-- set general potion cooldown time
 	local cooldown_hp = settings.profile.options.POTION_COOLDOWN
 	local cooldown_mana = settings.profile.options.POTION_COOLDOWN
@@ -2575,6 +2575,8 @@ function CPlayer:update()
 	if self.Class1 ~= oldclass or #settings.profile.skills == 0 then
 		settings.loadSkillSet(self.Class1)
 	end
+
+	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
 	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char,
 	addresses.charBattle_offset) == 1;
