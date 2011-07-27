@@ -115,12 +115,12 @@ function main()
 	database.load();
 	attach(getWin());
 
-	if( not checkExecutableCompatible() ) then
+	--[[if( not checkExecutableCompatible() ) then
 		cprintf(cli.yellow, "!! Notice: !!\n");
 		printf(language[43]);	-- is recommended that you run rom/update.lua
 
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
-	end
+	end]]--
 
 	-- load memory tables
 	LoadTables();
