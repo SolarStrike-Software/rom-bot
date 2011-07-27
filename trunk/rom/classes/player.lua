@@ -3477,7 +3477,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 
 			-- Check if too far
 			if obj and ( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) > settings.profile.options.HARVEST_DISTANCE ) then
-				obj == nil
+				obj = nil
 			end
 
 			if obj then -- object found, target
