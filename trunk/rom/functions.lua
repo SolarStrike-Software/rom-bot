@@ -1223,7 +1223,7 @@ function waitForLoadingScreen(_maxWaitTime)
 		end
 		yrest(1000)
 		local newAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
-	until newAddress ~= oldAddress and newAddress ~= 0
+	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0
 
 	-- wait until loading screen is gone
 	repeat

@@ -199,13 +199,6 @@ function main()
 
 	store = CStore()
 
-	--[[ Install timer to continually close the chat (if open)
-	local function closeChatEntry()
-		memoryWriteIntPtr(getProc(), addresses.chatbase_address,
-			{addresses.chat_offset3, addresses.chat_offset2, addresses.chat_offset1, addresses.chatEntryOpen_offset}, 0);
-	end
-	registerTimer("timedCloseChatEntry", secondsToTimer(1), closeChatEntry);]]
-
 	if( getTimerFrequency ) then
 		-- Grab the real frequency instead of calculating it, if available
 		bot.GetTimeFrequency = getTimerFrequency().low / 1000;

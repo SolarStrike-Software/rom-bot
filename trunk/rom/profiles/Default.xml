@@ -11,7 +11,7 @@
 		<option name="USE_PHIRIUS_POTION"	value="false" /> 		<!-- false | true if you want to use the Phirus Potions -->
 		<option name="PHIRIUS_MP_LOW"		value="40" />
 		<option name="PHIRIUS_HP_LOW"		value="40" />
-		
+
 		<!-- Rest if HP or Mana is below that level -->
 		<option name="HP_REST" 				value="15" />
 		<option name="MP_REST" 				value="15" />
@@ -57,7 +57,7 @@
 		<!-- Auto selling options when used with player:merchant -->
 		<option name="INV_AUTOSELL_ENABLE"	value="false" />		<!-- true | false -->
 		<option name="INV_AUTOSELL_FROMSLOT" value="1" /> 			<!-- 1 = bag 1 slot 1 -->
-		<option name="INV_AUTOSELL_TOSLOT"	value="30" /> 			<!-- 30 = last slot bag 1 -->
+		<option name="INV_AUTOSELL_TOSLOT"	value="60" /> 			<!-- 30 = last slot bag 1 -->
 		<option name="INV_AUTOSELL_QUALITY"	value="white,green" /> 	<!-- white,green,blue,purple  -->
 
 		<!-- Harvest options -->
@@ -87,7 +87,7 @@
 		<!-- <option name="PARTY"			value="true" /> -->
 		<!-- <option name="PARTY_ICONS"		value="true" /> -->
 		<!-- <option name="PARTY_INSTANCE"	value="true" /> -->
-		
+
 		<!-- Healing options -->
 		<!-- <option name="HEAL_PARTY"		value="true" /> --> 	<!-- Not implemented yet, coming soon -->
 
@@ -140,14 +140,14 @@
 
 	<skills_warrior>
 		<skill name="WARRIOR_SLASH"          	hotkey="MACRO" priority="90" />
-		<skill name="WARRIOR_TACTICAL_ATTACK"   hotkey="MACRO" priority="70" />	
+		<skill name="WARRIOR_TACTICAL_ATTACK"   hotkey="MACRO" priority="70" />
 		<skill name="WARRIOR_PROBING_ATTACK" 	hotkey="MACRO" priority="80" />
 		<skill name="WARRIOR_OPEN_FLANK"      	hotkey="MACRO" priority="70" />
 		<skill name="WARRIOR_SURPRISE_ATTACK"   hotkey="MACRO" priority="70" pullonly="true" />
 		<skill name="WARRIOR_FRENZY"  			hotkey="MACRO" priority="30" inbattle="true" />
-		<skill name="WARRIOR_THUNDER"     	  	hotkey="MACRO" priority="70" />		
-		<skill name="WARRIOR_MOON_CLEAVE"     	hotkey="MACRO" priority="70" />	
-		<skill name="WARRIOR_BLASTING_CYCLONE"  hotkey="MACRO" priority="70" />	
+		<skill name="WARRIOR_THUNDER"     	  	hotkey="MACRO" priority="70" />
+		<skill name="WARRIOR_MOON_CLEAVE"     	hotkey="MACRO" priority="70" />
+		<skill name="WARRIOR_BLASTING_CYCLONE"  hotkey="MACRO" priority="70" />
 	</skills_warrior>
 
 	<skills_scout>
@@ -156,7 +156,7 @@
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />
 		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="70" />
 		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
-		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" maxhpper="60" inbattle="true"/> 
+		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" maxhpper="60" inbattle="true"/>
 	</skills_scout>
 
 	<skills_rogue>
@@ -164,8 +164,8 @@
 		<skill name="ROGUE_LOW_BLOW"      		hotkey="MACRO" priority="80" />
 		<skill name="ROGUE_HIDE"    			hotkey="MACRO" priority="10" autouse="false" />
 		<skill name="ROGUE_INFORMER"    		hotkey="MACRO" priority="80" />
-		<skill name="ROGUE_ASSASSINS_RAGE"    	hotkey="MACRO" priority="60" />	
-		<skill name="ROGUE_WOUND_ATTACK"    	hotkey="MACRO" priority="80" />		
+		<skill name="ROGUE_ASSASSINS_RAGE"    	hotkey="MACRO" priority="60" />
+		<skill name="ROGUE_WOUND_ATTACK"    	hotkey="MACRO" priority="80" />
 	</skills_rogue>
 
 	<skills_mage>

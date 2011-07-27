@@ -314,11 +314,11 @@
 	<skill name="SCOUT_IGNITE" id="491509" mana="40" range="150" />
 	<skill name="SCOUT_GONE_WITH_THE_WIND" id="491510" mana="30" cooldown="120" casttime="2" maxhpper="20" type="buff" target="self" /> <!-- Drop aggro -->
 	<skill name="SCOUT_CURSED_ARROW" id="492623" mana="30" cooldown="10" casttime="2" type="dot" />
-	<skill name="SCOUT_PURIFYING_SHOT" id="491504" range="250" mana="150" cooldown="10" type="buff" target="fiendly" />
-	<skill name="SCOUT_MANA_ARROWS" id="491513" mana="30" range="150" cooldown="300" type="buff" target="fiendly" />
+	<skill name="SCOUT_PURIFYING_SHOT" id="491504" range="250" mana="150" cooldown="10" type="buff" target="friendly" />
+	<skill name="SCOUT_MANA_ARROWS" id="491513" mana="30" range="150" cooldown="300" type="buff" target="friendly" />
 	<skill name="SCOUT_SPIRITUAL_LEADER" id="491335" mana="40" cooldown="300" type="buff" target="self" />
 	<skill name="SCOUT_REPELLING_ARROW" id="491516" mana="30" manainc="3.0" range="150" cooldown="25" />
-	<skill name="SCOUT_HEALING_SHOT" id="491487" mana="20" manainc="2.0" range="150" cooldown="8" />
+	<skill name="SCOUT_HEALING_SHOT" id="491487" mana="20" manainc="2.0" range="150" cooldown="8" type="heal" target="friendly" />
 	<skill name="SCOUT_MANA_CONVERSION" id="491519" mana="50" manainc="5.0" cooldown="60" type="buff" target="self" />
 	<skill name="SCOUT_THORN_ARROW" id="494037" mana="30" manainc="3" range="200" cooldown="6" />
 	<skill name="SCOUT_ENTLING_OFFERING" id="494038" type="buff" target="self" buffname="504547"/>
@@ -402,4 +402,9 @@
 	<skill name="WARDEN_ANTI-MAGIC_ARROW" id="494004" concentration="30" cooldown="6" range="250" type="damage" target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" id="494212" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" id="494357" concentration="30" type="buff" target="self" cooldown="60" />
+
+
+	<!-- ALL -->
+   <skill name="ALL_SPIRIT_HERB_ESSENCE" casttime="3" type="heal" target="self" inbattle="false"/>
+   <skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" casttime="3" type="heal" target="self" inbattle="false"/>
 </skills>
