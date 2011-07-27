@@ -3475,7 +3475,12 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				obj = self:findNearestNameOrId(_objname, nil, evalFunc)
 			end
 
-			if obj and ( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) < settings.profile.options.HARVEST_DISTANCE ) then -- object found, target
+			-- Check if too far
+			if obj and ( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y ) > settings.profile.options.HARVEST_DISTANCE ) then
+				obj == nil
+			end
+
+			if obj then -- object found, target
 				if self.LastTargetPtr ~= obj.Address then
 					cprintf(cli.yellow, language[95], obj.Name); -- We found object and will harvest it
 					self.LastTargetPtr = obj.Address;		-- remember target address to avoid msg spam
