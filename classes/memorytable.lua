@@ -112,7 +112,7 @@ function GetRangeForID( id )
 		end
 	end
 
-	printf( "Table range not found for ID: %d\n", id )
+	--printf( "Table range not found for ID: %d\n", id )
 	return nil
 end
 
