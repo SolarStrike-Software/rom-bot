@@ -117,13 +117,13 @@ CPawn = class(
 		self.PotionManaUsed = 0;		-- counts use of mana potions
 		self.PotionLastManaEmptyTime = 0;	-- timer for potion empfty message
 		self.PotionLastHpEmptyTime = 0;	-- timer for potion empfty message
-		
+
 		self.PhiriusLastUseTime = 0;
 		self.PhiriusHpUsed = 0;			-- counts use of HP phirius
 		self.PhiriusManaUsed = 0;		-- counts use of mana phirius
 		self.PhiriusLastManaEmptyTime = 0;	-- timer for phirius empfty message
 		self.PhiriusLastHpEmptyTime = 0;	-- timer for phirius empfty message
-		
+
 		self.Returning = false;		-- Whether following the return path, or regular waypoints
 		self.BotStartTime = os.time(); -- Records when the bot was started.
 		self.BotStartTime_nr = 0;	-- Records when the bot was started, will not return at pause
@@ -386,16 +386,17 @@ end
 
 function CPawn:updateBuffs()
 	local proc = getProc()
+	local BuffSize = 0x54
 	local buffStart = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsStart_offset);
 	local buffEnd = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsEnd_offset);
 
 	self.Buffs = {} -- clear old values
 	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
-	if (buffEnd - buffStart)/ 56 > 20 then -- Something wrong, too many buffs
+	if (buffEnd - buffStart)/ BuffSize > 20 then -- Something wrong, too many buffs
 		return
 	end
 
-	for i = buffStart, buffEnd - 4, 56 do
+	for i = buffStart, buffEnd - 4, BuffSize do
 		local tmp = {}
 		--yrest(1)
 		tmp.Id = memoryReadRepeat("int", proc, i + addresses.pawnBuffId_offset);
