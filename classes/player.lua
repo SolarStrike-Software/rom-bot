@@ -872,7 +872,7 @@ function CPlayer:checkPotions()
 		if( self.MaxMana > 0 ) then
 			if( (self.Mana/self.MaxMana*100) < settings.profile.options.PHIRIUS_MP_LOW  and
 				os.difftime(os.time(), self.PhiriusLastUseTime) > 19 )  then
-				item = inventory:bestAvailableConsumable("phirusmana");
+				item = inventory:bestAvailablePhirius("phirusmana");
 				if( item ) then
 					if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
 					local checkItemName = item.Name;
