@@ -105,10 +105,10 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 	return true
 end
 
--- Returns item name or false, takes in type, example: "healing" or "mana" or "arraw_quver" or "thrown_bag"
+-- Returns item name or false, takes in type, example: "hot" or "mot" or "arraw_quver" or "thrown_bag"
 -- quantity is how many of them do we need, for example, for potions its 99 or 198
 -- but for arraws it might be 1 or 2
--- type: healing|mana|arrow_quiver|thrown_bag|poison
+-- type: hot|mot|arrow_quiver|thrown_bag|poison
 function CStore:buyConsumable(type, quantity)
 	if quantity == nil or quantity == "" then
 		return

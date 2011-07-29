@@ -1,50 +1,56 @@
 <potions>
 	<!-- Healing potions -->
-	<potion type="healing" id="208473" level="66" name="Herbs of Hope" />
-	<potion type="healing" id="208213" level="61" name="Herbs of Omnipotence" />
-	<potion type="healing" id="207273" level="56" name="Infinite Herb" />
-	<potion type="healing" id="204889" level="51" name="Spirit Herb" />
-	<potion type="healing" id="200820" level="46" name="Ancestral Spirit Herbs" />
-	<potion type="healing" id="200274" level="41" potency="1500" name="Strong Healing Potion" />
-	<potion type="healing" id="200229" level="41" potency="1200" name="Strong medicine" />
-	<potion type="healing" id="200819" level="41" potency="1000" name="Military Regeneration Formula" />
-	<potion type="healing" id="200816" level="36" name="Potent Regeneration Formula" />
-	<potion type="healing" id="200815" level="31" name="Regeneration Mixture" />
-	<potion type="healing" id="200812" level="26" name="Healer's First Aid Potion" />
-	<potion type="healing" id="200178" level="21" potency="800" name="Healing Potion" />
-	<potion type="healing" id="200811" level="21" potency="600" name="Barbarian Herbs" />
-	<potion type="healing" id="200174" level="21" potency="600" name="Salve" />
-	<potion type="healing" id="200808" level="16" name="Major First Aid Potion" />
-	<potion type="healing" id="200807" level="11" potency="400" name="First Aid Potion" />
-	<potion type="healing" id="200664" level="6" name="Basic First Aid Potion" />
-	<potion type="healing" id="203159" level="1" potency="500" name="Kuerbispizza" />
-	<potion type="healing" id="200154" level="1" potency="300" name="Heiltrank" />
-	<potion type="healing" id="200151" level="1" potency="220" name="Basic Medicine" />
-	<potion type="healing" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
-
+	<potion type="hot" id="208473" level="66" name="Herbs of Hope" />
+	<potion type="hot" id="208213" level="61" name="Herbs of Omnipotence" />
+	<potion type="hot" id="207273" level="56" name="Infinite Herb" />
+	<potion type="hot" id="204889" level="51" name="Spirit Herb" />
+	<potion type="hot" id="200820" level="46" name="Ancestral Spirit Herbs" />
+	<potion type="hot" id="200819" level="41" potency="1000" name="Military Regeneration Formula" />
+	<potion type="hot" id="200816" level="36" name="Potent Regeneration Formula" />
+	<potion type="hot" id="200815" level="31" name="Regeneration Mixture" />
+	<potion type="hot" id="200812" level="26" name="Healer's First Aid Potion" />
+	<potion type="hot" id="200811" level="21" potency="600" name="Barbarian Herbs" />
+	<potion type="hot" id="200808" level="16" name="Major First Aid Potion" />
+	<potion type="hot" id="200807" level="11" potency="400" name="First Aid Potion" />
+	<potion type="hot" id="200664" level="6" name="Basic First Aid Potion" />
+	<potion type="hot" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
+	
+	<potion type="heal" id="207677" level="65" potency="4000" name="Super Healing Potion" />	
+	<potion type="heal" id="207676" level="60" potency="3500" name="Super Salve" />
+	<potion type="heal" id="200274" level="41" potency="1500" name="Strong Healing Potion" />
+	<potion type="heal" id="200229" level="41" potency="1200" name="Strong medicine" />	
+	<potion type="heal" id="200178" level="21" potency="800" name="Healing Potion" />
+	<potion type="heal" id="200174" level="21" potency="600" name="Salve" />	
+	<potion type="heal" id="200154" level="1" potency="300" name="Basic Healing Potion" />
+	<potion type="heal" id="200151" level="1" potency="220" name="Basic Medicine" />	
+	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />	
+	
 	<!-- Mana potions -->
-	<potion type="mana" id="208480" level="66" name="Rare Magic Stone" />
-	<potion type="mana" id="208214" level="61" name="Elemental Stone of Omnipotence" />
-	<potion type="mana" id="207274" level="56" name="Infinite Elemental Stone" />
-	<potion type="mana" id="204890" level="51" name="Elemental Spirit Stone" />
-	<potion type="mana" id="201061" level="46" name="Elemental Spirit Stone" />
-	<potion type="mana" id="200275" level="43" potency="1500" name="Strong Mana Potion" />
-	<potion type="mana" id="200270" level="43" potency="1200" name="Powerful Spirit Potion" />
-	<potion type="mana" id="201060" level="41" name="Refined Crystal Mana Medicine" />
-	<potion type="mana" id="201057" level="36" name="Potent Crystal Mana Medicine" />
-	<potion type="mana" id="201056" level="31" name="Crystal Mana Medicine" />
-	<potion type="mana" id="201053" level="26" name="Condensed Magic Potion" />
-	<potion type="mana" id="200179" level="23" potency="800" name="Mana Potion green" />
-	<potion type="mana" id="200175" level="23" potency="600" name="Mana Potion" />
-	<potion type="mana" id="201052" level="21" name="Elemental Mana Stone" />
-	<potion type="mana" id="201047" level="16" name="Major Magic Potion" />
-	<potion type="mana" id="201046" level="11" name="Magic Potion" />
-	<potion type="mana" id="201043" level="6" name="Basic Magic Potion" />
-	<potion type="mana" id="200155" level="3" potency="300" name="Basic Mana Potion" />
-	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />
-	<potion type="mana" id="203160" level="1" potency="500" name="Kuerbissuppe" />
-	<potion type="mana" id="201042" level="1" potency="180" name="Simple Magic Potion" />
+	<potion type="mot" id="208480" level="66" name="Rare Magic Stone" />
+	<potion type="mot" id="208214" level="61" name="Elemental Stone of Omnipotence" />
+	<potion type="mot" id="207274" level="56" name="Infinite Elemental Stone" />
+	<potion type="mot" id="204890" level="51" name="Elemental Spirit Stone" />
+	<potion type="mot" id="201061" level="46" name="Elemental Spirit Stone" />
+	<potion type="mot" id="201060" level="41" name="Refined Crystal Mana Medicine" />
+	<potion type="mot" id="201057" level="36" name="Potent Crystal Mana Medicine" />
+	<potion type="mot" id="201056" level="31" name="Crystal Mana Medicine" />
+	<potion type="mot" id="201053" level="26" name="Condensed Magic Potion" />
+	<potion type="mot" id="201052" level="21" name="Elemental Mana Stone" />
+	<potion type="mot" id="201047" level="16" name="Major Magic Potion" />
+	<potion type="mot" id="201046" level="11" name="Magic Potion" />
+	<potion type="mot" id="201043" level="6" name="Basic Magic Potion" />
+	<potion type="mot" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
+	<potion type="mana" id="207679" level="65" potency="4000" name="Super Mana Potion" />	
+	<potion type="mana" id="207678" level="60" potency="3500" name="Super Spirit Potion" />	
+	<potion type="mana" id="200275" level="43" potency="1500" name="Strong Mana Potion" />
+	<potion type="mana" id="200270" level="43" potency="1200" name="Powerful Spirit Potion" />	
+	<potion type="mana" id="200179" level="23" potency="800" name="Mana Potion green" />
+	<potion type="mana" id="200175" level="23" potency="600" name="Mana Potion" />	
+	<potion type="mana" id="200155" level="3" potency="300" name="Basic Mana Potion" />
+	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />	
+	<potion type="mana" id="203160" level="1" potency="500" name="Pumpkin Soup of Happiness" />
+	
 	<!-- Arrow quivers -->
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
@@ -110,21 +116,16 @@
 	<potion type="phirusboth" 		id="203492" name="Phirius Special Water - Type D" potency="50" /> 	<!-- 50% -->
 	<potion type="phirusboth" 		id="203493" name="Phirius Special Water - Type E" potency="60" /> 	<!-- 60% -->	
 	
-	
 	<potion type="phirushealing" 	id="203494" name="Phirius Potion - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirushealing" 	id="203495" name="Phirius Potion - Type B" potency="30" />			<!-- 30% -->
 	<potion type="phirushealing" 	id="203496" name="Phirius Potion - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirushealing" 	id="203497" name="Phirius Potion - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirushealing" 	id="203498" name="Phirius Potion - Type E" potency="60" />			<!-- 60% -->
 	
-	
 	<potion type="phirusmana" 		id="203499" name="Phirius Elixir - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirusmana" 		id="203500" name="Phirius Elixir - Type B" potency="30" />			<!-- 30% -->
 	<potion type="phirusmana" 		id="203501" name="Phirius Elixir - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirusmana" 		id="203502" name="Phirius Elixir - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirusmana" 		id="203503" name="Phirius Elixir - Type E" potency="60" />			<!-- 60% -->
-	
-	
-
 
 </potions>
