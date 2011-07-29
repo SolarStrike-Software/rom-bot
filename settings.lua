@@ -1249,6 +1249,22 @@ function settings.updateSkillsAvailability()
 		end
 	end
 
+	-- Then collect item set skills
+	for num = 1, 5 do -- 5 possible enabled item set skills
+		local id = memoryReadInt(getProc(), addresses.itemSetSkillsBase + (num - 1)*4)
+		if id ~= 0 then
+			local name = GetIdName(id)
+			local address = GetItemAddress(id)
+			local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
+			if name ~= 0 and name ~= "" then
+				tabData[name] = {
+					Id = id,
+					aslevel = aslevel
+				}
+			end
+		end
+	end
+
 	-- Next go through the profile skills and see which are available
 	for _, skill in pairs(settings.profile.skills) do
 		-- Check Id
@@ -1267,17 +1283,17 @@ function settings.updateSkillsAvailability()
 			if tabData[realName] ~= nil then
 				-- update profile values
 				skill.Id = tabData[realName].Id
-				skill.TPToLevel = tabData[realName].TPToLevel
-				skill.Level = tabData[realName].Level
 				skill.aslevel = tabData[realName].aslevel
-				skill.skilltab = tabData[realName].skilltab
-				skill.skillnum = tabData[realName].skillnum
+				if tabData[realName].TPToLevel then skill.TPToLevel = tabData[realName].TPToLevel end
+				if tabData[realName].Level then skill.Level = tabData[realName].Level end
+				if tabData[realName].skilltab then skill.skilltab = tabData[realName].skilltab end
+				if tabData[realName].skillnum then skill.skillnum = tabData[realName].skillnum end
 				-- update database values(some functions access the database values)
 				database.skills[skill.Name].Id = tabData[realName].Id
-				database.skills[skill.Name].Level = tabData[realName].Level
 				database.skills[skill.Name].aslevel = tabData[realName].aslevel
-				database.skills[skill.Name].skilltab = tabData[realName].skilltab
-				database.skills[skill.Name].skillnum = tabData[realName].skillnum
+				if tabData[realName].Level then database.skills[skill.Name].Level = tabData[realName].Level end
+				if tabData[realName].skilltab then database.skills[skill.Name].skilltab = tabData[realName].skilltab end
+				if tabData[realName].skillnum then database.skills[skill.Name].skillnum = tabData[realName].skillnum end
 
 				-- Check if available
 				if skill.aslevel > player.Level then
