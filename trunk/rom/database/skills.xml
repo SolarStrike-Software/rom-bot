@@ -110,7 +110,7 @@
 	<skill name="PRIEST_CONDENSED_RAGE" id="493038" rage="25" type="buff" casttime="1" target="self" buffname="503280" reqbuffname="501977" reqbufftarget="player" />
 
 	<!-- Itemset skills -->
-	<skill name="PRIEST_FROST_SCARS" id="495563" rage="200" mana="180" cooldown="4" type="damaga" target="enemy" />
+	<skill name="PRIEST_FROST_SCARS" id="495563" rage="200" mana="180" cooldown="4" type="damage" target="enemy" />
 	<!-- Unknown -->
 	<skill name="PRIEST_BLESSING_OF_RAIN" aslevel="16" mana="120" type="buff" cooldown="600" target="self" />
 
@@ -405,6 +405,7 @@
 
 
 	<!-- ALL -->
-   <skill name="ALL_SPIRIT_HERB_ESSENCE" casttime="3" type="heal" target="self" inbattle="false"/>
-   <skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" casttime="3" type="heal" target="self" inbattle="false"/>
+   <skill name="ALL_SPIRIT_HERB_ESSENCE" id="495491" casttime="3" type="heal" target="self" inbattle="false"/>
+   <skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" id="495492" casttime="3" type="heal" target="self" inbattle="false"/>
+   <skill name="ALL_ENERGY_RESTORE" id="495494" casttime="5" cooldown="45" target="self" />
 </skills>
