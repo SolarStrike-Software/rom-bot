@@ -344,7 +344,7 @@ function CInventory:updateNextSlot(_times)
 	end;
 end;
 
--- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
+-- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
 	local bestLevel = 0;		-- required player level of a potion
 	local bestPotency = 0;		-- power of a potion
@@ -357,13 +357,13 @@ function CInventory:bestAvailableConsumable(type)
 
 
 	-- set select strategy
-	if( type == "mana" ) then
+	if( type == "mot" ) then
 		if( settings.profile.options.USE_MANA_POTION == select_strategy_minstack ) then
 			select_strategy = select_strategy_minstack;
 		else
 			select_strategy = select_strategy_default;
 		end
-	elseif(type == "healing" ) then
+	elseif(type == "hot" ) then
 		if( settings.profile.options.USE_HP_POTION == select_strategy_minstack ) then
 			select_strategy = select_strategy_minstack;
 		else
@@ -838,7 +838,7 @@ function getInventoryRange(range)
 	end
 end
 
--- Returns item name or false, takes in type, example: "healing" or "mana" or "arrow" or "thrown"
+-- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailablePhirius(type)
 
 	local bestPer = 0;		-- power of a potion
@@ -886,6 +886,82 @@ function CInventory:bestAvailablePhirius(type)
 				elseif( consumable.Potency == bestPer  and
 					item.ItemCount < bestSmallStack ) then
 					bestPer = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				end
+			end
+		end
+	end
+	return bestItem;
+end
+
+-- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
+function CInventory:bestAvailablepotion(type)
+	local bestLevel = 0;		-- required player level of a potion
+	local bestPotency = 0;		-- power of a potion
+	local bestItem = false;
+	local bestSmallStack = 999;
+	local select_strategy;
+	local select_strategy_best = "best";
+	local select_strategy_minstack = "minstack";
+	local select_strategy_default = "best";
+
+
+	-- set select strategy
+	if( type == "mana" ) then
+		if( settings.profile.options.USE_MANA_POTION == select_strategy_minstack ) then
+			select_strategy = select_strategy_minstack;
+		else
+			select_strategy = select_strategy_default;
+		end
+	elseif(type == "heal" ) then
+		if( settings.profile.options.USE_HP_POTION == select_strategy_minstack ) then
+			select_strategy = select_strategy_minstack;
+		else
+			select_strategy = select_strategy_default;
+		end
+	else
+		select_strategy = select_strategy_default;	-- default = 'best'
+	end
+
+	self:update();
+	-- check item slots slot by slot
+	for slot,item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id];
+
+		if( consumable  and							-- item in database
+		    consumable.Type == type and	 			-- right type (mana, arrow, ...)
+		 	consumable.Level <= player.Level and	-- level ok
+		 	item.ItemCount > 0 and					-- use only if some available
+			item.Available) then					-- not in unrented bag
+
+			if( select_strategy == select_strategy_minstack ) then
+				-- select smallest stack
+				if item.ItemCount < bestSmallStack then
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				end
+			else	-- select best available consumable (& smallest stack by default)
+				-- select better level
+
+				if( consumable.Level > bestLevel  ) then
+					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				-- same level but select better potency
+				elseif( consumable.Level == bestLevel  and
+				  		consumable.Potency > bestPotency) then
+					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
+					bestSmallStack = item.ItemCount;
+					bestItem = item;
+				-- same/same but select smaller stack
+				elseif( consumable.Level == bestLevel  and
+						consumable.Potency == bestPotency  and
+						item.ItemCount < bestSmallStack ) then
+					bestLevel = consumable.Level;
+					bestPotency = consumable.Potency;
 					bestSmallStack = item.ItemCount;
 					bestItem = item;
 				end

@@ -795,28 +795,11 @@ function CPlayer:checkSkills(_only_friendly, target)
 					yrest(200); -- Wait to stop only if not an instant cast spell
 				end
 
-				-- Make sure we aren't already busy casting something else
-	--			while(self.Casting) do
-	--				-- Waiting for casting to finish...
-	--				yrest(100);
-	--				self:update();
-	--			end
-
-		-- this is done in CPlayer:cast() so it's duplicated
-				--[[ break cast if aggro before casting
-				if( self:check_aggro_before_cast(JUMP_FALSE, v.Type) and
-				   ( v.Type == STYPE_DAMAGE or
-					 v.Type == STYPE_DOT )  ) then	-- without jump
-					return false;
-				end;]]
-
 				self:cast(v);
 				used = true;
 			end
 		end
 	else
-		-- We used the skill queue instead of the above loop,
-		-- so now we check potions
 		self:checkPotions();
 	end
 
@@ -826,6 +809,7 @@ end
 -- Check if you need to use any potions, and use them.
 function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
+
 
 	if settings.profile.options.USE_PHIRIUS_POTION == true then
 		-- If we need to use a health potion
@@ -914,24 +898,12 @@ function CPlayer:checkPotions()
 	self:update()
 
 	--== Normal Potions after checking for phirius ==--
+--=== Lisa to add in hot and one time heal potion usage. ===--
 
-
-	-- set general potion cooldown time
-	local cooldown_hp = settings.profile.options.POTION_COOLDOWN
-	local cooldown_mana = settings.profile.options.POTION_COOLDOWN
-
-	-- copy special mp/hp cooldowns if defined
-	if( settings.profile.options.POTION_COOLDOWN_HP ~= 0 ) then
-		cooldown_hp = settings.profile.options.POTION_COOLDOWN_HP
-	end
-	if( settings.profile.options.POTION_COOLDOWN_MANA ~= 0 ) then
-		cooldown_mana = settings.profile.options.POTION_COOLDOWN_MANA
-	end
-
-	-- If we need to use a health potion
+	-- If we need to use a heal over time potion
 	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION  and
-		os.difftime(os.time(), self.PotionLastUseTime) > cooldown_hp )  then
-		item = inventory:bestAvailableConsumable("healing");
+		os.difftime(os.time(), self.PotionLastUseTime) > 15 )  then
+		item = inventory:bestAvailableConsumable("hot");
 		if( item ) then
 			if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
 			local checkItemName = item.Name;
@@ -946,6 +918,7 @@ function CPlayer:checkPotions()
 				cprintf(cli.green, language[10], 		-- Using HP potion
 				   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
 				   item.Name, item.ItemCount);
+				   yrest(1000)
 				if( self.Fighting ) then
 					yrest(1000);
 				end
@@ -967,11 +940,11 @@ function CPlayer:checkPotions()
 		end
 	end
 
-	-- If we need to use a mana potion(if we even have mana)
+	-- If we need to use a mana over time potion(if we even have mana)
 	if( self.MaxMana > 0 ) then
 		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION  and
-			os.difftime(os.time(), self.PotionLastUseTime) > cooldown_mana )  then
-			item = inventory:bestAvailableConsumable("mana");
+			os.difftime(os.time(), self.PotionLastUseTime) > 15 )  then
+			item = inventory:bestAvailableConsumable("mot");
 			if( item ) then
 				-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drubk before cast/skill is finished
 				if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
@@ -989,6 +962,7 @@ function CPlayer:checkPotions()
 					cprintf(cli.green, language[11], 		-- Using MP potion
 						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
 						item.Name, item.ItemCount);
+						yrest(1000)
 					if( self.Fighting ) then
 						yrest(1000);
 					end
@@ -1011,6 +985,92 @@ function CPlayer:checkPotions()
 		end
 	end
 
+	-- If we need to use a heal potion
+	if( (self.HP/self.MaxHP*100) < settings.profile.options.HP_LOW_POTION  and
+		os.difftime(os.time(), self.PotionLastOnceUseTime) > 60 )  then
+		item = inventory:bestAvailablepotion("heal");
+		if( item ) then
+			if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
+			local checkItemName = item.Name;
+			item:update();
+			if( checkItemName ~= item.Name ) then
+				cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+				item:update();
+			else
+				item:use();
+				self.PotionHpOnceUsed = self.PotionHpOnceUsed + 1;			-- counts use of HP potions
+
+				cprintf(cli.green, language[10], 		-- Using HP potion
+				   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
+				   item.Name, item.ItemCount);
+				if( self.Fighting ) then
+					yrest(1000);
+				end
+
+				self.PotionLastOnceUseTime = os.time();
+			end
+
+			return true;
+		else		-- potions empty
+			if( os.difftime(os.time(), self.PotionLastHpOnceEmptyTime) > 16 ) then
+				--cprintf(cli.yellow, language[17], inventory.MaxSlots); 		-- No more (usable) hp potions
+				self.PotionLastHpOnceEmptyTime = os.time();
+				-- full inventory update if potions empty
+				if( os.difftime(os.time(), self.InventoryLastUpdate) >
+				  settings.profile.options.INV_UPDATE_INTERVAL ) then
+					self.InventoryDoUpdate = true;
+				end
+			end;
+		end
+	end
+
+	-- If we need to use a mana potion(if we even have mana)
+	if( self.MaxMana > 0 ) then
+		if( (self.Mana/self.MaxMana*100) < settings.profile.options.MP_LOW_POTION  and
+			os.difftime(os.time(), self.PotionLastOnceUseTime) > 60 )  then
+			item = inventory:bestAvailablepotion("mana");
+			if( item ) then
+				-- yrest(settings.profile.options.SKILL_USE_PRIOR);	-- potions can be drubk before cast/skill is finished
+				if self.Casting then self:waitTillCastingEnds() end -- wait if still casting minus undercut
+				--local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+				-- I think this check here is useless now
+				local checkItemName = item.Name;
+				item:update();
+				if( checkItemName ~= item.Name ) then
+					cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
+					item:update();
+				else
+					item:use();
+					self.PotionManaOnceUsed = self.PotionManaOnceUsed + 1;		-- counts use of mana potions
+
+					cprintf(cli.green, language[11], 		-- Using MP potion
+						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
+						item.Name, item.ItemCount);
+					if( self.Fighting ) then
+						yrest(1000);
+					end
+
+					self.PotionLastOnceUseTime = os.time();
+				end
+
+				return true;		-- avoid invalid/use count of
+			else	-- potions empty
+				if( os.difftime(os.time(), self.PotionLastManaOnceEmptyTime) > 16 ) then
+					--cprintf(cli.yellow, language[16], inventory.MaxSlots); 		-- No more (usable) mana potions
+					self.PotionLastManaOnceEmptyTime = os.time();
+					-- full inventory update if potions empty
+					if( os.difftime(os.time(), self.InventoryLastUpdate) >
+					  settings.profile.options.INV_UPDATE_INTERVAL ) then
+						self.InventoryDoUpdate = true;
+					end
+				end;
+			end;
+		end
+	end	
+	
+	
+	
+	
 	return false
 
 end
@@ -1102,7 +1162,7 @@ function CPlayer:fight()
 		end;
 
 		local target = self:getTarget();
-
+		
 		if( target.HP ~= lastTargetHP ) then
 			self.lastHitTime = os.time();
 			lastTargetHP = target.HP;
@@ -3274,8 +3334,8 @@ function CPlayer:merchant(_npcname, _option)
 		if ( inventory:autoSell() ) then
 			inventory:update();
 		end
-		store:buyConsumable("healing", settings.profile.options.HEALING_POTION);
-		store:buyConsumable("mana", settings.profile.options.MANA_POTION);
+		store:buyConsumable("hot", settings.profile.options.HEALING_POTION);
+		store:buyConsumable("mot", settings.profile.options.MANA_POTION);
 		store:buyConsumable("arrow_quiver", settings.profile.options.ARROW_QUIVER);
 		store:buyConsumable("thrown_bag", settings.profile.options.THROWN_BAG);
 		store:buyConsumable("poison", settings.profile.options.POISON);

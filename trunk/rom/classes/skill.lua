@@ -33,8 +33,6 @@ CSkill = class(
 		self.Target = STARGET_ENEMY;
 		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
 		self.ManaInc = 0; -- Increase in mana per level
-		self.skilltab = 0;
-		self.skillnum = 0;
 
 		-- Information about required buffs/debuffs
 		self.BuffName = "" -- name of buff if skill type is 'buff'
@@ -56,7 +54,7 @@ CSkill = class(
 		self.Toggled = false;
 
 		self.Blocking = false;	-- Whether or not the skill blocks the queue
-
+		self.pull = false -- pull is to specify which skill to use to start combat.
 		self.pullonly = false;	-- use only in pull phase (only for melees with ranged pull attacks)
 		self.maxuse = 0;	-- use that skill only x-times per fight
 		self.rebuffcut = 0;	-- reduce cooldown for x seconds to rebuff earlier
@@ -66,7 +64,6 @@ CSkill = class(
 		self.modifier = 0;
 
 		self.priority = 0; -- Internal use
-
 
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
@@ -87,8 +84,6 @@ CSkill = class(
 			self.Target = copyfrom.Target;
 			self.InBattle = copyfrom.InBattle;
 			self.ManaInc = copyfrom.ManaInc;
-			self.skilltab = copyfrom.skilltab;
-			self.skillnum = copyfrom.skillnum;
 			self.TargetMaxHpPer = copyfrom.TargetMaxHpPer;
 			self.TargetMaxHp = copyfrom.TargetMaxHp;
 			self.MaxHpPer = copyfrom.MaxHpPer;
@@ -98,6 +93,7 @@ CSkill = class(
 			self.hotkey = copyfrom.hotkey;
 			self.modifier = copyfrom.modifier;
 			self.priority = copyfrom.priority;
+			self.pull = copyfrom.pull;
 			self.pullonly = copyfrom.pullonly;
 			self.maxuse = copyfrom.maxuse;
 			self.rebuffcut = copyfrom.rebuffcut;
@@ -109,7 +105,6 @@ CSkill = class(
 			self.NoBuffTarget = copyfrom.NoBuffTarget;
 			self.NoBuffName = copyfrom.NoBuffName;
 			self.Blocking = copyfrom.Blocking;
-
 		end
 	end
 );
@@ -204,12 +199,22 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 
-	-- You don't meet the maximum HP percent requirement
-	if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
-	if( (self.MaxHpPer < 0 and -1 or 1) * (player.HP / player.MaxHP * 100) > self.MaxHpPer ) then
-		debug_skilluse("MAXHPPER", player.HP/player.MaxHP*100, self.MaxHpPer);
-		return false;
-	end
+-- You don't meet the maximum HP percent requirement
+   if( player.MaxHP == 0 ) then player.MaxHP = 1; end; -- prevent division by zero
+   if( target.MaxHP == 0 ) then target.MaxHP = 1; end
+
+   if target.Type ~= PT_PLAYER then -- no target or enemy target, heal self
+      if( (self.MaxHpPer < 0 and -1 or 1) * (player.HP / player.MaxHP * 100) > self.MaxHpPer ) then
+         debug_skilluse("MAXHPPER", player.HP/player.MaxHP*100, self.MaxHpPer);
+         return false;
+      end
+   else
+   --=== Heal friendly target, including self ===--
+      if( (self.MaxHpPer < 0 and -1 or 1) * (target.HP / target.MaxHP * 100) > self.MaxHpPer ) then
+         debug_skilluse("MAXHPPER", target.HP/target.MaxHP*100, self.MaxHpPer);
+         return false;
+      end
+   end
 
 	-- You are not below the maximum Mana Percent
 	if( (self.MaxManaPer < 0 and -1 or 1) * (player.Mana/player.MaxMana*100) > self.MaxManaPer ) then
@@ -246,7 +251,7 @@ function CSkill:canUse(_only_friendly, target)
 	-- check if hp below our HP_LOW level
 	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
 		local hpper = (player.HP/player.MaxHP * 100);
-
+	if target.Type ~= PT_PLAYER then
 		if( self.MaxHpPer ~= 100 ) then
 			if( hpper > self.MaxHpPer ) then
 				return false;
@@ -258,6 +263,20 @@ function CSkill:canUse(_only_friendly, target)
 				return false;
 			end
 		end
+	else
+		local hpper = (target.HP/target.MaxHP * 100);
+				if( self.MaxHpPer ~= 100 ) then
+			if( hpper > self.MaxHpPer ) then
+				return false;
+			end
+		else
+			-- Inherit from settings' HP_LOW
+			if( hpper > settings.profile.options.HP_LOW ) then
+				debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
+				return false;
+			end
+		end
+	end
 	end
 
 

@@ -3,59 +3,45 @@ include("player.lua");
 
 
 
-function PartyHeals()
-		local partymember={}
+function PartyTable()
+		partymember={}
 		local partymemberName={}
 		local partymemberObj={}
 
 		table.insert(partymemberName,1, RoMScript("UnitName('player')"))  -- need to insert player name.
 		table.insert(partymemberObj,1, player:findNearestNameOrId(partymemberName[1]))
 		table.insert(partymember,1, CPawn(partymemberObj[1].Address))
-for i = 1, 5 do
+	for i = 1, 5 do
 		if GetPartyMemberName(i) ~= nil then
-		cprintf(cli.yellow,"Party member "..i.." has the name of ")
-		cprintf(cli.red, GetPartyMemberName(i).."\n")
-		else
-		printf("No information for party member "..i.."\n")
+			cprintf(cli.yellow,"Party member "..i.." has the name of ")
+			cprintf(cli.red, GetPartyMemberName(i).."\n")
+		end
+			
+		if GetPartyMemberName(i) then
+			table.insert(partymemberName,i + 1, GetPartyMemberName(i))
+			table.insert(partymemberObj,i + 1, player:findNearestNameOrId(partymemberName[i + 1]))
+			table.insert(partymember,i + 1, CPawn(partymemberObj[i + 1].Address))
 		end
 		
-	if GetPartyMemberName(i) then
-		table.insert(partymemberName,i + 1, GetPartyMemberName(i))
-		table.insert(partymemberObj,i + 1, player:findNearestNameOrId(partymemberName[i]))
-		table.insert(partymember,i + 1, CPawn(partymemberObj[i].Address))
 	end
 end
 
-
-
+function PartyHeals()
+local _time = os.time()
+PartyTable()
 	while(true) do
-	
 		for i,v in ipairs(partymember) do
-		if i == 1 then keyboardPress(key.VK_F1); end
-		if i == 2 then keyboardPress(key.VK_F2); end
-		if i == 3 then keyboardPress(key.VK_F3); end
-		if i == 4 then keyboardPress(key.VK_F4); end
-		if i == 5 then keyboardPress(key.VK_F5); end
-		if i == 6 then keyboardPress(key.VK_F6); end
-
+			player:target(partymember[i])
 			partymember[i]:update()
 			player:update()
-			
 			partymember[i]:updateBuffs()
-			
 			player:checkSkills(true);
-			
-			player:checkPotions()
-								
-			yrest(500)
-				
- 
-		if (not player.Battling) then 
-  
-		getNameFollow()
-		end	
+			if (not player.Battling) then 
+				getNameFollow()
+			end	
+		end
+		if os.time() - _time >= 30 then PartyHeals() end
 	end
- 	end
  end
 
 function PartyDPS()
