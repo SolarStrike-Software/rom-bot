@@ -4,13 +4,13 @@ include("player.lua");
 
 
 function PartyTable()
-		partymember={}
+		partymemberpawn={}
 		local partymemberName={}
 		local partymemberObj={}
 
-		table.insert(partymemberName,1, RoMScript("UnitName('player')"))  -- need to insert player name.
-		table.insert(partymemberObj,1, player:findNearestNameOrId(partymemberName[1]))
-		table.insert(partymember,1, CPawn(partymemberObj[1].Address))
+		table.insert(partymemberName,1, player.Name)  -- need to insert player name.
+		table.insert(partymemberObj,1, player:findNearestNameOrId(player.Name))
+		table.insert(partymemberpawn,1, CPawn(player.Address))
 	for i = 1, 5 do
 		if GetPartyMemberName(i) ~= nil then
 			cprintf(cli.yellow,"Party member "..i.." has the name of ")
@@ -20,7 +20,7 @@ function PartyTable()
 		if GetPartyMemberName(i) then
 			table.insert(partymemberName,i + 1, GetPartyMemberName(i))
 			table.insert(partymemberObj,i + 1, player:findNearestNameOrId(partymemberName[i + 1]))
-			table.insert(partymember,i + 1, CPawn(partymemberObj[i + 1].Address))
+			table.insert(partymemberpawn,i + 1, CPawn(partymemberObj[i + 1].Address))
 		end
 		
 	end
@@ -30,11 +30,11 @@ function PartyHeals()
 local _time = os.time()
 PartyTable()
 	while(true) do
-		for i,v in ipairs(partymember) do
-			player:target(partymember[i])
-			partymember[i]:update()
+		for i,v in ipairs(partymemberpawn) do
+			player:target(partymemberpawn[i])
+			partymemberpawn[i]:update()
 			player:update()
-			partymember[i]:updateBuffs()
+			partymemberpawn[i]:updateBuffs()
 			player:checkSkills(true);
 			if (not player.Battling) then 
 				getNameFollow()
