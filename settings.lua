@@ -1253,10 +1253,10 @@ function settings.updateSkillsAvailability()
 	for num = 1, 5 do -- 5 possible enabled item set skills
 		local id = memoryReadInt(getProc(), addresses.itemSetSkillsBase + (num - 1)*4)
 		if id ~= 0 then
-			local name = GetIdName(id)
 			local address = GetItemAddress(id)
-			local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
-			if name ~= 0 and name ~= "" then
+			local name = GetIdName(id)
+			if name ~= 0 and name ~= "" and address ~= nil then
+				local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
 				tabData[name] = {
 					Id = id,
 					aslevel = aslevel
