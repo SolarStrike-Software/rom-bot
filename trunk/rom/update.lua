@@ -19,7 +19,7 @@ include("functions.lua");
 	comment		A string of text that will be appended in the output
 ]]
 
-local updatePatterns = 
+local updatePatterns =
 {
 	staticbase_char = {
 		pattern = getCharUpdatePattern(),
@@ -554,7 +554,7 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x11950);
+	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x11990);
 	assumptionUpdate("charExp_address", addresses.staticbase_char + 0x6C);
 end
 

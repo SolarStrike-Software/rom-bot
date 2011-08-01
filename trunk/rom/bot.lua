@@ -881,7 +881,7 @@ function resurrect()
 			RoMScript("UseSelfRevive();");	-- first try self revive
 			yrest(500);
 			RoMScript("BrithRevive();");
-			waitForLoadingScreen()
+			waitForLoadingScreen(30)
 			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);
 			player:update();
 		end

@@ -446,9 +446,7 @@ function loadPaths( _wp_path, _rp_path)
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
 			error(msg, 0);
 		end;
-		if( not __WPL ) then  		-- define object if not there
-			__WPL = CWaypointList();
-		end;
+		__WPL = CWaypointList();
 		__WPL:load(filename);
 		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
 
