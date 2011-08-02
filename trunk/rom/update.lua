@@ -554,7 +554,7 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("moneyPtr", addresses.staticbase_char + 0x11990);
+	assumptionUpdate("moneyPtr", addresses.staticInventory + 0x2FD4);
 	assumptionUpdate("charExp_address", addresses.staticbase_char + 0x6C);
 end
 
