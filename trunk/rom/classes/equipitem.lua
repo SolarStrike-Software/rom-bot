@@ -1,4 +1,4 @@
-local proc = getProc();
+--local proc = getProc();
 
 CEquipItem = class(
 	function( self, slot )		
@@ -28,7 +28,7 @@ CEquipItem = class(
 
 function CEquipItem:update()
 	local oldId = self.Id;
-	self.Id = memoryReadInt( proc, self.Address );
+	self.Id = memoryReadInt( getProc(), self.Address );
 	-- printf( "Address: %X\ID: %d\n", self.Address, self.Id );
 	
 	if self.Id ~= oldId and self.Id ~= 0 then
@@ -37,15 +37,15 @@ function CEquipItem:update()
 		-- printf( "Base item address: %X\tID: %d\n", self.BaseItemAddress, self.Id );
 		self.Name = "";
 		self.Empty = false;
-		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
-		self.MaxDurability = memoryReadByte( proc, self.Address + addresses.maxDurabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
+		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.maxDurabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
-		local plusQuality = memoryReadByte( proc, self.Address + addresses.qualityTierOffset );
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
+		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
+		local plusQuality = memoryReadByte( getProc(), self.Address + addresses.qualityTierOffset );
 		local quality, tier = math.modf ( plusQuality / 16 );
 		tier = tier * 16;
 		-- printf( "Quality: %X\tTier: %X\n", quality, tier );
@@ -57,11 +57,11 @@ function CEquipItem:update()
 		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0xffffffff, self.Name );
 
 		if ( self.BaseItemAddress ~= nil and self.BaseItemAddress ~= 0 ) then
-			nameAddress = memoryReadInt( proc, self.BaseItemAddress + addresses.nameOffset );
+			nameAddress = memoryReadInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
 			if( nameAddress == nil or nameAddress == 0 ) then
 				tmp = nil;
 			else
-				tmp = memoryReadString(proc, nameAddress);
+				tmp = memoryReadString(getProc(), nameAddress);
 			end;
 
 			if tmp ~= nil then
@@ -70,13 +70,13 @@ function CEquipItem:update()
 				self.Name = "<EMPTY>";
 			end;
 
-			self.Value = memoryReadInt( proc, self.BaseItemAddress + addresses.valueOffset );
+			self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.valueOffset );
 			if ( self.Value > 0 ) then
 				self.Worth = self.Value / 10;
 			end;
-			self.RequiredLvl = memoryReadInt( proc, self.BaseItemAddress + addresses.requiredLevelOffset );
-			self.MaxStack = memoryReadInt( proc, self.BaseItemAddress + addresses.maxStackOffset );
-			self.Quality = memoryReadInt( proc, self.BaseItemAddress + addresses.qualityBaseOffset );
+			self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
+			self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
+			self.Quality = memoryReadInt( getProc(), self.BaseItemAddress + addresses.qualityBaseOffset );
 		else
 			self.Name = "<UNKNOWN>";
 		end;
@@ -95,12 +95,12 @@ function CEquipItem:update()
 		self.Bound = false;
 	else
 		-- if id is not 0 and hasn't changed we only update these values
-		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
 	end;
 	
 	if( settings.profile.options.DEBUG_INV ) then	

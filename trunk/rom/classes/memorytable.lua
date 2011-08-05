@@ -1,5 +1,6 @@
-local proc = getProc()
-local tablePointer = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset )
+--local proc = getProc()
+--local tablePointer = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset )
+local tablePointer = nil;
 local itemSize = 0x20
 local tables = {}
 local threshold = 256 -- We look back a maximum of "threshold" items to check if the table continues
@@ -18,7 +19,7 @@ CTRange = class(
 -- It accepts the last address of the last item and returns the address where the range continues or nil.
 function GetNextTableAddress( highestAddress, ptr )
 
-	local lastId = memoryReadInt( proc,  ptr + addresses.idOffset ) -- 12 bytes offset id
+	local lastId = memoryReadInt( getProc(),  ptr + addresses.idOffset ) -- 12 bytes offset id
 	local _address
 	local tmpID
 
@@ -27,24 +28,24 @@ function GetNextTableAddress( highestAddress, ptr )
 	local function CheckAddress( addressToCheck )
 
 		-- Check the 0x4 offset address
-		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x4 )
+		local tmpAddress = memoryReadInt( getProc(), addressToCheck + 0x4 )
 		if ( tmpAddress ~= nil ) then
 			if tmpAddress > highestAddress then
 				return tmpAddress
 			end
-			local tmpId = memoryReadInt( proc, tmpAddress + addresses.idOffset )
+			local tmpId = memoryReadInt( getProc(), tmpAddress + addresses.idOffset )
 			if tmpId > lastId and tmpId < 999999 then
 				return tmpAddress
 			end
 		end
 
 		-- Check the 0x8 offset address
-		local tmpAddress = memoryReadInt( proc, addressToCheck + 0x8 )
+		local tmpAddress = memoryReadInt( getProc(), addressToCheck + 0x8 )
 		if ( tmpAddress ~= nil ) then
 			if tmpAddress > highestAddress then
 				return tmpAddress
 			end
-			local tmpId = memoryReadInt( proc, tmpAddress + addresses.idOffset )
+			local tmpId = memoryReadInt( getProc(), tmpAddress + addresses.idOffset )
 			if tmpId > lastId and tmpId < 999999 then
 				return tmpAddress
 			end
@@ -64,7 +65,7 @@ function GetNextTableAddress( highestAddress, ptr )
 
 	-- The new address might not point to the first item so we look back until we find the first one
 	if _address then
-		local tmpID = memoryReadInt( proc, _address + addresses.idOffset )
+		local tmpID = memoryReadInt( getProc(), _address + addresses.idOffset )
 
 		-- See if we already found it
 		if tmpID == ( lastId + 1 ) then
@@ -77,12 +78,12 @@ function GetNextTableAddress( highestAddress, ptr )
 
 		-- Now search forward and back until correct id is found.
 		for i = 0, threshold do
-			tmpID = memoryReadInt( proc, _address + i*itemSize + addresses.idOffset )
+			tmpID = memoryReadInt( getProc(), _address + i*itemSize + addresses.idOffset )
 			if ( tmpID == ( lastId + 1 ) ) then
 				-- We found it, we can exit and return the address.
 				return _address + i*itemSize
 			end
-			tmpID = memoryReadInt( proc, _address - i*itemSize + addresses.idOffset )
+			tmpID = memoryReadInt( getProc(), _address - i*itemSize + addresses.idOffset )
 			if ( tmpID == ( lastId + 1 ) ) then
 				-- We found it, we can exit and return the address.
 				return _address - i*itemSize
@@ -120,11 +121,11 @@ end
 function GetItemAddress( id )
 	-- Gets the address for the item
 	local function GetTmpAddress( _address, _id )
-		local address = memoryReadIntPtr(proc, _address + 0x10, 0x8)
+		local address = memoryReadIntPtr(getProc(), _address + 0x10, 0x8)
 		if address == 0 then
 			-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
 			RoMScript("GetCraftRequestItem(".._id..", -1)")
-			address = memoryReadIntPtr(proc, _address + 0x10, 0x8)
+			address = memoryReadIntPtr(getProc(), _address + 0x10, 0x8)
 		end
 		return address
 	end
@@ -137,7 +138,7 @@ function GetItemAddress( id )
 		-- Get the address. Check that it's the right one, else check the one before and after it.
 		for _,i in pairs({ 0, -1, 1 }) do
 			local tmpAddress = _range.StartAddress - (id - _range.Start + i) * itemSize
-			local testId = memoryReadInt(proc, tmpAddress + addresses.idOffset)
+			local testId = memoryReadInt(getProc(), tmpAddress + addresses.idOffset)
 			if testId == id then -- right address
 				_address = tmpAddress
 				break
@@ -150,7 +151,7 @@ function GetItemAddress( id )
 		end
 
 		local itemAddress = GetTmpAddress( _address, id )
-		local itemId = memoryReadInt( proc, itemAddress )
+		local itemId = memoryReadInt( getProc(), itemAddress )
 
 		if itemId == id then
 			return itemAddress
@@ -210,16 +211,16 @@ function LoadTables_memory()
 
 		-- Get initial address
 		local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
-		local initialAddress = memoryReadIntPtr( proc, tablePointer + (4 * (i - 1)), startAddressOffsets) - 0x20
+		local initialAddress = memoryReadIntPtr( getProc(), tablePointer + (4 * (i - 1)), startAddressOffsets) - 0x20
 
 		-- Get start id but check first 2 because they could be back-to-front.
-		local id1 = memoryReadInt( proc, initialAddress + addresses.idOffset )
-		local id2 = memoryReadInt( proc, initialAddress - itemSize + addresses.idOffset)
+		local id1 = memoryReadInt( getProc(), initialAddress + addresses.idOffset )
+		local id2 = memoryReadInt( getProc(), initialAddress - itemSize + addresses.idOffset)
 
 		-- In at least 1 case the table starts 1 up from here
 		if id1 == 0 or id1 == nil or id1 > maxId then
 			initialAddress = initialAddress - itemSize
-			id1 = memoryReadInt( proc, initialAddress - itemSize + addresses.idOffset )
+			id1 = memoryReadInt( getProc(), initialAddress - itemSize + addresses.idOffset )
 		end
 
 		-- Set lowest id as StartId
@@ -232,7 +233,7 @@ function LoadTables_memory()
 		end
 
 		-- Get name - isn't really necessary but is here for debuging purposes...
-		tables[i].Name = memoryReadStringPtr( proc, tablePointer + (4 * (i - 1)), 40)
+		tables[i].Name = memoryReadStringPtr( getProc(), tablePointer + (4 * (i - 1)), 40)
 
 		-- Scan for ranges
 		tables[i].Ranges = {}
@@ -244,7 +245,7 @@ function LoadTables_memory()
 		repeat
 			count = count + 1
 			local currAddress = lastStartAddress - itemSize * count
-			local currId = memoryReadInt( proc, currAddress + addresses.idOffset )
+			local currId = memoryReadInt( getProc(), currAddress + addresses.idOffset )
 
 			-- End of range detetection
 			local lastId = lastStartId + count - 1
@@ -264,7 +265,7 @@ function LoadTables_memory()
 					lastStartAddress = GetNextTableAddress( rangeHighestAddress, currAddress + itemSize ) -- search for next address from last address
 					if lastStartAddress ~= nil then
 						rangeHighestAddress = lastStartAddress
-						lastStartId = memoryReadInt( proc, lastStartAddress + addresses.idOffset )
+						lastStartId = memoryReadInt( getProc(), lastStartAddress + addresses.idOffset )
 					end
 				end
 
@@ -276,6 +277,8 @@ end
 
 -- This function decides whether to load the 'tables' data from file or from memory.
 function LoadTables()
+	tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
+
 	FlushOldCachedTables()
 	local fname = CACHE_PATH .. "/itemstables." .. getWin() .. ".lua"
 	if( fileExists(fname) ) then

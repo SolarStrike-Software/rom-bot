@@ -2,7 +2,7 @@ include("memorytable.lua");
 include("item.lua");
 include("equipitem.lua");
 
-local proc = getProc();
+--local proc = getProc();
 
 CInventory = class(
 	function (self)
@@ -13,7 +13,7 @@ CInventory = class(
 
 		self.BagSlot = {};
 		self.EquipSlots = {};
-		self.Money = memoryReadInt( proc, addresses.moneyPtr );
+		self.Money = memoryReadInt( getProc(), addresses.moneyPtr );
 
 		local timeStart = getTime();
 
@@ -284,7 +284,7 @@ end;
 -- or update slot 1 to _maxslot
 function CInventory:update( _maxslot )
 
-	self.Money = memoryReadInt( proc, addresses.moneyPtr );
+	self.Money = memoryReadInt( getProc(), addresses.moneyPtr );
 
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
