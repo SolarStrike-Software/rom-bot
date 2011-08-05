@@ -1,4 +1,4 @@
-local proc = getProc();
+--local proc = getProc();
 
 -- Tooltip parser keywords
 ITEM_TOOLTIP_DURABILITY = {
@@ -42,7 +42,7 @@ CItem = class(
 		self.Available = false; -- If slot is in unrented bag then = false
 
 		if slotnumber > 60 then -- Is Bag Item
-			self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + slotnumber - 1) + 1
+			self.BagId = memoryReadUByte(getProc(), addresses.inventoryBagIds + slotnumber - 1) + 1
 		else
 			self.BagId = slotnumber
 		end
@@ -141,7 +141,7 @@ function CItem:update()
 	local oldBagId = self.BagId;
 
 	if self.SlotNumber > 60 then -- Is Bag Item
-		self.BagId = memoryReadUByte(proc, addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+		self.BagId = memoryReadUByte(getProc(), addresses.inventoryBagIds + self.SlotNumber - 1) + 1
 	else
 		self.BagId = self.SlotNumber
 	end
@@ -152,12 +152,12 @@ function CItem:update()
 
 	-- Check if not rented
 	if self.BagId > 120 then
-		self.Available = memoryReadUInt(proc, addresses.rentBagBase + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+		self.Available = memoryReadUInt(getProc(), addresses.rentBagBase + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
 
-	self.Id = memoryReadInt( proc, self.Address ) or 0;
+	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
 		self.BaseItemAddress = GetItemAddress( self.Id );
@@ -169,29 +169,29 @@ function CItem:update()
 
 		self.Name = "";
 		self.Empty = false;
-		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.Value = memoryReadInt( proc, self.BaseItemAddress + addresses.valueOffset );
+		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.valueOffset );
 		if ( self.Value > 0 ) then
 			self.Worth = self.Value / 10;
 		end;
-		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
-		self.RequiredLvl = memoryReadInt( proc, self.BaseItemAddress + addresses.requiredLevelOffset );
-		self.MaxStack = memoryReadInt( proc, self.BaseItemAddress + addresses.maxStackOffset );
-		self.ObjType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset );
-		self.ObjSubType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset + 4);
-		self.ObjSubSubType = memoryReadInt( proc, self.BaseItemAddress + addresses.typeOffset + 8);
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
+		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
+		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
+		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
+		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset );
+		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 4);
+		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 8);
 
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
-			local skillItemId = memoryReadInt( proc, self.BaseItemAddress + addresses.realItemIdOffset );
+			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.realItemIdOffset );
 			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
 				local skillItemAddress = GetItemAddress( skillItemId );
 				if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
-					self.CoolDownTime = memoryReadInt( proc, skillItemAddress + addresses.coolDownOffset );
+					self.CoolDownTime = memoryReadInt( getProc(), skillItemAddress + addresses.coolDownOffset );
 				end;
 			end;
 			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
@@ -200,39 +200,39 @@ function CItem:update()
 		-- Special case for cards
 		if ( self.Id >= 770000 and self.Id <= 772000 ) then
 			-- We need to get info from NPC...
-			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idCardNPCOffset );
+			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idCardNPCOffset );
 			npcInfoAddress = GetItemAddress( tmp );
 			if npcInfoAddress then
-				nameAddress = memoryReadInt( proc, npcInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadInt( getProc(), npcInfoAddress + addresses.nameOffset );
 			else
 				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
 			end
 			self.Name = "Card - "; -- We should add a string so we can localize this
 		elseif ( self.Id >= 550000 and self.Id <=552000 ) then
 			-- We need to get info from item...
-			local tmp = memoryReadInt( proc, self.BaseItemAddress + addresses.idRecipeItemOffset )
+			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idRecipeItemOffset )
 			itemInfoAddress = GetItemAddress(  tmp );
 			if itemInfoAddress then
-				nameAddress = memoryReadInt( proc, itemInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadInt( getProc(), itemInfoAddress + addresses.nameOffset );
 			else
 				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
 			end
 			self.Name = "Recipe - "; -- We should add a string so we can localize this
 		else
-			nameAddress = memoryReadInt( proc, self.BaseItemAddress + addresses.nameOffset );
+			nameAddress = memoryReadInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
 		end;
 
 		if( nameAddress == nil or nameAddress == 0 ) then
 			tmp = "<EMPTY>";
 		else
-			tmp = memoryReadString(proc, nameAddress);
+			tmp = memoryReadString(getProc(), nameAddress);
 		end;
 
 
 		self.Name = self.Name .. tmp;
 
-		self.Quality = memoryReadInt( proc, self.BaseItemAddress + addresses.qualityBaseOffset );
-		local plusQuality = memoryReadByte( proc, self.Address + addresses.qualityTierOffset );
+		self.Quality = memoryReadInt( getProc(), self.BaseItemAddress + addresses.qualityBaseOffset );
+		local plusQuality = memoryReadByte( getProc(), self.Address + addresses.qualityTierOffset );
 		local quality, tier = math.modf ( plusQuality / 16 );
 		-- tier = tier * 16; -- Tier not really used yet...
 		if ( quality > 0 ) then
@@ -261,13 +261,13 @@ function CItem:update()
 		self.RequiredLvl = 0;
 	else
 		-- if id is not 0 and hasn't changed we only update these values
-		self.ItemCount = memoryReadInt( proc, self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( proc, self.Address + addresses.durabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.InUse = memoryReadInt( proc, self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadInt( proc, self.Address + addresses.boundStatusOffset );
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
+		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
 	end;
 
 	if( settings.profile.options.DEBUG_INV ) then

@@ -67,6 +67,7 @@ function main()
 	local forcedProfile = nil;
 	local forcedPath = nil;
 	local forcedRetPath = nil;
+	local forcedCharacter = nil;
 
 	for i = 2,#args do
 		if( args[i] == "update" ) then
@@ -95,6 +96,8 @@ function main()
 				forcedPath = val;
 			elseif( var == "retpath" ) then
 				forcedRetPath = val;
+			elseif( var == "character") then
+				forcedCharacter = val;
 			else
 				-- invalid option
 				local msg = sprintf(language[61], args[i]);
@@ -110,10 +113,8 @@ function main()
 
 	end
 
-
-
 	database.load();
-	attach(getWin());
+	attach(getWin(forcedCharacter));
 
 	if( not checkExecutableCompatible() ) then
 		cprintf(cli.yellow, "!! Notice: !!\n");

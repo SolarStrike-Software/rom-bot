@@ -66,7 +66,7 @@ function debugAssert(args)
 end
 
 -- Ask witch character does the user want to be, from the open windows.
-function selectGame()
+function selectGame(character)
 	-- Get list of windows in an array
 	local windowList = findWindowList("*", "Radiant Arcana");
 
@@ -96,6 +96,15 @@ function selectGame()
 		end
 		showWarnings(true);
 		closeProcess(process);
+	end
+
+	if( character ) then
+		for i,v in pairs(charToUse) do
+			printf("[DEBUG] char: '%s', win: %s\n", tostring(v), tostring(windowList[i]));
+			if( string.lower(v) == string.lower(character) ) then
+				return windowList[i];
+			end
+		end
 	end
 
 	windowChoice = 1;
@@ -249,9 +258,9 @@ function currDir()
   return cwd
 end
 
-function getWin()
+function getWin(character)
 	if( __WIN == nil ) then
-  		__WIN = selectGame();
+  		__WIN = selectGame(character);
 	end
 
 	return __WIN;
