@@ -157,7 +157,7 @@
 	<skill name="WARRIOR_LAVA_WEAPON" id="492913" mana="40" target="self" type="buff" buffname="503163" nobuffname="502886" nobufftarget="self"/>
 	<skill name="WARRIOR_DEFENDERS_ROAR" id="491466" mana="30" cooldown="180" target="self" type="buff" buffname="501872"/>
 	<skill name="WARRIOR_INTERRUPTING_STRIKE" id="491469" rage="30" cooldown="10" type="damage" target="enemy" />
-	<skill name="WARRIOR_BLOODLUST" id="492332" maxhpper="-20" target="self" type="buff" />
+	<skill name="WARRIOR_BLOODLUST" id="492332" cooldown="10" maxhpper="-20" target="self" type="buff" />
 	<skill name="WARRIOR_OPPORTUNITY" id="492617" rage="15" range="50" type="damage" target="enemy" reqbuffname="501503" reqbufftarget="target" />
 	<skill name="WARRIOR_THROW_SHIELD" id="491333" mana="30" cooldown="6" type="damage" target="enemy" />
 	<skill name="WARRIOR_BLOCKING_STANCE" id="491480" mana="20" target="self" type="buff" buffname="502007"/>

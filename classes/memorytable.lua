@@ -1,163 +1,107 @@
---local proc = getProc()
---local tablePointer = memoryReadIntPtr( proc, addresses.tablesBase, addresses.tablesBaseOffset )
-local tablePointer = nil;
-local itemSize = 0x20
-local tables = {}
-local threshold = 256 -- We look back a maximum of "threshold" items to check if the table continues
-local maxId = 800000
-local CACHE_PATH = getExecutionPath() .. "/../cache"
+local function GetIdAddressLine(id)
+	local lineSize = 0x20;
 
-CTRange = class(
-	function(self, _start, _end, startAddress)
-		self.Start = _start
-		self.End = _end
-		self.StartAddress = startAddress
-	end
-)
-
--- This function searches for the address where the current range continues
--- It accepts the last address of the last item and returns the address where the range continues or nil.
-function GetNextTableAddress( highestAddress, ptr )
-
-	local lastId = memoryReadInt( getProc(),  ptr + addresses.idOffset ) -- 12 bytes offset id
-	local _address
-	local tmpID
-
-	-- This function checks an address to see if the 4 and 8 offset hold the address where the range continues.
-	-- It returns this range if found or returns nil.
-	local function CheckAddress( addressToCheck )
-
-		-- Check the 0x4 offset address
-		local tmpAddress = memoryReadInt( getProc(), addressToCheck + 0x4 )
-		if ( tmpAddress ~= nil ) then
-			if tmpAddress > highestAddress then
-				return tmpAddress
-			end
-			local tmpId = memoryReadInt( getProc(), tmpAddress + addresses.idOffset )
-			if tmpId > lastId and tmpId < 999999 then
-				return tmpAddress
+	-- Finds the nearest address in 'IdAddressTables' with the closest id to '_id'
+	local function FindNearestIdAddress(_id)
+		local closestId
+		for i,v in pairs(IdAddressTables) do
+			if closestId == nil or math.abs(_id - i) < math.abs(_id - closestId) then
+				closestId = i
 			end
 		end
 
-		-- Check the 0x8 offset address
-		local tmpAddress = memoryReadInt( getProc(), addressToCheck + 0x8 )
-		if ( tmpAddress ~= nil ) then
-			if tmpAddress > highestAddress then
-				return tmpAddress
-			end
-			local tmpId = memoryReadInt( getProc(), tmpAddress + addresses.idOffset )
-			if tmpId > lastId and tmpId < 999999 then
-				return tmpAddress
-			end
-		end
-
-		return nil
+		return IdAddressTables[closestId]
 	end
 
-	-- Find address pointing to where the range continues
-	-- The address pointing to where the range continues may not be in the last item so we search backwards for it
-	for t = 0, threshold do
-		_address = CheckAddress( ( ptr + ( t * itemSize ) ) )
-		if _address ~= nil then
-			break
-		end -- found a match
-	end
+	-- Searches for the address in memoery for the id 'IdToFind'
+	local function FindIdAddress(IdToFind)
+		-- Get closest existing address from IdAddressTables to start search
+		local dataPointer = FindNearestIdAddress(IdToFind)
 
-	-- The new address might not point to the first item so we look back until we find the first one
-	if _address then
-		local tmpID = memoryReadInt( getProc(), _address + addresses.idOffset )
+		local loopTest = 0 -- Used to make sure it doesn't get stuck in a loop if bad id
+		repeat
+			loopTest = loopTest + 1
 
-		-- See if we already found it
-		if tmpID == ( lastId + 1 ) then
-			-- We found it, we can exit and return the address.
-			return _address
-		end
-
-		-- Jump to where the start should be, given the id found at this address
-		_address = _address + (tmpID - lastId - 1) * itemSize
-
-		-- Now search forward and back until correct id is found.
-		for i = 0, threshold do
-			tmpID = memoryReadInt( getProc(), _address + i*itemSize + addresses.idOffset )
-			if ( tmpID == ( lastId + 1 ) ) then
-				-- We found it, we can exit and return the address.
-				return _address + i*itemSize
+			-- Get 0 and 8 offsets
+			local offset8 = memoryReadInt( getProc(), dataPointer + 8);
+			-- Has it reached the end of the table?
+			if offset8 < 0x100000 then
+				return
 			end
-			tmpID = memoryReadInt( getProc(), _address - i*itemSize + addresses.idOffset )
-			if ( tmpID == ( lastId + 1 ) ) then
-				-- We found it, we can exit and return the address.
-				return _address - i*itemSize
+			local offset0 = memoryReadInt( getProc(), dataPointer );
+
+			-- Get the id
+			local currentId = memoryReadInt( getProc(), dataPointer + addresses.idOffset );
+
+			-- Check the id.
+			if currentId == nil or currentId < 1 or currentId > 999999 then
+				return
 			end
-		end
 
-		-- Continuing id not found
-		_address = nil
-	end
+			-- Add to table to speed future searches
+			if not IdAddressTables[currentId] then
+				IdAddressTables[currentId] = dataPointer
+			end
 
-	return _address
-end
-
--- This function finds which subtable and range the id belongs to
-function GetRangeForID( id )
-	-- If tables hasn't been loaded yet then exit
-	if #tables == 0 then return end
-
-	for _, _table in ipairs( tables ) do
-		if ( id >= _table.StartId and id <= _table.EndId ) then
-			-- make sure the id is in one of the ranges
-			for _, _range in pairs(_table.Ranges) do
-				if ( id >= _range.Start and id <= _range.End ) then
-					return _range
+			-- Id not found. Get next dataPointer.
+			if currentId > IdToFind then
+				if offset0 == offset8 then
+					dataPointer = dataPointer + lineSize
+				else
+					dataPointer = offset0
+				end
+			elseif currentId < IdToFind then
+				if offset0 == offset8 then
+					dataPointer = dataPointer - lineSize
+				else
+					dataPointer = offset8
 				end
 			end
-		end
+
+			--printf("currentAddress %X , current ID %X:%d IdToFind %X:%d\n",dataPointer,currentId,currentId,IdToFind,IdToFind)
+			--yrest(5)
+
+		until currentId == IdToFind or loopTest > 500
+
+		return dataPointer
 	end
 
-	printf( "Table range not found for ID: %d\n", id )
-	return nil
+	--first initialization
+	if not IdAddressTables then
+		local tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
+		local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
+
+		local dataPointer = memoryReadIntPtr( getProc(), tablePointer, startAddressOffsets) - lineSize
+		local id = memoryReadInt(getProc(), dataPointer + addresses.idOffset )
+
+		IdAddressTables = {[id] = dataPointer}
+	end
+
+	-- Is it already in the table
+	if IdAddressTables[id] then
+		return IdAddressTables[id]
+	end
+
+	-- Else find it in memory
+	return FindIdAddress(id)
 end
 
--- This function returns the address where the item info is located.
-function GetItemAddress( id )
-	-- Gets the address for the item
-	local function GetTmpAddress( _address, _id )
-		local address = memoryReadIntPtr(getProc(), _address + 0x10, 0x8)
-		if address == 0 then
-			-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
-			RoMScript("GetCraftRequestItem(".._id..", -1)")
-			address = memoryReadIntPtr(getProc(), _address + 0x10, 0x8)
-		end
-		return address
-	end
-
-	local _range = GetRangeForID( id )
-
-	if _range ~= nil then
-		local _address
-
-		-- Get the address. Check that it's the right one, else check the one before and after it.
-		for _,i in pairs({ 0, -1, 1 }) do
-			local tmpAddress = _range.StartAddress - (id - _range.Start + i) * itemSize
-			local testId = memoryReadInt(getProc(), tmpAddress + addresses.idOffset)
-			if testId == id then -- right address
-				_address = tmpAddress
-				break
+function GetItemAddress(id)
+	if id then
+		local addressline = GetIdAddressLine(id)
+		if addressline then
+			local address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8)
+			if address == 0 then
+				-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
+				RoMScript("GetCraftRequestItem("..id..", -1)")
+				address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8);
 			end
-		end
-
-		if _address == nil then
-			printf("Failed to find correct address in range for id %d.\n", id)
-			return
-		end
-
-		local itemAddress = GetTmpAddress( _address, id )
-		local itemId = memoryReadInt( getProc(), itemAddress )
-
-		if itemId == id then
-			return itemAddress
+			return address
 		else
-			printf("Failed to find correct item address for id %d.\n", id)
+			printf("Id %d not found\n", id)
 		end
+	else
+		printf("Id is nil\n")
 	end
 end
 
@@ -169,179 +113,4 @@ function GetIdName(itemId)
 			return memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
 		end
 	end
-end
-
--- This function loads 'tables' from cache file.
-function LoadTables_cached(filename)
-	local status, err = pcall(dofile, filename)
-	if( not status ) then
-		-- Failed to load the cache file.
-		cprintf(cli.red, "[DEBUG] Failed to load cache file; Dropping bad file.\n")
-
-		LoadTables_memory()
-		CacheTables()
-		return
-	end
-
-	tables = {}
-	for i,v in pairs(cached_tables) do
-		tables[i] = {
-			StartId = v.StartId,
-			EndId = v.EndId,
-			Name = v.Name,
-			Ranges = {},
-		}
-
-		for k,v in pairs(v.Ranges) do
-			table.insert(tables[i].Ranges, CTRange(v.Start, v.End, v.StartAddress))
-		end
-	end
-	cached_tables = nil
-end
-
--- This function creates the 'tables' table from memory.
-function LoadTables_memory()
-	tables = {}
-
-	-- Get start addresses, names and startids for the 27 subTables
-	for i = 1, 27 do
-		tables[i] = {}
-
-		displayProgressBar( i / 27 * 100, 50)
-
-		-- Get initial address
-		local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
-		local initialAddress = memoryReadIntPtr( getProc(), tablePointer + (4 * (i - 1)), startAddressOffsets) - 0x20
-
-		-- Get start id but check first 2 because they could be back-to-front.
-		local id1 = memoryReadInt( getProc(), initialAddress + addresses.idOffset )
-		local id2 = memoryReadInt( getProc(), initialAddress - itemSize + addresses.idOffset)
-
-		-- In at least 1 case the table starts 1 up from here
-		if id1 == 0 or id1 == nil or id1 > maxId then
-			initialAddress = initialAddress - itemSize
-			id1 = memoryReadInt( getProc(), initialAddress - itemSize + addresses.idOffset )
-		end
-
-		-- Set lowest id as StartId
-		if id1 > id2 then
-			tables[i].StartId = id2
-			tables[i].EndId = id1
-		else
-			tables[i].StartId = id1
-			tables[i].EndId = id2
-		end
-
-		-- Get name - isn't really necessary but is here for debuging purposes...
-		tables[i].Name = memoryReadStringPtr( getProc(), tablePointer + (4 * (i - 1)), 40)
-
-		-- Scan for ranges
-		tables[i].Ranges = {}
-
-		local lastStartAddress = initialAddress
-		local lastStartId = tables[i].StartId
-		local rangeHighestAddress = initialAddress
-		local count = 1 -- skip first 2 because they could be back-to-front.
-		repeat
-			count = count + 1
-			local currAddress = lastStartAddress - itemSize * count
-			local currId = memoryReadInt( getProc(), currAddress + addresses.idOffset )
-
-			-- End of range detetection
-			local lastId = lastStartId + count - 1
-			if currId == nil or currId == 0 or currId ~= (lastStartId + count) then
-				-- Save range
-				table.insert(tables[i].Ranges,CTRange(lastStartId, lastId, lastStartAddress))
-
-				-- Check min and max table values
-				if lastStartId < tables[i].StartId then tables[i].StartId = lastStartId end
-				if lastId > tables[i].EndId then tables[i].EndId = lastId end
-
-				-- Does another range immediately follow
-				if currId ~= nil and currId ~= 0 and currId > tables[i].StartId and currId < maxId then
-					lastStartAddress = currAddress
-					lastStartId = currId
-				else -- Search if the range continues at another address
-					lastStartAddress = GetNextTableAddress( rangeHighestAddress, currAddress + itemSize ) -- search for next address from last address
-					if lastStartAddress ~= nil then
-						rangeHighestAddress = lastStartAddress
-						lastStartId = memoryReadInt( getProc(), lastStartAddress + addresses.idOffset )
-					end
-				end
-
-				count = 0
-			end
-		until lastStartAddress == nil
-	end
-end
-
--- This function decides whether to load the 'tables' data from file or from memory.
-function LoadTables()
-	tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
-
-	FlushOldCachedTables()
-	local fname = CACHE_PATH .. "/itemstables." .. getWin() .. ".lua"
-	if( fileExists(fname) ) then
-		LoadTables_cached(fname)
-	else
-		LoadTables_memory()
-		CacheTables()
-	end
-end
-
--- This function deletes any cache files that are no longer needed
-function FlushOldCachedTables()
-	local dir = getDirectory(CACHE_PATH)
-	if( not dir ) then
-		return
-	end
-
-	for i,v in pairs(dir) do
-		local valid = true
-		local win = string.match(v, "^itemstables.(%d+).lua")
-		if( win ) then
-			if( windowValid(win) ) then
-				if( getWindowClassName(win) ~= "Radiant Arcana" ) then
-					valid = false
-				end
-			else
-				valid = false
-			end
-		end
-
-		-- if not valid, delete it.
-		if( valid == false ) then
-			local function fixSlashes(path)
-				--path = string.gsub(path, "\\+", "/")
-				path = string.gsub(path, "/+", "\\")
-
-				return path
-			end
-
-			if( system and allowSystemCommands ) then
-				printf("Deleting %s (old cache file)\n", v)
-				system("del \"" .. fixSlashes(CACHE_PATH .. "/" .. v) .. "\"")
-			end
-		end
-	end
-end
-
--- This function saves 'tables' to the cache file.
-function CacheTables()
-	local outFile = io.open(CACHE_PATH .. "/itemstables." .. getWin() .. ".lua", "w")
-	if( not outFile ) then
-		return
-	end
-
-	outFile:write("cached_tables = {\n")
-	for i,v in pairs(tables) do
-		local rangesString = ""
-		for i,v in pairs(v.Ranges) do
-			rangesString = rangesString .. sprintf("\t\t{Start = %d, End = %d, StartAddress = 0x%X},\n", v.Start, v.End, v.StartAddress)
-		end
-		outFile:write(sprintf("\t{StartId = %d, EndId = %d, Name = \"%s\", Ranges = {\n%s\t}},\n",
-			v.StartId, v.EndId, v.Name, rangesString))
-	end
-	outFile:write(sprintf("}\n\n"))
-	outFile:close()
 end

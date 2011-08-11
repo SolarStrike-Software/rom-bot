@@ -1066,11 +1066,11 @@ function CPlayer:checkPotions()
 				end;
 			end;
 		end
-	end	
-	
-	
-	
-	
+	end
+
+
+
+
 	return false
 
 end
@@ -1162,7 +1162,7 @@ function CPlayer:fight()
 		end;
 
 		local target = self:getTarget();
-		
+
 		if( target.HP ~= lastTargetHP ) then
 			self.lastHitTime = os.time();
 			lastTargetHP = target.HP;
@@ -2831,6 +2831,9 @@ function CPlayer:logout(fc_shutdown, logout_close)
 			yrest(100);
 		end
 	else
+		-- Close all windows to avoid problems when relogging.
+		RoMScript("CloseAllWindows()") yrest(500)
+
 		RoMScript("Logout();");
 		yrest(30000); -- Wait for the log out to process
 	end

@@ -123,9 +123,6 @@ function main()
 		logMessage("Game exectuable may have changed. You should run rom/update.lua");
 	end
 
-	-- load memory tables
-	LoadTables();
-
 	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
