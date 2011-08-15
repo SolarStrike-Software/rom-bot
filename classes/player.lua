@@ -2632,14 +2632,34 @@ function CPlayer:update()
 	local oldclass = self.Class1
 
 	CPawn.update(self); -- run base function
+
 	if self.Class1 ~= oldclass or #settings.profile.skills == 0 then
 		settings.loadSkillSet(self.Class1)
 	end
 
+	-- If have 2nd class, look for 3rd class
+	-- Class1 and Class2 are done in the pawn class. Class3 only works for player.
+	local classInfoSize = 0x294
+	if self.Class2 ~= -1 then
+		for i = 1, 8 do
+			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (classInfoSize * i) + addresses.charClassInfoLevel_offset)
+			if level > 0 and i ~= self.Class1 and i ~= self.Class2 then
+				-- must be class 3
+				self.Class3 = i
+				break
+			end
+		end
+	end
+
+	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset)
+	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset)
+	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset)
+	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset)
+	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset)
+
 	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
-	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char,
-	addresses.charBattle_offset) == 1;
+	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
 
 	local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
@@ -2688,7 +2708,7 @@ function CPlayer:update()
 		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
 		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
 
-		local newExp = memoryReadRepeat("intptr", getProc(), addresses.charExp_address, 0) or 0;
+		local newExp = self.XP or 0;
 		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
 
 		self.LastExpUpdateTime = os.time();					-- Reset timer

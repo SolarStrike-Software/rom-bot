@@ -61,9 +61,11 @@ CPawn = class(
 		self.Type = PT_NONE;
 		self.Class1 = CLASS_NONE;
 		self.Class2 = CLASS_NONE;
+		self.Class3 = CLASS_NONE;
 		self.Guild = "<UNKNOWN>";
 		self.Level = 1;
 		self.Level2 = 1;
+		self.Level3 = 1;
 		self.HP = 1000;
 		self.MaxHP = 1000;
 		self.MP = 1000;
@@ -112,7 +114,7 @@ CPawn = class(
 		self.Concentration = 0;
 		self.MaxConcentration = 0;
 		self.Nature = 0;
-		
+
 		self.PotionLastUseTime = 0;
 		self.PotionHpUsed = 0;			-- counts use of HP over time potions
 		self.PotionManaUsed = 0;		-- counts use of mana over time potions
@@ -123,8 +125,8 @@ CPawn = class(
 		self.PotionHpOnceUsed = 0;			-- counts use of HP potions
 		self.PotionManaOnceUsed = 0;		-- counts use of mana potions
 		self.PotionLastManaOnceEmptyTime = 0;	-- timer for potion empty message
-		self.PotionLastHpOnceEmptyTime = 0;	-- timer for potion empty message		
-		
+		self.PotionLastHpOnceEmptyTime = 0;	-- timer for potion empty message
+
 		self.PhiriusLastUseTime = 0;
 		self.PhiriusHpUsed = 0;			-- counts use of HP phirius
 		self.PhiriusManaUsed = 0;		-- counts use of mana phirius
