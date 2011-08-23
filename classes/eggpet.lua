@@ -215,7 +215,7 @@ end
 
 function CEggPet:Summon()
 	self:update()
-	while self.EggId > 0 and self.Summoned == false do
+	while self.EggId > 0 and self.Summoned == false and player.Alive and player.HP > 0 do
 		RoMScript("SummonPet("..self.EggSlot..")")
 		repeat
 			yrest(500)

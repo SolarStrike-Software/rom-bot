@@ -1255,7 +1255,7 @@ function settings.updateSkillsAvailability()
 		if id ~= 0 then
 			local address = GetItemAddress(id)
 			local name = GetIdName(id)
-			if name ~= 0 and name ~= "" and address ~= nil then
+			if name ~= nil and name ~= "" and address ~= nil then
 				local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
 				tabData[name] = {
 					Id = id,

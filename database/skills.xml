@@ -225,6 +225,9 @@
 	<skill name="ROGUE_POWER_OF_THE_LION" id="492924" cooldown="60" type="buff" target="self" reqbuffname="501946" reqbufftarget="player"/>
 	<skill name="ROGUE_SEARING_LIGHT" id="493025" mana="40" type="buff" buffname="503268" target="self" nobuffname="500715" nobufftarget="player" />
 
+	<!-- Itemset skills -->
+	<skill name="ROGUE_YAWAKAS_BLESSING" id="495730" energy="30" target="self" type="buff" buffname="507485" />
+
 	<!-- Unknown skills or superseded names-->
 	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_CHEAP_SHOT must be behind target and cannot be used in combat -->
