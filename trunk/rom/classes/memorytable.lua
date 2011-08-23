@@ -1,40 +1,62 @@
 local function GetIdAddressLine(id)
 	local lineSize = 0x20;
 
-	-- Finds the nearest address in 'IdAddressTables' with the closest id to '_id'
-	local function FindNearestIdAddress(_id)
-		local closestId
-		for i,v in pairs(IdAddressTables) do
-			if closestId == nil or math.abs(_id - i) < math.abs(_id - closestId) then
-				closestId = i
-			end
-		end
+	local tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
+	local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
 
-		return IdAddressTables[closestId]
+	local dataPointer = memoryReadIntPtr( getProc(), tablePointer , startAddressOffsets ) - lineSize
+	local IdTableHeader
+
+	--Reads into the table to get a 'IdTableHeader' address
+	for i=0,10 do
+		local offset0 = memoryReadInt( getProc(),  dataPointer - lineSize * i )
+		local offset8 = memoryReadInt( getProc(), (dataPointer - lineSize * i ) + 0x8)
+		if offset0 == offset8 then
+			IdTableHeader = offset0
+			break
+		end
 	end
 
-	-- Searches for the address in memoery for the id 'IdToFind'
+	if IdTableHeader == nil then
+		error("Unable to find a valid IdTableAddress")
+	end
+
+	--Get informations from the 'IdTableHeader'
+	local smallestIdAddress   = memoryReadInt( getProc(), IdTableHeader )
+	local middleIdAddress     = memoryReadInt( getProc(), IdTableHeader + 0x4 )
+	local largestIdAdress     = memoryReadInt( getProc(), IdTableHeader + 0x8 )
+
+	local smallestId    	  = memoryReadInt( getProc(), smallestIdAddress + addresses.idOffset )
+	local largestId     	  = memoryReadInt( getProc(), largestIdAdress + addresses.idOffset )
+
+	-- Searches for the address in memory for the id 'IdToFind'
 	local function FindIdAddress(IdToFind)
-		-- Get closest existing address from IdAddressTables to start search
-		local dataPointer = FindNearestIdAddress(IdToFind)
+		-- Check the 'IdToFind'.
+		if IdToFind == nil or IdToFind < smallestId or IdToFind > largestId then
+			return
+		end
+		-- Use the middleIdAddress from IdAddressTables to start search
+		local dataPointer = middleIdAddress
 
 		local loopTest = 0 -- Used to make sure it doesn't get stuck in a loop if bad id
 		repeat
 			loopTest = loopTest + 1
 
 			-- Get 0 and 8 offsets
-			local offset8 = memoryReadInt( getProc(), dataPointer + 8);
-			-- Has it reached the end of the table?
-			if offset8 < 0x100000 then
+			local offset8 = memoryReadInt( getProc(), dataPointer + 8)
+			-- Read a valid value? Has it reached the end of the table?
+			if offset8 == nil or offset8 < 0x100000 then
 				return
 			end
-			local offset0 = memoryReadInt( getProc(), dataPointer );
+			local offset0 = memoryReadInt( getProc(), dataPointer )
 
 			-- Get the id
-			local currentId = memoryReadInt( getProc(), dataPointer + addresses.idOffset );
+			local currentId = memoryReadInt( getProc(), dataPointer + addresses.idOffset )
+
+			--printf("currentAddress %X , current ID %X:%d IdToFind %X:%d\n",dataPointer,currentId,currentId,IdToFind,IdToFind)
 
 			-- Check the id.
-			if currentId == nil or currentId < 1 or currentId > 999999 then
+			if currentId == nil or currentId < smallestId or currentId > largestId then
 				return
 			end
 
@@ -45,36 +67,26 @@ local function GetIdAddressLine(id)
 
 			-- Id not found. Get next dataPointer.
 			if currentId > IdToFind then
-				if offset0 == offset8 then
+				if offset0 == offset8 or offset0 == IdTableHeader then
 					dataPointer = dataPointer + lineSize
 				else
 					dataPointer = offset0
 				end
 			elseif currentId < IdToFind then
-				if offset0 == offset8 then
+				if offset0 == offset8 or offset8 == IdTableHeader then
 					dataPointer = dataPointer - lineSize
 				else
 					dataPointer = offset8
 				end
 			end
 
-			--printf("currentAddress %X , current ID %X:%d IdToFind %X:%d\n",dataPointer,currentId,currentId,IdToFind,IdToFind)
-			--yrest(5)
-
 		until currentId == IdToFind or loopTest > 500
 
 		return dataPointer
 	end
 
-	--first initialization
-	if not IdAddressTables then
-		local tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
-		local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
-
-		local dataPointer = memoryReadIntPtr( getProc(), tablePointer, startAddressOffsets) - lineSize
-		local id = memoryReadInt(getProc(), dataPointer + addresses.idOffset )
-
-		IdAddressTables = {[id] = dataPointer}
+	if IdAddressTables == nil then
+		IdAddressTables = {}
 	end
 
 	-- Is it already in the table
@@ -110,7 +122,13 @@ function GetIdName(itemId)
 	if itemId ~= nil and itemId > 0 then
 		local itemAddress = GetItemAddress(itemId)
 		if itemAddress ~= nil and itemAddress > 0 then
-			return memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
+			local name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
+			if name == nil then
+				-- Item data not totally substanciated yet. Do "GetCraftRequestItem", then the address will exist.
+				RoMScript("GetCraftRequestItem("..itemId..", -1)")
+				name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
+			end
+			return name
 		end
 	end
 end
