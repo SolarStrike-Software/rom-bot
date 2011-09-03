@@ -1933,20 +1933,20 @@ function evalTargetDefault(address)
 
 	-- target is to strong for us
 	if (settings.profile.options.PARTY_INSTANCE ~= true ) then
-	if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
---				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-			return false;		-- he is not a valid target
-		end;
+		if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
+			if ( player.Battling == false ) then	-- if we don't have aggro then
+	--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+				printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+				return false;		-- he is not a valid target
+			end;
 
-		if( player.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
-			target.TargetPtr ~= player.Address ) then		-- but not from that target
---				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-			return false;
+			if( player.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
+				target.TargetPtr ~= player.Address ) then		-- but not from that target
+	--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+				printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
+				return false;
+			end;
 		end;
-	end;
 	end
 
 	-- don't target NPCs

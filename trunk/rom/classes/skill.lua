@@ -191,8 +191,8 @@ function CSkill:canUse(_only_friendly, target)
 	local prior = getSkillUsePrior();
 
 	if( deltaTime(getTime(), self.LastCastTime) <
-		  (self.Cooldown*1000 - self.rebuffcut*1000 - prior) ) then	-- Cooldown is in sec
-		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000-self.rebuffcut*1000 - deltaTime(getTime(), self.LastCastTime) );
+		  (self.Cooldown*1000 - prior) ) then	-- Cooldown is in sec
+		debug_skilluse("ONCOOLDOWN", self.Cooldown*1000 - deltaTime(getTime(), self.LastCastTime) );
 		return false;
 --	else
 --		debug_skilluse("NOCOOLDOWN", deltaTime(getTime(), self.LastCastTime) - self.Cooldown*1000-self.rebuffcut*1000 );
@@ -251,32 +251,32 @@ function CSkill:canUse(_only_friendly, target)
 	-- check if hp below our HP_LOW level
 	if( self.Type == STYPE_HEAL or self.Type == STYPE_HOT ) then
 		local hpper = (player.HP/player.MaxHP * 100);
-	if target.Type ~= PT_PLAYER then
-		if( self.MaxHpPer ~= 100 ) then
-			if( hpper > self.MaxHpPer ) then
-				return false;
+		if target.Type ~= PT_PLAYER then
+			if( self.MaxHpPer ~= 100 ) then
+				if( hpper > self.MaxHpPer ) then
+					return false;
+				end
+			else
+				-- Inherit from settings' HP_LOW
+				if( hpper > settings.profile.options.HP_LOW ) then
+					debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
+					return false;
+				end
 			end
 		else
-			-- Inherit from settings' HP_LOW
-			if( hpper > settings.profile.options.HP_LOW ) then
-				debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
-				return false;
+			local hpper = (target.HP/target.MaxHP * 100);
+					if( self.MaxHpPer ~= 100 ) then
+				if( hpper > self.MaxHpPer ) then
+					return false;
+				end
+			else
+				-- Inherit from settings' HP_LOW
+				if( hpper > settings.profile.options.HP_LOW ) then
+					debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
+					return false;
+				end
 			end
 		end
-	else
-		local hpper = (target.HP/target.MaxHP * 100);
-				if( self.MaxHpPer ~= 100 ) then
-			if( hpper > self.MaxHpPer ) then
-				return false;
-			end
-		else
-			-- Inherit from settings' HP_LOW
-			if( hpper > settings.profile.options.HP_LOW ) then
-				debug_skilluse("HPLOW", hpper, "greater as setting", settings.profile.options.HP_LOW );
-				return false;
-			end
-		end
-	end
 	end
 
 
@@ -356,7 +356,8 @@ function CSkill:canUse(_only_friendly, target)
 
 	-- check if 'self' has buff
 	if self.BuffName ~= nil and self.Target == STARGET_SELF then
-		if player:hasBuff(self.BuffName) then
+		local buffitem = player:getBuff(self.BuffName)
+		if buffitem and (buffitem.TimeLeft > self.rebuffcut + prior) then
 			debug_skilluse("PLAYERHASBUFF");
 			return false
 		end

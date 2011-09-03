@@ -71,6 +71,7 @@ CItem = class(
 		self.ObjType = 0;
 		self.ObjSubType = 0;
 		self.ObjSubSubType = 0;
+		self.Stats = {}; -- list of named stats and their ids.
 
 		if ( self.Address ~= nil and self.Address ~= 0 ) then
 			self:update();
@@ -244,6 +245,17 @@ function CItem:update()
 
 		-- Build an usable ItemLink
 		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
+
+		-- Get Stats (only named stats)
+		for i = 1, 6 do
+			local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
+			if tmpid == 0 then -- No More stats
+				break
+			end
+			tmpid = tmpid + 500000
+			local tmpname = GetIdName(tmpid)
+			self.Stats[i] = {Id = tmpid, Name = tmpname}
+		end
 	elseif ( self.Id == 0 ) then
 		self.Empty = true;
 		self.Id = 0;

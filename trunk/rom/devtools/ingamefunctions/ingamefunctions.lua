@@ -70,7 +70,7 @@ function igf_getSlotData(_slotnr)
 	local itemlink, bagid, icon, name, itemcount = GetBagItemLink(GetBagItemInfo(_slotnr)),GetBagItemInfo(_slotnr);
 
 --	local _type, _data, _name = ParseHyperlink( itemLink );
-	local itemid, color = Fusion_parseItemLink( itemlink );
+	local itemid, color = igf_parseItemLink( itemlink );
 	local tmp = { bagid = nil, icon = nil, name = nil, itemcount = nil, itemid = nil, color = nil };
 
 	-- from GetBagItemInfo()

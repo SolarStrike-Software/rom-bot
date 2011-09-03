@@ -14,17 +14,17 @@
 	<potion type="hot" id="200807" level="11" potency="400" name="First Aid Potion" />
 	<potion type="hot" id="200664" level="6" name="Basic First Aid Potion" />
 	<potion type="hot" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
-	
-	<potion type="heal" id="207677" level="65" potency="4000" name="Super Healing Potion" />	
+
+	<potion type="heal" id="207677" level="65" potency="4000" name="Super Healing Potion" />
 	<potion type="heal" id="207676" level="60" potency="3500" name="Super Salve" />
 	<potion type="heal" id="200274" level="41" potency="1500" name="Strong Healing Potion" />
-	<potion type="heal" id="200229" level="41" potency="1200" name="Strong medicine" />	
+	<potion type="heal" id="200229" level="41" potency="1200" name="Strong medicine" />
 	<potion type="heal" id="200178" level="21" potency="800" name="Healing Potion" />
-	<potion type="heal" id="200174" level="21" potency="600" name="Salve" />	
+	<potion type="heal" id="200174" level="21" potency="600" name="Salve" />
 	<potion type="heal" id="200154" level="1" potency="300" name="Basic Healing Potion" />
-	<potion type="heal" id="200151" level="1" potency="220" name="Basic Medicine" />	
-	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />	
-	
+	<potion type="heal" id="200151" level="1" potency="220" name="Basic Medicine" />
+	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />
+
 	<!-- Mana potions -->
 	<potion type="mot" id="208480" level="66" name="Rare Magic Stone" />
 	<potion type="mot" id="208214" level="61" name="Elemental Stone of Omnipotence" />
@@ -41,19 +41,19 @@
 	<potion type="mot" id="201043" level="6" name="Basic Magic Potion" />
 	<potion type="mot" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
-	<potion type="mana" id="207679" level="65" potency="4000" name="Super Mana Potion" />	
-	<potion type="mana" id="207678" level="60" potency="3500" name="Super Spirit Potion" />	
+	<potion type="mana" id="207679" level="65" potency="4000" name="Super Mana Potion" />
+	<potion type="mana" id="207678" level="60" potency="3500" name="Super Spirit Potion" />
 	<potion type="mana" id="200275" level="43" potency="1500" name="Strong Mana Potion" />
-	<potion type="mana" id="200270" level="43" potency="1200" name="Powerful Spirit Potion" />	
+	<potion type="mana" id="200270" level="43" potency="1200" name="Powerful Spirit Potion" />
 	<potion type="mana" id="200179" level="23" potency="800" name="Mana Potion green" />
-	<potion type="mana" id="200175" level="23" potency="600" name="Mana Potion" />	
+	<potion type="mana" id="200175" level="23" potency="600" name="Mana Potion" />
 	<potion type="mana" id="200155" level="3" potency="300" name="Basic Mana Potion" />
-	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />	
+	<potion type="mana" id="200152" level="3" potency="220" name="Basic Spirit Potion" />
 	<potion type="mana" id="203160" level="1" potency="500" name="Pumpkin Soup of Happiness" />
-	
+
 	<!-- Arrow quivers -->
-	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
+	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202083" name="Gunpowder Arrow Quiver" level="49" />
 	<potion type="arrow_quiver" id="202082" name="Razor Tooth Arrow Quiver" level="42" />
@@ -65,6 +65,8 @@
 	<potion type="arrow_quiver" id="202075" name="Wooden Arrow Quiver" level="1" />
 
 	<!-- Arrows -->
+	<potion type="arrow" id="210313" name="Magic Pattern Arrow" level="63" />
+	<potion type="arrow" id="212754" name="" level="60" /><!-- Itemset skill "Create Tendrils" arrows -->
 	<potion type="arrow" id="212185" name="Runic Thorn" level="55" />
 	<potion type="arrow" id="210312" name="" level="56" /><!-- Kerl's Mechanical Arrow -->
 	<potion type="arrow" id="210311" name="Gunpowder Arrow" level="49" />
@@ -108,20 +110,20 @@
 	<potion type="eggpet_hoe" 		id="204228" name="Small Hoe" level="1" />
 	<potion type="eggpet_spade" 	id="204230" name="Small Spade" level="1" />
 	<potion type="eggpet_hatchet" 	id="204232" name="Small Hatchet" level="1" />
-	
+
 	<!-- Phirius Potions -->
-	<potion type="phirusboth" 		id="203489" name="Phirius Special Water - Type A" potency="20" /> 	<!-- 20% -->	
-	<potion type="phirusboth" 		id="203490" name="Phirius Special Water - Type B" potency="30" /> 	<!-- 30% -->	
+	<potion type="phirusboth" 		id="203489" name="Phirius Special Water - Type A" potency="20" /> 	<!-- 20% -->
+	<potion type="phirusboth" 		id="203490" name="Phirius Special Water - Type B" potency="30" /> 	<!-- 30% -->
 	<potion type="phirusboth" 		id="203491" name="Phirius Special Water - Type C" potency="40" /> 	<!-- 40% -->
 	<potion type="phirusboth" 		id="203492" name="Phirius Special Water - Type D" potency="50" /> 	<!-- 50% -->
-	<potion type="phirusboth" 		id="203493" name="Phirius Special Water - Type E" potency="60" /> 	<!-- 60% -->	
-	
+	<potion type="phirusboth" 		id="203493" name="Phirius Special Water - Type E" potency="60" /> 	<!-- 60% -->
+
 	<potion type="phirushealing" 	id="203494" name="Phirius Potion - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirushealing" 	id="203495" name="Phirius Potion - Type B" potency="30" />			<!-- 30% -->
 	<potion type="phirushealing" 	id="203496" name="Phirius Potion - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirushealing" 	id="203497" name="Phirius Potion - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirushealing" 	id="203498" name="Phirius Potion - Type E" potency="60" />			<!-- 60% -->
-	
+
 	<potion type="phirusmana" 		id="203499" name="Phirius Elixir - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirusmana" 		id="203500" name="Phirius Elixir - Type B" potency="30" />			<!-- 30% -->
 	<potion type="phirusmana" 		id="203501" name="Phirius Elixir - Type C" potency="40" />			<!-- 40% -->
