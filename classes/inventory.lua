@@ -678,6 +678,11 @@ function CInventory:autoSell()
 				sell_item = false;
 			end
 
+			-- check number of named stats
+			if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
+				sell_item = false;
+			end
+
 			-- read tooltip
 			local tooltip_right;
 			if( bot.IgfAddon == true and (slotitem.ObjType == 0 or slotitem.ObjType == 1)) then
@@ -866,10 +871,10 @@ function CInventory:bestAvailablePhirius(type)
 				bestSmallStack = item.ItemCount;
 				bestItem = item;
 			end
-			
+
 		end
 	end
-	
+
 	if bestItem == false then
 		for slot,item in pairs(self.BagSlot) do
 			local consumable = database.consumables[item.Id];

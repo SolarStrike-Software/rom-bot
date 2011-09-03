@@ -135,6 +135,7 @@ settings_default = {
 			INV_AUTOSELL_NOSELL_DURA = 0,	-- durability > x will not sell, 0=sell all
 			INV_AUTOSELL_STATS_NOSELL = nil,	-- stats (text search at right tooltip side) that will not be selled
 			INV_AUTOSELL_STATS_SELL = nil,		-- stats (text search at right tooltip side) that will be selled, even if in nosell
+			INV_AUTOSELL_NOSELL_STATSNUMBER = 3,-- If the item has this many or more named stats then don't sell
 
 
 		},
@@ -1107,7 +1108,10 @@ function settings.loadProfile(_name)
 		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");
 	end
 
-
+	-- Remember original combat settings
+	originalCombatType = settings.profile.options.COMBAT_TYPE
+	originalCombatDistance = settings.profile.options.COMBAT_DISTANCE
+	originalCombatRangedPull = settings.profile.options.COMBAT_RANGED_PULL
 end
 
 function settings.loadSkillSet(class)
@@ -1157,6 +1161,10 @@ function settings.loadSkillSet(class)
 		end
 	end
 
+	if originalCombatType then settings.profile.options.COMBAT_TYPE = originalCombatType end
+	if originalCombatDistance then settings.profile.options.COMBAT_DISTANCE = originalCombatDistance end
+	if originalCombatRangedPull then settings.profile.options.COMBAT_RANGED_PULL = originalCombatRangedPull end
+
 	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
 		cprintf(cli.yellow, language[200]);
 		settings.profile.options.COMBAT_RANGED_PULL = false;
@@ -1180,7 +1188,6 @@ function settings.loadSkillSet(class)
 			error("undefined player.Class1 in settings.lua", 0);
 		end;
 	end
-
 
 	-- check if range attack range and combat distance fit together
 	local best_range = 0;

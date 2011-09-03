@@ -65,6 +65,7 @@ addresses = {
 	itemCountOffset = 0x10,
 	itemInfoOffset = 0x10,
 	itemSetSkillsBase = 0x9E2038,
+	itemStatsOffset = 0x20,
 	loadingScreenPtr = 0xA1D2F8,
 	loadingScreen_offset = 0xC,
 	macroBody_offset = 0x118,
