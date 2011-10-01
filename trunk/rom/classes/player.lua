@@ -259,32 +259,34 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
-
 		if( obj ~= nil ) then
-			if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
-				local dist = distance(self.X, self.Z, obj.X, obj.Z);
-				local pawn = CPawn(obj.Address);
-				pawn:update();
-				local _target = pawn:getTarget();
+			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset) or 0;
+			if not bitAnd(inp,0x4000000) then
+				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
+					local dist = distance(self.X, self.Z, obj.X, obj.Z);
+					local pawn = CPawn(obj.Address);
+					pawn:update();
+					local _target = pawn:getTarget();
 
-				if( evalFunc(obj.Address) == true ) then
-					if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
-					(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or (_target.Name == GetPartyMemberName(1) )  or (_target.Name == GetPartyMemberName(2) ) or (_target.Name == GetPartyMemberName(3) ) or (_target.Name == GetPartyMemberName(4) ) or (_target.Name == GetPartyMemberName(5) ) ) and
-					aggroOnly == true) or aggroOnly == false) ) then
-						local currentScore = 0;
-						currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
-						currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
-						if( pawn.TargetPtr == self.Address ) then currentScore = currentScore + SCORE_ATTACKING; end;
-						if( pawn.Aggressive ) then
-							currentScore = currentScore + SCORE_AGGRESSIVE;
-						end;
-						if( (_target.Name == GetPartyMemberName(1) ) or (_target.Name == GetPartyMemberName(2) )or (_target.Name == GetPartyMemberName(3) )or (_target.Name == GetPartyMemberName(4) )or (_target.Name == GetPartyMemberName(5) ) ) then currentScore = currentScore + 5000 end
-						if( bestEnemy == nil ) then
-							bestEnemy = obj;
-							bestScore = currentScore;
-						elseif( currentScore > bestScore ) then
-							bestEnemy = obj;
-							bestScore = currentScore;
+					if( evalFunc(obj.Address) == true ) then
+						if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
+						(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or (_target.Name == GetPartyMemberName(1) )  or (_target.Name == GetPartyMemberName(2) ) or (_target.Name == GetPartyMemberName(3) ) or (_target.Name == GetPartyMemberName(4) ) or (_target.Name == GetPartyMemberName(5) ) ) and
+						aggroOnly == true) or aggroOnly == false) ) then
+							local currentScore = 0;
+							currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
+							currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
+							if( pawn.TargetPtr == self.Address ) then currentScore = currentScore + SCORE_ATTACKING; end;
+							if( pawn.Aggressive ) then
+								currentScore = currentScore + SCORE_AGGRESSIVE;
+							end;
+							if( (_target.Name == GetPartyMemberName(1) ) or (_target.Name == GetPartyMemberName(2) )or (_target.Name == GetPartyMemberName(3) )or (_target.Name == GetPartyMemberName(4) )or (_target.Name == GetPartyMemberName(5) ) ) then currentScore = currentScore + 5000 end
+							if( bestEnemy == nil ) then
+								bestEnemy = obj;
+								bestScore = currentScore;
+							elseif( currentScore > bestScore ) then
+								bestEnemy = obj;
+								bestScore = currentScore;
+							end
 						end
 					end
 				end
@@ -3680,7 +3682,7 @@ function CPlayer:waitTillCastingEnds()
 		-- leave before Casting flag is gone, so we can cast faster
 		local prior = getSkillUsePrior();
 
-		if( deltaTime(getTime(), self.LastSkillStartTime) > self.LastSkillCastTime * 1000 - prior ) then
+		if( deltaTime(getTime(), self.LastSkillStartTime) > self.LastSkillCastTime - prior ) then
 			--				end of waiting
 			break;
 		end

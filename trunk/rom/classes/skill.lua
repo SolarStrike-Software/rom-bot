@@ -357,7 +357,7 @@ function CSkill:canUse(_only_friendly, target)
 	-- check if 'self' has buff
 	if self.BuffName ~= nil and self.Target == STARGET_SELF then
 		local buffitem = player:getBuff(self.BuffName)
-		if buffitem and (buffitem.TimeLeft > self.rebuffcut + prior) then
+		if buffitem and (buffitem.TimeLeft > self.rebuffcut + prior/1000) then
 			debug_skilluse("PLAYERHASBUFF");
 			return false
 		end
