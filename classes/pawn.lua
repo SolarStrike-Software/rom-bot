@@ -248,7 +248,7 @@ function CPawn:update()
 	self.GUID = memoryReadShort(proc, self.Address + addresses.pawnGUID_offset) or self.GUID;
 	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
 
-	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 3;
+	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 1;
 	self.Harvesting = memoryReadRepeat("int", proc, self.Address + addresses.pawnHarvesting_offset) ~= 0;
 	self.Casting = (memoryReadRepeat("int", proc, self.Address + addresses.pawnCasting_offset) ~= 0);
 
