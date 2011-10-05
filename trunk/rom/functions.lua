@@ -1406,4 +1406,10 @@ function AddPartner(nameOrId)
 	end
 end
 
-
+function Attack()
+	if settings.profile.hotkeys.ATTACK == nil then
+		setupAttackKey()
+	end
+	yrest(100)
+	keyboardPress(settings.profile.hotkeys.ATTACK.key)
+end

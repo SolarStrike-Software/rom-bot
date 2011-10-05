@@ -165,8 +165,8 @@ function CPlayer:harvest(_id, _second_try)
 		end
 
 		if( nodeStillFound(closestHarvestable) ) then
-			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, closestHarvestable.Address);
-			RoMScript("UseSkill(1,1)");
+			self:target(closestHarvestable.Address)
+			Attack();
 		else
 			return; -- Node disappeared for whatever reason...
 		end
@@ -192,7 +192,7 @@ function CPlayer:harvest(_id, _second_try)
 
 			if( deltaTime(getTime(), timeStart) > 3000 ) then
 				-- Maybe the command didn't go through. Try once more.
-				RoMScript("UseSkill(1,1)");
+				Attack()
 				yrest(500);
 				break;
 			end
@@ -208,7 +208,7 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 
-			if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
+			if not nodeStillFound(closestHarvestable) then
 				break;
 			end
 
@@ -218,7 +218,7 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 		end
-
+		self:unfreezeTargetPtr()
 
 		self:update();
 		if( not self.Battling ) then
@@ -261,7 +261,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 		obj = objectList:getObject(i);
 		if( obj ~= nil ) then
 			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset) or 0;
-			if not bitAnd(inp,0x4000000) then
+			if not bitAnd(inp,0x4000000) then -- Invisible/attackable?
 				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z);
 					local pawn = CPawn(obj.Address);
@@ -317,7 +317,24 @@ function CPlayer:target(pawnOrAddress)
 		return
 	end
 
-	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+	if CPawn(address).Type == PT_NODE then
+		self:freezeTargetPtr(address)
+	else
+		self:unfreezeTargetPtr()
+		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+	end
+end
+
+function freezeTargetPtr(address)
+	memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
+end
+
+function CPlayer:freezeTargetPtr(address)
+	registerTimer("freezeTargetPtr", 5, freezeTargetPtr, address)
+end
+
+function CPlayer:unfreezeTargetPtr()
+	unregisterTimer("freezeTargetPtr")
 end
 
 --[[
@@ -1114,11 +1131,7 @@ function CPlayer:fight()
 			end
 		end;
 
-		if( settings.profile.hotkeys.MACRO ) then
-			RoMScript("UseSkill(1,1);");
-		else
-			keyboardPress(settings.profile.hotkeys.ATTACK.key);
-		end
+		Attack()
 	end
 
 	-- Prep for battle, if needed.
@@ -1494,7 +1507,7 @@ function CPlayer:loot()
 
 	local function looten()
 		-- "attack" is also the hotkey to loot, strangely.
-		local hf_attack_key;
+		--[[local hf_attack_key;
 		if( settings.profile.hotkeys.MACRO ) then
 			hf_attack_key = "MACRO";
 			cprintf(cli.green, language[31],
@@ -1505,7 +1518,8 @@ function CPlayer:loot()
 			cprintf(cli.green, language[31],
 			   hf_attack_key , dist);	-- looting target.
 			keyboardPress(settings.profile.hotkeys.ATTACK.key);
-		end
+		end]]
+		Attack()
 
 	--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 	--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
@@ -3407,9 +3421,10 @@ function CPlayer:target_NPC(_npcname)
 			self:moveInRange(CWaypoint(npc.X, npc.Z), 39, true);
 		end
 		-- target NPC
-		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, npc.Address);
-		RoMScript("UseSkill(1,1)"); yrest(50); RoMScript("UseSkill(1,1)"); -- 'click' again to be sure
+		self:target(npc.Address)
+		Attack(); yrest(50); Attack(); -- 'click' again to be sure
 		yrest(1000);
+		self:unfreezeTargetPtr()
 		return true
 	else
 		cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
@@ -3576,7 +3591,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 					self:moveInRange(CWaypoint(obj.X, obj.Z), 39, true);
 				end
 				yrest(100)
-				RoMScript("UseSkill(1,1)"); yrest(50);
+				Attack()
 				local timeStart = getTime()
 
 				--Wait minimum time
@@ -3587,7 +3602,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				until deltaTime(getTime(),timeStart) >= minWaitTime
 
 				if self.Casting == false and _waittime > 0 then -- Was expecting castingbar so try again, 2nd try.
-					RoMScript("UseSkill(1,1)"); yrest(50);
+					Attack(); yrest(50);
 					timeStart = getTime()
 				end
 
@@ -3605,6 +3620,8 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				until deltaTime(getTime(),timeStart) > _waittime and self.Casting == false
 			end
 		until interrupted == false
+
+		self:unfreezeTargetPtr()
 
 		if obj then -- harvest again
 			if _donotignore ~= true then
