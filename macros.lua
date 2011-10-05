@@ -53,8 +53,17 @@ function setupMacros()
 	end
 
 	setupMacroHotkey()
-	-- To do: setupAttackKey()
-	--        setupSkillKeys()
+	setupAttackKey()
+	-- To do: setupSkillKeys()
+end
+
+function setupAttackKey()
+	local __, tmpkey = findActionKeyForId(540000) -- Attack id
+	if tmpkey ~= nil then
+		settings.profile.hotkeys.ATTACK = {name = "ATTACK", key = tmpkey}
+	else
+		error("The \"Attack\" skill needs to be in the actionbar and have a valid hotkey. Usually one of the first 12 action keys in the bottom actionbar.")
+	end
 end
 
 function setupMacroHotkey()
