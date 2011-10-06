@@ -327,7 +327,7 @@ end
 
 function freezeTargetPtr(address)
 	--=== If casting then stop freezing memory ===--
-	if player.Casting or player.Harvesting then
+	if ((memoryReadUInt(getProc(), address + addresses.pawnId_offset) or 0) == 0) or player.Casting or player.Harvesting then
 		unregisterTimer("freezeTargetPtr")
 	else
 		memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
