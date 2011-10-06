@@ -316,17 +316,24 @@ function CPlayer:target(pawnOrAddress)
 	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
 		return
 	end
-
+	
 	if CPawn(address).Type == PT_NODE then
-		self:freezeTargetPtr(address)
-	else
-		self:unfreezeTargetPtr()
-		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+		if CPawn(address).TargetIcon == false then
+			self:freezeTargetPtr(address)
+		else
+			self:unfreezeTargetPtr()
+			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+		end
 	end
 end
 
 function freezeTargetPtr(address)
-	memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
+	--=== If casting then stop freezing memory ===--
+	if player.Casting or player.Harvesting then
+		unregisterTimer("freezeTargetPtr")
+	else
+		memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
+	end
 end
 
 function CPlayer:freezeTargetPtr(address)

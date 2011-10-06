@@ -168,6 +168,7 @@ CPawn = class(
 		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
 		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
 		self.SkillQueue = {};				-- Holds any queued skills, obviously
+		self.TargetIcon = true				
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -260,7 +261,15 @@ function CPawn:update()
 	else
 		self.Lootable = false;
 	end
-
+	
+	--=== Does icon appear when you click pawn ===--
+	ticon = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
+	if bitAnd(ticon,0x10) then
+		self.TargetIcon = true
+	else
+		self.TargetIcon = false
+	end
+	
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
 	local namePtr = memoryReadRepeat("uint", proc, self.Address + addresses.pawnName_offset);
