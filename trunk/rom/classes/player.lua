@@ -317,13 +317,11 @@ function CPlayer:target(pawnOrAddress)
 		return
 	end
 	
-	if CPawn(address).Type == PT_NODE then
-		if CPawn(address).TargetIcon == false then
-			self:freezeTargetPtr(address)
-		else
-			self:unfreezeTargetPtr()
-			memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
-		end
+	if CPawn(address).Type == PT_NODE and CPawn(address).TargetIcon == false then
+		self:freezeTargetPtr(address)
+	else
+		self:unfreezeTargetPtr()
+		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 	end
 end
 
