@@ -1266,16 +1266,24 @@ end
 --== addresses moved to addresses.lua ==--
 
 function GetPartyMemberName(_number)
+	if _lastupdated == nil then _lastupdated = os.time() end
 	if partymembers == nil or (os.time() - _lastupdated) >= 60 then
 		nummembers = sendMacro("GetNumPartyMembers()")
-		partymembers={} 
-		for i = 1, nummembers do
-			_name = sendMacro("GetPartyMember("..i..")")
-			table.insert(partymembers,i, _name)
+		if nummembers == 1 then 
+			table.insert(partymembers,9, "solopartying")
 			_lastupdated = os.time()
+			return nil 
+		else
+			partymembers={} 
+			for i = 1, nummembers-1 do
+				_name = sendMacro("GetPartyMember("..i..")")
+				table.insert(partymembers,i, _name)
+				_lastupdated = os.time()
+			end
+			return partymembers[_number]
 		end
 	end
-	return partymembers[_number]
+	
 	--[[if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
