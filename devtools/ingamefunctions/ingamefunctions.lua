@@ -124,3 +124,57 @@ function igf_questStatus(_questname)
 	end
 	return "not accepted"
 end
+
+local COMMAND_MACRO_NAME = "RB Command"
+local RESULT_MACRO_NAME = "RB"
+local ResultOutput
+
+function FindMacros()
+	for m = 1, 48 do
+		local icnum,name,body=GetMacroInfo(m)
+		if name == COMMAND_MACRO_NAME then
+			commandMacro = m
+		elseif name == RESULT_MACRO_NAME then
+			resultMacro = m
+		end
+		if commandMacro and resultMacro then
+			break
+		end
+	end
+
+	return commandMacro, resultMacro
+end
+
+
+-- Highjack this function for our use
+-- F9 to trigger by default
+function ToggleUI_TITLE()
+	-- Check if macro numbers have been set
+	if commandMacro == nil or resultMacro == nil then
+		commandMacro, resultMacro = FindMacros()
+	end
+
+	--Read command macro
+	local icnum,name,body=GetMacroInfo(commandMacro)
+	if string.find(body,"^/") then -- Should be slash command
+		ExecuteMacroLine(body)
+	elseif body == "SendMore" then
+		-- command macro to get the rest of the data from 'ResultOutput'
+		-- Remove previously sent 255 char
+		ResultOutput = string.sub(ResultOutput, 256)
+		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , ResultOutput)
+	else
+		-- The initial command macro
+		ResultOutput = ''
+		local func = loadstring("local a={".. body .. "} return a")
+		local a = {}
+		if func then
+			a = func()
+		end
+		for i = 1, #a do
+			ResultOutput = ResultOutput .. tostring(a[i]) .. string.char(9)
+		end
+		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , ResultOutput)
+	end
+end
+

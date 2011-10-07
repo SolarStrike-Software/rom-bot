@@ -53,22 +53,12 @@ function setupMacros()
 	end
 
 	setupMacroHotkey()
-	setupAttackKey()
 	-- To do: setupSkillKeys()
-end
-
-function setupAttackKey()
-	local __, tmpkey = findActionKeyForId(540000) -- Attack id
-	if tmpkey ~= nil then
-		settings.profile.hotkeys.ATTACK = {name = "ATTACK", key = tmpkey}
-	else
-		error("The \"Attack\" skill needs to be in the actionbar and have a valid hotkey. Usually one of the first 12 action keys in the bottom actionbar.")
-	end
 end
 
 function setupMacroHotkey()
 	-- Find the action key that points to the command macro.
-	local actionKey, hotkey = findActionKeyForMacro(commandMacro)
+	--[[local actionKey, hotkey = findActionKeyForMacro(commandMacro)
 	if not actionKey then
 		actionKey, hotkey = findUsableActionKey()
 		if actionKey then
@@ -84,7 +74,12 @@ function setupMacroHotkey()
 	end
 
 	-- Set settings.profile.hotkeys.MACRO.key
-	settings.profile.hotkeys.MACRO.key = hotkey
+	settings.profile.hotkeys.MACRO.key = hotkey]]
+	local actionkey, modifier = getHotkey(49) -- toggle title/guild
+	if actionkey == 0 or modifier ~= nil then
+		error("Please assign a hotkey to 'Show title/guild' in the games 'Key Bindings' interface. Dont use a modifier.")
+	end
+	settings.profile.hotkeys.MACRO.key = key.VK_F9
 end
 
 -- Macro functions

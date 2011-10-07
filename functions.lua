@@ -552,13 +552,13 @@ function RoMScript(script, default)
 	--- Get the real offset of the address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
 
-	local scriptDef;
+--	local scriptDef;
 
-	if( settings.options.LANGUAGE == "spanish" ) then
-		scriptDef = "/redactar";
-	else
-		scriptDef = "/script";
-	end
+--	if( settings.options.LANGUAGE == "spanish" ) then
+--		scriptDef = "/redactar";
+--	else
+--		scriptDef = "/script";
+--	end
 
 	--- Macro length is max 255, and after we add the return code,
 	--- we are left with about 155 character limit.
@@ -571,14 +571,16 @@ function RoMScript(script, default)
 		-- The command macro
 		if dataPart == 0 then
 			-- The initial command macro
-			text = scriptDef.." R='' a={" .. script ..
-			"} for i=1,#a do R=R..tostring(a[i])" ..
-			"..'" .. string.char(9) .. "' end" ..
-			" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,R)";
+--			text = scriptDef.." R='' a={" .. script ..
+--			"} for i=1,#a do R=R..tostring(a[i])" ..
+--			"..'" .. string.char(9) .. "' end" ..
+--			" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,R)";
+			text = script
 		else
 			-- command macro to get the rest of the data from 'R'
-			text = scriptDef.." EditMacro("..resultMacro..",'"..
-			RESULT_MACRO_NAME.."',7,string.sub(R,".. (1 + dataPart * 255) .."))";
+--			text = scriptDef.." EditMacro("..resultMacro..",'"..
+--			RESULT_MACRO_NAME.."',7,string.sub(R,".. (1 + dataPart * 255) .."))";
+			text = "SendMore"
 		end
 
 		-- Check to make sure length is within bounds
@@ -594,7 +596,7 @@ function RoMScript(script, default)
 			-- Write something on the first address, to see when its over written
 			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
 
-			--- Execute it
+			-- Execute it
 			if( settings.profile.hotkeys.MACRO ) then
 				keyboardPress(settings.profile.hotkeys.MACRO.key);
 			end
@@ -1284,7 +1286,7 @@ function GetPartyMemberName(_number)
 	end
 	return partymembers[_number]
 
-	
+
 	--[[if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
@@ -1426,9 +1428,10 @@ function AddPartner(nameOrId)
 end
 
 function Attack()
-	if settings.profile.hotkeys.ATTACK == nil then
+	RoMScript("UseSkill(1,1)")
+	--[[if settings.profile.hotkeys.ATTACK == nil then
 		setupAttackKey()
 	end
 	yrest(100)
-	keyboardPress(settings.profile.hotkeys.ATTACK.key)
+	keyboardPress(settings.profile.hotkeys.ATTACK.key)]]
 end
