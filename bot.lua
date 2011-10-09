@@ -589,10 +589,9 @@ function main()
 				  				target:getTarget().Address ~= player.Address and
 				 				 (not player:isFriend(CPawn(target.TargetPtr))) and
 				  				target:getTarget().Address ~= 0 -- because of distance limitation
-				  				and ( target:getTarget().Name ~= GetPartyMemberName(1)) and ( target:getTarget().Name ~= GetPartyMemberName(2)) and ( target:getTarget().Name ~= GetPartyMemberName(3)) and ( target:getTarget().Name ~= GetPartyMemberName(4))  and ( target:getTarget().Name ~= GetPartyMemberName(5)) )then
+				  				and target:getTarget().InParty ~= true )then
 									cprintf(cli.red, language[5], target.Name);
 							else
-							--	printf("Should be fighting, 581\n")
 								player:fight();
 							end
 
@@ -616,7 +615,7 @@ function main()
 			if( settings.profile.options.ANTI_KS ) then
 				if( target:haveTarget() and
 				  target:getTarget().Address ~= player.Address and
-				  (not player:isFriend(CPawn(target.TargetPtr))) and ( target:getTarget().Name ~= GetPartyMemberName(1))  and ( target:getTarget().Name ~= GetPartyMemberName(2))  and ( target:getTarget().Name ~= GetPartyMemberName(3))  and ( target:getTarget().Name ~= GetPartyMemberName(4))  and ( target:getTarget().Name ~= GetPartyMemberName(5)) ) then
+				  (not player:isFriend(CPawn(target.TargetPtr))) and target:getTarget().InParty ~= true ) then
 					cprintf(cli.red, language[5], target.Name);
 				else
 					player:fight();

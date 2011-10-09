@@ -270,7 +270,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 
 					if( evalFunc(obj.Address) == true ) then
 						if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
-						(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or (_target.Name == GetPartyMemberName(1) )  or (_target.Name == GetPartyMemberName(2) ) or (_target.Name == GetPartyMemberName(3) ) or (_target.Name == GetPartyMemberName(4) ) or (_target.Name == GetPartyMemberName(5) ) ) and
+						(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or _target.InParty == true ) and
 						aggroOnly == true) or aggroOnly == false) ) then
 							local currentScore = 0;
 							currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
@@ -279,7 +279,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 							if( pawn.Aggressive ) then
 								currentScore = currentScore + SCORE_AGGRESSIVE;
 							end;
-							if( (_target.Name == GetPartyMemberName(1) ) or (_target.Name == GetPartyMemberName(2) )or (_target.Name == GetPartyMemberName(3) )or (_target.Name == GetPartyMemberName(4) )or (_target.Name == GetPartyMemberName(5) ) ) then currentScore = currentScore + 5000 end
+							if _target.InParty == true  then currentScore = currentScore + 5000 end
 							if( bestEnemy == nil ) then
 								bestEnemy = obj;
 								bestScore = currentScore;
@@ -1260,11 +1260,7 @@ function CPlayer:fight()
 			target.Name ~= "Tatus"	and
 		    target.TargetPtr ~= self.Address and
 			target.TargetPtr ~= self.Pet.Address and
-			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(1)  and
-			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(2)  and
-			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(3)  and
-			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(4)  and
-			CPawn(target.TargetPtr).Name ~= GetPartyMemberName(5) ) then	-- but not from that mob
+			CPawn(target.TargetPtr).InParty ~= true ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
 			printf("test this line 1100")
 			self:clearTarget();
@@ -2482,7 +2478,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and  targettarget.InParty ~= true ) then	-- but not from that mob
 				debug_target("target lvl above/below profile settings with battling from other mob")
 				return false;
 			end;
@@ -2499,7 +2495,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then	-- but not from that mob
 				debug_target("we have aggro from another mob")
 				return false;
 			end;
@@ -2513,7 +2509,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1))  and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5))  ) then	-- but not from that mob
+			target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then	-- but not from that mob
 				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
 				return false;
 			end;
@@ -2528,7 +2524,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and         -- we have aggro
-				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1))  and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from the PK player
+				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from the PK player
 				debug_target("PK player, aggro, but he don't target us")
 				return false;
 			end;
@@ -2542,7 +2538,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from that target
+				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from that target
 				debug_target("target is in friends, aggro, but not from that target")
 				return false;
 			end;
@@ -2563,7 +2559,7 @@ function CPlayer:haveTarget()
 				end;
 
 				if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-					target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then   -- but not from that target
+					target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from that target
 					debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
 					return false;
 				end;
@@ -2580,7 +2576,7 @@ function CPlayer:haveTarget()
 			end;
 
 			if( self.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then		-- but not from that target
+				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then		-- but not from that target
 --				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
 				return false;
@@ -2608,7 +2604,7 @@ function CPlayer:haveTarget()
 			-- If they aren't targeting us, and they have less than full HP
 			-- then they must be fighting somebody else.
 			-- If it's a friend, then it is a valid target; help them.
-			if( target.TargetPtr ~= self.Address and  ( targettarget.Name ~= GetPartyMemberName(1)) and  ( targettarget.Name ~= GetPartyMemberName(2)) and  ( targettarget.Name ~= GetPartyMemberName(3)) and  ( targettarget.Name ~= GetPartyMemberName(4)) and  ( targettarget.Name ~= GetPartyMemberName(5)) ) then
+			if( target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then
 
 				-- If the target's TargetPtr is 0,
 				-- that doesn't necessarily mean they don't
@@ -2909,11 +2905,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	end
 
 	if target.TargetPtr == self.Address or
-	(targettarget.Name == GetPartyMemberName(1) ) or
-	(targettarget.Name == GetPartyMemberName(2) ) or
-	(targettarget.Name == GetPartyMemberName(3) ) or
-	(targettarget.Name == GetPartyMemberName(4) ) or
-	(targettarget.Name == GetPartyMemberName(5) ) then
+	targettarget.InParty == true then
 		return false;
 	end
 

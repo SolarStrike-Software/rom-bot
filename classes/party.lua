@@ -70,7 +70,7 @@ _timexx = os.time()
 				getNameFollow()
 			end	
 		end
-		if settings.profile.options.HEAL_FIGHT ~= false then
+		if settings.profile.options.HEALER_FIGHT ~= false then
 			--=== Find mobs with I icon and kill them ===--
 			player:target(player:findEnemy(nil,nil,icontarget,nil)) 
 			if player:haveTarget() then
@@ -100,20 +100,19 @@ function PartyDPS()
 				player:fight();
 			end
 		end
-		
+		getNameFollow()
 		local selficon = player:GetPartyIcon()
 		
 		--=== if self icon II then mount up and follow ===--
 		if selficon == 2 then
 			while not player.Mounted do
 				player:mount()
-				getNameFollow()
 			end
 		end
 		
 		--=== If self icon III then just follow ===--
 		if selficon == 3 then
-			getNameFollow()
+			
 		end
 		
 		--=== If self icon VI then logout, also errors MM after logging out ===--

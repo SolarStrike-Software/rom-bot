@@ -168,7 +168,8 @@ CPawn = class(
 		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
 		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
 		self.SkillQueue = {};				-- Holds any queued skills, obviously
-		self.TargetIcon = true				
+		self.TargetIcon = true		
+		self.InParty = false
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -262,13 +263,22 @@ function CPawn:update()
 		self.Lootable = false;
 	end
 	
+	
+	local tmpp = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 	--=== Does icon appear when you click pawn ===--
-	ticon = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
-	if bitAnd(ticon,0x10) then
+	if bitAnd(tmpp,0x10) then
 		self.TargetIcon = true
 	else
 		self.TargetIcon = false
 	end
+	
+	--=== InParty indicator ===--
+	if bitAnd(tmpp,0x80000000) then
+		self.InParty = true
+	else
+		self.InParty = false
+	end	
+	
 	
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
@@ -473,7 +483,7 @@ function CPawn:haveTarget()
 	local tmp = CPawn(self.TargetPtr);
 
 	-- You can't be your own target!
-	if( self.TargetPtr == self.Address or tmp.Name == GetPartyMemberName(1) or tmp.Name == GetPartyMemberName(2) or tmp.Name == GetPartyMemberName(3) or tmp.Name == GetPartyMemberName(4) or tmp.Name == GetPartyMemberName(5) ) then
+	if self.TargetPtr == self.Address or tmp.InParty == true then
 --	print("can't target yourself or party members.\n")
 		return false;
 	end
