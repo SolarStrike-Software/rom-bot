@@ -89,7 +89,7 @@
 		<!-- <option name="PARTY_INSTANCE"	value="true" /> -->
 
 		<!-- Healing options -->
-		<!-- <option name="HEAL_PARTY"		value="true" /> --> 	<!-- Not implemented yet, coming soon -->
+		<!-- <option name="HEALER_FIGHT"		value="true" /> --> 	<!-- Not implemented yet, coming soon -->
 
 
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->

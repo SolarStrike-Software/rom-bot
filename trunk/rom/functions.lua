@@ -1268,7 +1268,7 @@ end
 --== addresses moved to addresses.lua ==--
 
 function GetPartyMemberName(_number)
-	if type(_number) ~= "number" or _number < 1 then
+	--[[if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
@@ -1284,10 +1284,10 @@ function GetPartyMemberName(_number)
 		end
 		_lastupdated = os.time()
 	end
-	return partymembers[_number]
+	return partymembers[_number] ]]
 
 
-	--[[if type(_number) ~= "number" or _number < 1 then
+	if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
@@ -1301,12 +1301,12 @@ function GetPartyMemberName(_number)
 		return nil
 	end
 
-	return memoryReadRepeat("string", getProc(), memberAddress + 8 )]]
+	return memoryReadRepeat("string", getProc(), memberAddress + 8 )
 end
 
 function GetPartyMemberAddress(_number)
 
-	--[[if type(_number) ~= "number" or _number < 1 then
+	if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
@@ -1320,8 +1320,8 @@ function GetPartyMemberAddress(_number)
 		return
 	end
 		local memberName = memoryReadRepeat("string", getProc(), memberAddress + 8 )
-	return player:findNearestNameOrId(memberName)]]
-	return player:findNearestNameOrId(GetPartyMemberName(_number))
+	return player:findNearestNameOrId(memberName)
+	--return player:findNearestNameOrId(GetPartyMemberName(_number))
 end
 
 function EventMonitorStart(monitorName, event, filter)
