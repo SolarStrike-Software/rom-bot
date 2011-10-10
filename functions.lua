@@ -544,6 +544,12 @@ end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
+	-- Is script 'attack' command?
+	if string.gsub(script,"[; ]","") == "UseSkill(1,1)" then
+		Attack()
+		return
+	end
+
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
 		return
@@ -1428,10 +1434,43 @@ function AddPartner(nameOrId)
 end
 
 function Attack()
-	RoMScript("UseSkill(1,1)")
-	--[[if settings.profile.hotkeys.ATTACK == nil then
+	yrest(100)
+
+	local function freezeTargetPtr(address)
+		memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
+	end
+
+	if settings.profile.hotkeys.ATTACK == nil then
 		setupAttackKey()
 	end
-	yrest(100)
-	keyboardPress(settings.profile.hotkeys.ATTACK.key)]]
+
+	local tmpTargetPtr = memoryReadRepeat("int", getProc(), player.Address + addresses.pawnTargetPtr_offset) or 0
+
+	if tmpTargetPtr == 0 and player.TargetPtr == 0 then
+		-- Nothing to attack
+		return
+	end
+
+	if tmpTargetPtr ~= 0 then
+		player.TargetPtr = tmpTargetPtr
+		keyboardPress(settings.profile.hotkeys.ATTACK.key)
+		return
+	end
+
+	if player.TargetPtr ~= 0 then
+		-- update TargetPtr
+		player:updateTargetPtr()
+		if player.TargetPtr ~= 0 then -- still valid target
+			-- freeze TargetPtr
+			registerTimer("freezeTargetPtr", 5, freezeTargetPtr, player.TargetPtr)
+
+			-- 'Click'
+			keyboardPress(settings.profile.hotkeys.ATTACK.key)
+
+			yrest(0) -- Needed for it to work. Don't know why.
+
+			-- unfreeze TargetPtr
+			unregisterTimer("freezeTargetPtr")
+		end
+	end
 end

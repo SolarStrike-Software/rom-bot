@@ -23,6 +23,7 @@ addresses = {
 	charMaxExpTable_address = 0xA18F38,
 	charPtrMounted_offset = 0x7C,
 	charPtr_offset = 0x598,
+	charStance_offset = 0x7AC,
 	coolDownOffset = 0xE8,
 	durabilityOffset = 0x18,
 	editBoxHasFocus_address = 0xA1DC24,

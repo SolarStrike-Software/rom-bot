@@ -129,7 +129,7 @@ local COMMAND_MACRO_NAME = "RB Command"
 local RESULT_MACRO_NAME = "RB"
 local ResultOutput
 
-function FindMacros()
+local function FindMacros()
 	for m = 1, 48 do
 		local icnum,name,body=GetMacroInfo(m)
 		if name == COMMAND_MACRO_NAME then
@@ -145,7 +145,6 @@ function FindMacros()
 	return commandMacro, resultMacro
 end
 
-
 -- Highjack this function for our use
 -- F9 to trigger by default
 function ToggleUI_TITLE()
@@ -158,6 +157,7 @@ function ToggleUI_TITLE()
 	local icnum,name,body=GetMacroInfo(commandMacro)
 	if string.find(body,"^/") then -- Should be slash command
 		ExecuteMacroLine(body)
+		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , "")
 	elseif body == "SendMore" then
 		-- command macro to get the rest of the data from 'ResultOutput'
 		-- Remove previously sent 255 char
