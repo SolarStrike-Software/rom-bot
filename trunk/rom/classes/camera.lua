@@ -35,7 +35,7 @@ end
 
 function CCamera:setPosition(x, y, z)
 	local proc = getProc();
-	
+
 	self.XUVec = x;
 	self.YUVec = y;
 	--self.ZUVec = z;
@@ -47,11 +47,15 @@ end
 
 function CCamera:setRotation(angle)
 	local proc = getProc();
-	local maxViewDistance = 125; -- Hard value set by the game
-	local px = player.X;
-	local pz = player.Z;
-	local nx = px + math.cos(angle + math.pi) * maxViewDistance;
-	local nz = pz + math.sin(angle + math.pi) * maxViewDistance;
+
+	local px = player.X
+	local pz = player.Z
+	local cx = memoryReadFloat(proc, self.Address + addresses.camX_offset)
+	local cz = memoryReadFloat(proc, self.Address + addresses.camZ_offset)
+	local currentDistance = distance(px,pz,cx,cz)
+
+	local nx = px + math.cos(angle + math.pi) * currentDistance;
+	local nz = pz + math.sin(angle + math.pi) * currentDistance;
 
 	memoryWriteFloat(proc, self.Address + addresses.camX_offset, nx);
 	memoryWriteFloat(proc, self.Address + addresses.camZ_offset, nz);

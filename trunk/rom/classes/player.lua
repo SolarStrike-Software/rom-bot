@@ -135,11 +135,9 @@ function CPlayer:harvest(_id, _second_try)
 
 	yrest(200); -- Make sure we come to a stop before attempting to harvest.
 	local lastHarvestedNodeAddr = nil;
-
 	while(true) do
 		self:update();
 		closestHarvestable = findNearestHarvestable(_id, lastHarvestedNodeAddr);
-
 		if( closestHarvestable == nil ) then
 			printf(language[79]);
 			return;
@@ -208,7 +206,7 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 
-			if not nodeStillFound(closestHarvestable) then
+			if( not nodeStillFound(closestHarvestable) or self.TargetPtr ~= closestHarvestable.Address ) then
 				break;
 			end
 
@@ -218,7 +216,6 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 		end
-		self:unfreezeTargetPtr()
 
 		self:update();
 		if( not self.Battling ) then
@@ -314,32 +311,12 @@ function CPlayer:target(pawnOrAddress)
 	local addressId = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset) or 0;
 
 	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
+		self.TargetPtr = 0
 		return
 	end
-	
-	if CPawn(address).Type == PT_NODE and CPawn(address).TargetIcon == false then
-		self:freezeTargetPtr(address)
-	else
-		self:unfreezeTargetPtr()
-		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
-	end
-end
 
-function freezeTargetPtr(address)
-	--=== If casting then stop freezing memory ===--
-	if ((memoryReadUInt(getProc(), address + addresses.pawnId_offset) or 0) == 0) or player.Casting or player.Harvesting then
-		unregisterTimer("freezeTargetPtr")
-	else
-		memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
-	end
-end
-
-function CPlayer:freezeTargetPtr(address)
-	registerTimer("freezeTargetPtr", 5, freezeTargetPtr, address)
-end
-
-function CPlayer:unfreezeTargetPtr()
-	unregisterTimer("freezeTargetPtr")
+	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+	self.TargetPtr = address
 end
 
 --[[
@@ -2668,6 +2645,7 @@ function CPlayer:update()
 		end
 	end
 
+
 	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset)
 	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset)
 	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset)
@@ -2677,6 +2655,9 @@ function CPlayer:update()
 	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
 	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
+
+	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset);
+	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2);
 
 	local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
@@ -3421,7 +3402,6 @@ function CPlayer:target_NPC(_npcname)
 		self:target(npc.Address)
 		Attack(); yrest(50); Attack(); -- 'click' again to be sure
 		yrest(1000);
-		self:unfreezeTargetPtr()
 		return true
 	else
 		cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
@@ -3617,8 +3597,6 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				until deltaTime(getTime(),timeStart) > _waittime and self.Casting == false
 			end
 		until interrupted == false
-
-		self:unfreezeTargetPtr()
 
 		if obj then -- harvest again
 			if _donotignore ~= true then

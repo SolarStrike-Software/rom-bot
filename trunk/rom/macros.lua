@@ -53,33 +53,50 @@ function setupMacros()
 	end
 
 	setupMacroHotkey()
+	setupAttackKey()
 	-- To do: setupSkillKeys()
 end
 
 function setupMacroHotkey()
 	-- Find the action key that points to the command macro.
-	--[[local actionKey, hotkey = findActionKeyForMacro(commandMacro)
-	if not actionKey then
-		actionKey, hotkey = findUsableActionKey()
-		if actionKey then
-			setActionKeyToMacro(actionKey, commandMacro)
-		else
-			error("No valid action keys available for the command macro. Please supply an empty action key with a hotkey and no modifier.")
-		end
-	end
-
-	if( settings.options.DEBUGGING_MACRO ) then
-		printf("actionKey set to " .. actionKey .. ".\n")
-		printf("The macro hotkey is ".. string.char(hotkey) .. ".\n")
+	local actionKey, hotkey = findActionKeyForMacro(commandMacro)
+	if actionKey then
+		-- A hotkey for the macro is no longer needed.
+		printf("You no longer need to place the macro into the actionbar. It will be removed.\n")
+		setActionKeyToId(actionKey, "delete")
 	end
 
 	-- Set settings.profile.hotkeys.MACRO.key
-	settings.profile.hotkeys.MACRO.key = hotkey]]
-	local actionkey, modifier = getHotkey(49) -- toggle title/guild
-	if actionkey == 0 or modifier ~= nil then
-		error("Please assign a hotkey to 'Show title/guild' in the games 'Key Bindings' interface. Dont use a modifier.")
+	local hotkey, modifier = getHotkey(49) -- The "Toggle title/guild" hotkey
+	if hotkey == 0 or modifier ~= nil then
+		error("Please assign a hotkey to 'Show title/guild' in the games 'Key Bindings' interface. Dont use a modifier(CTRL,SHIFT,ALT).")
 	end
-	settings.profile.hotkeys.MACRO.key = key.VK_F9
+	settings.profile.hotkeys.MACRO.key = hotkey
+
+	if( settings.options.DEBUGGING_MACRO ) then
+		printf("The macro hotkey is ".. string.char(hotkey) .. ".\n")
+	end
+end
+
+function setupAttackKey()
+	local tmpActionKey , tmpkey = findActionKeyForId(540000) -- Attack id
+
+	if tmpkey == nil then
+		-- Find an empty actionkey to use
+		local actionKey, hotkey = findUsableActionKey(settings.profile.hotkeys.ATTACK.key)
+		if actionKey then -- empty found. Assign 'Attack',
+			setActionKeyToId(actionKey, 540000)
+			tmpActionKey = actionKey
+			tmpkey = hotkey
+		else
+			error("The \'Attack\' skill was not found on the action bar. Please add it. One of the first 12 keys on the bottom action bar is recommended.")
+		end
+	end
+	settings.profile.hotkeys.ATTACK = {name = "ATTACK", key = tmpkey}
+
+	if( settings.options.DEBUGGING_MACRO ) then
+		printf("The 'Attack' skill is on actionbar button ".. tmpActionKey .. ".\n")
+	end
 end
 
 -- Macro functions
@@ -213,11 +230,17 @@ function setActionKeyToId(actionkey, id)
 	local actionKey_address = actionBar_base + actionBar_offset + actionKey_offset
 
 	-- write id
-	memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyId_offset, id)
+	if id == "delete" then
+		memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyId_offset, 0)
+	else
+		memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyId_offset, id)
+	end
 
 	-- get type
 	local type;
-	if id >= 0 and id < 49 then -- id = 0 with empty action keys too but we assume it's macro id '0'. So this function can't delete a key.
+	if id == "delete" then
+		type = 0 -- type empty
+	elseif id >= 0 and id < 49 then
 		type = 4 -- type macro
 	elseif id > 490000 and id < 541000 then
 		type = 3 -- type skill
@@ -254,7 +277,7 @@ function findActionKeyForMacro(macroNum)
 	return findActionKeyForId(macroId)
 end
 
-function findUsableActionKey()
+function findUsableActionKey(preferable)
 	-- Only returns usable action keys with a hotkey and no modifier.
 	local bestkey, hotkey, modifier;
 	for i = 1, 80 do
@@ -266,7 +289,7 @@ function findUsableActionKey()
 			hotkey, modifier = getHotkey(i + 88) -- actionbars hotkeys start at 89 in the hotkeys list
 			if hotkey ~= 0 and modifier == null then
 				-- Best choice is an empty with users chosen hotkey.
-				if hotkey == settings.profile.hotkeys.MACRO.key then
+				if preferable and hotkey == preferable then
 					return i, hotkey
 				end
 

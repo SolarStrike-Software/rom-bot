@@ -105,6 +105,7 @@ CPawn = class(
 		self.Battling = false; -- The actual "in combat" flag.
 		self.Fighting = false; -- Internal use, does not depend on the client's battle flag
 		self.Casting = false;
+		self.Stance = 0;
 		self.Mana = 0;
 		self.MaxMana = 0;
 		self.Rage = 0;
@@ -168,7 +169,7 @@ CPawn = class(
 		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
 		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
 		self.SkillQueue = {};				-- Holds any queued skills, obviously
-		self.TargetIcon = true		
+		self.TargetIcon = true
 		self.InParty = false
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
@@ -262,8 +263,8 @@ function CPawn:update()
 	else
 		self.Lootable = false;
 	end
-	
-	
+
+
 	local tmpp = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 	--=== Does icon appear when you click pawn ===--
 	if bitAnd(tmpp,0x10) then
@@ -271,15 +272,15 @@ function CPawn:update()
 	else
 		self.TargetIcon = false
 	end
-	
+
 	--=== InParty indicator ===--
 	if bitAnd(tmpp,0x80000000) then
 		self.InParty = true
 	else
 		self.InParty = false
-	end	
-	
-	
+	end
+
+
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
 	local namePtr = memoryReadRepeat("uint", proc, self.Address + addresses.pawnName_offset);
@@ -316,7 +317,7 @@ function CPawn:update()
 	self.Level = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel_offset) or self.Level;
 	self.Level2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel2_offset) or self.Level2;
 
-	self.TargetPtr = memoryReadRepeat("int", proc, self.Address + addresses.pawnTargetPtr_offset) or self.TargetPtr;
+	self:updateTargetPtr()
 
 	self.X = memoryReadRepeat("float", proc, self.Address + addresses.pawnX_offset) or self.X;
 	self.Y = memoryReadRepeat("float", proc, self.Address + addresses.pawnY_offset) or self.Y;
@@ -472,9 +473,8 @@ function CPawn:updateBuffs()
 end
 
 function CPawn:haveTarget()
-	local proc = getProc();
-	self.TargetPtr = memoryReadRepeat("int", proc, self.Address + addresses.pawnTargetPtr_offset);
-	if( self.TargetPtr == nil ) then self.TargetPtr = 0; end;
+	-- Update TargetPtr
+	self:updateTargetPtr()
 
 	if( self.TargetPtr == 0 ) then
 		return false;
@@ -602,4 +602,24 @@ function CPawn:GetPartyIcon()
          return i + 1
       end
    end
+end
+
+function CPawn:updateTargetPtr()
+	local tmpTargetPtr = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnTargetPtr_offset) or 0
+
+	if tmpTargetPtr ~= 0 then
+		self.TargetPtr = tmpTargetPtr
+		return
+	end
+
+	if self.TargetPtr ~= 0 then
+		-- Check if still valid
+		local addressId = memoryReadRepeat("uint", getProc(), self.TargetPtr + addresses.pawnId_offset) or 0;
+
+		if addressId == 0 and addressId > 999999 then -- The target no longer exists
+			self.TargetPtr = 0
+		end
+	end
+
+	return 0
 end
