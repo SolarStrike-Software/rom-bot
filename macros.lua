@@ -82,8 +82,16 @@ function setupAttackKey()
 	local tmpActionKey , tmpkey = findActionKeyForId(540000) -- Attack id
 
 	if tmpkey == nil then
+		-- See if user speicfied a prefered key.
+		local prefered = nil
+		if settings.profile.hotkeys.ATTACK then -- A prefered value has been specified.
+			prefered = settings.profile.hotkeys.ATTACK.key
+		end
+
 		-- Find an empty actionkey to use
-		local actionKey, hotkey = findUsableActionKey(settings.profile.hotkeys.ATTACK.key)
+		local actionKey, hotkey = findUsableActionKey(prefered)
+
+		-- Assign 'Attack' to action key
 		if actionKey then -- empty found. Assign 'Attack',
 			setActionKeyToId(actionKey, 540000)
 			tmpActionKey = actionKey
