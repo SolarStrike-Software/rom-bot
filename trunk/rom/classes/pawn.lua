@@ -616,7 +616,7 @@ function CPawn:updateTargetPtr()
 		-- Check if still valid
 		local addressId = memoryReadRepeat("uint", getProc(), self.TargetPtr + addresses.pawnId_offset) or 0;
 
-		if addressId == 0 and addressId > 999999 then -- The target no longer exists
+		if addressId == 0 or addressId > 999999 then -- The target no longer exists
 			self.TargetPtr = 0
 		end
 	end
