@@ -128,6 +128,8 @@ end
 local COMMAND_MACRO_NAME = "RB Command"
 local RESULT_MACRO_NAME = "RB"
 local ResultOutput
+local commandMacro
+local resultMacro
 
 local function FindMacros()
 	for m = 1, 48 do
