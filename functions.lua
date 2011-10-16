@@ -544,12 +544,6 @@ end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
-	-- Is script 'attack' command?
-	if string.gsub(script,"[; ]","") == "UseSkill(1,1)" then
-		Attack()
-		return
-	end
-
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
 		return
@@ -1236,16 +1230,15 @@ function waitForLoadingScreen(_maxWaitTime)
 			cprintf(cli.yellow,"The loading screen didn't appear...\n")
 			return false
 		end
-		yrest(1000)
+		rest(1000)
 		local newAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0
-
 	-- wait until loading screen is gone
 	repeat
-		yrest(1000)
+		rest(1000)
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
 
-	yrest(2000)
+	rest(2000)
 	player:update()
 	return true
 end
@@ -1434,13 +1427,7 @@ function AddPartner(nameOrId)
 end
 
 function Attack()
-	yrest(100)
-
-	local function freezeTargetPtr(address)
-		memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, address);
-	end
-
-	if settings.profile.hotkeys.ATTACK == nil then
+	if settings.profile.hotkeys.AttackType == nil then
 		setupAttackKey()
 	end
 
@@ -1453,7 +1440,11 @@ function Attack()
 
 	if tmpTargetPtr ~= 0 then
 		player.TargetPtr = tmpTargetPtr
-		keyboardPress(settings.profile.hotkeys.ATTACK.key)
+		if settings.profile.hotkeys.AttackType == "macro" then
+			RoMScript("UseSkill(1,1)")
+		else
+			keyboardPress(settings.profile.hotkeys.AttackType)
+		end
 		return
 	end
 
@@ -1461,16 +1452,24 @@ function Attack()
 		-- update TargetPtr
 		player:updateTargetPtr()
 		if player.TargetPtr ~= 0 then -- still valid target
+
 			-- freeze TargetPtr
-			registerTimer("freezeTargetPtr", 5, freezeTargetPtr, player.TargetPtr)
+			memoryWriteString(getProc(), 0x5F2A8F, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
+
+			-- Target it
+			memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, player.TargetPtr);
 
 			-- 'Click'
-			keyboardPress(settings.profile.hotkeys.ATTACK.key)
-
-			yrest(0) -- Needed for it to work. Don't know why.
+			if settings.profile.hotkeys.AttackType == "macro" then
+				RoMScript("UseSkill(1,1)")
+			else
+				keyboardPress(settings.profile.hotkeys.AttackType)
+			end
+			yrest(100)
 
 			-- unfreeze TargetPtr
-			unregisterTimer("freezeTargetPtr")
+			memoryWriteString(getProc(), 0x5F2A8F, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x99, 0x95, 0x27, 0x00));
+
 		end
 	end
 end

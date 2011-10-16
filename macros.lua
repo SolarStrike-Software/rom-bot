@@ -78,32 +78,31 @@ function setupMacroHotkey()
 	end
 end
 
+settings.profile.hotkeys.AttackType = nil
 function setupAttackKey()
-	local tmpActionKey , tmpkey = findActionKeyForId(540000) -- Attack id
+	settings.profile.hotkeys.AttackType = nil
 
-	if tmpkey == nil then
-		-- See if user speicfied a prefered key.
-		local prefered = nil
-		if settings.profile.hotkeys.ATTACK then -- A prefered value has been specified.
-			prefered = settings.profile.hotkeys.ATTACK.key
-		end
-
-		-- Find an empty actionkey to use
-		local actionKey, hotkey = findUsableActionKey(prefered)
-
-		-- Assign 'Attack' to action key
-		if actionKey then -- empty found. Assign 'Attack',
-			setActionKeyToId(actionKey, 540000)
-			tmpActionKey = actionKey
-			tmpkey = hotkey
+	-- See if user speicfied a prefered key.
+	if settings.profile.hotkeys.ATTACK and string.lower(settings.profile.hotkeys.ATTACK.key) ~= "macro" then
+		-- First see if 'Attack' already exists in action bar
+		local tmpActionKey , tmpkey = findActionKeyForId(540000)
+		if tmpkey ~= nil then
+			settings.profile.hotkeys.AttackType = tmpkey
 		else
-			error("The \'Attack\' skill was not found on the action bar. Please add it. One of the first 12 keys on the bottom action bar is recommended.")
+			local actionkey, hotkey = findUsableActionKey(settings.profile.hotkeys.ATTACK.key)
+			if actionkey and hotkey then
+				settings.profile.hotkeys.AttackType = hotkey
+				setActionKeyToId(actionkey, 540000)
+			end
 		end
 	end
-	settings.profile.hotkeys.ATTACK = {name = "ATTACK", key = tmpkey}
+
+	if settings.profile.hotkeys.AttackType == nil then
+		settings.profile.hotkeys.AttackType = "macro"
+	end
 
 	if( settings.options.DEBUGGING_MACRO ) then
-		printf("The 'Attack' skill is on actionbar button ".. tmpActionKey .. ".\n")
+		printf("The 'Attack' hotkey is set to '".. settings.profile.hotkeys.AttackType .. "'.\n")
 	end
 end
 
