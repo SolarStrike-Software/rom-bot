@@ -55,6 +55,7 @@ addresses = {
 	eggPetTraining_offset = 0x58,
 	eggPetWis_offset = 0x70,
 	eggPetWoodworking_offset = 0xD4,
+	functionTargetPatchAddr = 0x5F2A8F,
 	hotkeysKey_offset = 0x54,
 	hotkeysPtr = 0xA21E58,
 	hotkeys_offset = 0x28,
@@ -172,4 +173,3 @@ addresses = {
 	typeOffset = 0x78,
 	valueOffset = 0x34,
 }
-
