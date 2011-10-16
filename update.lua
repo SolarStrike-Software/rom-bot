@@ -479,7 +479,19 @@ local updatePatterns =
 			0x8B, 0x76),
 		mask = "xxxxx????xx????xx",
 		offset = 11,
-		startloc = 0x7E0000
+		startloc = 0x7E0000,
+	},
+
+	functionTargetPatchAddr = {
+		pattern = string.char(
+			0x56,
+			0x8B, 0xCD,
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x17,
+			0x8B, 0x82, 0xFF, 0xFF, 0xFF, 0xFF),
+		mask = "xxxx????xxxx????",
+		offset = 0,
+		startloc = 0x5F0000,
 	},
 }
 
@@ -525,6 +537,8 @@ function findOffsets()
 			addresses.staticpattern_char = found;
 		elseif( name == "staticbase_macro" ) then
 			addresses.staticpattern_macro = found;
+		elseif( name == "functionTargetPatchAddr" ) then
+			addresses.functionTargetPatchAddr = found;
 		end
 	end
 
