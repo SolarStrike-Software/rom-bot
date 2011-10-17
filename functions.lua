@@ -1458,7 +1458,7 @@ function Attack()
 			end
 
 			-- freeze TargetPtr
-			memoryWriteString(getProc(), functionTargetPatchAddr, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
 
 			-- Target it
 			memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, player.TargetPtr);
@@ -1472,7 +1472,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x99, 0x95, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x99, 0x95, 0x27, 0x00));
 
 		end
 	end
