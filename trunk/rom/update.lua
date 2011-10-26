@@ -92,9 +92,9 @@ local updatePatterns =
 	},
 
 	pawnHarvesting_offset = {
-		pattern = string.char(0x8D, 0x3C, 0x86,  
-			0x8B, 0x87, 0xFF, 0xFF, 0xFF, 0xFF, 
-			0x3B, 0xC3, 
+		pattern = string.char(0x8D, 0x3C, 0x86,
+			0x8B, 0x87, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x3B, 0xC3,
 			0x74, 0x37
 		),
 		mask = "xxxxx????xxxx",
@@ -561,7 +561,6 @@ function findOffsets()
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
 	assumptionUpdate("moneyPtr", addresses.staticInventory + 0x2FD4);
-	assumptionUpdate("charExp_address", addresses.staticbase_char + 0x6C);
 end
 
 function rewriteAddresses()
