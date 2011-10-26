@@ -610,4 +610,4 @@ function rewriteAddresses()
 	file:close();
 
 end
-rewriteAddresses();
+--rewriteAddresses();

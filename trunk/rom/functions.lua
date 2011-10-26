@@ -1477,3 +1477,12 @@ function Attack()
 		end
 	end
 end
+
+function getZoneId()
+	local zone = memoryReadRepeat("int", getProc(), addresses.zoneId)
+	if zone ~= nil then
+		return zone
+	else
+		printf("Invalid command\n")
+	end
+end
