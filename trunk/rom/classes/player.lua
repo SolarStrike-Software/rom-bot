@@ -1878,19 +1878,20 @@ function evalTargetDefault(address)
 
 
 	-- PK protect
-	if( target.Type == PT_PLAYER ) then      -- Player are type == 1
-		if ( player.Battling == false ) then   -- if we don't have aggro then
-			debug_target("PK player, but not fighting us")
-			return false;         -- he is not a valid target
-		end;
+	if settings.profile.options.PVP ~= true then
+		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
+			if ( player.Battling == false ) then   -- if we don't have aggro then
+				debug_target("PK player, but not fighting us")
+				return false;         -- he is not a valid target
+			end;
 
-		if( player.Battling == true  and         -- we have aggro
-			target.TargetPtr ~= player.Address ) then   -- but not from the PK player
-			debug_target("PK player, aggro, but he don't target us")
-			return false;
+			if( player.Battling == true  and         -- we have aggro
+				target.TargetPtr ~= player.Address ) then   -- but not from the PK player
+				debug_target("PK player, aggro, but he don't target us")
+				return false;
+			end;
 		end;
-	end;
-
+	end
 	-- Friends aren't enemies
 	if( player:isFriend(target) ) then
 		if ( player.Battling == false ) then   -- if we don't have aggro then
@@ -2495,19 +2496,20 @@ function CPlayer:haveTarget()
 
 
 		-- PK protect
-		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
-			if ( self.Battling == false ) then   -- if we don't have aggro then
-				debug_target("PK player, but not fighting us")
-				return false;         -- he is not a valid target
-			end;
+		if settings.profile.options.PVP ~= true then
+			if( target.Type == PT_PLAYER ) then      -- Player are type == 1
+				if ( self.Battling == false ) then   -- if we don't have aggro then
+					debug_target("PK player, but not fighting us")
+					return false;         -- he is not a valid target
+				end;
 
-			if( self.Battling == true  and         -- we have aggro
-				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from the PK player
-				debug_target("PK player, aggro, but he don't target us")
-				return false;
+				if( self.Battling == true  and         -- we have aggro
+					target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from the PK player
+					debug_target("PK player, aggro, but he don't target us")
+					return false;
+				end;
 			end;
-		end;
-
+		end
 		-- Friends aren't enemies
 		if( self:isFriend(target) ) then
 			if ( self.Battling == false ) then   -- if we don't have aggro then
