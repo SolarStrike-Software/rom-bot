@@ -2649,7 +2649,7 @@ function CPlayer:update()
 
 	CPawn.update(self); -- run base function
 
-	if self.Class1 ~= oldclass or (#settings.profile.skills == 0 and #settings.profile.skillsData ~= 0) then
+	if self.Class1 ~= oldclass or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
 		settings.loadSkillSet(self.Class1)
 	end
 
