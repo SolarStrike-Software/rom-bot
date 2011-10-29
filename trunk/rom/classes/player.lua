@@ -196,7 +196,6 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 		end
-
 		self:update();
 		timeStart = getTime();
 		while( self.Harvesting and skip == false ) do
@@ -1261,22 +1260,14 @@ function CPlayer:fight()
 
 			printf(language[25], suggestedRange, dist);
 			-- move into distance
-			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
-			local posX, posZ;
 			local success, reason;
 
 			if( settings.profile.options.COMBAT_TYPE == "ranged" or
 			  self.ranged_pull == true ) then		-- melees with timed ranged pull
 				if dist > suggestedRange then -- move closer
-					movedist = dist - suggestedRange
-					if movedist < 50 then movedist = 50 end;
-
-					posX = self.X + math.cos(angle) * (movedist);
-					posZ = self.Z + math.sin(angle) * (movedist);
-					success, reason = self:moveTo(CWaypoint(posX, posZ), true);
+					success, reason = self:moveTo(target, true, nil, suggestedRange);
 				end
 			else 	-- normal melee
---			elseif( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				success, reason = self:moveTo(target, true);
 				-- Start melee attacking
 				if( settings.profile.options.COMBAT_TYPE == "melee" ) then
@@ -1979,9 +1970,11 @@ function evalTargetDefault(address)
 	return true;
 end
 
-function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
+function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 
 	self:update();
+	local destination
+
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 	local yangle = 0
 	if waypoint.Y ~= nil then
@@ -2097,6 +2090,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
+	if range then dist = dist - range end
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
@@ -2175,10 +2169,33 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 
 		end
 
-		dist = distance(self.X, self.Z, waypoint.X, waypoint.Z);
+		dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
-		if waypoint.Y ~= nil then
-			yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
+
+		-- calculate new kcoords if range specified
+		if range and range > 0 then
+			if dist > range then -- Calculate coordinates
+				local movedist = dist - range
+				if movedist < 50 then movedist = 50 end;
+
+				local posX = self.X + math.cos(angle) * (movedist);
+				local posZ = self.Z + math.sin(angle) * (movedist);
+				local posY = self.Y -- default value
+				if waypoint.Y ~= nil then
+					posY = self.Y + (waypoint.Y - self.Y) * movedist
+				end
+				destination = CWaypoint(posX, posZ, posY)
+				dist = dist - range
+			else
+				break -- already in range
+			end
+
+		else
+			destination = CWaypoint(waypoint.X, waypoint.Z, waypoint.Y)
+		end
+
+		if destination.Y ~= nil then
+			yangle = math.atan2(destination.Y - self.Y, ((destination.X - self.X)^2 + (destination.Z - self.Z)^2)^.5 );
 		end
 		angleDif = angleDifference(angle, self.Direction);
 
@@ -2226,13 +2243,15 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd)
 		waypoint:update();
 
 	end
-if (settings.profile.options.WP_NO_STOP ~= false) then
-	if (success == false) or (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+
+	if (settings.profile.options.WP_NO_STOP ~= false) then
+		if (success == false) or (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+		end
+	else
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 	end
-else
-	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-end
+
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
@@ -2630,7 +2649,7 @@ function CPlayer:update()
 
 	CPawn.update(self); -- run base function
 
-	if self.Class1 ~= oldclass or #settings.profile.skills == 0 then
+	if self.Class1 ~= oldclass or (#settings.profile.skills == 0 and #settings.profile.skillsData ~= 0) then
 		settings.loadSkillSet(self.Class1)
 	end
 
@@ -3395,6 +3414,11 @@ function CPlayer:target_NPC(_npcname)
 
 	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC
 
+	if type(_npcname) == "string" and
+		bot.ClientLanguage == "RU" then
+		_npcname = utf82oem_russian(_npcname);		-- language conversations for Russian Client
+	end
+
 	local npc = self:findNearestNameOrId(_npcname)
 	if npc then	-- we successfully found NPC
 		cprintf(cli.green, language[136], npc.Name);	-- we successfully target NPC
@@ -3512,7 +3536,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
-				if( obj.Address ~= ignore and (obj.Id == _objnameorid or string.find(obj.Name, _objnameorid) )) then
+				if( obj.Address ~= ignore and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid) )) then
 					if( evalFunc(obj.Address) == true ) then
 						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then

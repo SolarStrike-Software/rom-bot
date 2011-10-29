@@ -59,11 +59,12 @@ CItem = class(
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 		self.Durability = 0;
+		self.MaxDurability = 0;
 		self.Quality = 0; -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
 		self.Value = 0;
 		self.Worth = 0;
 		self.InUse = false;
-		self.BoundStatus = 1; -- 0 = pick, 1 = no, 2 = bound 3 = equip
+		self.BoundStatus = 1; -- 0 = bound on pickup, 1 = not bound, 2 = binds on equip 3 = binds on equip and bound
 		self.RequiredLvl = 0;
 		self.CoolDownTime = 0;
 		self.LastTimeUsed = 0;
@@ -172,6 +173,7 @@ function CItem:update()
 		self.Empty = false;
 		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
 		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
+		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.maxDurabilityOffset );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
@@ -180,7 +182,7 @@ function CItem:update()
 			self.Worth = self.Value / 10;
 		end;
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
+		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.boundStatusOffset );
 		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
 		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
 		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset );
@@ -271,6 +273,7 @@ function CItem:update()
 		self.Worth = 0;
 		self.InUse = false;
 		self.RequiredLvl = 0;
+		self.Stats = {};
 	else
 		-- if id is not 0 and hasn't changed we only update these values
 		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );

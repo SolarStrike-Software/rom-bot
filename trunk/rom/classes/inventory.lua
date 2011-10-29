@@ -581,8 +581,8 @@ function CInventory:autoSell()
 			end
 		end
 
-		debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-		  "Durability check, search for:", durakey, "=>", duramax);
+		--debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+		-- "Durability check, search for:", durakey, "=>", duramax);
 
 		-- check dura
 		if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA 		and
@@ -668,8 +668,12 @@ function CInventory:autoSell()
 
 			-- check if on type sell lists
 			if (isInTypeSell(slotitem) == false ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
 				sell_item = false
 			elseif (isInTypeNosell(slotitem) == true ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
 				sell_item = false
 			end
 
@@ -680,6 +684,8 @@ function CInventory:autoSell()
 
 			-- check number of named stats
 			if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
 				sell_item = false;
 			end
 
