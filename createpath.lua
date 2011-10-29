@@ -182,6 +182,10 @@ function saveWaypoints(list)
 		hf_line = hf_line .. "\t" .. closeformat;
 	end
 
+	if( bot.ClientLanguage == "RU" ) then
+		hf_line = oem2utf8_russian(hf_line);		-- language conversations for Russian Client
+	end
+
 	file:write(hf_line);
 	file:write("</waypoints>");
 

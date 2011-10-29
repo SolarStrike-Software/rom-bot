@@ -67,7 +67,7 @@ function setupMacroHotkey()
 	end
 
 	-- Set settings.profile.hotkeys.MACRO.key
-	local hotkey, modifier = getHotkey(49) -- The "Toggle title/guild" hotkey
+	local hotkey, modifier = getHotkeyByName("TOGGLEPLATES") -- The "Toggle title/guild" hotkey
 	if hotkey == 0 or modifier ~= nil then
 		error("Please assign a hotkey to 'Show title/guild' in the games 'Key Bindings' interface. Dont use a modifier(CTRL,SHIFT,ALT).")
 	end
@@ -266,12 +266,14 @@ function setActionKeyToMacro(actionkey, macroNum)
 end
 
 function findActionKeyForId(id)
+	local firstActionKey = getHotkeyByName("ACTIONBAR1BUTTON1")
+
 	-- Only returns usable action keys with a hotkey and no modifier.
 	for i = 1, 80 do
 		local keyId, type = getActionKeyInfo(i)
 		if keyId == id  and type ~= 0 then -- need 'type' to be valid
 			-- Check the hotkey and modifier
-			local hotkey, modifier = getHotkey(i + 88) -- actionbars hotkeys start at 89 in the hotkeys list
+			local hotkey, modifier = getHotkey(firstActionKey - 1 + i) -- actionbars hotkeys start at 89 in the hotkeys list
 			if hotkey ~= 0 and modifier == null then
 				return i, hotkey
 			end
@@ -285,6 +287,8 @@ function findActionKeyForMacro(macroNum)
 end
 
 function findUsableActionKey(preferable)
+	local firstActionKey = getHotkeyByName("ACTIONBAR1BUTTON1")
+
 	-- Only returns usable action keys with a hotkey and no modifier.
 	local bestkey, hotkey, modifier;
 	for i = 1, 80 do
@@ -293,7 +297,7 @@ function findUsableActionKey(preferable)
 		if type == 0 then
 
 			-- And has hotkey with no modifier
-			hotkey, modifier = getHotkey(i + 88) -- actionbars hotkeys start at 89 in the hotkeys list
+			hotkey, modifier = getHotkey(firstActionKey - 1 + i) -- actionbars hotkeys start at 89 in the hotkeys list
 			if hotkey ~= 0 and modifier == null then
 				-- Best choice is an empty with users chosen hotkey.
 				if preferable and hotkey == preferable then
@@ -315,7 +319,13 @@ end
 function getHotkey(number)
 	local hotkeysTableAddress = memoryReadIntPtr(getProc(), addresses.hotkeysPtr, addresses.hotkeys_offset)
 	local hotkeyAddress = memoryReadInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
+	if hotkeyAddress == 0 then return end -- invalid number
 	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset)
+
+	local name = memoryReadString(getProc(), hotkeyAddress + addresses.hotkeysName_offset)
+	if name ~= string.match(name,"[%w%p]*") or name == "" then
+		name = memoryReadStringPtr(getProc(), hotkeyAddress + addresses.hotkeysName_offset, 0)
+	end
 
 	local tempModifier = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset + 2)
 	local modifier;
@@ -329,5 +339,19 @@ function getHotkey(number)
 		modifier = null
 	end
 
-	return hotkey, modifier
+	return hotkey, modifier, name
+end
+
+function getHotkeyByName(_name)
+	local number = 0
+	local hotkey, modifier, name
+	repeat
+		number = number + 1
+		hotkey, modifier, name = getHotkey(number)
+		if hotkey == nil then
+			return -- nothing found
+		end
+	until name == _name
+
+	return hotkey, modifier, number
 end

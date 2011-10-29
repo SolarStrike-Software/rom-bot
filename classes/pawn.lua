@@ -421,7 +421,7 @@ function CPawn:updateBuffs()
 
 	self.Buffs = {} -- clear old values
 	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
-	if (buffEnd - buffStart)/ BuffSize > 20 then -- Something wrong, too many buffs
+	if (buffEnd - buffStart)/ BuffSize > 50 then -- Something wrong, too many buffs
 		return
 	end
 

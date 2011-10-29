@@ -1162,12 +1162,12 @@ function settings.loadSkillSet(class)
 		end
 	end
 
-	if originalCombatType then settings.profile.options.COMBAT_TYPE = originalCombatType end
-	if originalCombatDistance then settings.profile.options.COMBAT_DISTANCE = originalCombatDistance end
-	if originalCombatRangedPull then settings.profile.options.COMBAT_RANGED_PULL = originalCombatRangedPull end
+	settings.profile.options.COMBAT_TYPE = originalCombatType
+	settings.profile.options.COMBAT_DISTANCE = originalCombatDistance
+	settings.profile.options.COMBAT_RANGED_PULL = originalCombatRangedPull
 
 	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
-		cprintf(cli.yellow, language[200]);
+		cprintf(cli.yellow, language[200]); -- No ranged skills. Turning COMBAT_RANGED_PULL off.
 		settings.profile.options.COMBAT_RANGED_PULL = false;
 	end
 
@@ -1202,10 +1202,9 @@ function settings.loadSkillSet(class)
 	end
 
 	-- check is combat distance is greater then maximum ranged attack
-	if( best_range < settings.profile.options.COMBAT_DISTANCE  and
-		(settings.profile.options.COMBAT_TYPE == "ranged" or
-		settings.profile.options.COMBAT_RANGED_PULL == true) ) then
-		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE, best_range);	-- Maximum range of range attack skills is lesser
+	if ( settings.profile.options.COMBAT_DISTANCE == nil or
+		best_range < settings.profile.options.COMBAT_DISTANCE) then --and
+		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE or 0, best_range);	-- Maximum range of range attack skills is lesser
 		settings.profile.options.COMBAT_DISTANCE = best_range
 	end
 end

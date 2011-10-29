@@ -49,7 +49,7 @@
 	<skill name="MAGE_PURIFY" id="491588" mana="150" range="200" cooldown="10" type="buff" target="self" />
 	<skill name="MAGE_MAGIC_DRAIN" id="493265" mana="30" range="180" cooldown="60" type="damage" target="target" />
 	<skill name="MAGE_HOLY_LIGHT_STRIKE" id="491594" mana="15" range="150" casttime="2" type="damage" target="target" />
-	<skill name="MAGE_STARS_OF_LIGHT" id="491347" mana="30" range="200" cooldown="2" casttime="4" type="dot" />
+	<skill name="MAGE_STARS_OF_LIGHT" id="491347" mana="30" range="200" cooldown="2" casttime="4" type="damage" />
 	<skill name="MAGE_MESSENGER_OF_LIGHT" id="491599" mana="30" type="buff" buffname="502034" target="self" />
 	<skill name="MAGE_LIGHT_CHARGE" id="492634" mana="30" range="150" minrange="80" cooldown="8" priority="100" />
 	<skill name="MAGE_EARTH_SURGE" id="494049" mana="48" range="200" minrange="80" cooldown="2" />
@@ -307,7 +307,7 @@
 	<skill name="SCOUT_SHOOT" id="494070" consumable="1" range="180" cooldown="2" type="damage" target="enemy" />
 	<skill name="SCOUT_BATTLE_INSTINCT" id="491337" rage="30" target="self" buffname="501821" type="buff" />
 	<skill name="SCOUT_MENTAL_FOCUS" id="491491" rage="30" target="self" buffname="501892" type="buff" />
-	<skill name="SCOUT_TARGET_LOCK" id="492620" cooldown="60" concentration="30" type="buff" target="self" />
+	<skill name="SCOUT_TARGET_LOCK" id="492620" cooldown="60"  concentration="30" range="200" type="buff" buffname="502920" target="enemy"  />
 	<skill name="SCOUT_WEAK_SPOT" id="491493" concentration="30" range="250" cooldown="15" />
 	<skill name="SCOUT_BLINDING_POWDER" id="491336" energy="30" range="100" cooldown="60" type="buff" target="enemy" />
 	<skill name="SCOUT_SAPPING_ARROW" id="491496" energy="30" range="250" cooldown="20" type="buff" target="enemy" />
@@ -330,6 +330,7 @@
 	<!-- Itemset skills -->
 	<skill name="SCOUT_ARCHERS_GLORY" id="495477" concentration="35" cooldown="180" type="buff" buffname="506451" target="self" />
 	<skill name="SCOUT_SHATTERSTAR_STORM" id="495478" concentration="30" cooldown="60" range="120" type="damage" target="enemy" />
+	<skill name="SCOUT_ARROW_SHIELD" id="495714" cooldown="120" type="buff" buffname="506867" target="self" />
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
@@ -339,7 +340,7 @@
 	<!-- Druid skills -->
 	<skill name="DRUID_RECOVER" id="493528" mana="56" manainc="5.4" range="250" casttime="2" type="heal" buffname="503797" target="friendly" />
 	<skill name="DRUID_ANTIDOTE" id="493535" mana="150" range="200" cooldown="10" type="buff" target="friendly" />
-	<skill name="DRUID_SAVAGE_BLESSING" id="493531" mana="50" range="180" type="buff" buffname="503800" target="friendly" />
+	<skill name="DRUID_SAVAGE_BLESSING" id="493531" mana="100" range="180" type="buff" buffname="620454" target="friendly" />
 	<skill name="DRUID_EARTH_PULSE" id="493540" mana="40" manainc="4" range="180" cooldown="15" />
 	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" id="493533" mana="100" range="150" cooldown="90" type="buff" buffname="503802" target="friendly" />
 	<skill name="DRUID_EARTH_ARROW" id="493538" mana="12" manainc="1.1" range="200" casttime="2" />
@@ -366,6 +367,7 @@
 	<skill name="DRUID_CAMELLIA_FLOWER" id="494019" mana="25" range="200" type="heal" target="friendly" />
 	<skill name="DRUID_POISONOUS_WIDOW_EMBRACE" id="494022" mana="30" range="200"  casttime="2" type="damage" target="enemy" />
 	<skill name="DRUID_CORROSIVE_POISON" id="494024" mana="30" range="200" cooldown="10" type="dot" target="enemy" />
+	<skill name="WARDEN_EARTH_SPIRIT_ESSENCE" id="494215" mana="100" manainc="10" type="buff" buffname="504847" target="self" />
 
 
 	<!-- Warden skills -->
@@ -403,6 +405,7 @@
 
 	<!-- Elite -->
 	<skill name="WARDEN_ANTI-MAGIC_ARROW" id="494004" concentration="30" cooldown="6" range="250" type="damage" target="enemy" />
+	<skill name="WARDEN_UNTAMABLE" id="494006" concentration="30" cooldown="4" range="50" type="damage" target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" id="494212" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" id="494357" concentration="30" type="buff" target="self" cooldown="60" />
 
