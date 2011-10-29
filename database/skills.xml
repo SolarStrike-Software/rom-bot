@@ -240,7 +240,7 @@
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" id="490155" mana="6" manainc="0.50" range="90" cooldown="30" type="damage" target="enemy" />
 	<skill name="KNIGHT_ENHANCED_ARMOR" id="490152" mana="20" manainc="2.0" type="buff" buffname="500141,501823" target="self" />
 	<skill name="KNIGHT_HOLY_SHIELD" id="490495" cooldown="300" type="buff" buffname="501772" target="self" />
-	<skill name="KNIGHT_HOLY_SEAL" id="491368" mana="30" cooldown="300" type="buff" buffname="501772" target="self" />
+	<skill name="KNIGHT_HOLY_SEAL" id="491368" mana="30" type="buff" buffname="501772" target="self" />
 	<skill name="KNIGHT_MANA_RETURN" id="491446" range="100" cooldown="8" type="damage" target="enemy" reqbuffname="501773" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_WHIRLWIND_SHIELD" id="491281" mana="20" cooldown="6" />
 	<skill name="KNIGHT_SHACKLES_OF_LIGHT" id="490180" mana="24" manainc="25" range="50" cooldown="60" type="damage" target="enemy" />
