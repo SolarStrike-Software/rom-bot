@@ -319,14 +319,13 @@ end
 function getHotkey(number)
 	local hotkeysTableAddress = memoryReadIntPtr(getProc(), addresses.hotkeysPtr, addresses.hotkeys_offset)
 	local hotkeyAddress = memoryReadInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
-	if hotkeyAddress == 0 then return end -- invalid number
+	if hotkeyAddress < 1 then return end -- invalid number
 	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset)
 
 	local name = memoryReadString(getProc(), hotkeyAddress + addresses.hotkeysName_offset)
-	if name ~= string.match(name,"[%w%p]*") or name == "" then
+	if name ~= string.match(name,"[%u%d_]*") or name == "" then
 		name = memoryReadStringPtr(getProc(), hotkeyAddress + addresses.hotkeysName_offset, 0)
 	end
-
 	local tempModifier = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset + 2)
 	local modifier;
 	if tempModifier == 1 then
