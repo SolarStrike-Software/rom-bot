@@ -352,6 +352,37 @@ function exitCallback()
 end
 atExit(exitCallback);
 
+function errorCallback(script, line, message)
+	local crashwin = findWindow("Crash Report", "#32770");
+
+	if( crashwin ~= 0 and crashwin ~= nil ) then
+		-- Looks like the paired game client crashed. Kill it off and exit.
+		local pid = findProcessByWindow(crashwin);
+		os.execute("TASKKILL /PID " .. pid .. " /F");
+
+		warning(script .. ":" .. line .. ": " .. message);
+
+		printf("Found a crashed game client and killed it. (PID %d)\n", pid);
+		printf("This instance of MicroMacro will automatically terminate in 30 seconds.\n");
+		printf("Press ENTER to end the script and prevent termination.\n");
+
+		local starttime = os.time();
+		while( os.time() - starttime < 30 ) do
+			yrest(10);
+
+			if( keyPressed(key.VK_ENTER) or keyPressed(key.VK_ESCAPE) ) then
+				return;
+			end
+		end
+
+		-- Terminate this copy of MicroMacro.
+		os.exit();
+	else
+		printf("Did not find any crashed game clients.\n");
+	end
+end
+atError(errorCallback);
+
 function resumeCallback()
 	printf("Resumed.\n");
 
@@ -1485,33 +1516,4 @@ function getZoneId()
 	else
 		printf("Invalid command\n")
 	end
-end
-
-function bankItemBySlot(SlotNumber)
-	-- moneyPtr + 0x8 = bank Address = 0x9DDDCC in 4.0.4.2456
-	-- SlotNumber is 1 to 40
-	if SlotNumber >= 1 and 40 >= SlotNumber then
-		local baseaddress = (addresses.moneyPtr + 0x8)
-		local Address = baseaddress + ( (SlotNumber - 1) * 68 );
-		local Id = memoryReadInt( getProc(), Address ) or 0;
-		local Name
-		if ( Id ~= nil and Id ~= 0 ) then
-			local BaseItemAddress = GetItemAddress( Id );
-			if ( BaseItemAddress == nil or BaseItemAddress == 0 ) then
-				cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", Id );
-				logMessage(sprintf("Wrong value returned in update of item id: %d", Id));
-				return;
-			end;
-			local ItemCount = memoryReadInt( getProc(), Address + addresses.itemCountOffset );
-			local nameAddress = memoryReadInt( getProc(), BaseItemAddress + addresses.nameOffset );
-			if( nameAddress == nil or nameAddress == 0 ) then
-				Name = "<EMPTY>";
-			else
-				Name = memoryReadString(getProc(), nameAddress);
-				return Name, Id, ItemCount, SlotNumber  -- this is the important part
-			end;
-		end
-	else
-		print("Incorrect Slot number stated\n")
-	end	
 end
