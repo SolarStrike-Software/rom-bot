@@ -408,6 +408,7 @@
 	<skill name="WARDEN_UNTAMABLE" id="494006" concentration="30" cooldown="4" range="50" type="damage" target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" id="494212" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" id="494357" concentration="30" type="buff" target="self" cooldown="60" />
+	<skill name="WARDEN_WIND_CHOP" id="494010" mana="20" range="50" type="damage" target="enemy"/>
 
 
 	<!-- ALL -->

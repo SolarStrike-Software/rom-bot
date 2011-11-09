@@ -1517,3 +1517,32 @@ function getZoneId()
 		printf("Invalid command\n")
 	end
 end
+
+function bankItemBySlot(SlotNumber)
+	-- moneyPtr + 0x8 = bank Address = 0x9DDDCC in 4.0.4.2456
+	-- SlotNumber is 1 to 40
+	if SlotNumber >= 1 and 40 >= SlotNumber then
+		local baseaddress = (addresses.moneyPtr + 0x8)
+		local Address = baseaddress + ( (SlotNumber - 1) * 68 );
+		local Id = memoryReadInt( getProc(), Address ) or 0;
+		local Name
+		if ( Id ~= nil and Id ~= 0 ) then
+			local BaseItemAddress = GetItemAddress( Id );
+			if ( BaseItemAddress == nil or BaseItemAddress == 0 ) then
+				cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", Id );
+				logMessage(sprintf("Wrong value returned in update of item id: %d", Id));
+				return;
+			end;
+			local ItemCount = memoryReadInt( getProc(), Address + addresses.itemCountOffset );
+			local nameAddress = memoryReadInt( getProc(), BaseItemAddress + addresses.nameOffset );
+			if( nameAddress == nil or nameAddress == 0 ) then
+				Name = "<EMPTY>";
+			else
+				Name = memoryReadString(getProc(), nameAddress);
+				return Name, Id, ItemCount, SlotNumber  -- this is the important part
+			end;
+		end
+	else
+		print("Incorrect Slot number stated\n")
+	end
+end

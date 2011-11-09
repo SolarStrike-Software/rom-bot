@@ -56,7 +56,7 @@ CPawn = class(
 	function (self, ptr)
 		self.Address = ptr;
 		self.Name = "<UNKNOWN>";
-		self.Id = 0;
+		self.Id = -1;
 		self.GUID  = 0;
 		self.Type = PT_NONE;
 		self.Class1 = CLASS_NONE;
@@ -235,6 +235,18 @@ function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";
 	local tmp;
+
+	tmp = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset) or 0;
+	if self.Id == -1 then -- First time. Get it.
+		self.Id = tmp
+		if self.Id > 999999 then self.Id = 0 end
+	else -- see if it changed
+		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
+			self.Id = 0
+		end
+	end
+	if self.Id == 0 then return end
+
 	tmp = memoryReadRepeat("byte", proc, self.Address + addresses.charAlive_offset);
 	self.Alive = not(tmp == 9 or tmp == 8);
 	self.HP = memoryReadRepeat("int", proc, self.Address + addresses.pawnHP_offset) or self.HP;
@@ -247,7 +259,7 @@ function CPawn:update()
 
 	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
 
-	self.Id = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset) or self.Id;
+
 	self.GUID = memoryReadShort(proc, self.Address + addresses.pawnGUID_offset) or self.GUID;
 	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
 
