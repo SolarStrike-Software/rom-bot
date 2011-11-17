@@ -1,4 +1,6 @@
-IGF_INSTALLED = true;	-- so we can detect if the addon is installed
+IGF_INSTALLED = 1;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+                    -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
+					-- and change the check in 'settings.lua' to match this number.
 
 -- read the tooltip values for a given item in the bag (bagid)
 function igf_GetTooltip(_side, _bagid)
@@ -132,6 +134,9 @@ local commandMacro
 local resultMacro
 
 local function FindMacros()
+	commandMacro = nil
+	resultMacro = nil
+
 	for m = 1, 48 do
 		local icnum,name,body=GetMacroInfo(m)
 		if name == COMMAND_MACRO_NAME then
@@ -153,6 +158,12 @@ function ToggleUI_TITLE()
 	-- Check if macro numbers have been set
 	if commandMacro == nil or resultMacro == nil then
 		commandMacro, resultMacro = FindMacros()
+	else -- Check if they've moved
+		local __,cName=GetMacroInfo(commandMacro)
+		local __,rName=GetMacroInfo(resultMacro)
+		if cName ~= COMMAND_MACRO_NAME or rName ~= resultMacro then
+			commandMacro, resultMacro = FindMacros()
+		end
 	end
 
 	--Read command macro

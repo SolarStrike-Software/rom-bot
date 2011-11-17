@@ -2024,6 +2024,19 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 
 	end;
 
+	-- look for a target before start movig
+	if( (not ignoreCycleTargets) and (not self.Battling) ) then
+		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
+		if( newTarget ) then			-- find a new target
+			self:target(newTarget.Address);
+			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
+			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
+			success = false;
+			failreason = WF_TARGET;
+			return success, failreason;
+		end;
+	end;
+
 	-- QUICK_TURN only
 	if( settings.profile.options.QUICK_TURN == true ) then
 		self:faceDirection(angle, yangle);
@@ -2075,19 +2088,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
-	-- direction ok, now look for a target before start movig
-	if( (not ignoreCycleTargets) and (not self.Battling) ) then
-		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
-		if( newTarget ) then			-- find a new target
-			self:target(newTarget.Address);
-			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
-			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
-			success = false;
-			failreason = WF_TARGET;
-			return success, failreason;
-		end;
-	end;
-
+	-- Direction ok, start moving forward
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
 	if range then dist = dist - range end
@@ -2637,20 +2638,21 @@ function CPlayer:haveTarget()
 end
 
 function CPlayer:update()
+	local addressChanged = false
+
 	-- Ensure that our address hasn't changed. If it has, fix it.
 	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
+		addressChanged = true
 	end;
-
-
-	local oldclass = self.Class1
 
 	CPawn.update(self); -- run base function
 
-	if self.Class1 ~= oldclass or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
+	if addressChanged or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
 		settings.loadSkillSet(self.Class1)
+		addressChanged = false
 	end
 
 	-- If have 2nd class, look for 3rd class
