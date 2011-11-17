@@ -1,5 +1,3 @@
-IGFEVENTS_INSTALLED = true;	-- so we can detect if the event addon is installed
-
 -- Definition of 'monitor':
 ----------------------------
 -- In the context of this file, the name, event to monitor and filter options specified by the user is called a 'monitor'.

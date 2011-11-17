@@ -578,6 +578,12 @@ function RoMScript(script, default)
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
 		return
+	else -- check if still valid
+		local __, cName = readMacro(commandMacro)
+		local __, rName = readMacro(resultMacro)
+		if cName ~= COMMAND_MACRO_NAME or rName ~= RESULT_MACRO_NAME then -- macros moved
+			setupMacros()
+		end
 	end
 
 	--- Get the real offset of the address
