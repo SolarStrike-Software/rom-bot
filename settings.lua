@@ -1007,7 +1007,7 @@ function settings.loadProfile(_name)
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
 	settings.options.DEBUGGING_MACRO = true;
-	print("Testing 'ingamefunctions' macro.")
+	print("Testing 'ingamefunctions' macro. If it gets stuck here, please update the 'ingamefunctions' by copying the 'ingamefunctions' folder from 'rom/devtools' to the games 'interface/addons' folder.")
 	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
 	if( hf_return ~= 1234 ) then	-- return values not found
 --		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
@@ -1191,6 +1191,8 @@ function settings.loadSkillSet(class)
 			best_range = v.Range;
 		end
 	end
+
+	if best_range < 50 then best_range = 50 end
 
 	-- check is combat distance is greater then maximum ranged attack
 	if ( settings.profile.options.COMBAT_DISTANCE == nil or

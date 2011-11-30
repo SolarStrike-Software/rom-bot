@@ -748,10 +748,13 @@ end
 
 function CInventory:getMount()
     mounts = {
-	-- Id of all mounts (except 15 minute, and 2 hour mounts)
+	-- Id of all mounts
 	-- Add single mounts or ranges of mounts.
+	{first = 200876, last = 200879},
 	201130,
 	201468,
+	201482,
+	{first = 201488, last = 201490},
 	201698,
 	{first = 201927, last = 201928},
 	{first = 201965, last = 201966},

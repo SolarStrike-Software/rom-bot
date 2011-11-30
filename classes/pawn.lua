@@ -240,6 +240,8 @@ function CPawn:update()
 	if self.Id == -1 then -- First time. Get it.
 		self.Id = tmp
 		if self.Id > 999999 then self.Id = 0 end
+	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
+		self.Id = tmp
 	else -- see if it changed
 		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
 			self.Id = 0
