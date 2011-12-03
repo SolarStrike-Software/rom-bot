@@ -1,11 +1,30 @@
 BOT_VERSION = 3.29;
 
 BOT_REVISION = "<UNKNOWN>"
-local fname = getExecutionPath() .. "/.svn/entries"
+
+-- Check version 1.7 style svn folder.
+local fname = getExecutionPath() .. "/.svn/wc.db"
 if( fileExists(fname) ) then
-	local dirfound = false
-	for line in io.lines(fname) do
-		if dirfound then BOT_REVISION = line break elseif line == "dir" then dirfound = true end
+	local file, err = io.open(fname, "rb");
+	if file then
+		local string = file:read("*a")
+		local ver = string.match(string,"%(svn:wc:ra_dav:version.url %d* %/svn%/!svn%/ver%/(%d*)%/trunk%/rom%)")
+
+		if ver then
+			BOT_REVISION = ver
+		end
+		file:close();
+	end
+end
+
+-- If not found, try version 1.6 style svn folder.
+if BOT_REVISION == "<UNKNOWN>" then
+	local fname = getExecutionPath() .. "/.svn/entries"
+	if( fileExists(fname) ) then
+		local dirfound = false
+		for line in io.lines(fname) do
+			if dirfound then BOT_REVISION = line break elseif line == "dir" then dirfound = true end
+		end
 	end
 end
 

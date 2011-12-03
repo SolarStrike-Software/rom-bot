@@ -2095,13 +2095,10 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
-	local successDist = 30.0 -- Distance to consider successfully reaching the target location
-	if self.Mounted then
-		successDist = 40.0 -- so we don't overpass it and double back when mounted
-	end
+	local successDist = 0.3 * self.Speed -- Distance to consider successfully reaching the target location
 
 	local turning = false
-	while( dist > successDist ) do
+	while( dist > successDist or (range ~= nil and dist > 0)) do -- second part makes sure you are WITHIN range when using 'range'.
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -2126,7 +2123,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end;
 
 		-- look for a new target while moving
-		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) and (not turning) ) then
+		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) and (not turning) and dist > 50) then
 			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
 			if( newTarget ) then	-- find a new target
 				self:target(newTarget);
@@ -2242,6 +2239,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		yrest(100);
 		self:update();
 		waypoint:update();
+		successDist = 0.2 * self.Speed -- In case the players speed changed
 
 	end
 
@@ -2267,18 +2265,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 end
 
 function CPlayer:moveInRange(target, range, ignoreCycleTargets)
-	-- calculates the closest waypoint that is distance "range" from target
-	local playerTargetDist = distance(self.X, self.Z, target.X, target.Z)
-	if playerTargetDist > range then
-		local ratio = (playerTargetDist - range)/playerTargetDist
-		local rx = self.X + (target.X - self.X) * ratio
-		local rz = self.Z + (target.Z - self.Z) * ratio
-		local ry = self.Y -- default value
-		if target.Y ~= nil then
-			ry = self.Y + (target.Y - self.Y) * ratio
-		end
-		self:moveTo( CWaypoint(rx, rz, ry), ignoreCycleTargets )
-	end
+	self.moveTo(target, ignoreCycleTargets, nil, range)
 end
 
 function CPlayer:waitForAggro()
@@ -3644,6 +3631,11 @@ function CPlayer:mount()
 	if( self.Mounted ) then
 		printf("Already mounted.\n");
 		return;
+	end
+
+	if self.Swimming then
+		printf("Swimming. Can't mount.\n")
+		return
 	end
 
 	local mountMethod = false
