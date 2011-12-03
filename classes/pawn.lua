@@ -171,6 +171,8 @@ CPawn = class(
 		self.SkillQueue = {};				-- Holds any queued skills, obviously
 		self.TargetIcon = true
 		self.InParty = false
+		self.Swimming = false
+		self.Speed = 50
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -364,6 +366,11 @@ function CPawn:update()
 
 	self.Class1 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass1_offset) or self.Class1;
 	self.Class2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass2_offset) or self.Class2;
+
+	self.Speed = memoryReadRepeat("float", proc, self.Address + addresses.pawnSpeed_offset)
+
+	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
+	self.Swimming = (tmp == 3 or tmp == 4)
 
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana
