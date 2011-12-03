@@ -975,4 +975,4 @@ function resurrect()
 		__WPL:getFileName() );
 	end
 end
-startMacro(main);
+startMacro(main,true);
