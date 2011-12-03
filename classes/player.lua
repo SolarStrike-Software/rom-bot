@@ -2095,7 +2095,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
-	local successDist = 0.3 * self.Speed -- Distance to consider successfully reaching the target location
+	local successDist = 0.4 * self.Speed -- Distance to consider successfully reaching the target location
 
 	local turning = false
 	while( dist > successDist or (range ~= nil and dist > 0)) do -- second part makes sure you are WITHIN range when using 'range'.
@@ -2239,7 +2239,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		yrest(100);
 		self:update();
 		waypoint:update();
-		successDist = 0.2 * self.Speed -- In case the players speed changed
+		successDist = 0.4 * self.Speed -- In case the players speed changed
 
 	end
 
@@ -2265,7 +2265,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 end
 
 function CPlayer:moveInRange(target, range, ignoreCycleTargets)
-	self.moveTo(target, ignoreCycleTargets, nil, range)
+	self:moveTo(target, ignoreCycleTargets, nil, range)
 end
 
 function CPlayer:waitForAggro()
