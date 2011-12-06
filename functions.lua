@@ -903,8 +903,14 @@ function levelupSkill(_skillname, _times)
 	local hf_return = false;
 	for i = 1, _times do
 		yrest(600);
-		sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
-		hf_return = true;
+		local name, _, icon, _, rank, type, upgradeCost, isSkillable, isAvailable = RoMScript("GetSkillDetail("..skill_from_db.skilltab..","..skill_from_db.skillnum..")")
+		player:update()
+		if player.TP >= upgradeCost then
+			sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
+			hf_return = true;
+		else
+			break
+		end
 	end
 
 	if hf_return == true then
@@ -1509,7 +1515,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0xC9, 0x93, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0xE9, 0x90, 0x27, 0x00));
 
 		end
 	end
