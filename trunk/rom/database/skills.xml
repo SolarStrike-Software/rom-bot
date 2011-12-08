@@ -274,7 +274,8 @@
 	<skill name="KNIGHT_HOLY_SMITE" id="491634" mana="30" range="50" cooldown="8" type="damage" target="target" reqbuffname="502074" reqbufftarget="target" />
 	<skill name="KNIGHT_HOLY_PROTECTION" id="491637" mana="30" range="150" type="buff" buffname="502108" target="self" />
 	<skill name="KNIGHT_FREE_WILL" id="491351" mana="30" range="200" cooldown="120" type="buff" target="self" />
-
+	<!-- KNIGHT_DISARMAMENT_ARROW is an upgrade to Disarmament from scout elite and is only available to scout. -->
+	<skill name="KNIGHT_DISARMAMENT_ARROW" id="492950" mana="20" manainc="4.0" range="200" cooldown="8" type="damage" target="enemy" />
 	<!-- Unknown skills or superseded names-->
 	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
 	<skill name="KNIGHT_HOLY_LIGHT_FIELD" id="" mana="30" type="buff" target="self" cooldown="60" />
