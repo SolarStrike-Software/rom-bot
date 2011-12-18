@@ -11,7 +11,9 @@ function icontarget(address) -- looks for icon I on mobs
 end
 
 function PartyTable()
-
+		if _timexx == nil then
+			_timexx = os.time()
+		end
 		partymemberpawn={}
 		local partymemberName={}
 		local partymemberObj={}
@@ -136,4 +138,27 @@ function getNameFollow()
 		end
 		break
 	end
+end
+
+function checkparty(_dist)
+	local _dist = _dist or 200
+	PartyTable()
+	local _go = true
+	local partynum = RoMScript("GetNumPartyMembers()")
+	if partynum == #partymemberpawn then
+		for i = 2,#partymemberpawn do
+			player:update()
+			partymemberpawn[i]:update()
+			if partymemberpawn[i].X ~= nil then 
+				if distance(partymemberpawn[i].X,partymemberpawn[i].Z,player.X,player.Z) > _dist then
+					_go = false
+				end
+			else
+			_go = false
+			end
+		end
+	else
+		_go = false
+	end
+	return _go
 end
