@@ -416,4 +416,5 @@
    <skill name="ALL_SPIRIT_HERB_ESSENCE" id="495491" casttime="3" type="heal" target="self" inbattle="false"/>
    <skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" id="495492" casttime="3" type="heal" target="self" inbattle="false"/>
    <skill name="ALL_ENERGY_RESTORE" id="495494" casttime="5" cooldown="45" target="self" />
+   <skill name="ALL_FIRE_TRAINING" id="495174" cooldown="240" target="self" type="buff" buffname="506060" />
 </skills>

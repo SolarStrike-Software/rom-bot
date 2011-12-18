@@ -249,6 +249,7 @@ function CItem:update()
 		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
 
 		-- Get Stats (only named stats)
+		self.Stats = {}
 		for i = 1, 6 do
 			local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
 			if tmpid == 0 then -- No More stats
