@@ -164,9 +164,12 @@
 	<skill name="WARRIOR_IGNORE_PAIN" id="491334" cooldown="300" target="self" type="buff" />
 	<skill name="WARRIOR_SHIELD_BASH" id="491483" mana="30" range="50" />
 	<skill name="WARRIOR_ROSE_VINE" id="494034" type="buff" target="self" buffname="504543"/>
+	<skill name="WARRIOR_SAVAGE_WHIRLWIND" id="494324" mana="30" range="50" cooldown="8" type="damage" target="enemy" />
+	<skill name="WARRIOR_AIR_TREMOR" id="494625" minmanaper="30" cooldown="4" type="damage" target="enemy" />
 
 	<!-- Itemset skills -->
 	<skill name="WARRIOR_TOURNIQUET" id="495559" target="self" cooldown="90" type="hot" buffname="506522" />
+	<skill name="WARRIOR_SWORD_OF_IMPRISONMENT" id="495728" rage="20" range="50" type="damage"  target="enemy" />
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="WARRIOR_TRAMPLE" debuff="weakened" rage="15" range="50" cooldown="30" type="damage" target="enemy" />
@@ -188,7 +191,7 @@
 	<skill name="ROGUE_NUMBING_DAGGER" id="490347" consumable="1" range="150" casttime="1" type="damage" buffname="501494" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
 	<skill name="ROGUE_POISON" id="490329" consumable="1" casttime="1" type="buff" buffname="500715" target="self" />
-	<skill name="ROGUE_HIDE" id="490312" type="buff" target="self" inbattle="false" />
+	<skill name="ROGUE_HIDE" id="490312" type="buff" buffname="500675" target="self" inbattle="false"  />
 	<skill name="ROGUE_PREMEDITATION" id="490507" energy="20" type="buff" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
 	<skill name="ROGUE_SNEAK_ATTACK" id="490337" energy="20" range="50" cooldown="10" type="damage" target="enemy" />
@@ -417,4 +420,5 @@
    <skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" id="495492" casttime="3" type="heal" target="self" inbattle="false"/>
    <skill name="ALL_ENERGY_RESTORE" id="495494" casttime="5" cooldown="45" target="self" />
    <skill name="ALL_FIRE_TRAINING" id="495174" cooldown="240" target="self" type="buff" buffname="506060" />
-</skills>
+
+   </skills>

@@ -357,7 +357,8 @@ function CSkill:canUse(_only_friendly, target)
 	-- check if 'self' has buff
 	if self.BuffName ~= nil and self.Target == STARGET_SELF then
 		local buffitem = player:getBuff(self.BuffName)
-		if buffitem and (buffitem.TimeLeft > self.rebuffcut + prior/1000) then
+		--=== check for -1 for buffs with no duration like rogue hide ===--
+		if buffitem and ((buffitem.TimeLeft > self.rebuffcut + prior/1000) or buffitem.TimeLeft == -1 ) then
 			debug_skilluse("PLAYERHASBUFF");
 			return false
 		end

@@ -169,6 +169,7 @@ addresses = {
 	staticbase_macro = 0xA22FB4,
 	staticpattern_char = 0x5E6A87,
 	staticpattern_macro = 0x75D6A5,
+	swimAddress = 0x44E9B0,
 	tableDataStartPtrOffset = 0x1C,
 	tableStartPtrOffset = 0x124,
 	tablesBase = 0x9EFE5C,
