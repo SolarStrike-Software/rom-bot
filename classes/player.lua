@@ -681,9 +681,10 @@ end
 -- if they are needed.
 function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
-
 	self:update();
-
+	--=== don't cast any skills if mounted ===--
+	if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
+	
 	local target = target or self:getTarget();
 	if ( target ~= nil and _only_friendly ~= true ) then
 			target:update();
@@ -811,6 +812,8 @@ end
 function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
 
+	--=== If rogue is hidden then don't use potions as it breaks hide ===--
+	if player.Class1 == 3 and player:hasBuff(500675) then return false end
 
 	if settings.profile.options.USE_PHIRIUS_POTION == true then
 		-- If we need to use a health potion

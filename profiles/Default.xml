@@ -94,6 +94,8 @@
 		<!-- pvp -->
 		<!--option name="PVP"			value="true" /> --> 		<!-- To enable PVP, with this set to true it will auto attack any players with red names -->
 		
+		<!-- Dismount or not when casting skills -->
+		<option name="DISMOUNT"		value="true" />  <!-- true/false .. if true then it will use skills while mounted  -->
 		
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
