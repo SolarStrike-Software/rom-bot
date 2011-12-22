@@ -1515,7 +1515,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x79, 0x9B, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x09, 0x9F, 0x27, 0x00));
 
 		end
 	end
@@ -1545,13 +1545,15 @@ function bankItemBySlot(SlotNumber)
 				logMessage(sprintf("Wrong value returned in update of item id: %d", Id));
 				return;
 			end;
+			local MaxDurability = memoryReadByte( getProc(), Address + addresses.maxDurabilityOffset );
+			local RequiredLvl = memoryReadInt( getProc(), Address + addresses.requiredLevelOffset );
 			local ItemCount = memoryReadInt( getProc(), Address + addresses.itemCountOffset );
 			local nameAddress = memoryReadInt( getProc(), BaseItemAddress + addresses.nameOffset );
 			if( nameAddress == nil or nameAddress == 0 ) then
 				Name = "<EMPTY>";
 			else
 				Name = memoryReadString(getProc(), nameAddress);
-				return Name, Id, ItemCount, SlotNumber  -- this is the important part
+				return Name, Id, ItemCount, SlotNumber, RequiredLvl, MaxDurability   -- this is the important part
 			end;
 		end
 	else
