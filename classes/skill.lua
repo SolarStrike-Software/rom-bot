@@ -343,12 +343,21 @@ function CSkill:canUse(_only_friendly, target)
 		return false;
 	end
 
-	-- Already have a pet out
-	if( self.Type == STYPE_SUMMON and player.PetPtr ~= 0 ) then
-		debug_skilluse("PETALREAYDOUT");
-		return false;
-	end
 
+	-- Already have the same pet out
+	if self.Type == STYPE_SUMMON then
+		petupdate()
+		if player.Class1 == CLASS_WARDEN and pet.Name ~= "<UNKNOWN>" then -- have a pet out already
+			for k,v in pairs(pettable) do
+				if pet.Name == v.name and self.Id == v.skillid then 
+					debug_skilluse("PETALREADYOUT");
+					return false;
+				end
+			end
+		end
+	end
+	
+	
 	if( self.Toggleable and self.Toggled == true ) then
 		debug_skilluse("TOGGLED");
 		return false;
@@ -424,7 +433,19 @@ function CSkill:canUse(_only_friendly, target)
 		debug_skilluse("NEEDMORENATURE");
 		return false
 	end
-
+	-- warden pet heal
+	if self.Id == 493398 then
+		petupdate()
+		if pet.Name == "<UNKNOWN>" or ( pet.HP / pet.MaxHP * 100) > 70 then
+			return false
+		end
+	end
+	--=== water fairy usage
+	if player.Class1 == CLASS_PRIEST and self.Type == STYPE_SUMMON then
+		debug_skilluse("USINGPETFUNCTION");
+		waterfairy()
+		return false;
+	end
 	return true;
 end
 
@@ -481,7 +502,7 @@ function CSkill:use()
 	end
 
 	-- Make sure we aren't already busy casting something else, thats only neccessary after
-	-- skills with a casting timess
+	-- skills with a casting time
 	--[[local start_wait = getTime();
 	while(player.Casting) do -- this is done in CPlayer:cast()
 		if( deltaTime(getTime(), start_wait ) > 6000 ) then break; end;	-- in case there is a client update bug
@@ -491,7 +512,71 @@ function CSkill:use()
 	end]]
 
 	bot.LastSkillKeypressTime = getTime();		-- remember time to check time-lag between casts
+	
+	--=== warden usage
+	if player.Class1 == CLASS_WARDEN then
+		local skillName = GetIdName(self.Id)
+		if self.Type == STYPE_BUFF then
+			if not player.Battling then
+				--=== sacrifice pet buffs
+				if self.Id == 493346 then -- heart of the oak
+					wardenbuff(503946) 	-- code in classes/pet.lua
+					return 
+				end
+				if self.Id == 493348 then -- protection of nature
+					wardenbuff(503581)
+					return 
+				end	
+				if self.Id == 493347 then -- power of the oak
+					wardenbuff(503580)
+					return 
+				end
+			else
+				return
+			end
+		end
+		if self.Type == STYPE_SUMMON and not player.Battling then
+			petupdate()		-- code in classes/pet.lua
+			-- dont summon warden pet if already summoned.
+			if self.Id == 493333 and pet.Name ~= GetIdName(102297) then
+				RoMScript("CastSpellByName(\""..skillName.."\");");
+				repeat
+					yrest(1000)
+					player:update()
+				until not player.Casting
+				setpetautoattacks()
+				return
+			end
+			if self.Id == 493344 and pet.Name ~= GetIdName(102325) then
+				RoMScript("CastSpellByName(\""..skillName.."\");");
+				repeat
+					yrest(1000)
+					player:update()
+				until not player.Casting
+				setpetautoattacks()
+				return
+			end
+			if self.Id == 493343 and pet.Name ~= GetIdName(102324) then
+				RoMScript("CastSpellByName(\""..skillName.."\");");
+				repeat
+					yrest(1000)
+					player:update()
+				until not player.Casting
+				setpetautoattacks()
+				return
+			end
+			if self.Id == 494212 and pet.Name ~= GetIdName(102803) then
+				RoMScript("CastSpellByName(\""..skillName.."\");");
+				repeat
+					yrest(1000)
+					player:update()
+				until not player.Casting
+				setpetautoattacks()
+				return
+			end		
+		end
 
+	end
 
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
 		-- Get skill name

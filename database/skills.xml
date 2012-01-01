@@ -94,6 +94,8 @@
 	<skill name="PRIEST_PURGE" id="492360" mana="200" range="200" cooldown="20" />
 	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" id="492637" energy="30" casttime="1" cooldown="45" range="150" priority="90" />
 	<skill name="PRIEST_SHADOW_FURY" id="492932" mana="100" manainc="10" type="buff" target="self" buffname="503196" />
+	<skill name="PRIEST_WATER_FAIRY" id="493268" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
+
 	<!-- TODO: don't attack while frozen -->
 	<skill name="PRIEST_FREEZE" id="491586" mana="35" manainc="3.75" casttime="1" type="damage" buffname="501961" target="enemy" />
 	<!-- TODO: Requires curse -->
@@ -387,13 +389,13 @@
 	<skill name="WARDEN_SUMMON_SPIRIT_OF_THE_OAK" id="493333" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_THORNY_VINE" id="493393" mana="30" manainc="3" range="50" cooldown="8" type="dot" />
 	<!-- TODO: Elven Prayer Heals pet -->
-	<skill name="WARDEN_ELVEN_PRAYER" id="493398" mana="20" range="150" cooldown="5" />
+	<skill name="WARDEN_ELVEN_PRAYER" id="493398" mana="20" cooldown="120" />
 	<skill name="WARDEN_MOVEMENT_RESTRICTION" id="493400" mana="45" range="150" minrange="80" cooldown="45" />
 	<!-- TODO: Summon Nature Crystal uses 0.15 mana -->
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" id="493344" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<!-- TODO: Damage Transfer requires pet -->
 	<skill name="WARDEN_DAMAGE_TRANSFER" id="493399" mana="30" cooldown="180" type="buff" target="self" />
-	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" mana="55" type="buff" buffname="503579" target="self" />
+	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" mana="55" type="buff" buffname="503946" target="self" />
 	<skill name="WARDEN_FRANTIC_BRIAR" id="493391" mana="70" casttime="2" />
 	<!-- TODO: Requires pet HP > 0.3 -->
 	<skill name="WARDEN_SOUL_ATTACK" id="493404" range="150" casttime="2" cooldown="6" />

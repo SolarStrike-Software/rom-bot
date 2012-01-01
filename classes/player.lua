@@ -683,7 +683,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
 	self:update();
 	--=== don't cast any skills if mounted ===--
-	if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
+	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
 	
 	local target = target or self:getTarget();
 	if ( target ~= nil and _only_friendly ~= true ) then
@@ -845,7 +845,7 @@ function CPlayer:checkPotions()
 				return true;
 			else		-- potions empty
 				if( os.difftime(os.time(), self.PhiriusLastHpEmptyTime) > 16 ) then
-					cprintf(cli.yellow, "No more usable HP Phirius pots", inventory.MaxSlots);
+					cprintf(cli.yellow, "No more usable HP Phirius pots\n");
 					self.PhiriusLastHpEmptyTime = os.time();
 					-- full inventory update if potions empty
 					if( os.difftime(os.time(), self.InventoryLastUpdate) >
@@ -886,7 +886,7 @@ function CPlayer:checkPotions()
 					return true;		-- avoid invalid/use count of
 				else	-- potions empty
 					if( os.difftime(os.time(), self.PhiriusLastManaEmptyTime) > 16 ) then
-						cprintf(cli.yellow, "No more usable MP Phirius pots", inventory.MaxSlots);
+						cprintf(cli.yellow, "No more usable MP Phirius pots\n");
 						self.PhiriusLastManaEmptyTime = os.time();
 						-- full inventory update if potions empty
 						if( os.difftime(os.time(), self.InventoryLastUpdate) >
@@ -1090,7 +1090,18 @@ function CPlayer:fight()
 		sendMacro('SetRaidTarget("target", 1);')
 		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
-
+	--[[
+	if player.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
+		petupdate()
+		if pet.Name == GetIdName(102297) or 
+		pet.Name == GetIdName(102324) or
+		pet.Name == GetIdName(102803)
+		then
+			petstartcombat()
+		end
+	end
+	]]
+	
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
 	self.Fighting = true;
@@ -1242,7 +1253,6 @@ function CPlayer:fight()
 			target.TargetPtr ~= self.Pet.Address and
 			CPawn(target.TargetPtr).InParty ~= true ) then	-- but not from that mob
 			cprintf(cli.green, language[36], target.Name);
-			printf("test this line 1100")
 			self:clearTarget();
 			break_fight = true;
 			break;
@@ -2158,7 +2168,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end
 
 		-- while moving without target: check potions / friendly skills
-		if( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
+		if not player.Mounted and ( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
@@ -2917,35 +2927,39 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 
 	-- check if the target is attacking us, if not we can break and take the other mob
 
-	if( target.TargetPtr ~= self.Address  and	-- check HP, because death targets also have not target
+	if( target.TargetPtr ~= self.Address and	-- check HP, because death targets also have not target
 	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
 	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
 	-- to prevent from skipping him while he is still attacking us, we do that special fix
 		target.Name ~= "Tatus"	and
 		-- even he is attacking us
-	    target.HP/target.MaxHP*100 > 90 ) then			-- target is alive and no attacking us
+		target.TargetPtr ~= self.PetPtr and
+	    target.HP/target.MaxHP*100 > 90	) then			
+		-- target is alive and not attacking us
 -- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
 -- and at the same time the target HP are above 0
 -- so we say > 90% life is alive :-)
 
-		if( _jump == true ) then		-- jump to abort casting
-			keyboardPress(settings.hotkeys.JUMP.key);
-		end;
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
-		end
+	
 		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
 		if( self:findTarget() ) then	-- we found a target
 			local target = self:getTarget();
-			if( target.TargetPtr == self.Address ) then	-- it is the right aggressor
+			if( target.TargetPtr == self.Address or target.TargetPtr == self.PetPtr ) then	-- it is the right aggressor
 				cprintf(cli.green, "%s is attacking us, we take that target.\n", target.Name);	-- attacking us
 			else
 				cprintf(cli.green, "%s is not attacking us, we clear that target.\n", target.Name);	-- not attacking us
 				self:clearTarget();
 			end
 		end
-
-		return true;
+	end		
+		
+	if player.Class1 == CLASS_WARDEN then -- has issues with pet as target, temp fix.
+		return false
+	end
+	
+	return true;
 
 end
 

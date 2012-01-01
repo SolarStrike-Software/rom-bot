@@ -44,6 +44,7 @@ include("classes/eggpet.lua");
 include("classes/store.lua");
 include("classes/party.lua");
 include("classes/itemtypes.lua");
+include("classes/pet.lua");
 include("settings.lua");
 include("macros.lua");
 
@@ -742,10 +743,10 @@ function main()
 			if( player.TargetPtr ~= 0 and (not player:haveTarget()) ) then
 				player:clearTarget();
 			end
-
-			player:checkPotions();
-			player:checkSkills( ONLY_FRIENDLY );	-- only cast hot spells to ourselfe
-
+			if not player.Mounted then
+				player:checkPotions();
+				player:checkSkills( ONLY_FRIENDLY );	-- only cast hot spells to ourselfe
+			end
 			if( success ) then
 				-- if we stick directly at a wp the counter would reseted even if we are sticked
 				-- hence we reset the counter only after 3 successfull waypoints
