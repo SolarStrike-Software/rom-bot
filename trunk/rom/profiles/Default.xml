@@ -93,10 +93,7 @@
 
 		<!-- pvp -->
 		<!--option name="PVP"			value="true" /> --> 		<!-- To enable PVP, with this set to true it will auto attack any players with red names -->
-		
-		<!-- Dismount or not when casting skills -->
-		<option name="DISMOUNT"		value="true" />  <!-- true/false .. if true then it will use skills while mounted  -->
-		
+			
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
 
@@ -194,8 +191,16 @@
 	</skills_knight>
 
 	<skills_warden>
-		<skill name="WARDEN_CHARGED_CHOP"	  	hotkey="MACRO" priority="90" />
-		<skill name="WARDEN_ENERGY_ABSORB"	  	hotkey="MACRO" priority="80" inbattle="true" hpper="25" />
+		<skill name="WARDEN_CHARGED_CHOP"	  			hotkey="MACRO" priority="100" />
+		<skill name="WARDEN_ENERGY_ABSORB"	  			hotkey="MACRO" priority="80" inbattle="true" hpper="25" />
+		<skill name="WARDEN_SUMMON_SPIRIT_OF_THE_OAK"	hotkey="MACRO" priority="90" />
+		<skill name="WARDEN_SUMMON_NATURE_CRYSTAL"	  	hotkey="MACRO" priority="90" autouse="false" />
+		<skill name="WARDEN_SUMMON_OAK_WALKER"	  		hotkey="MACRO" priority="90" autouse="false" />
+		<skill name="WARDEN_BRIAR_SHIELD"	  			hotkey="MACRO" priority="90" />
+		<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT"	hotkey="MACRO" priority="100" />
+		<skill name="WARDEN_SAVAGE_POWER"				hotkey="MACRO" priority="90" />
+		<skill name="WARDEN_POWER_OF_THE_OAK" 			hotkey="MACRO" priority="90" />
+		<skill name="WARDEN_ELVEN_PRAYER" 				hotkey="MACRO" priority="90" />
 	</skills_warden>
 
 	<skills_druid>
