@@ -1,37 +1,38 @@
+function setpettable()
+	pettable = {
+		[1] = {
+		name = GetIdName(102297), -- spirit of the oak
+		skillid = 493333,
+		skill6name = "PUNCH",
+		skill6auto = "true",
+		skill7name = "ENTANGLE",
+		skill7auto = "false"},
 
-pettable = {
-	[1] = {
-	name = GetIdName(102297), -- spirit of the oak
-	skillid = 493333,
-	skill6name = "PUNCH",
-	skill6auto = "true",
-	skill7name = "ENTANGLE",
-	skill7auto = "false"},
+		[2] = {
+		name = GetIdName(102325), -- nature crystal
+		skillid = 493344,
+		skill6name = "PROTECTION",
+		skill6auto = "true",
+		skill7name = "ACCELERATION",
+		skill7auto = "true"},
 
-	[2] = {
-	name = GetIdName(102325), -- nature crystal
-	skillid = 493344,
-	skill6name = "PROTECTION",
-	skill6auto = "true",
-	skill7name = "ACCELERATION",
-	skill7auto = "true"},
-
-	[3] = {
-	name = GetIdName(102324), -- oak walker
-	skillid = 493343,
-	skill6name = "STAB",
-	skill6auto = "true",
-	skill7name = "INTERFERENCE",
-	skill7auto = "false"},
-	
-	[4] = {
-	name = GetIdName(102803), -- chiron the centaur
-	skillid = 494212,
-	skill6name = "CENTAURS_ARROW",
-	skill6auto = "true",
-	skill7name = "VALIANT_SHOT",
-	skill7auto = "true"}
-}
+		[3] = {
+		name = GetIdName(102324), -- oak walker
+		skillid = 493343,
+		skill6name = "STAB",
+		skill6auto = "true",
+		skill7name = "INTERFERENCE",
+		skill7auto = "false"},
+		
+		[4] = {
+		name = GetIdName(102803), -- chiron the centaur
+		skillid = 494212,
+		skill6name = "CENTAURS_ARROW",
+		skill6auto = "true",
+		skill7name = "VALIANT_SHOT",
+		skill7auto = "true"}
+	}
+end
 
 function setpetautoattacks()
 	petupdate()
@@ -69,6 +70,7 @@ function petupdate()
 	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnPetPtr_offset);
 	pet = CPawn(petaddress)
 	pet:update()
+	setpettable()
 end
 
 function wardenbuff(_nameorid)
