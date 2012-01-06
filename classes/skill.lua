@@ -64,6 +64,8 @@ CSkill = class(
 		self.modifier = 0;
 
 		self.priority = 0; -- Internal use
+		self.skillnum = 0
+		self.skilltab = 0
 
 		if( type(copyfrom) == "table" ) then
 			self.Name = copyfrom.Name;
@@ -105,6 +107,8 @@ CSkill = class(
 			self.NoBuffTarget = copyfrom.NoBuffTarget;
 			self.NoBuffName = copyfrom.NoBuffName;
 			self.Blocking = copyfrom.Blocking;
+			self.skillnum = copyfrom.skillnum
+			self.skilltab = copyfrom.skilltab
 		end
 	end
 );
@@ -349,15 +353,15 @@ function CSkill:canUse(_only_friendly, target)
 		petupdate()
 		if player.Class1 == CLASS_WARDEN and pet.Name ~= "<UNKNOWN>" then -- have a pet out already
 			for k,v in pairs(pettable) do
-				if pet.Name == v.name and self.Id == v.skillid then 
+				if pet.Name == v.name and self.Id == v.skillid then
 					debug_skilluse("PETALREADYOUT");
 					return false;
 				end
 			end
 		end
 	end
-	
-	
+
+
 	if( self.Toggleable and self.Toggled == true ) then
 		debug_skilluse("TOGGLED");
 		return false;
@@ -512,7 +516,7 @@ function CSkill:use()
 	end]]
 
 	bot.LastSkillKeypressTime = getTime();		-- remember time to check time-lag between casts
-	
+
 	--=== warden usage
 	if player.Class1 == CLASS_WARDEN then
 		local skillName = GetIdName(self.Id)
@@ -521,15 +525,15 @@ function CSkill:use()
 				--=== sacrifice pet buffs
 				if self.Id == 493346 then -- heart of the oak
 					wardenbuff(503946) 	-- code in classes/pet.lua
-					return 
+					return
 				end
 				if self.Id == 493348 then -- protection of nature
 					wardenbuff(503581)
-					return 
-				end	
+					return
+				end
 				if self.Id == 493347 then -- power of the oak
 					wardenbuff(503580)
-					return 
+					return
 				end
 			else
 				return
@@ -573,7 +577,7 @@ function CSkill:use()
 				until not player.Casting
 				setpetautoattacks()
 				return
-			end		
+			end
 		end
 
 	end

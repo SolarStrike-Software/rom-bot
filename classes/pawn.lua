@@ -228,7 +228,7 @@ function memoryReadRepeat(_type, proc, address, offset)
 	end
 
 	if( settings.options.DEBUGGING ) then
-		error("Error in memory reading", 2);
+		print("Error in memory reading");
 	end
 end
 
@@ -247,6 +247,8 @@ function CPawn:update()
 	else -- see if it changed
 		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
 			self.Id = 0
+			self.Type = 0
+			self.Name = ""
 		end
 	end
 	if self.Id == 0 then return end

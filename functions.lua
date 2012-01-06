@@ -1560,3 +1560,26 @@ function bankItemBySlot(SlotNumber)
 		print("Incorrect Slot number stated\n")
 	end
 end
+
+-- This function for users is to simplify changing profile after changing character.
+function loadProfile(forcedProfile)
+   -- convert player name to profile name and check if profile exist
+   local load_profile_name;   -- name of profile to load
+   if( forcedProfile ) then
+      load_profile_name = convertProfileName(forcedProfile);
+   else
+      load_profile_name = convertProfileName(player.Name);
+   end
+   player = CPlayer.new();
+   settings.load();
+   settings.loadProfile(load_profile_name)
+
+   -- Profile onLoad event
+   if( type(settings.profile.events.onLoad) == "function" ) then
+      local status,err = pcall(settings.profile.events.onLoad);
+      if( status == false ) then
+         local msg = sprintf("onLoad error: %s", err);
+         error(msg);
+      end
+   end
+end
