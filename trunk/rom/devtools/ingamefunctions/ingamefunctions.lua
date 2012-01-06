@@ -1,21 +1,33 @@
-IGF_INSTALLED = 1;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 2;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
 -- read the tooltip values for a given item in the bag (bagid)
-function igf_GetTooltip(_side, _bagid)
+function igf_GetTooltip(_side, _setcommand, _arg1, ...)
 
 	if( _side ~= "Left"  and  _side ~= "Right" ) then
 		_side = "Right";
 	end
 
-	if( not _bagid ) then
+	-- Check for backward compatability
+	if _arg1 == nil then
+		_arg1 = _setcommand
+		_setcommand = "SetBagItem"
+	end
+
+	-- Check if valid GameToolip command
+	if GameTooltip[_setcommand] == nil then
+		ChatFrame1:AddMessage("IGF: pls call igf_GetTooltip() with a valid set command.")
+		return false
+	end
+
+	if( not _arg1 ) then
 		ChatFrame1:AddMessage("IGF: pls call igf_GetTooltip() with a valid bagid.");
 		return false
 	end
 
 	GameTooltip:ClearLines();			-- seems not to work, still sometimes old values there ???
-	GameTooltip:SetBagItem(_bagid);		-- set tooltip for given bagid
+	GameTooltip[_setcommand](GameTooltip,_arg1,...);		-- set tooltip for given item type and id
 --	GameTooltip:Show()		-- ok
 --	GameTooltip:Hide()		-- ok
 

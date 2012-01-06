@@ -26,7 +26,10 @@ function CObject:update()
 	self.Id = memoryReadUInt(proc, self.Address + addresses.pawnId_offset) or 0;
 	self.Type = memoryReadInt(proc, self.Address + addresses.pawnType_offset) or 0;
 
-	if( self.Id == nil or self.Type == nil ) then
+	if( self.Id == 0 or self.Type == 0 ) then -- invalid object
+		self.Id = 0
+		self.Type = 0
+		self.Name = ""
 		return;
 	end
 
@@ -52,7 +55,7 @@ function CObject:update()
 	else
 		-- time for only convert 8 characters is 0 ms
 		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
---		local hf_before = getTime(); 
+--		local hf_before = getTime();
 
 		if( bot.ClientLanguage == "RU" ) then
 			self.Name = utf82oem_russian(tmp);
@@ -60,7 +63,7 @@ function CObject:update()
 			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
 --			self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
 		end
---		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) ); 
+--		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) );
 	end
 
 	self.X = memoryReadFloat(proc, self.Address + addresses.pawnX_offset) or 0;
@@ -82,7 +85,7 @@ function CObject:update()
 			self.Attackable = false;
 		end]]
 	end
-	
+
 	if( self.Address == nil ) then
 		error("Error reading memory in CObject:update()");
 	end
