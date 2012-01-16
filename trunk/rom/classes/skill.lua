@@ -355,9 +355,17 @@ function CSkill:canUse(_only_friendly, target)
 			for k,v in pairs(pettable) do
 				if pet.Name == v.name and self.Id == v.skillid then
 					debug_skilluse("PETALREADYOUT");
+					PetWaitTimer = 0
 					return false;
 				end
 			end
+		end
+
+		if PetWaitTimer == nil or PetWaitTimer == 0 then -- Start timer
+			PetWaitTimer = os.time()
+			return false
+		elseif os.time() - PetWaitTimer < 15 then -- Wait longer
+			return false
 		end
 	end
 
@@ -437,6 +445,7 @@ function CSkill:canUse(_only_friendly, target)
 		debug_skilluse("NEEDMORENATURE");
 		return false
 	end
+
 	-- warden pet heal
 	if self.Id == 493398 then
 		petupdate()
@@ -444,6 +453,7 @@ function CSkill:canUse(_only_friendly, target)
 			return false
 		end
 	end
+
 	--=== water fairy usage
 	if player.Class1 == CLASS_PRIEST and self.Type == STYPE_SUMMON then
 		debug_skilluse("USINGPETFUNCTION");

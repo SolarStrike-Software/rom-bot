@@ -684,7 +684,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 	self:update();
 	--=== don't cast any skills if mounted ===--
 	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
-	
+
 	local target = target or self:getTarget();
 	if ( target ~= nil and _only_friendly ~= true ) then
 			target:update();
@@ -1093,7 +1093,7 @@ function CPlayer:fight()
 	--[[
 	if player.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
 		petupdate()
-		if pet.Name == GetIdName(102297) or 
+		if pet.Name == GetIdName(102297) or
 		pet.Name == GetIdName(102324) or
 		pet.Name == GetIdName(102803)
 		then
@@ -1101,7 +1101,7 @@ function CPlayer:fight()
 		end
 	end
 	]]
-	
+
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
 	self.Fighting = true;
@@ -2642,7 +2642,7 @@ function CPlayer:update()
 	local addressChanged = false
 
 	-- Ensure that our address hasn't changed. If it has, fix it.
-	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
 	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
@@ -2671,18 +2671,18 @@ function CPlayer:update()
 	end
 
 
-	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset)
-	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset)
-	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset)
-	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset)
-	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset)
+	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
+	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
+	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
+	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
 
 	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
 	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
 
-	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset);
-	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2);
+	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
+	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
 
 	local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
@@ -2716,7 +2716,7 @@ function CPlayer:update()
 		error("Error reading memory in CPlayer:update()");
 	end
 
-	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset);
+	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
 	if( self.Pet == nil ) then
 		self.Pet = CPawn(self.PetPtr);
 	else
@@ -2934,7 +2934,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		target.Name ~= "Tatus"	and
 		-- even he is attacking us
 		target.TargetPtr ~= self.PetPtr and
-	    target.HP/target.MaxHP*100 > 90	) then			
+	    target.HP/target.MaxHP*100 > 90	) then
 		-- target is alive and not attacking us
 -- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
 -- and at the same time the target HP are above 0
@@ -2942,7 +2942,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
 		self:clearTarget();
-	
+
 		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
 		if( self:findTarget() ) then	-- we found a target
 			local target = self:getTarget();
@@ -2953,12 +2953,12 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 				self:clearTarget();
 			end
 		end
-	end		
-		
+	end
+
 	if player.Class1 == CLASS_WARDEN then -- has issues with pet as target, temp fix.
 		return false
 	end
-	
+
 	return true;
 
 end
@@ -3645,9 +3645,14 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 	end
 end
 
-function CPlayer:mount()
-	if( self.Mounted ) then
+function CPlayer:mount(_dismount)
+	if( (not _dismount) and self.Mounted ) then
 		printf("Already mounted.\n");
+		return;
+	end
+
+	if( _dismount and (not self.Mounted) ) then
+		printf("Already dismounted.\n");
 		return;
 	end
 
@@ -3672,29 +3677,42 @@ function CPlayer:mount()
 	end
 
 	if( mountMethod ) then -- mount found
-		--repeat
-			while( self.Battling ) do
-				self:target(self:findEnemy(true, nil, nil, nil));
-				self:update();
-				if( self:haveTarget() ) then
-					self:fight();
-				end
+		while( self.Battling ) do
+			self:target(self:findEnemy(true, nil, nil, nil));
+			self:update();
+			if( self:haveTarget() ) then
+				self:fight();
 			end
+		end
 
-			-- mount
+		-- mount
+		if mountMethod == "partner" then
+			RoMScript("PartnerFrame_CallPartner(2,1)")
+		else
+			mount:use()
+		end
+
+		yrest(500)
+		repeat
+			yrest(100);
+			self:update();
+		until self.Casting == false
+
+		if _dismount == true and player.Mounted then
+			-- second try dismount
+			yrest(1000)
 			if mountMethod == "partner" then
 				RoMScript("PartnerFrame_CallPartner(2,1)")
 			else
 				mount:use()
 			end
+		end
 
-			yrest(500)
-			repeat
-				yrest(100);
-				self:update();
-			until self.Casting == false
-		--until self.Mounted
 	end
+end
+
+function CPlayer:dismount()
+	self:mount(true)
 end
 
 -- Waits till casting ends minus SKILL_USE_PRIOR.

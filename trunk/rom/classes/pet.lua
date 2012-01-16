@@ -23,7 +23,7 @@ function setpettable()
 		skill6auto = "true",
 		skill7name = "INTERFERENCE",
 		skill7auto = "false"},
-		
+
 		[4] = {
 		name = GetIdName(102803), -- chiron the centaur
 		skillid = 494212,
@@ -38,7 +38,7 @@ function setpetautoattacks()
 	petupdate()
 	--=== set pet to counter attack except for nature crystal
 	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
-	if pet.Name ~= GetIdName(102325) then	
+	if pet.Name ~= GetIdName(102325) then
 		if active ~= true then
 			RoMScript("UsePetAction(5)")
 		end
@@ -47,7 +47,7 @@ function setpetautoattacks()
 			RoMScript("UsePetAction(5)")
 		end
 	end
-	
+
 	for k,v in pairs(pettable) do
 		if v.name == pet.Name then
 			if v.skill6auto == "true" then
@@ -69,7 +69,6 @@ end
 function petupdate()
 	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnPetPtr_offset);
 	pet = CPawn(petaddress)
-	pet:update()
 	setpettable()
 end
 
@@ -87,14 +86,21 @@ function wardenbuff(_nameorid)
 			buffid = 503581
 		elseif string.find(string.lower(_nameorid), "walker") then
 			buffid = 503580
-		else 
+		else
 			error("Unrecognized name for warden pet buff.")
 		end
 	end
 	petupdate()
+
+	-- Check if already have the buff
+	local HavePetBuff = player:getBuff("503946,503581,503580")
+	if buffid == HavePetBuff then
+		return
+	end
+
 	local function summonbuff()
 		if not player.Battling then
-			if buffid == 503946 and not player:hasBuff(503946) then
+			if buffid == 503946 then
 				RoMScript("CastSpellByName(\""..GetIdName(493333).."\");");
 				print("Summoning "..GetIdName(102297))
 				repeat
@@ -104,21 +110,21 @@ function wardenbuff(_nameorid)
 				RoMScript("CastSpellByName(\""..GetIdName(493346).."\")")
 				print("Casting Buff: "..GetIdName(503946))
 			end
-			if buffid == 503581 and not player:hasBuff(503581) then
+			if buffid == 503581 then
 				RoMScript("CastSpellByName(\""..GetIdName(493344).."\");");
 				print("Summoning "..GetIdName(102325))
 				repeat
-				yrest(1000)			
+				yrest(1000)
 				player:update()
 				until not player.Casting
 				RoMScript("CastSpellByName(\""..GetIdName(493348).."\")")
-				print("Casting Buff: "..GetIdName(503581))				
-			end		
-			if buffid == 503580 and not player:hasBuff(503580) then
+				print("Casting Buff: "..GetIdName(503581))
+			end
+			if buffid == 503580 then
 				RoMScript("CastSpellByName(\""..GetIdName(493343).."\");");
 				print("Summoning "..GetIdName(102324))
 				repeat
-				yrest(1000)			
+				yrest(1000)
 				player:update()
 				until not player.Casting
 				RoMScript("CastSpellByName(\""..GetIdName(493347).."\")")
@@ -141,6 +147,7 @@ function wardenbuff(_nameorid)
 	else
 		summonbuff()
 	end
+	PetWaitTimer = 1 -- So it immediately resummons assist pet if used.
 end
 
 function petstartcombat()
@@ -168,33 +175,41 @@ function waterfairy()
 		return -- can't have a water fairy if class is wrong
 	end
 	petupdate()
-	if pet.Name ~= GetIdName(102105) then
-		RoMScript("CastSpellByName(\""..GetIdName(493268).."\")")
+	if pet.Id ~= 102105 then -- Water Fairy
+		if PetWaitTimer == nil or PetWaitTimer == 0 then -- Start timer
+			PetWaitTimer = os.time()
+			return false
+		elseif os.time() - PetWaitTimer < 15 then -- Wait longer
+			return false
+		end
+
+		if  player.Mounted then
+			return
+		end
+
+		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key); yrest(500)
+		sendMacro("CastSpellByName(\""..GetIdName(493268).."\")")
 		print("Summoning "..GetIdName(102105))
 		repeat
-		yrest(1000)
-		player:update()
-		until not player.Casting
-	end
-	player:update()
-	if not player:hasBuff(503736) then
-		if _timess == nil or os.time() - _timess > 20 then
-			RoMScript("UsePetAction(6)")
-			_timess = os.time()
+			yrest(1000)
+		until not (memoryReadRepeat("int", getProc(), player.Address + addresses.pawnCasting_offset) ~= 0);
+
+		petupdate()
+		local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
+		if active == true then
+			sendMacro("UsePetAction(5)")
 		end
+		player.LastDistImprove = os.time();   -- global, because we reset it while skill use
+	else
+		PetWaitTimer = 0
 	end
-	petupdate()
-	local hasbuffconceal = false
-	for k,v in pairs(pet.Buffs) do
-		if v.Name == GetIdName(503753) then
-			hasbuffconceal = true
-		end
+	if not pet:hasBuff(503736) then -- Frost Halo
+		sendMacro("UsePetAction(6)")
+		yrest(500)
 	end
-	if hasbuffconceal == false then
-		RoMScript("UsePetAction(7)")
-	end
-	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
-	if active == true then
-		RoMScript("UsePetAction(5)")
+	if not pet:hasBuff(503753) then -- Conceal
+		sendMacro("UsePetAction(7)")
+		yrest(500)
 	end
 end
+
