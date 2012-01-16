@@ -34,6 +34,8 @@
 <node name="Mithril" id="560059" type="ORE" />
 <node name="Frost Crystal" id="560060" type="ORE" />
 <node name="Mica" id="560061" type="ORE" />
+<node name="Olivine" id="560076" type="ORE" />
+<node name="Purple Agate Crystal" id="560080" type="ORE" />
 
 <node name="Ash Wood" id="560018" type="WOOD" />
 <node name="Willow Wood" id="560019" type="WOOD" />
@@ -69,6 +71,8 @@
 <node name="Sagewood" id="560066" type="WOOD" />
 <node name="Fairywood" id="560067" type="WOOD" />
 <node name="Aeontree Wood" id="560068" type="WOOD" />
+<node name="Fastan Banyan" id="560077" type="WOOD" />
+<node name="Janost Cypress Wood" id="560081" type="WOOD" />
 
 <node name="Mountain Demon Grass" id="560035" type="HERB" />
 <node name="Beetroot" id="560036" type="HERB" />
@@ -99,4 +103,6 @@
 <node name="Straw Mushroom" id="560073" type="HERB" />
 <node name="Mirror Sedge" id="560074" type="HERB" />
 <node name="Goblin Grass" id="560075" type="HERB" />
+<node name="Verbena" id="560078" type="HERB" />
+<node name="Nocturnal Lantern Grass" id="560082" type="HERB" />
 </nodes>
