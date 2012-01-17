@@ -1072,9 +1072,6 @@ function CPlayer:checkPotions()
 		end
 	end
 
-
-
-
 	return false
 
 end
@@ -1083,6 +1080,9 @@ function CPlayer:fight()
 	self:update();
 	if( not self:haveTarget() ) then
 		return false;
+	end
+	if self.Mounted then
+		self:dismount()
 	end
 	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
@@ -3664,10 +3664,9 @@ function CPlayer:mount(_dismount)
 	local mountMethod = false
 	local mount
 
-	--     First find mount
-	-- Look in partner bag first
+	-- Find mount
 	if RoMScript("PartnerFrame_GetPartnerCount(2)") > 0 then
-		-- There is a mount in the bag. Assign the mountmethod.
+		-- There is a mount in the partner bag. Assign the mountmethod.
 		mountMethod = "partner"
 	elseif inventory then -- Make sure inventory has been mapped.
 		mount = inventory:getMount();
@@ -3676,7 +3675,13 @@ function CPlayer:mount(_dismount)
 		end
 	end
 
-	if( mountMethod ) then -- mount found
+	-- Mount found?
+	if(not mountMethod ) then
+		return
+	end
+
+	-- Make sure we are not battling before trying to mount
+	if not _dismount then
 		while( self.Battling ) do
 			self:target(self:findEnemy(true, nil, nil, nil));
 			self:update();
@@ -3684,30 +3689,30 @@ function CPlayer:mount(_dismount)
 				self:fight();
 			end
 		end
+	end
 
-		-- mount
+	-- mount/dismount
+	if mountMethod == "partner" then
+		RoMScript("PartnerFrame_CallPartner(2,1)")
+	else
+		mount:use()
+	end
+
+	yrest(500)
+	repeat
+		yrest(100);
+		self:update();
+	until self.Casting == false
+
+	-- Just in case you mounted a different mount instead of dismounting
+	if _dismount == true and player.Mounted then
+		-- second try dismount
+		yrest(1000)
 		if mountMethod == "partner" then
 			RoMScript("PartnerFrame_CallPartner(2,1)")
 		else
 			mount:use()
 		end
-
-		yrest(500)
-		repeat
-			yrest(100);
-			self:update();
-		until self.Casting == false
-
-		if _dismount == true and player.Mounted then
-			-- second try dismount
-			yrest(1000)
-			if mountMethod == "partner" then
-				RoMScript("PartnerFrame_CallPartner(2,1)")
-			else
-				mount:use()
-			end
-		end
-
 	end
 end
 
