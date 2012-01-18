@@ -1,4 +1,4 @@
-PT_NONE = 0;
+PT_NONE = -1;
 PT_PLAYER = 1;
 PT_MONSTER = 2;
 PT_NPC = 4;
@@ -24,11 +24,11 @@ function CObject:update()
 	local tmp;
 
 	self.Id = memoryReadUInt(proc, self.Address + addresses.pawnId_offset) or 0;
-	self.Type = memoryReadInt(proc, self.Address + addresses.pawnType_offset) or 0;
+	self.Type = memoryReadInt(proc, self.Address + addresses.pawnType_offset) or -1;
 
-	if( self.Id == 0 or self.Type == 0 ) then -- invalid object
+	if( self.Id == 0 or self.Type == -1 ) then -- invalid object
 		self.Id = 0
-		self.Type = 0
+		self.Type = -1
 		self.Name = ""
 		return;
 	end
