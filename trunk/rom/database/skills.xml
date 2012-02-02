@@ -82,9 +82,9 @@
 
 	<!-- Elite -->
 	<skill name="PRIEST_BATTLE_MONK_STANCE" id="491600" mana="20" type="buff" buffname="501977" target="self" />
-	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" id="491362" mana="15" range="50" reqbuffname="501977" reqbufftarget="player" />
-	<skill name="PRIEST_FIGHTING_SPIRIT_COMBINATION" id="491363" mana="30" range="50" cooldown="6" reqbuffname="501977" reqbufftarget="player" />
-	<skill name="PRIEST_ASCENDING_DRAGON_STRIKE" id="491364" rage="30" range="50" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" id="491362" mana="15" type="damage" target="enemy" range="50" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_FIGHTING_SPIRIT_COMBINATION" id="491363" mana="30" type="damage" target="enemy" range="50" cooldown="6" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_ASCENDING_DRAGON_STRIKE" id="491364" rage="30" type="damage" target="enemy" range="50" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_POWER_BUILD_UP" id="492635" mana="40" cooldown="30" casttime="1" type="buff" buffname="502904" target="self" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" id="491323" mana="100" type="buff" buffname="501778" target="self" />
 	<skill name="PRIEST_CURING_SHOT" id="492636" mana="120" range="200" casttime="2" cooldown="6" type="heal" />
@@ -397,7 +397,7 @@
 	<!-- TODO: Damage Transfer requires pet -->
 	<skill name="WARDEN_DAMAGE_TRANSFER" id="493399" mana="30" cooldown="180" type="buff" target="self" />
 	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" mana="55" type="buff" buffname="503946" target="self" />
-	<skill name="WARDEN_FRANTIC_BRIAR" id="493391" mana="70" casttime="2" />
+	<skill name="WARDEN_FRANTIC_BRIAR" id="493391" mana="70" casttime="2" range="80" type="damage" target="enemy"/>
 	<!-- TODO: Requires pet HP > 0.3 -->
 	<skill name="WARDEN_SOUL_ATTACK" id="493404" range="150" casttime="2" cooldown="6" />
 	<skill name="WARDEN_SUMMON_OAK_WALKER" id="493343" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />

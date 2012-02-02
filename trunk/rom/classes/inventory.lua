@@ -142,7 +142,8 @@ function CInventory:itemTotalCount(itemNameOrId, range)
 
 	self:update();
 
-	totalCount = 0;
+	local item
+	local totalCount = 0;
 	for slot = first, last do
 		item = inventory.BagSlot[slot]
  	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
@@ -565,56 +566,21 @@ function CInventory:autoSell()
 
 	end
 
-	local function isDuraIgnore(_tooltip_right)
-
-		local duramax;		-- durability max value (if found)
-		local durakey = ITEM_TOOLTIP_DURABILITY[bot.ClientLanguage];	-- keyword to search for
-
-		if( durakey == nil ) then
-			error(language[1005], 0);
-		end
-
-		-- read durability from tooltip
-		for i,text in pairs(_tooltip_right) do
-			for _keyword, _dura, _duramax in string.gfind(text, "("..durakey..")%s*(%d+)/(%d+)") do
-				duramax = tonumber(_duramax);
-			end
-		end
-
-		--debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-		-- "Durability check, search for:", durakey, "=>", duramax);
-
-		-- check dura
-		if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA 		and
-			settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
-			duramax													and
-			duramax >= settings.profile.options.INV_AUTOSELL_NOSELL_DURA ) then
-			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-			  "Durability check: nosell, durability > then limit =>", duramax, ">",
-			    settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
-			return true;
-		end
-
-		return false
-
-	end
-
-
-	local function isInStatsNoSell(_tooltip_right)
+	local function isInStatsNoSell(_item)
 
 		if ( not hf_stats_nosell ) then
 			return false
 		end
 
-		for i1,tooltipline in pairs(_tooltip_right) do
+		for i1,stat in pairs(_item.Stats) do
 			for i2,nosellstat in pairs(hf_stats_nosell) do
 
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 				  "Check nosellstat line:", i1, tooltipline, "=>", nosellstat);
 
-				if( string.find( string.lower(tooltipline), string.lower(nosellstat), 1, true)  ) then
+				if( string.find( string.lower(stat.Name), string.lower(nosellstat), 1, true)  ) then
 					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Not to sell stat found:", tooltipline);
+					  "Not to sell stat found:", stat.Name);
 					return true
 				end
 
@@ -625,18 +591,18 @@ function CInventory:autoSell()
 
 	end
 
-	local function isInStatsSell(_tooltip_right)
+	local function isInStatsSell(_item)
 
 		if ( not hf_stats_sell ) then
 			return false
 		end
 
-		for i,tooltipline in pairs(_tooltip_right) do
+		for i,stat in pairs(_item) do
 			for i,sellstat in pairs(hf_stats_sell) do
 
-				if( string.find( string.lower(tooltipline), string.lower(sellstat), 1, true)  ) then
+				if( string.find( string.lower(stat.Name), string.lower(sellstat), 1, true)  ) then
 					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Allways sell stat found:", tooltipline);
+					  "Allways sell stat found:", stat.Name);
 					return true
 				end
 
@@ -689,21 +655,10 @@ function CInventory:autoSell()
 				sell_item = false;
 			end
 
-			-- read tooltip
-			local tooltip_right;
-			if( bot.IgfAddon == true and (slotitem.ObjType == 0 or slotitem.ObjType == 1)) then
-				tooltip_right = slotitem:getGameTooltip("right");
-				if( tooltip_right == false ) then	-- error while reading tooltip
-					cprintf(cli.yellow, "Error reading tooltip for bagslot %s, %s %s\n",
-					 slotitem.SlotNumber, slotitem.Id, slotitem.Name);
-					 sell_item = false;
-				end
-			end
-
 			-- check max durability value
-			if( bot.IgfAddon == true	and
-				tooltip_right			and
-				isDuraIgnore(tooltip_right) == true ) then
+			if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
+				slotitem.MaxDurability > 0 and
+				slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
 				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
@@ -711,12 +666,10 @@ function CInventory:autoSell()
 			end
 
 			-- check if stats / text strings are on the ingnore list
-			if( bot.IgfAddon == true	and
-				tooltip_right			and
-				isInStatsNoSell(tooltip_right) == true ) then
+			if( isInStatsNoSell(slotitem) == true ) then
 
 				-- check if in sell always stats
-				if( isInStatsSell(tooltip_right) == true ) then
+				if( isInStatsSell(slotitem) == true ) then
 					-- don't change the sell flag
 				else
 					sell_item = false;
@@ -728,7 +681,7 @@ function CInventory:autoSell()
 			if( sell_item == true ) then
 				if RoMScript("StoreFrame:IsVisible()") then
 					hf_wesell = true;
-					slotitem:use();
+					RoMScript("UseBagItem("..slotitem.BagId..")")
 				else
 					break
 				end

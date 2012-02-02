@@ -575,6 +575,12 @@ end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script, default)
+	-- Check for loading screen
+	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0 then
+		-- Cannot execute RoMScript during loading screen.
+		return
+	end
+
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
 		return
@@ -1582,4 +1588,222 @@ function loadProfile(forcedProfile)
          error(msg);
       end
    end
+end
+
+-- Thanks to JackBlonder for his work on the QuestByName functions
+function AcceptQuestByName(_name)
+
+	local DEBUG = false
+
+	-- Check if we have target
+	player:update()
+	yrest(100)
+	if (player.TargetPtr == 0 or player.TargetPtr == nil) then
+		print("No target! Target NPC before using AcceptQuestByName")
+		return
+	end
+	-- Target NPC again to get updated questlist
+	Attack()
+	yrest(500)
+	--------------------------------------------
+	_name = _name or "all"
+	local questToAccept = _name
+				if DEBUG then
+					printf("questToAccept: %s\n",questToAccept)
+				end
+	local questOnBoard
+	local availableQuests = RoMScript("GetNumQuest(1)") -- Get number of available quests
+				if DEBUG then
+					printf("Number of available quests: %d\n",availableQuests)
+				end
+
+	local matchFound = false
+	-- For each quest
+	for i=1,availableQuests do
+		-- Check to see if we have room to accept quests
+		if (30 > RoMScript("GetNumQuestBookButton_QuestBook()"))  then
+			-- Get quest name
+			questOnBoard = RoMScript("GetQuestNameByIndex(1, "..i..")")
+						if DEBUG then
+							printf("questOnBoard: %s \n",questOnBoard)
+						end
+
+			if (questToAccept == "" or questToAccept == "all") or -- Accept all
+			  FindNormalisedString(questOnBoard,questToAccept) then -- Or match name
+				matchFound = true
+				repeat
+					RoMScript("OnClick_QuestListButton(1,"..i..")") -- Clicks the quest
+					yrest(100)
+					RoMScript("AcceptQuest()") -- Accepts the quest
+					yrest(100)
+				until (getQuestStatus(questOnBoard)=="incomplete" or getQuestStatus(questOnBoard)=="complete") -- Try again if accepting didn't work
+				printf("Quest accepted: %s\n",questOnBoard)
+
+				-- break if name matched
+				if (questToAccept ~= "" and questToAccept ~= "all") then
+					break
+				end
+				yrest(200)
+			elseif questToAccept ~= "" and questToAccept ~= "all" and i==availableQuests then
+				-- Didn't find name match
+				printf("Questname not found: %s\n",questToAccept) -- Quest not found
+			end
+		else
+			print("Maxim number of quests in questbook!")
+		end
+	end
+	RoMScript("SpeakFrame:Hide()")
+	yrest(750)
+	return matchFound
+end
+
+function CompleteQuestByName(_name, _rewardnumberorname)
+
+	local DEBUG = false
+
+	-- Check if we have target
+	player:update()
+	yrest(100)
+	if (player.TargetPtr == 0 or player.TargetPtr == nil) then
+		print("No target! Target NPC before using CompleteQuestByName")
+		return
+	end
+	-- Target NPC again to get updated questlist
+	Attack()
+	yrest(500)
+	--------------------------------------------
+
+	_name = _name or "all"
+	local questToComplete = _name
+				if DEBUG then
+					printf("questToComplete: %s\n",questToComplete)
+				end
+	local questOnBoard = ""
+	local availableQuests = RoMScript("GetNumQuest(3)")
+				if DEBUG then
+					printf("Number of available quests: %d\n",availableQuests)
+				end
+
+	-- For each quest
+	for i=1,availableQuests do
+		-- Get quest name
+		questOnBoard = RoMScript("GetQuestNameByIndex(3, "..i..")")
+				if DEBUG then
+					printf("questOnBoard / Index: %s \t %d\n",questOnBoard,i)
+				end
+
+		if (questToComplete == "" or questToComplete == "all") or -- Complete all
+		  FindNormalisedString(questOnBoard,questToComplete) then -- Or match name
+			repeat
+				RoMScript("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
+				yrest(100)
+				if _rewardnumberorname then
+							if DEBUG then
+								printf("_rewardnumberorname: %s \n",_rewardnumberorname)
+							end
+					if type(_rewardnumberorname) == "number" then
+						RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item".._rewardnumberorname..")")
+						yrest(100)
+					elseif type(_rewardnumberorname) == "string" then
+						-- Search for reward name
+						local found = false
+						for rewardNum = 1, RoMScript("SpeakQuestReward1.itemcount") do
+							-- rewardID = RoMScript("SpeakQuestReward1_Item"..rewardNum..".ID")
+							-- rewardType = RoMScript("SpeakQuestReward1_Item"..rewardNum..".Type")
+							-- set Tooptip
+							-- RoMScript("GameTooltip:SetQuestItem("..rewardType..","..rewardID..")")
+							-- get Tooptip data
+							local rewardName = RoMScript("SpeakQuestReward1_Item"..rewardNum.."_Desc:GetText()")
+							if FindNormalisedString(rewardName, _rewardnumberorname) then
+								found = true
+								RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..rewardNum..")")
+								yrest(100)
+								break
+							end
+						end
+						if not found then
+							printf("Invalid reward name or number, \"%s\"\n", _rewardnumberorname)
+							return
+						end
+					else
+						printf("Invalid reward type specified. Expected \"number\" or \"string\", got \""..type(_rewardnumberorname).."\".\n")
+						return
+					end
+				end
+				RoMScript("CompleteQuest()") -- Completes the quest
+				yrest(100)
+			until (getQuestStatus(questOnBoard)~="complete")
+			printf("Quest completed: %s\n",questOnBoard)
+
+			-- break if name matched
+			if (questToComplete ~= "" and questToComplete ~= "all") then
+				break
+			end
+			yrest(200)
+		elseif questToComplete ~= "" and questToComplete ~= "all" and i==availableQuests then
+			printf("Questname not found: %s\n",questToComplete)
+		end
+	end
+	RoMScript("SpeakFrame:Hide()")
+	yrest(750)
+end
+
+function AcceptAllQuests()
+	AcceptQuestByName()
+end
+
+function CompleteAllQuests()
+	CompleteQuestByName()
+end
+
+-- normalises a string so it can be used in searches such as "string.find" and "string.match" without error.
+function NormaliseString(_str)
+	_str = string.gsub(_str, string.char(45), ".")	-- Delete "-" in string
+	_str = string.gsub(_str, string.char(34), ".")	-- Delete """ in string
+	_str = string.lower(_str) -- Lower case
+	return _str
+end
+
+-- Finds a string in another string, normalising it first.
+function FindNormalisedString(_name, _string)
+	_name = string.lower(_name)
+	_string = NormaliseString(_string)
+
+	if string.find(_name,_string) then
+		return true
+	else
+		return false
+	end
+end
+
+function ChoiceOptionByName(optiontext)
+------------------------------------------------
+-- Select Option By Name
+-- optiontext = option text or part of
+-- NPC option dialog should already be open
+------------------------------------------------
+	if not RoMScript("SpeakFrame:IsVisible()") then
+		printf("Please open a dialog before using \"ChoiceOptionByName\".\n")
+		return
+	end
+
+    local counter = 1
+	local option
+    repeat
+		option = RoMScript("GetSpeakOption("..counter..")")
+		if option and FindNormalisedString(option,optiontext) then
+			-- First try "ChoiceOption"
+            RoMScript("ChoiceOption("..counter..");"); yrest(1000);
+
+			-- If SpeakFrame is still open and option is still there then try "SpeakFrame_ListDialogOption"
+			option = RoMScript("GetSpeakOption("..counter..")")
+			if option and FindNormalisedString(option,optiontext) and RoMScript("SpeakFrame:IsVisible()") then
+				RoMScript("SpeakFrame_ListDialogOption(1,"..counter..");"); yrest(1000);
+			end
+            return true
+        end
+        counter = counter + 1
+    until not option
+	printf("Option \"%s\" not found.\n",optiontext)
+    return false
 end

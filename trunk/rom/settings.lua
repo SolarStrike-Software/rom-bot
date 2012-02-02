@@ -1051,8 +1051,6 @@ function settings.loadProfile(_name)
 			hf_language = "russian";
 		elseif(bot.ClientLanguage == "PL" ) then
 			hf_language = "polish";
-		elseif(bot.ClientLanguage == "ES" ) then
-			hf_language = "spanish";
 		else
 			hf_language = "english";
 		end

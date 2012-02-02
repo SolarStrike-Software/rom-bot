@@ -152,14 +152,7 @@ end
 
 function petstartcombat()
 	petupdate()
-	if pet.Name == GetIdName(102803) then
-		RoMScript("UsePetAction(6)")
-		print("Making Pet Attack")
-		yrest(500)
-		RoMScript("UsePetAction(7)")
-		yrest(500)
-		RoMScript("UsePetAction(3)")
-	elseif pet.Name == GetIdName(102325) then
+	if pet.Name == GetIdName(102325) then
 		if _printed == nil then
 			print("Nature Crystal Doesn't attack")
 			_printed = true
