@@ -216,6 +216,7 @@ end
 function CEggPet:Summon()
 	self:update()
 	while self.EggId > 0 and self.Summoned == false and player.Alive and player.HP > 0 do
+		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200)
 		RoMScript("SummonPet("..self.EggSlot..")")
 		repeat
 			yrest(500)
@@ -418,6 +419,7 @@ function CEggPet:getToolChoices()
 		tmp.Type = "Mining"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/mRatio
+		tmp.HaveSome = false
 		table.insert(tmpResults,tmp)
 	end
 	if wRatio > 0 then
@@ -425,6 +427,7 @@ function CEggPet:getToolChoices()
 		tmp.Type = "Woodworking"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/wRatio
+		tmp.HaveSome = false
 		table.insert(tmpResults,tmp)
 	end
 	if hRatio > 0 then
@@ -432,6 +435,7 @@ function CEggPet:getToolChoices()
 		tmp.Type = "Herbalism"
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/hRatio
+		tmp.HaveSome = false
 		table.insert(tmpResults,tmp)
 	end
 
@@ -449,16 +453,31 @@ end
 function CEggPet:getBestTool()
 	local toolChoices = self:getToolChoices()
 	-- Check if you have tools in inventory
-	local toolSlot = self.Tool.Id
 
-	local choice = 0
+	-- Custom inventory search function to speed things up
+	local item
+	for slot = 51, 240 do
+		item = inventory.BagSlot[slot]
+		if item.Available and not item.Empty then
+
+			for i, Type in pairs(toolChoices) do
+				if Type.Id == item.Id or Type.Id == self.Tool.Id then
+					toolChoices[i].HaveSome = true
+					break
+				end
+			end
+
+		end
+	end
+
+	-- Check if you have tools
 	for i, Type in pairs(toolChoices) do
-		-- Check if you have tools
-		if inventory:itemTotalCount(Type.Id) > 0 or Type.Id == self.Tool.Id then
+		if Type.HaveSome then
 			return Type
 		end
 	end
 end
+
 
 function checkEggPets()
 	-- This function makes sure the pets are crafting and assisting as per the profile settings.
@@ -514,25 +533,48 @@ function checkEggPets()
 			until assistEgg.Crafting == false
 		end
 
+		-- Custom count function because 6 itemTotalCounts is too slow
+		inventory:update();
+
+		local item, cake, cheese, milk, beef, favorite, dessert = 0,0,0,0,0,0,0
+		for slot = 51, 240 do
+			item = inventory.BagSlot[slot]
+			if item.Available then
+				if item.Id == 204791 then
+					cake = cake + item.ItemCount
+				elseif item.Id == 204925 then
+					cheese = cheese + item.ItemCount
+				elseif item.Id == 204924 then
+					milk = milk + item.ItemCount
+				elseif item.Id == beef then
+					beef = beef + item.ItemCount
+				elseif item.Id == 204511 then
+					favorite = favorite + item.ItemCount
+				elseif item.Id == 204510 then
+					dessert = dessert + item.ItemCount
+				end
+			end;
+		end;
+
 		-- Check if needs to be fed
 
 		-- Get best nourishment food
 		local foodId = 0
-		if assistEgg.Nourishment <= 95 and inventory:itemTotalCount(204791) > 0 then -- use cake
+		if assistEgg.Nourishment <= 95 and cake > 0 then -- use cake
 			foodId = 204791
-		elseif assistEgg.Nourishment <= 90 and inventory:itemTotalCount(204925) > 0 then -- use cheese
+		elseif assistEgg.Nourishment <= 90 and cheese > 0 then -- use cheese
 			foodId = 204925
-		elseif assistEgg.Nourishment <= 80 and inventory:itemTotalCount(204924) > 0 then -- use milk
+		elseif assistEgg.Nourishment <= 80 and milk > 0 then -- use milk
 			foodId = 204924
-		elseif assistEgg.Nourishment <= 70 and inventory:itemTotalCount(204234) > 0 then -- use beef
+		elseif assistEgg.Nourishment <= 70 and beef > 0 then -- use beef
 			foodId = 204234
 		end
 
 		-- Get best loyalty food
 		local loyaltyFoodId = 0
-		if assistEgg.Loyalty <= 90 and inventory:itemTotalCount(204511) > 0 then -- Use Favorite Meal
+		if assistEgg.Loyalty <= 90 and favorite > 0 then -- Use Favorite Meal
 			loyaltyFoodId = 204511
-		elseif assistEgg.Loyalty <= 99 and inventory:itemTotalCount(204510) > 0 then -- Use Dessert of Happiness
+		elseif assistEgg.Loyalty <= 99 and dessert > 0 then -- Use Dessert of Happiness
 			loyaltyFoodId = 204510
 		end
 

@@ -164,6 +164,7 @@ function CPlayer:harvest(_id, _second_try)
 
 		if( nodeStillFound(closestHarvestable) ) then
 			self:target(closestHarvestable.Address)
+			yrest(100)
 			Attack();
 			yrest(100);
 		else
@@ -253,7 +254,6 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	local SCORE_ATTACKING = 100;    -- attacking = score
 	local SCORE_HEALTHPERCENT = 75; -- lower health = more score
 
-
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
 		if( obj ~= nil ) then
@@ -262,10 +262,9 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z);
 					local pawn = CPawn(obj.Address);
-					pawn:update();
 					local _target = pawn:getTarget();
 
-					if( evalFunc(obj.Address) == true ) then
+					if( evalFunc(pawn.Address, pawn) == true ) then
 						if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
 						(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or _target.InParty == true ) and
 						aggroOnly == true) or aggroOnly == false) ) then
@@ -1090,7 +1089,7 @@ function CPlayer:fight()
 		sendMacro('SetRaidTarget("target", 1);')
 		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
-	--[[
+
 	if player.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
 		petupdate()
 		if pet.Name == GetIdName(102297) or
@@ -1100,7 +1099,6 @@ function CPlayer:fight()
 			petstartcombat()
 		end
 	end
-	]]
 
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
@@ -1430,8 +1428,7 @@ function CPlayer:fight()
 	end
 	self.Fighting = false;
 
-	-- update ~ 3-4 slots (about 50 ms each)
-	inventory:updateSlotsByTime(200);
+	yrest(200);
 end
 
 function CPlayer:loot()
@@ -1509,7 +1506,7 @@ function CPlayer:loot()
 		local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
 		local startWait = getTime()
 		while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
-			inventory:updateSlotsByTime(100)
+			yrest(100)
 			target:update()
 		end
 	end
@@ -1602,9 +1599,11 @@ end
 local lootIgnoreList = {}
 local lootIgnoreListPos = 0
 
-function evalTargetLootable(address)
+function evalTargetLootable(address, target)
 
-	local target = CPawn(address);
+	if not target then
+		target = CPawn(address);
+	end
 
 	-- Check if lootable
 	if not ( target.Lootable ) then
@@ -1744,7 +1743,7 @@ end
 
 -- Basic target evaluation.
 -- Returns true if a valid target, else false.
-function evalTargetDefault(address)
+function evalTargetDefault(address, target)
 	local function debug_target(_place)
 		if( settings.profile.options.DEBUG_TARGET and
 			player.TargetPtr ~= player.LastTargetPtr ) then
@@ -1760,7 +1759,9 @@ function evalTargetDefault(address)
 		end
 	end
 
-	local target = CPawn(address);
+	if not target then
+		target = CPawn(address);
+	end
 
 	-- Can't have self as target
 	if( address == player.Address ) then
@@ -1985,8 +1986,31 @@ end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 
+	local function passed_point(lastpos, point)
+		point.X = tonumber(point.X)
+		point.Z = tonumber(point.Z)
+
+		local posbuffer = 5
+
+		local passed = true
+		if lastpos.X < point.X and player.X < point.X - posbuffer then
+			return false
+		end
+		if lastpos.X > point.X and player.X > point.X + posbuffer then
+			return false
+		end
+		if lastpos.Z < point.Z and player.Z < point.Z - posbuffer then
+			return false
+		end
+		if lastpos.Z > point.Z and player.Z > point.Z + posbuffer then
+			return false
+		end
+
+		return true
+	end
+
 	self:update();
-	local destination
+	local lastpos = {X=self.X, Z=self.Z, Y=self.Y}
 
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 	local yangle = 0
@@ -1994,7 +2018,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
 	end
 	local angleDif = angleDifference(angle, self.Direction);
-	local canTarget = false;
 	local startTime = os.time();
 	ignoreTargets = ignoreTargets or false;
 
@@ -2035,19 +2058,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		waypoint.Z = self.Z;
 		waypoint.X = self.X;
 
-	end;
-
-	-- look for a target before start movig
-	if( (not ignoreCycleTargets) and (not self.Battling) ) then
-		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
-		if( newTarget ) then			-- find a new target
-			self:target(newTarget.Address);
-			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
-			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
-			success = false;
-			failreason = WF_TARGET;
-			return success, failreason;
-		end;
 	end;
 
 	-- QUICK_TURN only
@@ -2101,25 +2111,36 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
+	-- look for a target before start movig
+	if( (not ignoreCycleTargets) and (not self.Battling) ) then
+		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
+		if( newTarget ) then			-- find a new target
+			self:target(newTarget.Address);
+			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
+			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
+			success = false;
+			failreason = WF_TARGET;
+			return success, failreason;
+		end;
+	end;
+
 	-- Direction ok, start moving forward
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
-	if range then dist = dist - range end
 	local lastDist = dist;
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
-	local speedRatio = 0.6 -- The ratio to speed that 'successDist' is set to. Eg. At walking speed of 50, successDist will be 30.
-	local successDist = speedRatio * self.Speed -- Distance to consider successfully reaching the target location
-
 	local turning = false
-	while( dist > successDist or (range ~= nil and dist > 0)) do -- second part makes sure you are WITHIN range when using 'range'.
+
+	local loopstart
+	local loopduration = 100 -- The duration we want the loop to take
+	local successdist = 10
+	repeat
+		loopstart = os.clock()
+
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
-
-		if( canTarget == false and os.difftime(os.time(), startTime) > 1 ) then
-			canTarget = true;
-		end
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
 	 	-- only if not in the fight stuff coding (means self.Fighting == false )
@@ -2137,7 +2158,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end;
 
 		-- look for a new target while moving
-		if( canTarget and (not ignoreCycleTargets) and (not self.Battling) and (not turning) and dist > 50) then
+		if((not ignoreCycleTargets) and (not self.Battling) and (not turning) and dist > 50) then
 			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
 			if( newTarget ) then	-- find a new target
 				self:target(newTarget);
@@ -2168,7 +2189,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end
 
 		-- while moving without target: check potions / friendly skills
-		if not player.Mounted and ( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
+		if not self.Mounted and ( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
@@ -2184,30 +2205,27 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 
-		-- calculate new kcoords if range specified
-		if range and range > 0 then
-			if dist > range then -- Calculate coordinates
-				local movedist = dist - range
-				if movedist < 50 then movedist = 50 end;
-
-				local posX = self.X + math.cos(angle) * (movedist);
-				local posZ = self.Z + math.sin(angle) * (movedist);
-				local posY = self.Y -- default value
-				if waypoint.Y ~= nil then
-					posY = self.Y + (waypoint.Y - self.Y) * movedist
-				end
-				destination = CWaypoint(posX, posZ, posY)
-				dist = dist - range
-			else
-				break -- already in range
-			end
-
-		else
-			destination = CWaypoint(waypoint.X, waypoint.Z, waypoint.Y)
+		-- Check if within range if range specified
+		if range and range > dist then
+			-- within range
+			break
 		end
 
-		if destination.Y ~= nil then
-			yangle = math.atan2(destination.Y - self.Y, ((destination.X - self.X)^2 + (destination.Z - self.Z)^2)^.5 );
+		-- Check if past waypoint
+		if passed_point(lastpos, waypoint) then
+		   -- waypoint reached
+		   break
+		end
+
+		-- Check if close to waypoint.
+		if dist < successdist then
+			break
+		end
+
+		lastpos = {X=self.X, Z=self.Z, Y=self.Y}
+
+		if waypoint.Y ~= nil then
+			yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
 		end
 		angleDif = angleDifference(angle, self.Direction);
 
@@ -2217,45 +2235,48 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 			camera:setRotation(angle);
 			self:update()
 			angleDif = angleDifference(angle, self.Direction);
+			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		else
 			self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
-		end
 
-		if( angleDif > math.rad(15) ) then
-			--keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-			--keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
+			if( angleDif > math.rad(15) ) then
+				--keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+				--keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key );
 
-			if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
-					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
-					yrest(100);
+				if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
+						keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+						keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+						yrest(100);
+				else
+						keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+						keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+						yrest(100);
+				end
+				turning = true
+			elseif( angleDif > math.rad(1) ) then
+				if( settings.profile.options.QUICK_TURN ) then
+					camera:setRotation(angle);
+				end
+
+				self:faceDirection(angle, yangle);
+				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+				keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
+				turning = false
 			else
-					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
-					yrest(100);
+				keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 			end
-			turning = true
-		elseif( angleDif > math.rad(1) ) then
-			if( settings.profile.options.QUICK_TURN ) then
-				camera:setRotation(angle);
-			end
-
-			self:faceDirection(angle, yangle);
-			keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
-			turning = false
-		else
-			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		end
+
 
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
-		yrest(100);
+		local pausetime = loopduration - (os.clock() - loopstart) -- minus the time already elapsed.
+		if pausetime < 1 then pausetime = 1 end
+		yrest(pausetime);
 		self:update();
 		waypoint:update();
-		successDist = speedRatio * self.Speed -- In case the players speed changed
 
-	end
+	until false
 
 	if (settings.profile.options.WP_NO_STOP ~= false) then
 		if (success == false) or (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
@@ -2267,13 +2288,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 
 	keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-
-	--[[ Not needed as it is checked in loop, WPT_RUN isn't correct anyway.
-	if( self.Battling and
-		 waypoint.Type ~= WPT_RUN ) then
-		--self:waitForAggro();
-		self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
-	end]]
 
 	return success, failreason;
 end
@@ -2312,6 +2326,9 @@ function CPlayer:faceDirection(dir,diry)
 	local hypotenuse = (1 - Vec3^2)^.5
 	local Vec1 = math.cos(dir) * hypotenuse;
 	local Vec2 = math.sin(dir) * hypotenuse;
+
+	self.Direction = math.atan2(Vec2, Vec1);
+	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
 	if self.Mounted then
 		local tmpAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
@@ -3137,14 +3154,14 @@ function CPlayer:sleep()
 	local sleep_start = os.time();		-- calculate the sleep time
 	self.Sleeping = true;	-- we are sleeping
 
-	cprintf(cli.yellow, language[89], os.date(), getKeyName(settings.hotkeys.START_BOT.key)  );
+	cprintf(cli.yellow, language[89], os.date(), getKeyName(getStartKey())  );
 
 	local hf_key = "";
 	while(true) do
 
 		local hf_key_pressed = false;
 
-		if( keyPressedLocal(settings.hotkeys.START_BOT.key) ) then	-- start key pressed
+		if( keyPressedLocal(getStartKey()) ) then	-- start key pressed
 			hf_key_pressed = true;
 			hf_key = "AWAKE";
 		end;
@@ -3155,7 +3172,7 @@ function CPlayer:sleep()
 			if( hf_key == "AWAKE" ) then
 				hf_key = " ";	-- clear last pressed key
 
-				cprintf(cli.yellow, language[90], getKeyName(settings.hotkeys.START_BOT.key),  os.date() );
+				cprintf(cli.yellow, language[90], getKeyName(getStartKey()),  os.date() );
 				self.Sleeping = false;	-- we are awake
 				break;
 			end;
@@ -3544,7 +3561,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
 				if( obj.Address ~= ignore and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid) )) then
-					if( evalFunc(obj.Address) == true ) then
+					if( evalFunc(obj.Address,obj) == true ) then
 						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then
 							closestObject = obj;
@@ -3687,6 +3704,18 @@ function CPlayer:mount(_dismount)
 			self:update();
 			if( self:haveTarget() ) then
 				self:fight();
+			else
+				break
+			end
+		end
+	end
+
+	-- if _dismount and mountmethod is inventory then assume buff name equals item name and cancel buff if exists. Mainly needed for 15m and 2h mounts
+	if _dismount and mountMethod == "inventory" then
+		for index, buff in pairs(self.Buffs) do
+			if string.find(mount.Name,buff.Name,1, true) then
+				sendMacro("CancelPlayerBuff("..index..");")
+				return
 			end
 		end
 	end
