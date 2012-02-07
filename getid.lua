@@ -1,10 +1,6 @@
 -- A simple script to simply tell you your in-game location
 
 include("addresses.lua");
-include("database.lua");
-include("classes/player.lua");
-include("classes/node.lua");
-include("settings.lua");
 include("functions.lua");
 include("classes/memorytable.lua");
 
@@ -22,19 +18,25 @@ end
 atExit(exitCallback);
 
 function main()
-	settings.load();
-	database.load();
-
-	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-	player = CPlayer(playerAddress);
+	local playerAddress
+	local playerX = 0
+	local playerZ = 0
+	local playerY = 0
 
 	while(true) do
 		yrest(500);
-		player:update();
-		mousePawn = CPawn(memoryReadIntPtr(getProc(),
-		addresses.staticbase_char, addresses.mousePtr_offset));
-		if( mousePawn.Address ~= 0) then
-			printf("\rObject found id %d %s distance %d\t\t", mousePawn.Id, mousePawn.Name, distance(player.X, player.Z, player.Y, mousePawn.X, mousePawn.Z, mousePawn.Y));
+		playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+		playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
+		playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
+		playerZ = memoryReadFloat(getProc(), playerAddress + addresses.pawnZ_offset) or playerZ
+		mousePawnAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) or 0
+		if( mousePawnAddress ~= 0) then
+			mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.pawnId_offset) or 0
+			mousePawnName = GetIdName(mousePawnId) or "<UNKNOWN>"
+			mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnX_offset) or mousePawnX
+			mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnY_offset) or mousePawnY
+			mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnZ_offset) or mousePawnZ
+			printf("\rObject found id %d %s distance %d\t\t", mousePawnId, mousePawnName, distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY));
 		else
 			printf("\rNo id at current mouse location\t\t\t\t");
 		end
