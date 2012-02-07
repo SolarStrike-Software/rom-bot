@@ -3560,7 +3560,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
-				if( obj.Address ~= ignore and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid) )) then
+				if( obj.Address ~= ignore and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
 					if( evalFunc(obj.Address,obj) == true ) then
 						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then

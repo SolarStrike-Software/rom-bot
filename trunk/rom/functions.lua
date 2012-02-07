@@ -1211,7 +1211,7 @@ function getQuestStatus(_questname)
 	end
 
 	if type(_questname) == "string" then
-		return RoMScript("igf_questStatus(\"".._questname.."\")")
+		return RoMScript("igf_questStatus(\""..NormaliseString(_questname).."\")")
 	end
 
 	error("Invalid id sent to getQuestStatus()")
@@ -1528,11 +1528,12 @@ function Attack()
 end
 
 function getZoneId()
-	local zone = memoryReadRepeat("int", getProc(), addresses.zoneId)
-	if zone ~= nil then
-		return zone
+	local zonechannel = memoryReadRepeat("int", getProc(), addresses.zoneId)
+	if zonechannel ~= nil then
+		local zone = zonechannel%1000
+		return zone, (zonechannel-zone)/1000 -- zone and channel
 	else
-		printf("Invalid command\n")
+		printf("Failed to get zone id\n")
 	end
 end
 

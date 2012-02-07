@@ -105,7 +105,7 @@ function GetItemAddress(id)
 			local address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8)
 			if address == 0 then
 				-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
-				RoMScript("GetCraftRequestItem("..id..", -1)")
+				if RoMScript then RoMScript("GetCraftRequestItem("..id..", -1)") end
 				address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8);
 			end
 			return address
@@ -125,7 +125,7 @@ function GetIdName(itemId)
 			local name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
 			if name == nil then
 				-- Item data not totally substanciated yet. Do "GetCraftRequestItem", then the address will exist.
-				RoMScript("GetCraftRequestItem("..itemId..", -1)")
+				if RoMScript then RoMScript("GetCraftRequestItem("..itemId..", -1)") end
 				name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
 			end
 			return name

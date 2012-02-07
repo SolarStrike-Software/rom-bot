@@ -148,7 +148,7 @@ function CItem:update()
 		self.BagId = self.SlotNumber
 	end
 
-	if self.BagId ~= oldId then -- need new address
+	if self.BagId ~= oldBagId then -- need new address
 		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
 	end
 

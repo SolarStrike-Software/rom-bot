@@ -1,12 +1,7 @@
 -- A simple script to simply tell you your in-game location
 
 include("addresses.lua");
-include("database.lua");
-include("classes/player.lua");
-include("classes/node.lua");
-include("settings.lua");
 include("functions.lua");
-include("classes/memorytable.lua");
 
 setStartKey(0);
 setStopKey(0);
@@ -22,17 +17,19 @@ end
 atExit(exitCallback);
 
 function main()
-	settings.load();
-	database.load();
-
-	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-	player = CPlayer(playerAddress);
+	local playerAddress
+	local playerX = 0
+	local playerZ = 0
+	local playerY = 0
 
 	while(true) do
 		yrest(500);
-		player:update();
+		playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+		playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
+		playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
+		playerZ = memoryReadFloat(getProc(), playerAddress + addresses.pawnZ_offset) or playerZ
 
-		printf("\rPosition: (%d, %d, %d)\t", player.X, player.Z, player.Y);
+		printf("\rPosition: (%d, %d, %d)\t", playerX, playerZ, playerY);
 	end
 end
 startMacro(main, true);
