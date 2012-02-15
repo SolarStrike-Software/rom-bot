@@ -173,6 +173,8 @@ CPawn = class(
 		self.InParty = false
 		self.Swimming = false
 		self.Speed = 50
+		self.ActualSpeed = 0
+		self.Moving = false
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end

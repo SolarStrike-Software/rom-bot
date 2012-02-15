@@ -1531,7 +1531,7 @@ function getZoneId()
 	local zonechannel = memoryReadRepeat("int", getProc(), addresses.zoneId)
 	if zonechannel ~= nil then
 		local zone = zonechannel%1000
-		return zone, (zonechannel-zone)/1000 -- zone and channel
+		return zone, (zonechannel-zone)/1000 + 1 -- zone and channel
 	else
 		printf("Failed to get zone id\n")
 	end

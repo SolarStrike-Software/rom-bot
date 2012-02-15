@@ -457,7 +457,7 @@ function CSkill:canUse(_only_friendly, target)
 	--=== water fairy usage
 	if player.Class1 == CLASS_PRIEST and self.Type == STYPE_SUMMON then
 		debug_skilluse("USINGPETFUNCTION");
-		waterfairy()
+		checkfairy()
 		return false;
 	end
 	return true;

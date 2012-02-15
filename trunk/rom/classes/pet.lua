@@ -1,3 +1,11 @@
+local fairy_db = {
+[CLASS_WARRIOR]	= {PetId = 102104, PetSummon = 493267, Buff = 503455}, -- Fire Fairy - Accuracy Halo
+[CLASS_SCOUT]	= {PetId = 102105, PetSummon = 493268, Buff = 503736}, -- Water Fairy - Frost Halo
+[CLASS_ROGUE]	= {PetId = 102106, PetSummon = 493268, Buff = 503459}, -- Shadow Fairy - Wraith Halo
+[CLASS_MAGE]	= {PetId = 102107, PetSummon = 493270, Buff = 503461}, -- Wind Fairy - WindRider Halo
+[CLASS_KNIGHT]	= {PetId = 102108, PetSummon = 493268, Buff = 503507}, -- Light Fairy - Devotion Halo
+}
+
 function setpettable()
 	pettable = {
 		[1] = {
@@ -163,12 +171,19 @@ function petstartcombat()
 	end
 end
 
-function waterfairy()
-	if player.Class1 ~= CLASS_PRIEST or player.Class2 ~= CLASS_SCOUT then
+function checkfairy()
+	local fairy = fairy_db[player.Class2]
+
+	if player.Class1 ~= CLASS_PRIEST or fairy == nil then
 		return -- can't have a water fairy if class is wrong
 	end
+
+	if  player.Mounted then
+		return
+	end
+
 	petupdate()
-	if pet.Id ~= 102105 then -- Water Fairy
+	if pet.Id ~= fairy.PetId then -- Fairy
 		if PetWaitTimer == nil or PetWaitTimer == 0 then -- Start timer
 			PetWaitTimer = os.time()
 			return false
@@ -176,13 +191,9 @@ function waterfairy()
 			return false
 		end
 
-		if  player.Mounted then
-			return
-		end
-
 		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key); yrest(500)
-		sendMacro("CastSpellByName(\""..GetIdName(493268).."\")")
-		print("Summoning "..GetIdName(102105))
+		sendMacro("CastSpellByName(\""..GetIdName(fairy.PetSummon).."\")")
+		print("Summoning "..GetIdName(fairy.PetId))
 		repeat
 			yrest(1000)
 		until not (memoryReadRepeat("int", getProc(), player.Address + addresses.pawnCasting_offset) ~= 0);
@@ -196,7 +207,8 @@ function waterfairy()
 	else
 		PetWaitTimer = 0
 	end
-	if not pet:hasBuff(503736) then -- Frost Halo
+
+	if not pet:hasBuff(fairy.Buff) then -- Frost Halo, Accuracy Halo...
 		sendMacro("UsePetAction(6)")
 		yrest(500)
 	end

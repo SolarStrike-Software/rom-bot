@@ -95,6 +95,10 @@
 	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" id="492637" energy="30" casttime="1" cooldown="45" range="150" priority="90" />
 	<skill name="PRIEST_SHADOW_FURY" id="492932" mana="100" manainc="10" type="buff" target="self" buffname="503196" />
 	<skill name="PRIEST_WATER_FAIRY" id="493268" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
+	<skill name="PRIEST_FIRE_FAIRY" id="493267" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
+	<skill name="PRIEST_WIND_FAIRY" id="493270" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
+	<skill name="PRIEST_SHADOW_FAIRY" id="493269" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
+	<skill name="PRIEST_LIGHT_FAIRY" id="493271" mana="250" casttime="6" inbattle="false" type="summon" target="self" />
 
 	<!-- TODO: don't attack while frozen -->
 	<skill name="PRIEST_FREEZE" id="491586" mana="35" manainc="3.75" casttime="1" type="damage" buffname="501961" target="enemy" />

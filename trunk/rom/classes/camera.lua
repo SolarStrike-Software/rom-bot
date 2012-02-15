@@ -63,6 +63,7 @@ function CCamera:setRotation(angle)
 
 	-- current camera distance
 	local currentDistance = distance(self.XFocus,self.ZFocus,self.YFocus,self.X,self.Z,self.Y)
+	if currentDistance > 150 then currentDistance = 150 end
 
 	-- y vector
 	local playerYAngle = player.DirectionY
