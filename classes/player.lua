@@ -548,6 +548,24 @@ function CPlayer:resetSkillLastCastTime()
 	end
 end
 
+local function RestWhileCheckingForWaypoint(_duration)
+	if #__WPL.Waypoints > 0 and player.Moving then
+		-- rest for _duration but if moving stop when reaching waypoint
+		local starttime = os.clock()
+		local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
+		local lastdist = distance(player.X,player.Z,curWP.X, curWP.Z)
+		repeat
+			startdist = lastdist
+			yrest(10)
+			player:update()
+			lastdist = distance(player.X, player.Z, curWP.X, curWP.Z)
+		until (os.clock() - starttime) > _duration/1000 or
+					 (lastdist < 10 or lastdist > startdist) -- and wp reached or moving away
+	else
+		yrest(_duration)
+	end
+end
+
 function CPlayer:cast(skill)
 	-- If given a string, look it up.
 	-- If given a skill object, use it natively.
@@ -628,7 +646,7 @@ function CPlayer:cast(skill)
 
 			self.LastSkillStartTime=getTime() -- now that casting = true reset starttime to now
 		else
-			yrest(700); -- assume .7 second yrest
+			RestWhileCheckingForWaypoint(700); -- assume .7 second yrest
 		end
 
 		-- count cast to enemy targets
@@ -763,9 +781,22 @@ function CPlayer:checkSkills(_only_friendly, target)
 	end
 
 	if( not useQueue ) then
+		local last_dist_to_wp
 		for i,v in pairs(settings.profile.skills) do
 			if( v.AutoUse and v:canUse(_only_friendly, target) ) then
+				-- break if just checking buff, moving and reached WP. So it can turn
+				if _only_friendly and #__WPL.Waypoints > 0 and self.Moving then
+					local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
+					local distToWP = distance(self.X, self.Z, curWP.X, curWP.Z)
+					if distToWP < 10 then -- wp reached
+						break
+					end
+					if last_dist_to_wp and distToWP > last_dist_to_wp then -- moving away from wp
+						break
+					end
 
+					last_dist_to_wp = distToWP
+				end
 
 				-- additional potion check while working at a 'casting round'
 				self:checkPotions();
@@ -833,7 +864,7 @@ function CPlayer:checkPotions()
 					cprintf(cli.green, language[10], 		-- Using HP potion
 					   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
 					   item.Name, item.ItemCount);
-					   yrest(1000)
+					   RestWhileCheckingForWaypoint(1000)
 					if( self.Fighting ) then
 						yrest(1000);
 					end
@@ -874,7 +905,7 @@ function CPlayer:checkPotions()
 						cprintf(cli.green, language[11], 		-- Using MP potion
 							self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
 							item.Name, item.ItemCount);
-							yrest(1000)
+							RestWhileCheckingForWaypoint(1000)
 						if( self.Fighting ) then
 							yrest(1000);
 						end
@@ -921,7 +952,7 @@ function CPlayer:checkPotions()
 				cprintf(cli.green, language[10], 		-- Using HP potion
 				   self.HP, self.MaxHP, self.HP/self.MaxHP*100,
 				   item.Name, item.ItemCount);
-				   yrest(1000)
+				   RestWhileCheckingForWaypoint(1000)
 				if( self.Fighting ) then
 					yrest(1000);
 				end
@@ -965,7 +996,7 @@ function CPlayer:checkPotions()
 					cprintf(cli.green, language[11], 		-- Using MP potion
 						self.Mana, self.MaxMana, self.Mana/self.MaxMana*100,
 						item.Name, item.ItemCount);
-						yrest(1000)
+						RestWhileCheckingForWaypoint(1000)
 					if( self.Fighting ) then
 						yrest(1000);
 					end
@@ -1409,7 +1440,6 @@ function CPlayer:fight()
 		inventory:updateSlotsByTime(800);
 
 	end;]]
-
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
 	self:update();
@@ -1426,6 +1456,7 @@ function CPlayer:fight()
 	if( self.TargetPtr ~= 0 ) then
 		self:clearTarget();
 	end
+
 	self.Fighting = false;
 
 	yrest(200);
@@ -1508,6 +1539,14 @@ function CPlayer:loot()
 		while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
 			yrest(100)
 			target:update()
+		end
+
+		-- Wait for character to finish standing
+		local starttime = os.clock()
+		self:update()
+		while self.Stance ~= 0 and 2 > (os.clock() - starttime) do
+			yrest(50)
+			self:update()
 		end
 	end
 
@@ -1659,21 +1698,21 @@ function evalTargetLootable(address, target)
 	end
 
 	-- use a bounding box first to avoid sqrt when not needed (sqrt is expensive)
-	if( target.X > (V.X - settings.profile.options.MAX_TARGET_DIST) and
-		target.X < (V.X + settings.profile.options.MAX_TARGET_DIST) and
-		target.Z > (V.Z - settings.profile.options.MAX_TARGET_DIST) and
-		target.Z < (V.Z + settings.profile.options.MAX_TARGET_DIST) ) then
+	if( target.X > (V.X - lootdist) and
+		target.X < (V.X + lootdist) and
+		target.Z > (V.Z - lootdist) and
+		target.Z < (V.Z + lootdist) ) then
 
-		if( distance(V.X, V.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
+		if( distance(V.X, V.Z, target.X, target.Z) > lootdist ) then
 			if( settings.profile.options.DEBUG_LOOT) then
-				cprintf(cli.yellow, "unlooted monster dist > MAX_TARGET_DIST")
+				cprintf(cli.yellow, "unlooted monster dist > lootdist")
 			end
 			return false;			-- he is not a valid target
 		end;
 	else
 		-- must be too far away
 		if( settings.profile.options.DEBUG_LOOT) then
-			cprintf(cli.yellow, "unlooted monster dist > MAX_TARGET_DIST")
+			cprintf(cli.yellow, "unlooted monster dist > lootdist")
 		end
 		return false;
 	end
@@ -1700,15 +1739,16 @@ function CPlayer:lootAll()
 		cprintf(cli.yellow,"The userfunction 'lootBodies()' is obsolete and might interfere with the bots 'lootAll()' function. Please delete the 'addon_lootbodies.lua' file from the 'userfunctions' folder.\n")
 	end
 
-	-- Check if inventory is full. We don't loot if inventory is full.
-	if inventory:itemTotalCount(0) == 0 then
-		if( settings.profile.options.DEBUG_LOOT) then
-			cprintf(cli.yellow, "[DEBUG] don't loot all reason: inventory is full\n");
-		end;
-		return
-	end
 
 	while true do
+		-- Check if inventory is full. We don't loot if inventory is full.
+		if inventory:itemTotalCount(0) == 0 then
+			if( settings.profile.options.DEBUG_LOOT) then
+				cprintf(cli.yellow, "[DEBUG] don't loot all reason: inventory is full\n");
+			end;
+			return
+		end
+
 		self:update()
 		if( self.Battling  and
 			self:findEnemy(true,nil,evalTargetDefault)) then
@@ -2158,7 +2198,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end;
 
 		-- look for a new target while moving
-		if((not ignoreCycleTargets) and (not self.Battling) and (not turning) and dist > 50) then
+		if((not ignoreCycleTargets) and (not self.Battling) and (not turning)) then
 			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
 			if( newTarget ) then	-- find a new target
 				self:target(newTarget);
@@ -2700,6 +2740,9 @@ function CPlayer:update()
 
 	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
 	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
+
+	self.ActualSpeed = memoryReadRepeat("float", getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
+	self.Moving = (self.ActualSpeed > 0)
 
 	local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
@@ -3452,7 +3495,7 @@ function CPlayer:target_NPC(_npcname)
 		-- target NPC
 		self:target(npc.Address)
 		Attack(); yrest(50); Attack(); -- 'click' again to be sure
-		yrest(1000);
+		yrest(500);
 		return true
 	else
 		cprintf(cli.green, language[137], _npcname);	-- we can't find NPC

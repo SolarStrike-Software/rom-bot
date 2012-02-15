@@ -571,57 +571,57 @@ function main()
 
 			if ( settings.profile.options.PARTY == false  ) then
 
-			player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
+				player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
 
-			-- wait a second with the aggro message to avoid wrong msg
-			-- because of slow battle flag from the client
-			if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
-				cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
-				msg_print = true;
-			end;
-			if( player:haveTarget() ) then
-				if( msg_print == false ) then
+				-- wait a second with the aggro message to avoid wrong msg
+				-- because of slow battle flag from the client
+				if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
 					cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
 					msg_print = true;
 				end;
+				if( player:haveTarget() ) then
+					if( msg_print == false ) then
+						cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
+						msg_print = true;
+					end;
 
-				break;
-			end;
+					break;
+				end;
 
-			if( os.difftime(os.time(), aggroWaitStart) > 4 ) then
-				cprintf(cli.red, language[34]);		-- Aggro wait time out
-				break;
-			end;
+				if( os.difftime(os.time(), aggroWaitStart) > 4 ) then
+					cprintf(cli.red, language[34]);		-- Aggro wait time out
+					break;
+				end;
 
-			yrest(10);
-			player:update();
+				yrest(10);
+				player:update();
 
 			else
-					player:target(player:findEnemy(true, nil, nil, nil));
-								local target = player:getTarget();
-							if( os.difftime(os.time(), aggroWaitStart) > 5 ) then
-								cprintf(cli.red, language[34]);		-- Aggro wait time out
-							break;
-							end;
+				player:target(player:findEnemy(true, nil, evalTargetDefault));
+				local target = player:getTarget();
+				if( os.difftime(os.time(), aggroWaitStart) > 5 ) then
+					cprintf(cli.red, language[34]);		-- Aggro wait time out
+					break;
+				end;
 				if player:haveTarget() then
-							if( settings.profile.options.ANTI_KS ) then
-							if( target:haveTarget() and
-				  				target:getTarget().Address ~= player.Address and
-				 				 (not player:isFriend(CPawn(target.TargetPtr))) and
-				  				target:getTarget().Address ~= 0 -- because of distance limitation
-				  				and target:getTarget().InParty ~= true )then
-									cprintf(cli.red, language[5], target.Name);
-							else
-								player:fight();
-							end
+					if( settings.profile.options.ANTI_KS ) then
+						if( target:haveTarget() and
+							target:getTarget().Address ~= player.Address and
+							 (not player:isFriend(CPawn(target.TargetPtr))) and
+							target:getTarget().Address ~= 0 -- because of distance limitation
+							and target:getTarget().InParty ~= true )then
+								cprintf(cli.red, language[5], target.Name);
+						else
+							player:fight();
+						end
 
-				else
-						player:fight();
+					else
+							player:fight();
+					end
+					yrest(10);
+					player:update();
 				end
-			yrest(10);
-			player:update();
 			end
-		end
 		end
 
 		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
