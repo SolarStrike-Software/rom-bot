@@ -2760,18 +2760,6 @@ function CPlayer:update()
 		self.aggro_start_time = 0;
 	end
 
-	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
-	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirZUVec_offset);
-	local Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
-
-	if( Vec1 == nil ) then Vec1 = 0.0; end;
-	if( Vec2 == nil ) then Vec2 = 0.0; end;
-	if( Vec3 == nil ) then Vec3 = 0.0; end;
-
-	self.Direction = math.atan2(Vec2, Vec1);
-	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
-
-
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
 		error("Error reading memory in CPlayer:update()");
 	end

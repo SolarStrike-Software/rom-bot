@@ -343,6 +343,17 @@ function CPawn:update()
 	self.Y = memoryReadRepeat("float", proc, self.Address + addresses.pawnY_offset) or self.Y;
 	self.Z = memoryReadRepeat("float", proc, self.Address + addresses.pawnZ_offset) or self.Z;
 
+	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
+	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirZUVec_offset);
+	local Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+
+	if( Vec1 == nil ) then Vec1 = 0.0; end;
+	if( Vec2 == nil ) then Vec2 = 0.0; end;
+	if( Vec3 == nil ) then Vec3 = 0.0; end;
+
+	self.Direction = math.atan2(Vec2, Vec1);
+	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );	
+	
 	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 
 	if( self.Type == PT_MONSTER ) then

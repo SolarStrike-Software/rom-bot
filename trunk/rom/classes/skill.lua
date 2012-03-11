@@ -533,15 +533,15 @@ function CSkill:use()
 		if self.Type == STYPE_BUFF then
 			if not player.Battling then
 				--=== sacrifice pet buffs
-				if self.Id == 493346 then -- heart of the oak
+				if GetIdName(self.Id) == GetIdName(491668) then -- heart of the oak
 					wardenbuff(503946) 	-- code in classes/pet.lua
 					return
 				end
-				if self.Id == 493348 then -- protection of nature
+				if GetIdName(self.Id) == GetIdName(493348) then -- protection of nature
 					wardenbuff(503581)
 					return
 				end
-				if self.Id == 493347 then -- power of the oak
+				if GetIdName(self.Id) == GetIdName(493347) then -- power of the oak
 					wardenbuff(503580)
 					return
 				end
@@ -552,7 +552,7 @@ function CSkill:use()
 		if self.Type == STYPE_SUMMON and not player.Battling then
 			petupdate()		-- code in classes/pet.lua
 			-- dont summon warden pet if already summoned.
-			if self.Id == 493333 and pet.Name ~= GetIdName(102297) then
+			if GetIdName(self.Id) == GetIdName(493333) and pet.Name ~= GetIdName(102297) then
 				RoMScript("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
@@ -561,7 +561,7 @@ function CSkill:use()
 				setpetautoattacks()
 				return
 			end
-			if self.Id == 493344 and pet.Name ~= GetIdName(102325) then
+			if GetIdName(self.Id) == GetIdName(493344) and pet.Name ~= GetIdName(102325) then
 				RoMScript("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
@@ -570,7 +570,7 @@ function CSkill:use()
 				setpetautoattacks()
 				return
 			end
-			if self.Id == 493343 and pet.Name ~= GetIdName(102324) then
+			if GetIdName(self.Id) == GetIdName(493343) and pet.Name ~= GetIdName(102324) then
 				RoMScript("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
@@ -579,7 +579,7 @@ function CSkill:use()
 				setpetautoattacks()
 				return
 			end
-			if self.Id == 494212 and pet.Name ~= GetIdName(102803) then
+			if GetIdName(self.Id) == GetIdName(494212) and pet.Name ~= GetIdName(102803) then
 				RoMScript("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)

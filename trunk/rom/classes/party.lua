@@ -59,6 +59,7 @@ _timexx = os.time()
 			until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
 		end
 		PartyTable()
+		yrest(200)
 		for i,v in ipairs(partymemberpawn) do
 			player:target(partymemberpawn[i])
 			player:update()

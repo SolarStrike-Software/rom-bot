@@ -85,15 +85,15 @@ function wardenbuff(_nameorid)
 	petupdate()
 	local buffid
 	if type(_nameorid) == "number" then
-		buffid = _nameorid
+		buffname = GetIdName(_nameorid)
 	else
 		if string.find(string.lower(_nameorid), "spirit" ) or
 			string.find(string.lower(_nameorid), "heart" ) then
-			buffid = 503946
+			buffname = GetIdName(503946)
 		elseif string.find(string.lower(_nameorid), "nature") then
-			buffid = 503581
+			buffname = GetIdName(503581)
 		elseif string.find(string.lower(_nameorid), "walker") then
-			buffid = 503580
+			buffname = GetIdName(503580)
 		else
 			error("Unrecognized name for warden pet buff.")
 		end
@@ -102,13 +102,13 @@ function wardenbuff(_nameorid)
 
 	-- Check if already have the buff
 	local HavePetBuff = player:getBuff("503946,503581,503580")
-	if buffid == HavePetBuff then
+	if buffname == GetIdName(HavePetBuff) then
 		return
 	end
 
 	local function summonbuff()
 		if not player.Battling then
-			if buffid == 503946 then
+			if buffname == GetIdName(503946) then
 				RoMScript("CastSpellByName(\""..GetIdName(493333).."\");");
 				print("Summoning "..GetIdName(102297))
 				repeat
@@ -118,7 +118,7 @@ function wardenbuff(_nameorid)
 				RoMScript("CastSpellByName(\""..GetIdName(493346).."\")")
 				print("Casting Buff: "..GetIdName(503946))
 			end
-			if buffid == 503581 then
+			if buffname == GetIdName(503581) then
 				RoMScript("CastSpellByName(\""..GetIdName(493344).."\");");
 				print("Summoning "..GetIdName(102325))
 				repeat
@@ -128,7 +128,7 @@ function wardenbuff(_nameorid)
 				RoMScript("CastSpellByName(\""..GetIdName(493348).."\")")
 				print("Casting Buff: "..GetIdName(503581))
 			end
-			if buffid == 503580 then
+			if buffname == GetIdName(503580) then
 				RoMScript("CastSpellByName(\""..GetIdName(493343).."\");");
 				print("Summoning "..GetIdName(102324))
 				repeat
@@ -141,11 +141,11 @@ function wardenbuff(_nameorid)
 		end
 	end
 	if pet.Name ~= "<UNKNOWN>" then -- pet summoned
-		if pet.Name == GetIdName(102297) and buffid == 503946 then
+		if pet.Name == GetIdName(102297) and buffname == GetIdName(503946) then
 			RoMScript("CastSpellByName(\""..GetIdName(493346).."\")")
-		elseif pet.Name == GetIdName(102325) and buffid == 503581 then
+		elseif pet.Name == GetIdName(102325) and buffname == GetIdName(503581) then
 			RoMScript("CastSpellByName(\""..GetIdName(493348).."\")")
-		elseif pet.Name == GetIdName(102324) and buffid == 503580 then
+		elseif pet.Name == GetIdName(102324) and buffname == GetIdName(503580) then
 			RoMScript("CastSpellByName(\""..GetIdName(493347).."\")")
 		else
 			RoMScript("CastSpellByName(\""..GetIdName(493645).."\")") -- recall pet

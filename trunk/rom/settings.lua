@@ -1292,13 +1292,21 @@ function settings.updateSkillsAvailability()
 				if tabData[realName].Level then database.skills[skill.Name].Level = tabData[realName].Level end
 				if tabData[realName].skilltab then database.skills[skill.Name].skilltab = tabData[realName].skilltab end
 				if tabData[realName].skillnum then database.skills[skill.Name].skillnum = tabData[realName].skillnum end
-
+				
 				-- Check if available
-				if skill.aslevel > player.Level then
-					skill.Available = false
+				if skill.skilltab == 3 then 
+					if skill.aslevel > player.Level2  then
+						skill.Available = false
+					else
+						skill.Available = true
+					end
 				else
-					skill.Available = true
-				end
+					if skill.aslevel > player.Level  then
+						skill.Available = false
+					else
+						skill.Available = true
+					end
+				end				
 			else
 				skill.Available = false
 			end

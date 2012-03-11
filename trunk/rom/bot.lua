@@ -569,7 +569,7 @@ function main()
 				break;
 			end;
 
-			if ( settings.profile.options.PARTY == false  ) then
+			if ( settings.profile.options.PARTY ~= true  ) then
 
 				player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
 
@@ -595,14 +595,9 @@ function main()
 
 				yrest(10);
 				player:update();
-
 			else
-				player:target(player:findEnemy(true, nil, evalTargetDefault));
+				player:target(player:findEnemy(true, nil, nil));
 				local target = player:getTarget();
-				if( os.difftime(os.time(), aggroWaitStart) > 5 ) then
-					cprintf(cli.red, language[34]);		-- Aggro wait time out
-					break;
-				end;
 				if player:haveTarget() then
 					if( settings.profile.options.ANTI_KS ) then
 						if( target:haveTarget() and
@@ -624,9 +619,7 @@ function main()
 			end
 		end
 
-		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
-			-- only fight back if it's not a TRAVEL waypoint
-
+		if( player:haveTarget() ) then
 			-- remember players position at fight start
 			local FightStartX = player.X;
 			local FightStartZ = player.Z;
