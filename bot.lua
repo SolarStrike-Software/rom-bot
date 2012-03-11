@@ -619,7 +619,8 @@ function main()
 			end
 		end
 
-		if( player:haveTarget() ) then
+		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
+			-- only fight back if it's not a TRAVEL waypoint
 			-- remember players position at fight start
 			local FightStartX = player.X;
 			local FightStartZ = player.Z;

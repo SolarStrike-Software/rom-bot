@@ -52,7 +52,7 @@
 	<potion type="mana" id="203160" level="1" potency="500" name="Pumpkin Soup of Happiness" />
 
 	<!-- Arrow quivers -->
-	
+	<potion type="arrow_quiver" id="202092" name="Obsidian Arrow Quiver" level="70" />
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
