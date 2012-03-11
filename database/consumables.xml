@@ -52,6 +52,7 @@
 	<potion type="mana" id="203160" level="1" potency="500" name="Pumpkin Soup of Happiness" />
 
 	<!-- Arrow quivers -->
+	
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
@@ -65,6 +66,7 @@
 	<potion type="arrow_quiver" id="202075" name="Wooden Arrow Quiver" level="1" />
 
 	<!-- Arrows -->
+	<potion type="arrow" id="212985" name="Obsidian Arrow" level="70" />
 	<potion type="arrow" id="210313" name="Magic Pattern Arrow" level="63" />
 	<potion type="arrow" id="212754" name="" level="60" /><!-- Itemset skill "Create Tendrils" arrows -->
 	<potion type="arrow" id="212185" name="Runic Thorn" level="55" />

@@ -116,7 +116,7 @@
 	<skill name="PRIEST_CONDENSED_RAGE" id="493038" rage="25" type="buff" casttime="1" target="self" buffname="503280" reqbuffname="501977" reqbufftarget="player" />
 
 	<!-- Itemset skills -->
-	<skill name="PRIEST_FROST_SCARS" id="495563" rage="200" mana="180" cooldown="4" type="damage" target="enemy" />
+	<skill name="PRIEST_FROST_SCARS" id="495563" range="200" mana="180" cooldown="4" type="damage" target="enemy" />
 	<!-- Unknown -->
 	<skill name="PRIEST_BLESSING_OF_RAIN" aslevel="16" mana="120" type="buff" cooldown="600" target="self" />
 
@@ -428,5 +428,5 @@
    <skill name="ALL_ENERGY_RESTORE" id="495494" casttime="5" cooldown="45" target="self" />
    <skill name="ALL_FIRE_TRAINING" id="495174" cooldown="240" target="self" type="buff" buffname="506060" />
    <Skill name="All_SOLDIERS_ATTACK" id="495176" cooldown="240" target="self" type="buff" buffname="506062" />
-
+	<skill name="ALL_RECOVER_MAGIC" id="495481" casttime="1" cooldown="180" type="buff" buffname="506455" target="self" />
    </skills>
