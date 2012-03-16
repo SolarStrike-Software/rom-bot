@@ -1339,17 +1339,20 @@ function GetPartyMemberName(_number)
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
-
+	
+	
+	--partyMemberList_offset = 0x13C
+	--local partmembername = memoryReadStringPtr(getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset + (_number - 1) * 0x60)
+	--return partmembername
+	
 	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
-
+	
 	-- Check if that number exists
 	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
-
 		return nil
 	end
-
-	return memoryReadRepeat("string", getProc(), memberAddress + 8 )
+	return memoryReadRepeat("string", getProc(), memberAddress + 8) 
 end
 
 function GetPartyMemberAddress(_number)
@@ -1521,7 +1524,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x99, 0xCC, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0xD9, 0xC6, 0x27, 0x00));
 
 		end
 	end
