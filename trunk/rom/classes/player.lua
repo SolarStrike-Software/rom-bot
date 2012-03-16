@@ -1596,11 +1596,11 @@ function CPlayer:loot()
 				if( obj.Type == PT_SIGIL ) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z);
 
-					if( nearestSigil == nil and dist < settings.profile.options.MAX_TARGET_DIST ) then
+					if( nearestSigil == nil and dist < settings.profile.options.LOOT_DISTANCE ) then
 						nearestSigil = obj;
 					else
 
-						if( dist < settings.profile.options.MAX_TARGET_DIST and
+						if( dist < settings.profile.options.LOOT_DISTANCE and
 							dist < distance(self.X, self.Z, nearestSigil.X, nearestSigil.Z) ) then
 							-- New nearest sigil found
 							nearestSigil = obj;
