@@ -1339,20 +1339,20 @@ function GetPartyMemberName(_number)
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
-	
-	
+
+
 	--partyMemberList_offset = 0x13C
 	--local partmembername = memoryReadStringPtr(getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset + (_number - 1) * 0x60)
 	--return partmembername
-	
+
 	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
-	
+
 	-- Check if that number exists
 	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
 		return nil
 	end
-	return memoryReadRepeat("string", getProc(), memberAddress + 8) 
+	return memoryReadRepeat("string", getProc(), memberAddress + 8)
 end
 
 function GetPartyMemberAddress(_number)
@@ -1583,6 +1583,7 @@ function loadProfile(forcedProfile)
    player = CPlayer.new();
    settings.load();
    settings.loadProfile(load_profile_name)
+   player:update()
 
    -- Profile onLoad event
    if( type(settings.profile.events.onLoad) == "function" ) then

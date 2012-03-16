@@ -410,7 +410,7 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- Check required buffs/debuffs
-	if( self.ReqBuffName ~= "" ) then
+	if( self.ReqBuffName ~= "" and self.ReqBuffName ~= "nil") then
 		local bool;
 		if( self.ReqBuffTarget == "player" ) then
 			bool = player:hasBuff(self.ReqBuffName, self.ReqBuffCount)
@@ -425,7 +425,7 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- Check non-required buffs/debuffs
-	if( self.NoBuffName ~= "" ) then
+	if( self.NoBuffName ~= "" and self.NoBuffName ~= "nil") then
 		local bool;
 		if( self.NoBuffTarget == "player" ) then
 			bool = player:hasBuff(self.NoBuffName, self.NoBuffCount)
