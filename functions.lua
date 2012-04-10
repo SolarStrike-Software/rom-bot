@@ -1524,7 +1524,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0xD9, 0xC6, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x79, 0xD3, 0x27, 0x00));
 
 		end
 	end
