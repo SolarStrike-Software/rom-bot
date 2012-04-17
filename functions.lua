@@ -1761,6 +1761,25 @@ function CompleteAllQuests()
 	CompleteQuestByName()
 end
 
+function CancelQuest(nameorid)
+	local index = 1
+	local questId = RoMScript("GetQuestId(1)")
+	while questId ~= nil do
+		if questId == nameorid or string.find(GetIdName(questId), nameorid, 1, true) then
+			-- match found, delete
+			RoMScript("} g_SelectedQuest = "..index.." a = {")
+			RoMScript("ViewQuest_QuestBook( g_SelectedQuest )")
+			yrest(500)
+			RoMScript("DeleteQuest()")
+			yrest(1000)
+			return
+		else
+			index = index + 1
+			questId = RoMScript("GetQuestId("..index..")")
+		end
+	end
+end
+
 -- normalises a string so it can be used in searches such as "string.find" and "string.match" without error.
 function NormaliseString(_str)
 	_str = string.gsub(_str, string.char(45), ".")	-- Delete "-" in string

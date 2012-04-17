@@ -101,8 +101,7 @@ function wardenbuff(_nameorid)
 	petupdate()
 
 	-- Check if already have the buff
-	local HavePetBuff = player:getBuff("503946,503581,503580")
-	if buffname == GetIdName(HavePetBuff) then
+	if if player:getBuff(buffname) then
 		return
 	end
 

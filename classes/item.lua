@@ -456,7 +456,9 @@ function CItem:moveTo(bag)
 	-- If have 'toItem' then move there.
 	if toItem then
 		RoMScript("PickupBagItem("..self.BagId..");");
+		repeat yrest(500) until RoMScript("CursorHasItem()")
 		RoMScript("PickupBagItem("..toItem.BagId..");");
+		repeat yrest(500) until not RoMScript("CursorHasItem()")
 		inventory:update()
 	end
 end
