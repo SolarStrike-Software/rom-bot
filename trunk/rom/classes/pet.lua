@@ -101,7 +101,7 @@ function wardenbuff(_nameorid)
 	petupdate()
 
 	-- Check if already have the buff
-	if if player:getBuff(buffname) then
+	if player:getBuff(buffname) then
 		return
 	end
 
