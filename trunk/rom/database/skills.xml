@@ -137,7 +137,7 @@
 	<skill name="WARRIOR_THUNDER" id="491139" rage="15" range="50" cooldown="15" type="damage" target="enemy" reqbuffname="501503" reqbufftarget="target" />
 	<skill name="WARRIOR_FEINT" id="490089" range="50" cooldown="2" type="damage" target="enemy" />
 	<!-- TODO: Feint can only be used after an enemy dodges an attack -->
-	<skill name="WARRIOR_SURPRISE_ATTACK" id="490129" minrange="60" range="150" cooldown="12" type="damage" target="enemy" inbattle="false" />
+	<skill name="WARRIOR_SURPRISE_ATTACK" id="490129" minrange="60" range="150" cooldown="12" type="damage" target="enemy"/>
 	<skill name="WARRIOR_TAUNT" id="490130" range="50" cooldown="25" type="damage" target="enemy" />
 	<skill name="WARRIOR_MOON_CLEAVE" id="490121" rage="50" range="50" cooldown="30" type="damage" target="enemy" />
 	<skill name="WARRIOR_SHOUT" id="490136" rage="30" range="50" cooldown="120" type="damage" target="enemy" />
@@ -238,6 +238,7 @@
 
 	<!-- Itemset skills -->
 	<skill name="ROGUE_YAWAKAS_BLESSING" id="495730" energy="30" target="self" type="buff" buffname="507485" />
+	<skill name="ROGUE_UNKNOWN_CHOICE" id="495715" energy="20" target="self" type="buff" buffname="506868,506877,506880" cooldown="180" />
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="ROGUE_CHEAP_SHOT" energy="50" range="50" type="damage" target="enemy" inbattle="false" />

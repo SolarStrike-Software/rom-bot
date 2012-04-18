@@ -12,6 +12,8 @@ CWaypointList = class(
 		self.Radius = 500;
 		self.FileName = nil;
 		self.Mode = "waypoints";
+		self.KillZone = {};
+		self.ExcludeZones = {}
 
 		self.Type = 0; -- UNSET
 		self.ForcedType = 0; 	-- Wp type to overwrite current type, can be used by users in WP coding
@@ -278,4 +280,101 @@ function CWaypointList:findWaypointTag(tag)
 	end
 
 	return 0;
+end
+
+function CWaypointList:setKillZone(_zone)
+	-- Reset Kill Zone
+	if _zone == nil or _zone == "" or (type(_zone) == "table" and #_zone == 0) then
+		self:clearKillZone()
+		return
+	end
+
+	-- Check argument
+	if type(_zone) == "table" then
+		-- check table values
+		for k,v in pairs(_zone) do
+			if (not v.X) or (not v.Z) then
+				error("SetKillZone: Invalid table.",0)
+			end
+		end
+	elseif type(_zone) == "string" then
+		if not string.find(_zone,".xml", 1, true) then
+			_zone = _zone .. ".xml"
+		end
+		local filename = getExecutionPath() .. "/waypoints/" .. _zone
+		local file, err = io.open(filename, "r");
+		if file then
+			file:close();
+			local tmpWPL = CWaypointList();
+			tmpWPL:load(filename);
+			_zone = table.copy(tmpWPL.Waypoints)
+		else
+			error("SetKillZone: invalid file name.",0)
+		end
+	else
+		error("SetKillZone: Invalid argument.",0)
+	end
+
+	-- Set kill zone
+	self:clearKillZone()
+	for i = 1, #_zone do
+		self.KillZone[i] = {X=_zone[i].X, Z=_zone[i].Z}
+	end
+end
+
+function CWaypointList:clearKillZone()
+	self.KillZone = {}
+end
+
+function CWaypointList:addExcludeZone(_zone,_zonename)
+	-- Check argument
+	if type(_zone) == "table" then
+		-- check table values
+		for k,v in pairs(_zone) do
+			if (not v.X) or (not v.Z) then
+				error("AddExcludeZone: Invalid table.",0)
+			end
+		end
+	elseif type(_zone) == "string" then
+		if not string.find(_zone,".xml", 1, true) then
+			_zone = _zone .. ".xml"
+		end
+		local filename = getExecutionPath() .. "/waypoints/" .. _zone
+		local file, err = io.open(filename, "r");
+		if file then
+			file:close();
+			local tmpWPL = CWaypointList();
+			tmpWPL:load(filename);
+			_zone = table.copy(tmpWPL.Waypoints)
+		else
+			error("AddExcludeZone: invalid file name.",0)
+		end
+	else
+		error("AddExcludeZone: Invalid argument.",0)
+	end
+
+	local tmp = {}
+	for i = 1, #_zone do
+		tmp[i] = {X=_zone[i].X, Z=_zone[i].Z}
+	end
+
+	-- Add Exclude Zone
+	if _zonename then
+		self.ExcludeZones[_zonename] = table.copy(tmp)
+	else
+		table.insert(self.ExcludeZones,tmp)
+	end
+end
+
+function CWaypointList:deleteExcludeZone(_zonename)
+	for name,zone in pairs(self.ExcludeZones) do
+		if name == _zonename then
+			self.ExcludeZones[name] = nil
+			return
+		end
+	end
+end
+
+function CWaypointList:clearExcludeZones()
+	self.ExcludeZones = {}
 end
