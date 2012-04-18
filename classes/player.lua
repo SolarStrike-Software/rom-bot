@@ -1379,6 +1379,8 @@ function CPlayer:fight()
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
+		elseif self.Cast_to_target == 0 then
+			self.ranged_pull = false
 		end
 
 		yrest(100);
@@ -1877,6 +1879,44 @@ function evalTargetDefault(address, target)
 			return false;
 		end;
 	end;
+
+	-- check if in assigned kill zone
+	if (not player.Returning) and #__WPL.KillZone > 0 and not PointInPoly(__WPL.KillZone, target.X, target.Z) then
+		if ( player.Battling == false ) then	-- if we don't have aggro then
+			debug_target("target outside KillZone")
+			return false;			-- he is not a valid target
+		end;
+
+		if( player.Battling == true  and		-- we have aggro
+		target.TargetPtr ~= player.Address ) then	-- but not from that mob
+			debug_target("target outside KillZone with battling from other mob")
+			return false;
+		end;
+	end
+
+	-- check if in one of the exclude zones
+	if (not player.Returning) and next(__WPL.ExcludeZones) then
+		local inazone = false
+		for zonename,zone in pairs(__WPL.ExcludeZones) do
+			if PointInPoly(zone, target.X, target.Z) then
+				inazone = true
+				break
+			end
+		end
+
+		if inazone then
+			if ( player.Battling == false ) then	-- if we don't have aggro then
+				debug_target("target inside an exclude zone")
+				return false;			-- he is not a valid target
+			end;
+
+			if( player.Battling == true  and		-- we have aggro
+			target.TargetPtr ~= player.Address ) then	-- but not from that mob
+				debug_target("target inside an exclude zone with battling from other mob")
+				return false;
+			end;
+		end
+	end
 
 	-- check target distance to path against MAX_TARGET_DIST
 	local wpl; -- this is the waypoint list we're using

@@ -1831,3 +1831,33 @@ function ChoiceOptionByName(optiontext)
 	printf("Option \"%s\" not found.\n",optiontext)
     return false
 end
+
+function PointInPoly(vertices, testx, testz )
+-- Tells you if a point (testx,testz) is within a polygon represented by a table of points in 'vertices'
+	if type(vertices) == "string" then
+		if not string.find(vertices,".xml", 1, true) then
+			vertices = vertices .. ".xml"
+		end
+		local filename = getExecutionPath() .. "/waypoints/" .. vertices
+		local file, err = io.open(filename, "r");
+		if file then
+			file:close();
+			local tmpWPL = CWaypointList();
+			tmpWPL:load(filename);
+			vertices = table.copy(tmpWPL.Waypoints)
+		else
+			error("PointInPoly: invalid file name.",0)
+		end
+	end
+
+	local nvert = table.getn(vertices)
+	local j = nvert
+	local c = false
+	for i = 1, nvert do
+		if ( ((vertices[i].Z > testz) ~= (vertices[j].Z > testz)) and (testx < (vertices[j].X - vertices[i].X) * (testz - vertices[i].Z) / (vertices[j].Z - vertices[i].Z) + vertices[i].X) ) then
+			c = not c
+		end
+		j = i
+	end
+	return c
+end
