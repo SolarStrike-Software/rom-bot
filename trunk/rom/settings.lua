@@ -750,7 +750,7 @@ function settings.loadProfile(_name)
 
 			-- Over-ride attributes
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
-			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget
+			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget, mobcount
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")));
 			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")));
@@ -768,6 +768,8 @@ function settings.loadProfile(_name)
 			nobufftarget = v:getAttribute("nobufftarget");
 			nobuffname = v:getAttribute("nobuffname");
 			autouse = v:getAttribute("autouse");
+			mobcount = v:getAttribute("mobcount");
+
 		-- Ensure that autouse is a proper type.
 			if( not (autouse == true or autouse == false) ) then
 				autouse = true;
@@ -875,6 +877,7 @@ function settings.loadProfile(_name)
 			if( nobufftarget ) then tmp.NoBuffTarget = nobufftarget; end;
 			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
 			if( autouse == false ) then tmp.AutoUse = false; end;
+			if( mobcount ) then tmp.MobCount = mobcount; end;
 
 			table.insert(settings.profile.skillsData[classNum], tmp);
 
@@ -1292,9 +1295,9 @@ function settings.updateSkillsAvailability()
 				if tabData[realName].Level then database.skills[skill.Name].Level = tabData[realName].Level end
 				if tabData[realName].skilltab then database.skills[skill.Name].skilltab = tabData[realName].skilltab end
 				if tabData[realName].skillnum then database.skills[skill.Name].skillnum = tabData[realName].skillnum end
-				
+
 				-- Check if available
-				if skill.skilltab == 3 then 
+				if skill.skilltab == 3 then
 					if skill.aslevel > player.Level2  then
 						skill.Available = false
 					else
@@ -1306,7 +1309,7 @@ function settings.updateSkillsAvailability()
 					else
 						skill.Available = true
 					end
-				end				
+				end
 			else
 				skill.Available = false
 			end

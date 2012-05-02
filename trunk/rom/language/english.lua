@@ -65,6 +65,7 @@ language = {
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
 
+	[77] = "Invalid option used in 'player:getCraftLevel'",
 	[78] = "Harvesting cancelled due to aggressive enemies.\n",
 	[79] = "No nearby harvestables found.\n",
 	[80] = "Move in\n",
@@ -99,7 +100,7 @@ language = {
 	[111] = "You have not defined a return path! We will use the normal waypoint file \'%s\' instead.\n",
 	[112] = "Using normal waypoint file \'%s\' after resurrection.\n",
 	[113] = "Waypoint type TRAVEL, we won't stop and won't fight back\n",
-	-- [114] = "",  -- emtpy
+	[114] = "No waypoints to go to in waypoint file.",
 	[115] = "Error: The key for \'%s\' is empty!\n",
 	[116] = "Error: The hotkey \'%s\' for \'%s\' is not a valid key!\n",
 	[117] = "Error: The modifier \'%s\' for \'%s\' is not a valid key (VK_SHIFT, VK_ALT, VK_CONTROL)!\n",

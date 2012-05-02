@@ -1,6 +1,5 @@
 include("addresses.lua");
 include("functions.lua");
-
 -- Note: We get 'char' and 'macro' data from functions.lua
 -- because it is used in other scripts.
 
@@ -217,10 +216,10 @@ local updatePatterns =
 
 	pawnLootable_offset = {
 		pattern = string.char(0x8B, 0xC8,
-0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
-0xD9, 0x5C, 0x24, 0xFF,
-0xF6, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0x04,
-0x0F, 0x84),
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xD9, 0x5C, 0x24, 0xFF,
+			0xF6, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0x04,
+			0x0F, 0x84),
 		mask = "xxx????xxx?xx????xxx",
 		offset = 13,
 		startloc = 0x5E0000,
@@ -509,6 +508,106 @@ local updatePatterns =
 		offset = 0,
 		startloc = 0x5F0000,
 	},
+
+	functionMousePatchAddr = {
+		pattern = string.char(
+			0xC7, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xEB, 0x0D,
+			0x8B, 0x46, 0x78),
+		mask = "xx????????xxxxx",
+		offset = 0,
+		startloc = 0x620000,
+	},
+
+	swimAddress = {
+		pattern = string.char(
+			0x89, 0x83, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xEB, 0x4B,
+			0x8B, 0x7B, 0xFF,
+			0x83, 0xBF),
+		mask = "xx????xxxx?XX",
+		offset = 0,
+		startloc = 0x440000,
+	},
+
+	castingBarPtr = {
+		pattern = string.char(
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x01,
+			0x8B, 0x50),
+		mask = "x????xx????xxxx",
+		offset = 7,
+		startloc = 0x630000,
+	},
+
+	charClassInfoBase = {
+		pattern = string.char(
+			0xC2, 0xFF, 0xFF,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x81, 0xB9, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x7D, 0x5E),
+		mask = "x??xx????xx????????xx",
+		offset = 5,
+		startloc = 0x5E0000,
+	},
+
+	charMaxExpTable_address = {
+		pattern = string.char(
+			0x69, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x85, 0xDB,
+			0x8B, 0x3D),
+		mask = "xx????xx????xxxx",
+		offset = 8,
+		startloc = 0x620000,
+	},
+
+	editBoxHasFocus_address = {
+		pattern = string.char(
+			0x74, 0x4F,
+			0xA1, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x85, 0xC0,
+			0x74, 0x46),
+		mask = "xxx????xxxx",
+		offset = 3,
+		startloc = 0x720000,
+	},
+
+	partyIconList_base = {
+		pattern = string.char(
+			0x8B, 0x11,
+			0x8B, 0x42, 0xFF,
+			0xFF, 0xD0,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x85, 0xC9,
+			0x74, 0x09),
+		mask = "xxxx?xxxx????xxxx",
+		offset = 9,
+		startloc = 0x650000,
+	},
+
+	skillsTableBase = {
+		pattern = string.char(
+			0x5D,
+			0x05, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x5F,
+			0x8B, 0x8C, 0x24),
+		mask = "xx????xxxx",
+		offset = 2,
+		startloc = 0x800000,
+	},
+
+	zoneId = {
+		pattern = string.char(
+			0x85, 0xFF,
+			0x89, 0x35, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x74, 0x17,
+			0x8B, 0x0D),
+		mask = "xxxx????xxxx",
+		offset = 4,
+		startloc = 0x630000,
+	},
 }
 
 
@@ -555,6 +654,12 @@ function findOffsets()
 			addresses.staticpattern_macro = found;
 		elseif( name == "functionTargetPatchAddr" ) then
 			addresses.functionTargetPatchAddr = found;
+		elseif( name == "functionMousePatchAddr" ) then
+			addresses.functionMousePatchAddr = found;
+		elseif( name == "swimAddress" ) then
+			addresses.swimAddress = found;
+		elseif( name == "charClassInfoBase" ) then
+			addresses.charClassInfoBase = memoryReadUInt(getProc(),addresses.charClassInfoBase)
 		end
 	end
 
@@ -564,7 +669,7 @@ function findOffsets()
 	printf("\n\n");
 	local function assumptionUpdate(name, newValue)
 		local assumptionUpdateMsg = "Assuming information for \'addresses.%s\'; now 0x%X, was 0x%X\n";
-		printf(assumptionUpdateMsg, name, newValue, addresses[name]);
+		printf(assumptionUpdateMsg, name, newValue, (addresses[name] or 0));
 		addresses[name] = newValue;
 	end
 
@@ -576,7 +681,43 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("moneyPtr", addresses.staticInventory + 0x2FD4);
+	assumptionUpdate("eggPetBaseAddress", addresses.charClassInfoBase + 0xDC28);
+	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xA644);
+	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0xF7E0);
+	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x6934);
+	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16750);
+	assumptionUpdate("playerCraftLevelBase", addresses.staticbase_char + 0x1554);
+	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xB1EC);
+	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x3960);
+	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179DC);
+
+	printf("\n");
+	local function readBytesUpdate(name, address, number)
+		local readBytesUpdateMsg = "Read bytes for %s at: 0x%X Bytes:%s\n"
+		local bytesString = ""
+		local tmp = {}
+		for i = 0, number-1 do
+			local tmpbyte = memoryReadUByte(getProc(),address + i)
+			table.insert(tmp, tmpbyte)
+			bytesString = bytesString ..string.format(" %02X", tmpbyte)
+		end
+
+		if tmp[1] == 0x90 then
+			error("Patch bytes = 0x90. Please restart the game before trying to run \"rom\update\" again.")
+		end
+
+		printf(readBytesUpdateMsg, name, address, bytesString)
+		addresses[name] = tmp
+	end
+
+	readBytesUpdate("functionTargetBytes", addresses.functionTargetPatchAddr, 8)
+	readBytesUpdate("functionMouseX1Bytes", addresses.functionMousePatchAddr, 10)
+	readBytesUpdate("functionMouseX2Bytes", addresses.functionMousePatchAddr + addresses.mousePatchX2_offset, 6)
+	readBytesUpdate("functionMouseX3Bytes", addresses.functionMousePatchAddr + addresses.mousePatchX3_offset, 6)
+	readBytesUpdate("functionMouseY1Bytes", addresses.functionMousePatchAddr + addresses.mousePatchY1_offset, 10)
+	readBytesUpdate("functionMouseY2Bytes", addresses.functionMousePatchAddr + addresses.mousePatchY2_offset, 6)
+	readBytesUpdate("functionMouseY3Bytes", addresses.functionMousePatchAddr + addresses.mousePatchY3_offset, 6)
+	readBytesUpdate("swimAddressBytes", addresses.swimAddress, 6)
 end
 
 function rewriteAddresses()
@@ -617,7 +758,24 @@ function rewriteAddresses()
 				comment = "\t--[[ " .. tmp .. " ]]";
 			end
 		end
-		file:write( sprintf("\t%s = 0x%X,%s\n", v.index, v.value, comment) );
+
+		-- Index part
+		file:write( sprintf("\t%s = ", v.index))
+
+		-- Value part
+		if type(v.value) == "table" then -- if it's a table of bytes
+			file:write( sprintf("{"))
+			for i = 1, #v.value do
+				if i ~= 1 then file:write( sprintf(", ")) end
+				file:write( sprintf("0x%02X", v.value[i]))
+			end
+			file:write( sprintf("},"))
+		else                             -- if it's an address or offset
+			file:write( sprintf("0x%X,", v.value))
+		end
+
+		-- Comment part
+		file:write( sprintf("%s\n", comment) );
 	end
 
 	file:write("}\n");
