@@ -352,8 +352,8 @@ function CPawn:update()
 	if( Vec3 == nil ) then Vec3 = 0.0; end;
 
 	self.Direction = math.atan2(Vec2, Vec1);
-	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );	
-	
+	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
+
 	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 
 	if( self.Type == PT_MONSTER ) then
@@ -658,4 +658,30 @@ function CPawn:updateTargetPtr()
 	end
 
 	return 0
+end
+
+function CPawn:countMobs(inrange, onlyaggro, idorname)
+	local count = 0
+
+	local objectList = CObjectList();
+	objectList:update();
+	for i = 0,objectList:size() do
+		local obj = objectList:getObject(i);
+		if obj ~= nil and obj.Type == PT_MONSTER and
+		  (inrange == nil or inrange >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) ) and
+		  (idorname == nil or idorname == obj.Name or idorname == obj.Id) then
+			local pawn = CPawn(obj.Address);
+			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
+				if onlyaggro == true then
+					if pawn.TargetPtr == player.Address then
+						count = count + 1
+					end
+				else
+					count = count + 1
+				end
+			end
+		end
+	end
+
+	return count
 end

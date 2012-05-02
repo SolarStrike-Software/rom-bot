@@ -12,6 +12,10 @@ STARGET_SELF = 1
 STARGET_FRIENDLY = 2
 STARGET_PET = 3
 
+-- AOE target
+SAOE_PLAYER = 0
+SAOE_TARGET = 1
+
 CSkill = class(
 	function (self, copyfrom)
 		self.Name = "";
@@ -33,6 +37,10 @@ CSkill = class(
 		self.Target = STARGET_ENEMY;
 		self.InBattle = nil; -- "true" = usable only in battle, false = out of battle
 		self.ManaInc = 0; -- Increase in mana per level
+		self.MobCount = 1; -- Number of mobs to be in range to use the skill. AOE must be set.
+		self.AOECenter = nil; -- if aoe then where is it's center 'target' or 'player'
+		self.AOERange = nil; -- Only needed if AOECenter = 'target'. Otherwise uses 'Range'
+		self.ClickToCast = false; -- Need to click the floor to cast
 
 		-- Information about required buffs/debuffs
 		self.BuffName = "" -- name of buff if skill type is 'buff'
@@ -109,6 +117,10 @@ CSkill = class(
 			self.Blocking = copyfrom.Blocking;
 			self.skillnum = copyfrom.skillnum
 			self.skilltab = copyfrom.skilltab
+			self.MobCount = copyfrom.MobCount
+			self.AOECenter = copyfrom.AOECenter
+			self.AOERange = copyfrom.AOERange
+			self.ClickToCast = copyfrom.ClickToCast
 		end
 	end
 );
@@ -460,6 +472,22 @@ function CSkill:canUse(_only_friendly, target)
 		checkfairy()
 		return false;
 	end
+
+	-- Enough mobs near AOE center?
+	if self.AOECenter and self.MobCount and self.MobCount > 1 then
+		if self.AOECenter == SAOE_PLAYER and self.Range and self.Range > 0 then
+			if player:countMobs(self.Range, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
+				debug_skilluse("MOBCOUNTLOWNEARPLAYER");
+				return false
+			end
+		elseif self.AOECenter == SAOE_TARGET and self.AOERange and self.AOERange > 0 then
+			if target:countMobs(self.AOERange, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
+				debug_skilluse("MOBCOUNTLOWNEARTARGET");
+				return false
+			end
+		end
+	end
+
 	return true;
 end
 
@@ -601,6 +629,64 @@ function CSkill:use()
 	else
 		-- use the normal hotkeys
 		keyboardPress(self.hotkey, self.modifier);
+	end
+
+	-- Freeze mouse function
+	local function nopmouse()
+		-- x axis
+		local addressX1 = addresses.functionMousePatchAddr
+		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
+		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
+		memoryWriteString(getProc(), addressX1, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- left of window
+		memoryWriteString(getProc(), addressX2, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- right of window
+		memoryWriteString(getProc(), addressX3, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- over window
+
+		-- y axis
+		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
+		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
+		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
+		memoryWriteString(getProc(), addressY1, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- above window
+		memoryWriteString(getProc(), addressY2, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- below window
+		memoryWriteString(getProc(), addressY3, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- over window
+	end
+
+	-- Unfreeze mouse function
+	local function unnopmouse()
+		-- x axis
+		local addressX1 = addresses.functionMousePatchAddr
+		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
+		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
+		memoryWriteString(getProc(), addressX1, string.char(unpack(addresses.functionMouseX1Bytes)));
+		memoryWriteString(getProc(), addressX2, string.char(unpack(addresses.functionMouseX2Bytes)));
+		memoryWriteString(getProc(), addressX3, string.char(unpack(addresses.functionMouseX3Bytes)));
+
+		-- y axis
+		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
+		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
+		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
+		memoryWriteString(getProc(), addressY1, string.char(unpack(addresses.functionMouseY1Bytes)));
+		memoryWriteString(getProc(), addressY2, string.char(unpack(addresses.functionMouseY2Bytes)));
+		memoryWriteString(getProc(), addressY3, string.char(unpack(addresses.functionMouseY3Bytes)));
+	end
+
+	if self.ClickToCast == true then
+		player:aimAt(target)
+
+		local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
+		local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
+		local clickX = math.ceil(ww/2)
+		local clickY = math.ceil(wh/2)
+
+		nopmouse()
+		yrest(50)
+		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
+		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
+		yrest(50)
+		RoMScript("SpellTargetUnit()")
+
+		yrest(50)
+		-- unfreeze TargetPtr
+		unnopmouse()
 	end
 
 	if( self.Toggleable ) then

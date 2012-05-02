@@ -11,6 +11,19 @@ ONLY_FRIENDLY = true;	-- only cast friendly spells HEAL / HOT / BUFF
 JUMP_FALSE = false		-- dont jump to break cast
 JUMP_TRUE = true		-- jump to break cast
 
+-- The craft numbers corespond with their order in memory
+CRAFT_BLACKSMITHING = 0
+CRAFT_CARPENTRY = 1
+CRAFT_ARMORCRAFTING = 2
+CRAFT_TAILORING = 3
+CRAFT_COOKING = 4
+CRAFT_ALCHEMY = 5
+CRAFT_MINING = 6
+CRAFT_WOODCUTTING = 7
+CRAFT_HERBALISM = 8
+
+local BreakFromFight = false
+
 CPlayer = class(CPawn);
 
 function CPlayer.new()
@@ -19,6 +32,136 @@ function CPlayer.new()
 	np:initialize();
 	np:update();
 	return np;
+end
+
+function CPlayer:update()
+	local addressChanged = false
+
+	-- Ensure that our address hasn't changed. If it has, fix it.
+	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
+		self.Address = tmpAddress;
+		cprintf(cli.green, language[40], self.Address);
+		addressChanged = true
+	end;
+
+	CPawn.update(self); -- run base function
+
+	if addressChanged or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
+		settings.loadSkillSet(self.Class1)
+		addressChanged = false
+	end
+
+	-- If have 2nd class, look for 3rd class
+	-- Class1 and Class2 are done in the pawn class. Class3 only works for player.
+	local classInfoSize = 0x294
+	if self.Class2 ~= -1 then
+		for i = 1, 8 do
+			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (classInfoSize * i) + addresses.charClassInfoLevel_offset)
+			if level > 0 and i ~= self.Class1 and i ~= self.Class2 then
+				-- must be class 3
+				self.Class3 = i
+				break
+			end
+		end
+	end
+
+
+	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
+	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
+	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
+	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
+
+	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
+
+	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
+
+	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
+	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
+
+	self.ActualSpeed = memoryReadRepeat("float", getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
+	self.Moving = (self.ActualSpeed > 0)
+
+	local tmp = self:getBuff(503827)
+	if tmp then -- has natures power
+		self.Nature = tmp.Level + 1
+	else
+		self.Nature = 0
+	end
+
+	-- remember aggro start time, used for timed ranged pull
+	if( self.Battling == true ) then
+		if(self.aggro_start_time == 0) then
+			self.aggro_start_time = os.time();
+		end
+	else
+		self.aggro_start_time = 0;
+	end
+
+	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
+		error("Error reading memory in CPlayer:update()");
+	end
+
+	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
+	if( self.Pet == nil ) then
+		self.Pet = CPawn(self.PetPtr);
+	else
+		self.Pet.Address = self.PetPtr;
+		if( self.Pet.Address ~= 0 ) then
+			self.Pet:update();
+		end
+	end
+
+	-- Update our exp gain
+	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
+		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
+		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
+
+		local newExp = self.XP or 0;
+		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
+
+		self.LastExpUpdateTime = os.time();					-- Reset timer
+
+		if( type(newExp) ~= "number" ) then newExp = 0; end;
+		if( type(maxExp) ~= "number" ) then maxExp = 1; end;
+
+		-- If we have not begun tracking exp, start by gathering
+		-- our current value, but do not count it as a gain
+		if( self.ExpInsertPos == 0 ) then
+			self.ExpInsertPos = 1;
+			self.LastExp = newExp;
+		else
+			local gain = 0;
+			local expGainSum = 0;
+			local valueCount = 0;
+
+			if( newExp > self.LastExp ) then
+				gain = newExp - self.LastExp;
+			elseif( newExp < self.LastExp ) then
+				-- We probably just leveled up. Just get our current, new value and use that.
+				gain = newExp;
+			end
+
+			self.LastExp = newExp;
+			self.ExpTable[self.ExpInsertPos] = gain;
+			self.ExpInsertPos = self.ExpInsertPos + 1;
+			if( self.ExpInsertPos > self.ExpTableMaxSize ) then
+				self.ExpInsertPos = 1;
+			end;
+
+			for i,v in pairs(self.ExpTable) do
+				valueCount = valueCount + 1;
+				expGainSum = expGainSum + v;
+			end
+
+			self.ExpPerMin = expGainSum / ( valueCount * self.ExpUpdateInterval / 60 );
+			self.TimeTillLevel = (maxExp - newExp) / self.ExpPerMin;
+			if( self.TimeTillLevel > 9999 ) then
+				self.TimeTillLevel = 9999;
+			end
+		end
+	end
 end
 
 -- Inserts a skill at the end of the queue.
@@ -92,6 +235,19 @@ function CPlayer:harvest(_id, _second_try)
 						elseif( harvestType == NTYPE_HERB and settings.profile.options.HARVEST_HERB == false ) then
 							harvestThis = false;
 						elseif( harvestType == NTYPE_ORE and settings.profile.options.HARVEST_ORE == false ) then
+							harvestThis = false;
+						end
+
+						local harvestLevel = database.nodes[obj.Id].Level
+						local craftLevel
+						if harvestType == NTYPE_ORE then
+							craftLevel = self:getCraftLevel(CRAFT_MINING)
+						elseif harvestType == NTYPE_WOOD then
+							craftLevel = self:getCraftLevel(CRAFT_WOODCUTTING)
+						elseif harvestType == NTYPE_HERB then
+							craftLevel = self:getCraftLevel(CRAFT_HERBALISM)
+						end
+						if harvestLevel > craftLevel then
 							harvestThis = false;
 						end
 					end
@@ -782,8 +938,10 @@ function CPlayer:checkSkills(_only_friendly, target)
 
 	if( not useQueue ) then
 		local last_dist_to_wp
+		local attack_skill_used = false -- Used for priority casting
 		for i,v in pairs(settings.profile.skills) do
-			if( v.AutoUse and v:canUse(_only_friendly, target) ) then
+			if( v.AutoUse and v:canUse(_only_friendly, target) ) and
+			  (settings.profile.options.PRIORITY_CASTING ~= true or attack_skill_used == false) then
 				-- break if just checking buff, moving and reached WP. So it can turn
 				if _only_friendly and #__WPL.Waypoints > 0 and self.Moving then
 					local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
@@ -825,6 +983,10 @@ function CPlayer:checkSkills(_only_friendly, target)
 				if( v.CastTime > 0 ) then
 					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 					yrest(200); -- Wait to stop only if not an instant cast spell
+				end
+
+				if settings.profile.options.PRIORITY_CASTING == true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
+					attack_skill_used = true
 				end
 
 				self:cast(v);
@@ -1188,6 +1350,7 @@ function CPlayer:fight()
 	end
 
 	local break_fight = false;	-- flag to avoid kill counts for breaked fights
+	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
 	while( self:haveTarget() ) do
 		self:update();
 		-- If we die, break
@@ -1200,6 +1363,11 @@ function CPlayer:fight()
 --			return;
 			break;
 		end;
+
+		if BreakFromFight == true then
+			break_fight = true;
+			break;
+		end
 
 		local target = self:getTarget();
 
@@ -1464,126 +1632,132 @@ function CPlayer:fight()
 	yrest(200);
 end
 
+function CPlayer:breakFight()
+	BreakFromFight = true
+end
+
 function CPlayer:loot()
 
-	if( settings.profile.options.LOOT ~= true ) then
+	if( settings.profile.options.LOOT ~= true and settings.profile.options.LOOT_SIGILS ~= true) then
 		if( settings.profile.options.DEBUG_LOOT) then
-			cprintf(cli.yellow, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true\n");
+			cprintf(cli.yellow, "[DEBUG] don't loot reason: settings.profile.options.LOOT ~= true and settings.profile.options.LOOT_SIGILS ~= true\n");
 		end;
 		return
 	end
 
-	if( self.TargetPtr == 0 ) then
-		if( settings.profile.options.DEBUG_LOOT) then
-			cprintf(cli.yellow, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
-		end;
-		return
-	end
-
-	-- aggro and not loot in combat
-	if( self.Battling  and
-		settings.profile.options.LOOT_IN_COMBAT ~= true ) and
-		self:findEnemy(true, nil, evalTargetDefault) then
-		cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
-		return
-	end
-
-	self:update();
-	local target = self:getTarget();
-
-	if( target == nil or target.Address == 0 ) then
-		if( settings.profile.options.DEBUG_LOOT) then
-			cprintf(cli.yellow, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
-		end;
-		return;
-	end
-
-	local dist = distance(self.X, self.Z, target.X, target.Z);
-	local hf_x = self.X
-	local hf_z = self.Z;
-	local lootdist = 100;
-
-	-- Set to combat distance; update later if loot distance is set
-	if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
-		lootdist = settings.profile.options.COMBAT_DISTANCE;
-	end
-
-	if( settings.profile.options.LOOT_DISTANCE ) then
-		lootdist = settings.profile.options.LOOT_DISTANCE;
-	end
-
-	if( dist > lootdist ) then 	-- only loot when close by
-		cprintf(cli.green, language[32]);	-- Target too far away; not looting.
-		return false
-	end
-
-
-	local function looten()
-		-- "attack" is also the hotkey to loot, strangely.
-		--[[local hf_attack_key;
-		if( settings.profile.hotkeys.MACRO ) then
-			hf_attack_key = "MACRO";
-			cprintf(cli.green, language[31],
-			   hf_attack_key , dist);	-- looting target.
-			RoMScript("UseSkill(1,1);");
-		else
-			hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
-			cprintf(cli.green, language[31],
-			   hf_attack_key , dist);	-- looting target.
-			keyboardPress(settings.profile.hotkeys.ATTACK.key);
-		end]]
-		Attack()
-
-	--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-	--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
-		local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
-		local startWait = getTime()
-		while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
-			yrest(100)
-			target:update()
+	if settings.profile.options.LOOT == true then repeat -- 'repeat' block to 'break' from 'if' statement
+		if( self.TargetPtr == 0 ) then
+			if( settings.profile.options.DEBUG_LOOT) then
+				cprintf(cli.yellow, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
+			end;
+			break
 		end
 
-		-- Wait for character to finish standing
-		local starttime = os.clock()
-		self:update()
-		while self.Stance ~= 0 and 2 > (os.clock() - starttime) do
-			yrest(50)
+		-- aggro and not loot in combat
+		if( self.Battling  and
+			settings.profile.options.LOOT_IN_COMBAT ~= true ) and
+			self:findEnemy(true, nil, evalTargetDefault) then
+			cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
+			return
+		end
+
+		self:update();
+		local target = self:getTarget();
+
+		if( target == nil or target.Address == 0 ) then
+			if( settings.profile.options.DEBUG_LOOT) then
+				cprintf(cli.yellow, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
+			end;
+			break;
+		end
+
+		local dist = distance(self.X, self.Z, target.X, target.Z);
+		local hf_x = self.X
+		local hf_z = self.Z;
+		local lootdist = 100;
+
+		-- Set to combat distance; update later if loot distance is set
+		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
+			lootdist = settings.profile.options.COMBAT_DISTANCE;
+		end
+
+		if( settings.profile.options.LOOT_DISTANCE ) then
+			lootdist = settings.profile.options.LOOT_DISTANCE;
+		end
+
+		if( dist > lootdist ) then 	-- only loot when close by
+			cprintf(cli.green, language[32]);	-- Target too far away; not looting.
+			break
+		end
+
+
+		local function looten()
+			-- "attack" is also the hotkey to loot, strangely.
+			--[[local hf_attack_key;
+			if( settings.profile.hotkeys.MACRO ) then
+				hf_attack_key = "MACRO";
+				cprintf(cli.green, language[31],
+				   hf_attack_key , dist);	-- looting target.
+				RoMScript("UseSkill(1,1);");
+			else
+				hf_attack_key = getKeyName(settings.profile.hotkeys.ATTACK.key);
+				cprintf(cli.green, language[31],
+				   hf_attack_key , dist);	-- looting target.
+				keyboardPress(settings.profile.hotkeys.ATTACK.key);
+			end]]
+			Attack()
+
+		--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
+		--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
+			local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
+			local startWait = getTime()
+			while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
+				yrest(100)
+				target:update()
+			end
+
+			-- Wait for character to finish standing
+			local starttime = os.clock()
 			self:update()
-		end
-	end
-
-	--yrest(1000);
-	self:update();
-	target:update();
-	if target.Lootable then
-		looten();
-	end;
-
-	-- check for loot problems to give a noob mesassage
-	self:update();
-	local target = self:getTarget();
-	dist = distance(self.X, self.Z, target.X, target.Z);
-	if( dist > 50 and -- We would need to be further away to be able to move to the target
-		--self.X == hf_x  and	-- we didn't move, seems attack key is not defined
-	    --self.Z == hf_z  and
-	    ( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
-		cprintf(cli.green, language[100]); -- We didn't move to the loot!?
-
-		-- second loot try?
-		if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 and target.Lootable ) then
-			yrest(settings.profile.options.LOOT_AGAIN);
-			looten();	-- try it again
+			while self.Stance ~= 0 and 2 > (os.clock() - starttime) do
+				yrest(50)
+				self:update()
+			end
 		end
 
-	end;
+		--yrest(1000);
+		self:update();
+		target:update();
+		if target.Lootable then
+			looten();
+		end;
 
-	-- rnd pause from 2-6 sec after loot to look more human
-	if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
-		self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,2,6);
-	end;
+		-- check for loot problems to give a noob mesassage
+		self:update();
+		local target = self:getTarget();
+		dist = distance(self.X, self.Z, target.X, target.Z);
+		if( dist > 50 and -- We would need to be further away to be able to move to the target
+			--self.X == hf_x  and	-- we didn't move, seems attack key is not defined
+			--self.Z == hf_z  and
+			( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
+			cprintf(cli.green, language[100]); -- We didn't move to the loot!?
 
-	-- Close the booty bag.
-	RoMScript("BootyFrame:Hide()");
+			-- second loot try?
+			if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 and target.Lootable ) then
+				yrest(settings.profile.options.LOOT_AGAIN);
+				looten();	-- try it again
+			end
+
+		end;
+
+		-- rnd pause from 2-6 sec after loot to look more human
+		if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
+			self:restrnd( settings.profile.options.LOOT_PAUSE_AFTER,2,6);
+		end;
+
+		-- Close the booty bag.
+		RoMScript("BootyFrame:Hide()");
+	until false end -- 'end' ends the 'if' statement
 
 	local function getNearestSigil()
 		local nearestSigil = nil;
@@ -1615,26 +1789,27 @@ function CPlayer:loot()
 		return nearestSigil;
 	end
 
-	-- Pick up all nearby sigils
-	self:clearTarget();
-	self:update();
-	local sigil = getNearestSigil();
-	--while( sigil ) do
-	if( sigil ) then
-		local dist = distance(self.X, self.Z, self.Y, sigil.X, sigil.Z, sigil.Y);
-		local angle = math.atan2(sigil.Z - self.Z, sigil.X - self.X);
-		local yangle = math.atan2(sigil.Y - self.Y, ((sigil.X - self.X)^2 + (sigil.Z - self.Z)^2)^.5 );
-		local nY = self.Y + math.sin(yangle) * (dist + 15);
-		local hypotenuse = (1 - math.sin(yangle)^2)^.5
-		local nX = self.X + math.cos(angle) * (dist + 15) * hypotenuse;
-		local nZ = self.Z + math.sin(angle) * (dist + 15) * hypotenuse;
-
-		self:moveTo( CWaypoint(nX, nZ, nY), true );
-		yrest(500);
+	if settings.profile.options.LOOT_SIGILS == true or (settings.profile.options.LOOT == true and settings.profile.options.LOOT_SIGILS == nil) then
+		-- Pick up all nearby sigils
+		self:clearTarget();
 		self:update();
-		sigil = getNearestSigil();
-	end
+		local sigil = getNearestSigil();
+		--while( sigil ) do
+		if( sigil ) then
+			local dist = distance(self.X, self.Z, self.Y, sigil.X, sigil.Z, sigil.Y);
+			local angle = math.atan2(sigil.Z - self.Z, sigil.X - self.X);
+			local yangle = math.atan2(sigil.Y - self.Y, ((sigil.X - self.X)^2 + (sigil.Z - self.Z)^2)^.5 );
+			local nY = self.Y + math.sin(yangle) * (dist + 15);
+			local hypotenuse = (1 - math.sin(yangle)^2)^.5
+			local nX = self.X + math.cos(angle) * (dist + 15) * hypotenuse;
+			local nZ = self.Z + math.sin(angle) * (dist + 15) * hypotenuse;
 
+			self:moveTo( CWaypoint(nX, nZ, nY), true );
+			yrest(500);
+			self:update();
+			sigil = getNearestSigil();
+		end
+	end
 end
 
 local lootIgnoreList = {}
@@ -1690,7 +1865,7 @@ function evalTargetLootable(address, target)
 		wpl = __WPL;
 	end
 
-	if (__WPL:getMode() == "waypoints") then
+	if (__WPL:getMode() == "waypoints") and #__WPL.Waypoints > 0 then
 		local pA = wpl.Waypoints[wpl.LastWaypoint]
 		local pB = wpl.Waypoints[wpl.CurrentWaypoint]
 
@@ -1928,7 +2103,7 @@ function evalTargetDefault(address, target)
 		wpl = __WPL;
 	end
 
-	if (__WPL:getMode() == "waypoints") then
+	if (__WPL:getMode() == "waypoints") and #__WPL.Waypoints > 0 then
 		local pA = wpl.Waypoints[wpl.LastWaypoint]
 		local pB = wpl.Waypoints[wpl.CurrentWaypoint]
 
@@ -2732,136 +2907,6 @@ function CPlayer:haveTarget()
 		end
 	else
 		return false;
-	end
-end
-
-function CPlayer:update()
-	local addressChanged = false
-
-	-- Ensure that our address hasn't changed. If it has, fix it.
-	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
-	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
-		self.Address = tmpAddress;
-		cprintf(cli.green, language[40], self.Address);
-		addressChanged = true
-	end;
-
-	CPawn.update(self); -- run base function
-
-	if addressChanged or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
-		settings.loadSkillSet(self.Class1)
-		addressChanged = false
-	end
-
-	-- If have 2nd class, look for 3rd class
-	-- Class1 and Class2 are done in the pawn class. Class3 only works for player.
-	local classInfoSize = 0x294
-	if self.Class2 ~= -1 then
-		for i = 1, 8 do
-			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (classInfoSize * i) + addresses.charClassInfoLevel_offset)
-			if level > 0 and i ~= self.Class1 and i ~= self.Class2 then
-				-- must be class 3
-				self.Class3 = i
-				break
-			end
-		end
-	end
-
-
-	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
-	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
-	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
-	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
-	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
-
-	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
-
-	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
-
-	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
-	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
-
-	self.ActualSpeed = memoryReadRepeat("float", getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
-	self.Moving = (self.ActualSpeed > 0)
-
-	local tmp = self:getBuff(503827)
-	if tmp then -- has natures power
-		self.Nature = tmp.Level + 1
-	else
-		self.Nature = 0
-	end
-
-	-- remember aggro start time, used for timed ranged pull
-	if( self.Battling == true ) then
-		if(self.aggro_start_time == 0) then
-			self.aggro_start_time = os.time();
-		end
-	else
-		self.aggro_start_time = 0;
-	end
-
-	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
-		error("Error reading memory in CPlayer:update()");
-	end
-
-	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
-	if( self.Pet == nil ) then
-		self.Pet = CPawn(self.PetPtr);
-	else
-		self.Pet.Address = self.PetPtr;
-		if( self.Pet.Address ~= 0 ) then
-			self.Pet:update();
-		end
-	end
-
-	-- Update our exp gain
-	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
-		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
-		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
-
-		local newExp = self.XP or 0;
-		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
-
-		self.LastExpUpdateTime = os.time();					-- Reset timer
-
-		if( type(newExp) ~= "number" ) then newExp = 0; end;
-		if( type(maxExp) ~= "number" ) then maxExp = 1; end;
-
-		-- If we have not begun tracking exp, start by gathering
-		-- our current value, but do not count it as a gain
-		if( self.ExpInsertPos == 0 ) then
-			self.ExpInsertPos = 1;
-			self.LastExp = newExp;
-		else
-			local gain = 0;
-			local expGainSum = 0;
-			local valueCount = 0;
-
-			if( newExp > self.LastExp ) then
-				gain = newExp - self.LastExp;
-			elseif( newExp < self.LastExp ) then
-				-- We probably just leveled up. Just get our current, new value and use that.
-				gain = newExp;
-			end
-
-			self.LastExp = newExp;
-			self.ExpTable[self.ExpInsertPos] = gain;
-			self.ExpInsertPos = self.ExpInsertPos + 1;
-			if( self.ExpInsertPos > self.ExpTableMaxSize ) then
-				self.ExpInsertPos = 1;
-			end;
-
-			for i,v in pairs(self.ExpTable) do
-				valueCount = valueCount + 1;
-				expGainSum = expGainSum + v;
-			end
-
-			self.ExpPerMin = expGainSum / ( valueCount * self.ExpUpdateInterval / 60 );
-			self.TimeTillLevel = (maxExp - newExp) / self.ExpPerMin;
-			if( self.TimeTillLevel > 9999 ) then
-				self.TimeTillLevel = 9999;
-			end
-		end
 	end
 end
 
@@ -3769,7 +3814,7 @@ function CPlayer:mount(_dismount)
 	end
 
 	-- Make sure we are not battling before trying to mount
-	if not _dismount then
+	if not _dismount and not (player.Current_waypoint_type == WPT_TRAVEL) then
 		while( self.Battling ) do
 			self:target(self:findEnemy(true, nil, nil, nil));
 			self:update();
@@ -3814,6 +3859,7 @@ function CPlayer:mount(_dismount)
 			mount:use()
 		end
 	end
+	yrest(500)
 end
 
 function CPlayer:dismount()
@@ -3841,4 +3887,56 @@ function CPlayer:waitTillCastingEnds()
 			break;
 		end
 	end
+end
+
+function CPlayer:aimAt(target)
+	target:update()
+	camera:update()
+
+	-- camera distance to camera focus
+	local cameraDistance = distance(camera.XFocus,camera.ZFocus,camera.YFocus,camera.X,camera.Z,camera.Y)
+	if cameraDistance > 150 then cameraDistance = 150 end
+
+	-- Target distance to camera focus
+	local targetDistance = distance(camera.XFocus,camera.ZFocus,camera.YFocus,target.X,target.Z,target.Y)
+
+	-- Ratio
+	local ratio = cameraDistance/targetDistance
+
+	-- Vectors
+	local vec1 = (camera.XFocus - target.X) * ratio
+	local vec2 = (camera.ZFocus - target.Z) * ratio
+	local vec3 = (camera.YFocus - (target.Y or camera.YFocus)) * ratio
+
+	-- New Camera coordinates
+	local nx = camera.XFocus + vec1
+	local nz = camera.ZFocus + vec2
+	local ny = camera.YFocus + vec3
+
+	-- write camera coordinates
+	memoryWriteFloat(getProc(), camera.Address + addresses.camX_offset, nx);
+	memoryWriteFloat(getProc(), camera.Address + addresses.camZ_offset, nz);
+	memoryWriteFloat(getProc(), camera.Address + addresses.camY_offset, ny);
+end
+
+function CPlayer:getCraftLevel(craft)
+	if string.lower(craft) == "blacksmithing" then craft = CRAFT_BLACKSMITHING
+	elseif string.lower(craft) == "carpentry" then craft = CRAFT_CARPENTRY
+	elseif string.lower(craft) == "armorcrafting" then craft = CRAFT_ARMORCRAFTING
+	elseif string.lower(craft) == "tailoring" then craft = CRAFT_TAILORING
+	elseif string.lower(craft) == "cooking" then craft = CRAFT_COOKING
+	elseif string.lower(craft) == "alchemy" then craft = CRAFT_ALCHEMY
+	elseif string.lower(craft) == "mining" then craft = CRAFT_MINING
+	elseif string.lower(craft) == "woodcutting" then craft = CRAFT_WOODCUTTING
+	elseif string.lower(craft) == "herbalism" then craft = CRAFT_HERBALISM
+	end
+
+	if type(craft) ~= "number" or craft < 0 or craft > 8 then
+		cprintf(cli.yellow, language[77])
+		return
+	end
+
+	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + craft*4)
+
+	return lvl
 end

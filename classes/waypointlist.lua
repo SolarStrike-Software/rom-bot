@@ -42,7 +42,7 @@ function CWaypointList:load(filename)
 		self.Type = WPT_NORMAL;
 	end
 
-	self.FileName = getFileName(filename);
+	self.FileName = string.match(filename,"waypoints/(.*)");
 	self.Waypoints = {}; -- Delete current waypoints.
 	self.ForcedType = 0;	-- delete forced waypoint type
 
@@ -89,10 +89,8 @@ function CWaypointList:load(filename)
 		end
 	end
 
-	if #self.Waypoints == 0 then -- Can't be mode 'waypoints' with no waypoints
-		self.Mode = "wander"
-	else
-		self.Mode = "waypoints"
+	self.Mode = "waypoints"
+	if #self.Waypoints > 0 then
 		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y));
 		self.LastWaypoint = self.CurrentWaypoint -1
 		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
@@ -134,6 +132,7 @@ function CWaypointList:setForcedWaypointType(_type)
 		cprintf(cli.yellow, "You try to force an unknown waypoint type \'%s\'. Please check.\n", _type);
 		error("Bot finished due to error above.", 0);
 	end
+	player.Current_waypoint_type = self.ForcedType
 
 	cprintf(cli.green, "Forced waypoint type \'%s\' set by user.\n", _type );
 end

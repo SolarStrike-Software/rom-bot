@@ -8,10 +8,10 @@ if( fileExists(fname) ) then
 	local file, err = io.open(fname, "rb");
 	if file then
 		local string = file:read("*a")
-		local ver = string.match(string,"%(svn:wc:ra_dav:version.url %d* %/svn%/!svn%/ver%/(%d*)%/trunk%/rom%)")
-
-		if ver then
-			BOT_REVISION = ver
+		for ver in string.gmatch(string,"%(svn:wc:ra_dav:version.url %d* %/svn%/!svn%/ver%/(%d*)%/trunk%/rom%)") do
+			if BOT_REVISION == "<UNKNOWN>" or ver > BOT_REVISION then
+				BOT_REVISION = ver
+			end
 		end
 		file:close();
 	end
@@ -464,6 +464,10 @@ function main()
 			local msg = sprintf("onLoad error: %s", err);
 			error(msg);
 		end
+	end
+
+	if #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
+		error(language[114],1) -- No waypoints to go to
 	end
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.

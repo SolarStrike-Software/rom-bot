@@ -53,6 +53,11 @@ function database.load()
 		nobufftarget = string.lower(tostring(v:getAttribute("nobufftarget") or "player"));
 		nobuffname = tostring(v:getAttribute("nobuffname") or "");
 
+		aoecenter = string.lower(v:getAttribute("aoecenter") or "");
+		aoerange = v:getAttribute("aoerange") or ""
+		clicktocast = v:getAttribute("clicktocast")
+
+
 		if( level == nil ) then level = 1; end;
 		if( level < 1 ) then level = 1; end;
 
@@ -92,6 +97,22 @@ function database.load()
 			type = STYPE_DOT;
 		end;
 
+		if clicktocast == true and aoecenter == "" then
+			aoecenter = SAOE_TARGET
+		end
+
+		if aoecenter == "player" then
+			aoecenter = SAOE_PLAYER
+		elseif aoecenter == "target" or aoecenter == SAOE_TARGET then
+			aoecenter = SAOE_TARGET
+			if aoerange == "" then
+				if clicktocast == true then
+					aoerange = 65
+				else
+					aoerange = 50
+				end
+			end
+		end
 
 
 		if( target == "enemy" ) then target = STARGET_ENEMY; end;
@@ -132,6 +153,9 @@ function database.load()
 		if(nobuffcount > 0 ) then tmp.NoBuffCount = nobuffcount; end;
 		if(nobufftarget ~= "") then tmp.NoBuffTarget = nobufftarget; end;
 		if(nobuffname ~= "") then tmp.NoBuffName = nobuffname; end;
+		if(aoecenter ~= "") then tmp.AOECenter = aoecenter; end;
+		if(aoerange ~= "") then tmp.AOERange = aoerange; end;
+		if(clicktocast ~= "") then tmp.ClickToCast = clicktocast; end;
 
 		database.skills[name] = tmp;
 	end
@@ -142,12 +166,13 @@ function database.load()
 	elements = root:getElements();
 
 	for i,v in pairs(elements) do
-		local name, id, type;
+		local name, id, type, level;
 		local tmp = CNode();
 
 		name = v:getAttribute("name");
 		id = v:getAttribute("id");
 		type = v:getAttribute("type");
+		level = v:getAttribute("level");
 
 		if( type == "WOOD" ) then
 			type = NTYPE_WOOD;
@@ -160,6 +185,7 @@ function database.load()
 		tmp.Name = name;
 		tmp.Id = id;
 		tmp.Type = type;
+		tmp.Level = level;
 
 		database.nodes[id] = tmp;
 	end

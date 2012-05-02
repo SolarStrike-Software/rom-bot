@@ -34,6 +34,8 @@
 		<option name="DOT_PERCENT"        	value="90" />
 		<option name="ANTI_KS"            	value="true" />
 		<option name="MAX_TARGET_DIST"    	value="225" />
+		<option name="PRIORITY_CASTING"		value="false" />		<!-- If you want to cast attack skills by 'priority' or 'sequencially' -->
+		<option name="COUNT_AGGRO_ONLY"		value="false" />		<!-- If you want to count only aggro mobs within range of aoe skills  -->
 
 		<!-- Attack monsters 3 levels above or 10 below your level -->
 		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
@@ -93,7 +95,7 @@
 
 		<!-- pvp -->
 		<!--option name="PVP"			value="true" /> --> 		<!-- To enable PVP, with this set to true it will auto attack any players with red names -->
-			
+
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
 

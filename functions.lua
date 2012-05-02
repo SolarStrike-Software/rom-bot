@@ -82,12 +82,13 @@ function selectGame(character)
 		process = openProcess(findProcessByWindow(windowList[i]));
 		-- read player address
 		showWarnings(false);
-		playerAddress = memoryReadIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
-		-- read player name
-		if( playerAddress ) then
-			nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
+		if addresses["staticbase_char"] and addresses["charPtr_offset"] and addresses["pawnName_offset"] then
+			playerAddress = memoryReadIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
+			-- read player name
+			if( playerAddress ) then
+				nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
+			end
 		end
-
 		-- store the player name, with window number
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")";
@@ -478,22 +479,20 @@ function loadPaths( _wp_path, _rp_path)
 		_rp_path = _rp_path .. ".xml";
 	end;
 
-	-- waypoint path is defined ... load it
+	-- waypoint path is defined
+
+	-- check if _wp_path exists
+	local wpfilename
 	if( _wp_path and
 		string.lower(_wp_path) ~= "wander" ) then
 		local filename = getExecutionPath() .. "/waypoints/" .. _wp_path;
 		if( not fileExists(filename) ) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
 			error(msg, 0);
-		end;
+		end
 		__WPL = CWaypointList();
-		__WPL:load(filename);
-		cprintf(cli.green, language[0], __WPL:getFileName());	-- Loaded waypoint path
-
-		if(__WPL.CurrentWaypoint ~= 1) then
-			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
-			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);
-		end;
+		wpfilename = filename
+		cprintf(cli.green, language[0], _wp_path);	-- Loaded waypoint path
 	end
 
 	-- set wander for WP
@@ -514,7 +513,8 @@ function loadPaths( _wp_path, _rp_path)
 		end;
 	end
 
-	-- return path defined or default found ... load it
+	-- check if _rp_path exists
+	local rpfilename
 	if( _rp_path ) then
 		if( not __RPL ) then  		-- define object if not there
 			__RPL = CWaypointList();
@@ -524,22 +524,37 @@ function loadPaths( _wp_path, _rp_path)
 			local msg = sprintf(language[143], filename ); -- We can't find your returnpath file
 			error(msg, 0);
 		end;
-		__RPL:load(filename);
-		cprintf(cli.green, language[1], __RPL:getFileName());	-- Loaded return path
+		rpfilename = filename
+		cprintf(cli.green, language[1], _rp_path);	-- Loaded return path
+	end
+
+	-- check if on returnpath
+	if( player.Returning == true  and
+	    _rp_path ) then
+		cprintf(cli.green, language[164], _rp_path);	-- We are coming from a return_path.
+	else
+		player.Returning = false;
+		cprintf(cli.green, language[165], _wp_path );-- We use the normal waypoint path %s now
+	end
+
+	-- waypoint path is defined ... load it
+	if wpfilename then
+		__WPL:load(wpfilename);
+
+		if(__WPL.CurrentWaypoint ~= 1 ) then --and #__WPL.Waypoints > 0
+			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
+			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);
+		end;
+	end
+
+	-- return path defined or default found ... load it
+	if rpfilename then
+		__RPL:load(rpfilename);
 	else
 		if( __RPL ) then  		-- clear old returnpath object
 			__RPL = nil;
 		end;
 	end;
-
-	-- check if on returnpath
-	if( player.Returning == true  and
-	    _rp_path ) then
-		cprintf(cli.green, language[164], __RPL:getFileName());	-- We are coming from a return_path.
-	else
-		player.Returning = false;
-		cprintf(cli.green, language[165], __WPL:getFileName() );-- We use the normal waypoint path %s now
-	end
 end
 
 -- executing RoMScript and send a MM window message before
@@ -1524,7 +1539,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x56, 0x8B, 0xCD, 0xE8, 0x79, 0xD3, 0x27, 0x00));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(unpack(addresses.functionTargetBytes)));
 
 		end
 	end

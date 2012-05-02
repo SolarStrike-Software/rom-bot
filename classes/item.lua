@@ -427,7 +427,7 @@ function CItem:getColorString()
 end
 
 function CItem:moveTo(bag)
-	inventory:update()
+	--inventory:update()
 	local first, last = getInventoryRange(bag)
 	if first == nil or bag == "all" then
 		printf("You must specify an inventory location to move the item to. You cannot use \"all\".\n")
@@ -455,11 +455,16 @@ function CItem:moveTo(bag)
 
 	-- If have 'toItem' then move there.
 	if toItem then
-		RoMScript("PickupBagItem("..self.BagId..");");
-		repeat yrest(500) until RoMScript("CursorHasItem()")
-		RoMScript("PickupBagItem("..toItem.BagId..");");
-		repeat yrest(500) until not RoMScript("CursorHasItem()")
-		inventory:update()
+		repeat
+			RoMScript("PickupBagItem("..self.BagId..");");
+			local c = 0 repeat c = c + 1 yrest(50) until RoMScript("CursorHasItem()") or c > 10
+		until RoMScript("CursorHasItem()")
+		repeat
+			RoMScript("PickupBagItem("..toItem.BagId..");");
+			local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20
+		until not RoMScript("CursorHasItem()")
+		self:update()
+		toItem:update()
 	end
 end
 
