@@ -466,7 +466,7 @@ function main()
 		end
 	end
 
-	if #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
+	if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
 		error(language[114],1) -- No waypoints to go to
 	end
 

@@ -1757,7 +1757,7 @@ function CPlayer:loot()
 
 		-- Close the booty bag.
 		RoMScript("BootyFrame:Hide()");
-	until false end -- 'end' ends the 'if' statement
+	until true end -- 'end' ends the 'if' statement
 
 	local function getNearestSigil()
 		local nearestSigil = nil;

@@ -1178,6 +1178,9 @@ function settings.loadSkillSet(class)
 		    player.Class1 == CLASS_MAGE    ) then
 			settings.profile.options.COMBAT_TYPE  = "ranged";
 		else
+print("player type", type(player))
+print("player.Class1",player.Class1)
+print("player.Name",player.Name)
 			error("undefined player.Class1 in settings.lua", 0);
 		end;
 	end
