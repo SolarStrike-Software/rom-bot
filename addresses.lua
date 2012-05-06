@@ -96,6 +96,8 @@ addresses = {
 	mousePatchY2_offset = 0x34,
 	mousePatchY3_offset = 0x7E4,
 	mousePtr_offset = 0x744,
+	mouseX_offset = 0x3B4,
+	mouseY_offset = 0x3B8,
 	nameOffset = 0xC,
 	partyIconList_base = 0xA27078,
 	partyIconList_offset = 0xC,
@@ -196,5 +198,7 @@ addresses = {
 	tablesBaseOffset = 0x28,
 	typeOffset = 0x78,
 	valueOffset = 0x34,
+	windowSizeX_offset = 0x30,
+	windowSizeY_offset = 0x34,
 	zoneId = 0xA1DEF8,
 }
