@@ -43,6 +43,9 @@ function CPlayer:update()
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
 		addressChanged = true
+		if player.Class1 == CLASS_WARDEN then
+			setpetautoattacks()
+		end
 	end;
 
 	CPawn.update(self); -- run base function
