@@ -587,6 +587,18 @@ local updatePatterns =
 		startloc = 0x650000,
 	},
 
+	playerCraftLevelBase = {
+		pattern = string.char(
+			0x74, 0x44,
+			0xD9, 0x86, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xB9, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xD9, 0x5C, 0x24, 0x04,
+			0xE8),
+		mask = "xxxx????x????xxxxx",
+		offset = 9,
+		startloc = 0x5E0000,
+	},
+
 	skillsTableBase = {
 		pattern = string.char(
 			0x5D,
@@ -686,7 +698,6 @@ function findOffsets()
 	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0xF7E0);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x6934);
 	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16750);
-	assumptionUpdate("playerCraftLevelBase", addresses.staticbase_char + 0x1554);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xB1EC);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x3960);
 	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179DC);

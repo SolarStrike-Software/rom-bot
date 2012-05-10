@@ -3939,7 +3939,7 @@ function CPlayer:getCraftLevel(craft)
 		return
 	end
 
-	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + craft*4)
+	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + addresses.playerCraftLevel_offset + craft*4)
 
 	return lvl
 end
