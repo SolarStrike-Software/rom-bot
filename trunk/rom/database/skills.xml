@@ -294,6 +294,9 @@
 	<skill name="KNIGHT_MANA_ABSORPTION" range="100" type="damage" target="enemy" />
 	<skill name="KNIGHT_HOLY_LIGHT_FIELD" id="" mana="30" type="buff" target="self" cooldown="60" />
 
+	<!-- Itemset skills -->
+	<skill name="KNIGHT_FULL_MOON_CLEAVE" id="495486" mana="250" range="80" cooldown="20" type="damage" target="enemy" aoecenter="player" />
+
 
 	<!-- Scout skills -->
 	<skill name="SCOUT_SHOT" id="490423" consumable="1" range="200" cooldown="2" type="damage" target="enemy" />
