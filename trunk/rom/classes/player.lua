@@ -1762,6 +1762,21 @@ function CPlayer:loot()
 		RoMScript("BootyFrame:Hide()");
 	until true end -- 'end' ends the 'if' statement
 
+	local function sigilNameMatch(_name)
+		if settings.profile.options.SIGILS_IGNORE_LIST == nil then
+			return true -- collect all sigils
+		end
+
+		for sigil in string.gmatch(";"..settings.profile.options.SIGILS_IGNORE_LIST,"[,;]([^,;]*)") do
+			if string.match(sigil,"^'.*'$") then sigil = string.match(sigil,"^'(.*)'$") end
+			if sigil == _name then
+				return false -- ignore the sigil
+			end
+		end
+
+		return true -- not in ignore list. Don't ignore.
+	end
+
 	local function getNearestSigil()
 		local nearestSigil = nil;
 		local obj = nil;
@@ -1771,19 +1786,18 @@ function CPlayer:loot()
 		for i = 0,objectList:size() do
 			obj = objectList:getObject(i);
 
-			if( obj ~= nil ) then
-				if( obj.Type == PT_SIGIL ) then
-					local dist = distance(self.X, self.Z, obj.X, obj.Z);
+			if( obj ~= nil ) and ( obj.Type == PT_SIGIL ) and sigilNameMatch(obj.Name) then
 
-					if( nearestSigil == nil and dist < settings.profile.options.LOOT_DISTANCE ) then
+				local dist = distance(self.X, self.Z, obj.X, obj.Z);
+
+				if( nearestSigil == nil and dist < settings.profile.options.LOOT_DISTANCE ) then
+					nearestSigil = obj;
+				else
+
+					if( dist < settings.profile.options.LOOT_DISTANCE and
+						dist < distance(self.X, self.Z, nearestSigil.X, nearestSigil.Z) ) then
+						-- New nearest sigil found
 						nearestSigil = obj;
-					else
-
-						if( dist < settings.profile.options.LOOT_DISTANCE and
-							dist < distance(self.X, self.Z, nearestSigil.X, nearestSigil.Z) ) then
-							-- New nearest sigil found
-							nearestSigil = obj;
-						end
 					end
 				end
 			end
@@ -1806,6 +1820,7 @@ function CPlayer:loot()
 			local hypotenuse = (1 - math.sin(yangle)^2)^.5
 			local nX = self.X + math.cos(angle) * (dist + 15) * hypotenuse;
 			local nZ = self.Z + math.sin(angle) * (dist + 15) * hypotenuse;
+			printf("Picking up sigil \"%s\"\n",sigil.Name)
 
 			self:moveTo( CWaypoint(nX, nZ, nY), true );
 			yrest(500);
