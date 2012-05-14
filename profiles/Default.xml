@@ -55,6 +55,8 @@
 		<option name="LOOT_IN_COMBAT"     	value="true" />
 		<option name="LOOT_DISTANCE"      	value="100" />
 		<option name="LOOT_PAUSE_AFTER"   	value="0" />			<!-- probability in % for a short rest -->
+		<option name="LOOT_SIGILS"			value="" />				<!-- Loot sigils or not. If ommitted, will depend on "LOOT" value -->
+		<option name="SIGILS_IGNORE_LIST"	value="" />				<!-- List of any sigils you wish to ignore, in language of client -->
 
 		<!-- Auto selling options when used with player:merchant -->
 		<option name="INV_AUTOSELL_ENABLE"	value="false" />		<!-- true | false -->
