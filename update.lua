@@ -697,10 +697,10 @@ function findOffsets()
 	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xA644);
 	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0xF7E0);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x6934);
-	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16750);
+	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16758);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xB1EC);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x3960);
-	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179DC);
+	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179E4);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)
