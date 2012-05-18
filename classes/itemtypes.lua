@@ -1,4 +1,5 @@
 local CACHE_PATH = getExecutionPath() .. "/../cache";
+local ITEMTYPESTABLE_VERSION = 1.0 -- Change if the saved format changes to force an update of the file.
 
 function LoadItemTypes()
 	itemtypes = nil
@@ -6,11 +7,13 @@ function LoadItemTypes()
 	local fname = CACHE_PATH .. "/itemtypestable.lua";
 	if( fileExists(fname) ) then
 		LoadItemTypes_cached(fname)
-		if itemtypes_language == string.sub(RoMScript("GetLanguage()"),1,2) then
-			-- data good
-			return
-		else
+		if itemtypes_language ~= string.sub(RoMScript("GetLanguage()"),1,2) then
 			printf("Client Language changed.\n")
+		elseif itemtypes_version ~= ITEMTYPESTABLE_VERSION	then
+			printf("itemtypestable is incorrect version.\n")
+		else
+			-- Data good
+			return
 		end
 	end
 
@@ -71,7 +74,7 @@ function LoadItemTypes_memory()
 			if (t1 == 0 and t2 >= 0 and t2 <= 4) or -- non unique t3 weapon name
 				(t1 == 1 and t2 >= 0 and t2 <= 3) then -- non unique t3 armor name
 				-- Add the t2 name to make a unique name
-				data[t1][t2][t3].Name = data[t1][t2][t3].Name .. " " .. data[t1][t2].Name
+				data[t1][t2][t3].UniqueName = data[t1][t2][t3].Name .. " " .. data[t1][t2].Name
 			end
 		end
 	end
@@ -118,7 +121,11 @@ function CacheItemTypes()
 							havesubsub = true
 							outFile:write(",\n")
 						end
-						outFile:write("\t\t\t["..i.."] = { Name = \""..v.Name.."\" },\n")
+						outFile:write("\t\t\t["..i.."] = { Name = \""..v.Name.."\"")
+						if v.UniqueName then
+							outFile:write(", UniqueName = \""..v.UniqueName.."\"")
+						end
+						outFile:write(" },\n")
 					end
 				end
 
@@ -140,6 +147,7 @@ function CacheItemTypes()
 	outFile:write("}\n");
 
 	outFile:write("itemtypes_language = \"" .. itemtypes_language .. "\"\n")
+	outFile:write("itemtypes_version = " .. ITEMTYPESTABLE_VERSION .. "\n")
 	outFile:close()
 end
 

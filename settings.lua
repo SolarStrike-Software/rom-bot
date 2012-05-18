@@ -1211,44 +1211,8 @@ function settings.updateSkillsAvailability()
 	--   aslevel
 	--   Available
 
-	local proc = getProc()
-	local skillsTableTabSize = 0x10
-	local skillSize = 0x4c
-
-	local function GetSkillInfo (address)
-		local tmp = {}
-		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
-		tmp.Name = GetIdName(tmp.Id)
-		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
-		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
-		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
-
-		return tmp
-	end
-
 	-- First collect tab skill info
-	local tabData = {}
-	for tab = 2,4 do -- tabs of interest 2,3 and 4
-		local tabBaseAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
-		local tabEndAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
-
-		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
-			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
-			local skilladdress = tabBaseAddress + (num - 1) * skillSize
-				tmpData = GetSkillInfo(skilladdress)
-				if tmpData.Name ~= nil and tmpData.Name ~= "" then
-					tabData[tmpData.Name] = {
-						Id = tmpData.Id,
-					    TPToLevel = tmpData.TPToLevel,
-						Level = tmpData.Level,
-						aslevel = tmpData.aslevel,
-						skilltab = tab,
-						skillnum = num,
-					}
-				end
-			end
-		end
-	end
+	local tabData = GetSkillBookData({2,3,4}) -- tabs of interest 2,3 and 4
 
 	-- Then collect item set skills
 	for num = 1, 5 do -- 5 possible enabled item set skills

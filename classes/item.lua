@@ -37,6 +37,10 @@ ITEMQUALITYCOLOR = {
 	tonumber("0xFFA864A8"),
 };
 
+ITEMFLAGs_ITEMSHOPITEM_MASK = 0X4
+ITEMFLAGs_CANBESOLD_MASK = 0X200
+-- ITEMFLAGs_NOTDROPEDONPKDEATH_MASK = 0X2
+
 CItem = class(
 	function( self, slotnumber )
 		self.Available = false; -- If slot is in unrented bag then = false
@@ -73,6 +77,8 @@ CItem = class(
 		self.ObjSubType = 0;
 		self.ObjSubSubType = 0;
 		self.Stats = {}; -- list of named stats and their ids.
+		self.ItemShopItem = false
+		self.CanBeSold = false
 
 		if ( self.Address ~= nil and self.Address ~= 0 ) then
 			self:update();
@@ -86,9 +92,8 @@ function CItem:use()
 	local reason = "";
 	self:update();
 
-	if self.Available == false then
-		canUse = false
-		reason = "Unrented"
+	if self.Available == false or self.Empty then
+		return
 	end
 
 	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
@@ -122,7 +127,7 @@ function CItem:use()
 end
 
 function CItem:delete()
-	if self.Available then
+	if self.Available and not self.Empty then
 		RoMScript("PickupBagItem("..self.BagId..");");
 		RoMScript("DeleteCursorItem();");
 
@@ -189,6 +194,7 @@ function CItem:update()
 		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 4);
 		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 8);
 
+		self.CoolDownTime = 0
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
 			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.realItemIdOffset );
 			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
@@ -259,6 +265,12 @@ function CItem:update()
 			local tmpname = GetIdName(tmpid)
 			self.Stats[i] = {Id = tmpid, Name = tmpname}
 		end
+
+		-- Get base item flag values
+		local flags = memoryReadInt(getProc(),self.BaseItemAddress + addresses.itemFlagsOffset)
+		self.ItemShopItem = bitAnd(flags,ITEMFLAGs_ITEMSHOPITEM_MASK)
+		self.CanBeSold = bitAnd(flags,ITEMFLAGs_CANBESOLD_MASK)
+
 	elseif ( self.Id == 0 ) then
 		self.Empty = true;
 		self.Id = 0;
@@ -428,9 +440,19 @@ end
 
 function CItem:moveTo(bag)
 	--inventory:update()
+	if self.Empty or not self.Available then
+		return
+	end
+
 	local first, last = getInventoryRange(bag)
 	if first == nil or bag == "all" then
 		printf("You must specify an inventory location to move the item to. You cannot use \"all\".\n")
+		return
+	end
+
+	-- Check if itemshop item
+	if bag == "itemshop" and not self.ItemShopItem then
+		-- Item is not itemshop item. Cannot be put in itemshop bag
 		return
 	end
 
@@ -455,14 +477,36 @@ function CItem:moveTo(bag)
 
 	-- If have 'toItem' then move there.
 	if toItem then
+		-- Pick up
+		local x = 0
 		repeat
+			x = x + 1
 			RoMScript("PickupBagItem("..self.BagId..");");
-			local c = 0 repeat c = c + 1 yrest(50) until RoMScript("CursorHasItem()") or c > 10
-		until RoMScript("CursorHasItem()")
+			local c = 0 repeat c = c + 1 yrest(50) until RoMScript("CursorHasItem()") or c > 10 -- Wait max time about 500ms
+		until RoMScript("CursorHasItem()") or x >= 4 -- try to pick up max 4 times (about 2s)
+
+		-- If couldn't pick up, give up
+		if not RoMScript("CursorHasItem()") then
+			return
+		end
+
+		-- Place item
+		x = 0
 		repeat
+			x = x + 1
 			RoMScript("PickupBagItem("..toItem.BagId..");");
-			local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20
-		until not RoMScript("CursorHasItem()")
+			local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20 -- Wait max time about 1000ms
+		until not RoMScript("CursorHasItem()") or x >= 3  -- try to drop max 3 times (about 3s)
+
+		-- If failed to place item then return to origin
+		if RoMScript("CursorHasItem()") then
+			x = 0
+			repeat
+				x = x + 1
+				RoMScript("PickupBagItem("..self.BagId..");");
+				local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20 -- Wait max time about 1000ms
+			until not RoMScript("CursorHasItem()") or x >= 3  -- try to drop max 3 times (about 3s)
+		end
 		self:update()
 		toItem:update()
 	end
@@ -474,11 +518,12 @@ function CItem:isType(typename)
 		return false
 	end
 
-	local itemtype, itemsubtype, itemsubsubtype = self:getTypes()
+	local itemtype, itemsubtype, itemsubsubtype, objsubsubuniquetype = self:getTypes()
 
 	if itemtype == typename or
 		itemsubtype == typename or
-		itemsubsubtype == typename then
+		itemsubsubtype == typename or
+		objsubsubuniquetype == typename then
 		return true
 	else
 		return false
@@ -499,9 +544,11 @@ function CItem:getTypes()
 	end
 
 	local objsubsubtype = nil
+	local objsubsubuniquetype = nil
 	if self.ObjSubSubType ~= -1 then
 		objsubsubtype = itemtypes[self.ObjType][self.ObjSubType][self.ObjSubSubType].Name
+		objsubsubuniquetype = itemtypes[self.ObjType][self.ObjSubType][self.ObjSubSubType].UniqueName
 	end
 
-	return objtype, objsubtype, objsubsubtype
+	return objtype, objsubtype, objsubsubtype, objsubsubuniquetype
 end

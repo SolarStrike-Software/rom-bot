@@ -617,75 +617,83 @@ function CInventory:autoSell()
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
 	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 60, settings.profile.options.INV_AUTOSELL_TOSLOT + 60, 1 do
-		local sell_item = true
 		local slotitem = self.BagSlot[slotNumber];
 
-		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available) then
+		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
 
-			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-			  "Check item so sell:", slotNumber, slotitem.Id, slotitem.Name);
+			repeat -- A loop we can break out of to speed things up
 
-			-- check item quality color
-			if( sellColor(slotitem.Color) == false ) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
-				sell_item = false;
-			end
+				  "Check item so sell:", slotNumber, slotitem.Id, slotitem.Name);
 
-			-- check if on type sell lists
-			if (isInTypeSell(slotitem) == false ) then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
-				sell_item = false
-			elseif (isInTypeNosell(slotitem) == true ) then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
-				sell_item = false
-			end
-
-			-- check itemname against ignore list
-			if( isInIgnorelist(slotitem) == true ) then
-				sell_item = false;
-			end
-
-			-- check number of named stats
-			if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
-				sell_item = false;
-			end
-
-			-- check max durability value
-			if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
-				slotitem.MaxDurability > 0 and
-				slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
-				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
-				sell_item = false;
-			end
-
-			-- check if stats / text strings are on the ingnore list
-			if( isInStatsNoSell(slotitem) == true ) then
-
-				-- check if in sell always stats
-				if( isInStatsSell(slotitem) == true ) then
-					-- don't change the sell flag
-				else
-					sell_item = false;
+				-- Check if can be sold
+				if slotitem.CannotBeSold then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Item can not be sold");
+					break
 				end
 
-			end
+				-- check item quality color
+				if( sellColor(slotitem.Color) == false ) then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
+					break
+				end
 
-			-- sell the item
-			if( sell_item == true ) then
+				-- check if on type sell lists
+				if (isInTypeSell(slotitem) == false ) then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
+					break
+				elseif (isInTypeNosell(slotitem) == true ) then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
+					break
+				end
+
+				-- check itemname against ignore list
+				if( isInIgnorelist(slotitem) == true ) then
+					break
+				end
+
+				-- check number of named stats
+				if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
+					break
+				end
+
+				-- check max durability value
+				if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
+					slotitem.MaxDurability > 0 and
+					slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
+					  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
+					break
+				end
+
+				-- check if stats / text strings are on the ingnore list
+				if( isInStatsNoSell(slotitem) == true ) then
+
+					-- check if in sell always stats
+					if( isInStatsSell(slotitem) == true ) then
+						-- don't change the sell flag
+					else
+						break
+					end
+
+				end
+
+				-- We didn't break? Then sell the item
 				if RoMScript("StoreFrame:IsVisible()") then
 					hf_wesell = true;
 					RoMScript("UseBagItem("..slotitem.BagId..")")
 				else
 					break
 				end
-			end
+
+			until true
 
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
 
