@@ -240,19 +240,6 @@ function CPlayer:harvest(_id, _second_try)
 						elseif( harvestType == NTYPE_ORE and settings.profile.options.HARVEST_ORE == false ) then
 							harvestThis = false;
 						end
-
-						local harvestLevel = database.nodes[obj.Id].Level
-						local craftLevel
-						if harvestType == NTYPE_ORE then
-							craftLevel = self:getCraftLevel(CRAFT_MINING)
-						elseif harvestType == NTYPE_WOOD then
-							craftLevel = self:getCraftLevel(CRAFT_WOODCUTTING)
-						elseif harvestType == NTYPE_HERB then
-							craftLevel = self:getCraftLevel(CRAFT_HERBALISM)
-						end
-						if harvestLevel > craftLevel then
-							harvestThis = false;
-						end
 					end
 
 					if( harvestThis == true ) then
@@ -312,6 +299,24 @@ function CPlayer:harvest(_id, _second_try)
 
 			if( result == false ) then -- They chose to not harvest this in the event
 				return;
+			end
+		end
+
+		-- Check harvest skill level.
+		if database.nodes[closestHarvestable.Id] then
+			local harvestLevel = database.nodes[closestHarvestable.Id].Level
+			local harvestType = database.nodes[closestHarvestable.Id].Type
+			local craftLevel
+			if harvestType == NTYPE_ORE then
+				craftLevel = self:getCraftLevel(CRAFT_MINING)
+			elseif harvestType == NTYPE_WOOD then
+				craftLevel = self:getCraftLevel(CRAFT_WOODCUTTING)
+			elseif harvestType == NTYPE_HERB then
+				craftLevel = self:getCraftLevel(CRAFT_HERBALISM)
+			end
+			if harvestLevel > craftLevel then
+				print(language[76]) -- Harvest skill level too low
+				return false;
 			end
 		end
 

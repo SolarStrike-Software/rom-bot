@@ -77,6 +77,7 @@ addresses = {
 	inUseOffset = 0x1C,
 	inventoryBagIds = 0x9E7AD4,
 	itemCountOffset = 0x10,
+	itemFlagsOffset = 0x28,
 	itemInfoOffset = 0x10,
 	itemSetSkillsBase = 0x9ECC70,
 	itemStatsOffset = 0x20,

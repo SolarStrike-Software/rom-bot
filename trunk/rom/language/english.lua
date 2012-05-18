@@ -65,6 +65,7 @@ language = {
 	[70] = "Resting finished after %s seconds.\n",
 	[71] = "Resting for %s seconds.\n",
 
+	[76] = "Harvest skill level too low.",
 	[77] = "Invalid option used in 'player:getCraftLevel'",
 	[78] = "Harvesting cancelled due to aggressive enemies.\n",
 	[79] = "No nearby harvestables found.\n",

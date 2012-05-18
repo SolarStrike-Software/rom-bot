@@ -1876,3 +1876,67 @@ function PointInPoly(vertices, testx, testz )
 	end
 	return c
 end
+
+function GetSkillBookData(_tabs)
+	if type(_tabs) == "table" then
+		-- do nothing
+	elseif type(tonumber(_tabs)) == "number" then
+		_tabs = {tonumber(_tabs)}
+	else
+		_tabs = {1,2,3,4,5}
+	end
+
+	local proc = getProc()
+	local skillsTableTabSize = 0x10
+	local skillSize = 0x4c
+
+	local function GetSkillInfo (address)
+		local tmp = {}
+		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
+		tmp.Name = GetIdName(tmp.Id)
+		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
+		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
+		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
+
+		return tmp
+	end
+
+	-- Collect tab skill info
+	local tabData = {}
+
+	for __, tab in pairs(_tabs) do
+		local tabBaseAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
+		local tabEndAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
+
+		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
+			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
+				local skilladdress = tabBaseAddress + (num - 1) * skillSize
+				tmpData = GetSkillInfo(skilladdress)
+				if tmpData.Name ~= nil and tmpData.Name ~= "" then
+					tabData[tmpData.Name] = {
+						Id = tmpData.Id,
+						TPToLevel = tmpData.TPToLevel,
+						Level = tmpData.Level,
+						aslevel = tmpData.aslevel,
+						skilltab = tab,
+						skillnum = num,
+					}
+				end
+			end
+		end
+	end
+
+	return tabData
+end
+
+function FindSkillBookSkill(_nameorid, _tabs)
+	local tabData = GetSkillBookData(_tabs)
+	for name, data in pairs(tabData) do
+		if data.Id == tonumber(_nameorid) or string.find(name, _nameorid, 1, true) then
+			data.Name = name
+			return data
+		end
+	end
+
+	return false
+end
