@@ -43,7 +43,7 @@ function CPlayer:update()
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
 		addressChanged = true
-		if player.Class1 == CLASS_WARDEN then
+		if self.Class1 == CLASS_WARDEN then
 			setpetautoattacks()
 		end
 	end;
@@ -1013,7 +1013,7 @@ function CPlayer:checkPotions()
 -- only one potion type could be used, so we return after using one type
 
 	--=== If rogue is hidden then don't use potions as it breaks hide ===--
-	if player.Class1 == 3 and player:hasBuff(500675) then return false end
+	if self.Class1 == 3 and self:hasBuff(500675) then return false end
 
 	if settings.profile.options.USE_PHIRIUS_POTION == true then
 		-- If we need to use a health potion
@@ -1291,7 +1291,7 @@ function CPlayer:fight()
 		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
 
-	if player.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
+	if self.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
 		petupdate()
 		if pet.Name == GetIdName(102297) or
 		pet.Name == GetIdName(102324) or
@@ -1423,6 +1423,11 @@ function CPlayer:fight()
 				cprintf(cli.green, language[99]); -- Ranged pulling finished. Mob not really moving
 				self.ranged_pull = false;
 			end;
+
+			if self.ranged_pull == false and settings.profile.options.COMBAT_TYPE == "melee" then
+				registerTimer("timedAttack", secondsToTimer(2), timedAttack);
+				timedAttack();
+			end
 		end
 
 		-- We're a bit TOO close...
@@ -2271,16 +2276,16 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		local posbuffer = 5
 
 		local passed = true
-		if lastpos.X < point.X and player.X < point.X - posbuffer then
+		if lastpos.X < point.X and self.X < point.X - posbuffer then
 			return false
 		end
-		if lastpos.X > point.X and player.X > point.X + posbuffer then
+		if lastpos.X > point.X and self.X > point.X + posbuffer then
 			return false
 		end
-		if lastpos.Z < point.Z and player.Z < point.Z - posbuffer then
+		if lastpos.Z < point.Z and self.Z < point.Z - posbuffer then
 			return false
 		end
-		if lastpos.Z > point.Z and player.Z > point.Z + posbuffer then
+		if lastpos.Z > point.Z and self.Z > point.Z + posbuffer then
 			return false
 		end
 
@@ -2608,11 +2613,11 @@ function CPlayer:faceDirection(dir,diry)
 	self.Direction = math.atan2(Vec2, Vec1);
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
-	if self.Mounted then
-		local tmpAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
-		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirXUVec_offset, Vec1);
-		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirZUVec_offset, Vec2);
-		memoryWriteFloat(getProc(), tmpAddress + addresses.pawnDirYUVec_offset, Vec3);
+	local tmpMountAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
+	if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
+		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirXUVec_offset, Vec1);
+		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirZUVec_offset, Vec2);
+		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirYUVec_offset, Vec3);
 	else
 		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
 		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirZUVec_offset, Vec2);
@@ -3111,7 +3116,7 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 		end
 	end
 
-	if player.Class1 == CLASS_WARDEN then -- has issues with pet as target, temp fix.
+	if self.Class1 == CLASS_WARDEN then -- has issues with pet as target, temp fix.
 		return false
 	end
 
@@ -3837,7 +3842,7 @@ function CPlayer:mount(_dismount)
 	end
 
 	-- Make sure we are not battling before trying to mount
-	if not _dismount and not (player.Current_waypoint_type == WPT_TRAVEL) then
+	if not _dismount and not (self.Current_waypoint_type == WPT_TRAVEL) then
 		while( self.Battling ) do
 			self:target(self:findEnemy(true, nil, nil, nil));
 			self:update();
@@ -3873,7 +3878,7 @@ function CPlayer:mount(_dismount)
 	until self.Casting == false
 
 	-- Just in case you mounted a different mount instead of dismounting
-	if _dismount == true and player.Mounted then
+	if _dismount == true and self.Mounted then
 		-- second try dismount
 		yrest(1000)
 		if mountMethod == "partner" then
