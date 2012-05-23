@@ -271,7 +271,6 @@ function CPawn:update()
 	self.GUID = memoryReadShort(proc, self.Address + addresses.pawnGUID_offset) or self.GUID;
 	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
 
-	self.Mounted = memoryReadRepeat("byte", proc, self.Address + addresses.pawnMount_offset) ~= 1;
 	self.Harvesting = memoryReadRepeat("int", proc, self.Address + addresses.pawnHarvesting_offset) ~= 0;
 	self.Casting = (memoryReadRepeat("int", proc, self.Address + addresses.pawnCasting_offset) ~= 0);
 
@@ -283,23 +282,6 @@ function CPawn:update()
 	else
 		self.Lootable = false;
 	end
-
-
-	local tmpp = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
-	--=== Does icon appear when you click pawn ===--
-	if bitAnd(tmpp,0x10) then
-		self.TargetIcon = true
-	else
-		self.TargetIcon = false
-	end
-
-	--=== InParty indicator ===--
-	if bitAnd(tmpp,0x80000000) then
-		self.InParty = true
-	else
-		self.InParty = false
-	end
-
 
 	-- Disable memory warnings for name reading only
 	showWarnings(false);
@@ -355,6 +337,22 @@ function CPawn:update()
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
 	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
+
+	self.Mounted = bitAnd(attackableFlag, 0x10000000)
+
+	--=== Does icon appear when you click pawn ===--
+	if bitAnd(attackableFlag,0x10) then
+		self.TargetIcon = true
+	else
+		self.TargetIcon = false
+	end
+
+	--=== InParty indicator ===--
+	if bitAnd(attackableFlag,0x80000000) then
+		self.InParty = true
+	else
+		self.InParty = false
+	end
 
 	if( self.Type == PT_MONSTER ) then
 		--printf("%s attackable flag: 0x%X\n", self.Name, attackableFlag);
