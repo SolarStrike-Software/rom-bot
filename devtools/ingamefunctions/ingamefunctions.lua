@@ -1,4 +1,4 @@
-IGF_INSTALLED = 2;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 3;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
@@ -119,12 +119,17 @@ end
 
 -- questname = name of quest
 function igf_questStatus(_questname)
-	local lowername=string.gsub(string.lower(_questname),"'","")
+	local lowername=string.lower(_questname)
 	local c = 1
 	local getname = GetQuestRequest(c,-2)
 	while getname ~= nil do
-		getname=string.gsub(getname,"'","")
-		if string.find(string.lower(getname), lowername) then -- Quest exists
+		local matched
+		if string.find(_questname,".",1,true) then -- Use Pattern Search
+			matched = string.find(string.lower(getname), lowername)
+		else -- Use plain search
+			matched = string.find(string.lower(getname), lowername, 1, true)
+		end
+		if matched then -- Quest exists
 			for i = 1, GetQuestRequest(c,-1) do -- for each goal
 				__,getstatus = GetQuestRequest(c,i)
 				if getstatus == 0 then -- check if not complete

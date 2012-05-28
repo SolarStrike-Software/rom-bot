@@ -1797,7 +1797,17 @@ end
 
 -- normalises a string so it can be used in searches such as "string.find" and "string.match" without error.
 function NormaliseString(_str)
-	_str = string.gsub(_str, string.char(45), ".")	-- Delete "-" in string
+	_str = string.gsub(_str, "%"..string.char(94), ".")	-- Delete "^" in string
+	_str = string.gsub(_str, "%"..string.char(36), ".")	-- Delete "$" in string
+	_str = string.gsub(_str, "%"..string.char(40), ".")	-- Delete "(" in string
+	_str = string.gsub(_str, "%"..string.char(41), ".")	-- Delete ")" in string
+	_str = string.gsub(_str, "%"..string.char(37), ".")	-- Delete "%" in string
+	_str = string.gsub(_str, "%"..string.char(91), ".")	-- Delete "[" in string
+	_str = string.gsub(_str, "%"..string.char(93), ".")	-- Delete "]" in string
+	_str = string.gsub(_str, "%"..string.char(42), ".")	-- Delete "*" in string
+	_str = string.gsub(_str, "%"..string.char(43), ".")	-- Delete "+" in string
+	_str = string.gsub(_str, "%"..string.char(45), ".")	-- Delete "-" in string
+	_str = string.gsub(_str, "%"..string.char(63), ".")	-- Delete "?" in string
 	_str = string.gsub(_str, string.char(34), ".")	-- Delete """ in string
 	_str = string.lower(_str) -- Lower case
 	return _str

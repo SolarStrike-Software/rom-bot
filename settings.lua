@@ -1089,7 +1089,7 @@ function settings.loadProfile(_name)
 	if igf_version then
 		bot.IgfAddon = true;
 		-- Check version
-		if igf_version ~= 2 then -- Change this value to match the value in "ingamefunctions.lua".
+		if igf_version ~= 3 then -- Change this value to match the value in "ingamefunctions.lua".
 			error(language[1006], 0)
 		end
 	else
