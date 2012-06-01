@@ -1,8 +1,19 @@
 include("memorytable.lua");
-include("item.lua");
-include("equipitem.lua");
+include("inventoryitem.lua");
 
---local proc = getProc();
+-- Tooltip parser keywords
+ITEM_TOOLTIP_DURABILITY = {
+	DE		= "Haltbarkeit",
+	FR		= "Structure",
+	ENEU	= "Durability",
+	ENUS	= "Durability",
+	PH		= "Durability",
+	RU		= "\143\224\174\231\173\174\225\226\236",
+	PL		= "Trwa\136o\152\143",
+	ES		= "Durabilidad",
+	SA 		= "Durabilidad",
+	ENAR 	= "Durability",
+};
 
 CInventory = class(
 	function (self)
@@ -10,298 +21,33 @@ CInventory = class(
 		RoMScript("GoodsFrame:Show(), GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
 
 		self.MaxSlots = 240;
-
 		self.BagSlot = {};
-		self.EquipSlots = {};
 		self.Money = memoryReadInt( getProc(), addresses.moneyPtr );
 
 		local timeStart = getTime();
 
 		for slotNumber = 1, self.MaxSlots, 1 do
-			self.BagSlot[slotNumber] = CItem( slotNumber );
+			self.BagSlot[slotNumber] = CInventoryItem( slotNumber );
 		end
 
 		if( settings.profile.options.DEBUG_INV ) then
 			printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
 		end;
 
-		for slotNumber = 1, 22, 1 do
-			self.EquipSlots[slotNumber] = CEquipItem( slotNumber );
-		end
-
 		self.NextItemToUpdate = 1;
 	end
 );
 
---[[function CInventory:update()
-	local timeStart = getTime();
-
-	self.Money = memoryReadInt( proc, addresses.moneyPtr );
-
-	for slotNumber = 1, self.MaxSlots, 1 do
-		self.BagSlot[slotNumber]:update();
-	end
-
---	if( settings.profile.options.DEBUG_INV ) then
-		printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
-		printf( "You have: %d gold.\n", self.Money );
---	end;
-end;]]
-
-function CInventory:updateEquipment()
-	local timeStart = getTime();
-
-	for slotNumber = 1, 22, 1 do
-		self.EquipSlots[ slotNumber ]:update();
-	end
-
-	if( settings.profile.options.DEBUG_INV ) then
-		printf( "Equipment update took: %d\n", deltaTime( getTime(), timeStart ) );
-	end;
-end;
-
-function CInventory:getAmmunitionCount()
-	self:updateEquipment();
-	-- self.EquipSlots[ 9 ]:update(); -- 9 Ammunition slot
-	local count = self.EquipSlots[ 10 ].ItemCount;
-	if count == nil then
-		count = 0;
-	end;
-	return count;
-end;
-
--- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
-function CInventory:reloadAmmunition(type)
-	item = self:bestAvailableConsumable(type);
-	-- if theres no ammunition, open a ammunition bag
-	if not item then
-		if type == "arrow" then
-			openItem = self:bestAvailableConsumable("arrow_quiver");
-		elseif type == "thrown" then
-			openItem = self:bestAvailableConsumable("thrown_bag");
-		end
-
-		if not openItem then
-			return false;
-		end
-
-		local checkItemName = openItem.Name;
-		self:update();
-		yrest(200);
-		item = self:bestAvailableConsumable(type);
-		if( item and checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
-			openItem:update();
-		else
-			openItem:use();
-			yrest( 500 ); --give time to server to respond with the opened item
-		end
-
-		-- after opening, update the inventory (this takes about 10 sec)
-		self:update();
-
-		item = self:bestAvailableConsumable(type);
-	end
-
-	if item then
-		-- use it
-		-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
-		local checkItemName = item.Name;
-		item:update();
-		if( checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name));
-			item:update();
-		else
-			item:use();
-		end
-	end
-end;
-
--- Here for compatibility reasons
-function CInventory:getItemCount(itemId, range)
-	if(itemId == nil) then
-		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );
-		return 0;
-	end
-
-	return self:itemTotalCount( itemId, range );
-end;
-
--- No longer uses cached information, it updates before checking
-function CInventory:itemTotalCount(itemNameOrId, range)
-	local first, last = getInventoryRange(range) -- get bag slot range
-	if first == nil then
-		-- Default values - 1-240 for items, 61-240 for empties.
-		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
-			first = 61
-		else
-			first = 1
-		end
-		last = 240 -- default, search only bags
-	end
-
-	self:update();
-
-	local item
-	local totalCount = 0;
-	for slot = first, last do
-		item = inventory.BagSlot[slot]
- 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
-			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
-				totalCount = totalCount + 1
-			else
-				totalCount = totalCount + item.ItemCount;
-			end
-		end;
-	end;
-
-	return totalCount;
-end;
-
-function CInventory:findItem( itemNameOrId, range)
-	local first, last = getInventoryRange(range) -- get bag slot range
-	if first == nil then
-		first , last = 1, 240 -- default, search all
-	end
-
-	local smallestStack = nil
-
-	self:update()
-
-	for slot = first, last do
-		item = inventory.BagSlot[slot]
- 	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
-			if item.ItemCount > 1 then
-				-- find smallest stack
-				if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
-					smallestStack = item
-				end
-			else
-				return item
-			end
-		end;
-	end;
-
-	return smallestStack
-end
-
-function CInventory:useItem(itemNameOrId)
-	self:update();
-
-	local item = self:findItem(itemNameOrId)
-	if item then
-		item:use();
-		return true, item.Id, item.Name;
-	end;
-
-	return false;
-end;
-
-function CInventory:isEquipped( __space )
--- return true if equipped is equipped at slot and has durability > 0
-	local slot = 16;-- Automatically set slot to 16/MainHand
-	_space = string.lower(__space);
-
-	if ( type(_space) ~= "string" ) then
-		return false;
-	end
-
-	if (_space == "head") then
-		slot = 1;
-	elseif (_space == "gloves") then
-		slot = 2;
-	elseif (_space == "boots") then
-		slot = 3;
-	elseif (_space == "shirt") then
-		slot = 4;
-	elseif (_space == "pants") then
-		slot = 5;
-	elseif (_space == "cloak") then
-		slot = 6;
-	elseif (_space == "belt") then
-		slot = 7;
-	elseif (_space == "shoulder") then
-		slot = 8;
-	elseif (_space == "necklace") then
-		slot = 9;
-	elseif (_space == "ammo") then
-		slot = 10;
-	elseif (_space == "bow") then
-		slot = 11;
-	elseif (_space == "rightring") then
-		slot = 12;
-	elseif (_space == "leftring") then
-		slot = 13;
-	elseif (_space == "rightearring") then
-		slot = 14;
-	elseif (_space == "leftearring") then
-		slot = 15;
-	elseif (_space == "mainhand") then
-		slot = 16;
-	elseif (_space == "offhand") then
-		slot = 17;
-	elseif (_space == "trinket") then
-		slot = 18; -- assumed, not confirmed
-	elseif (_space == "talisman1") then
-		slot = 19; -- slot next to necklace
-	elseif (_space == "talisman2") then
-		slot = 20; -- first slot under necklace next to shoulder
-	elseif (_space == "talisman3") then
-		slot = 21; -- first slot under talisman2 next to gloves
-	elseif (_space == "wings") then
-		slot = 22;
-	end;
-
-	self.EquipSlots[ slot ]:update();
-
-	if( self.EquipSlots[ slot ].Empty ) then
-		return false;
-	end;
-
-	local realDurability = self.EquipSlots[ slot ].Durability / self.EquipSlots[ slot ].MaxDurability * 100;
-
-	if( realDurability <= 0 ) then
-		return false;
-	end;
-
-	return true;
-end;
-
-function CInventory:getDurability( _slot )
-	-- return item durability for a given slot in percent from 0 - 100
-
-	if( not _slot) then _slot = 16; end		-- 16=MainHand | 17=OffHand | 11=Ranged
-
-	self.EquipSlots[ _slot ]:update();
-	return self.EquipSlots[ _slot ].Durability / self.EquipSlots[ _slot ].MaxDurability * 100;
-end;
-
-function CInventory:getMainHandDurability()
-	-- return values between 0 - 1 for compatibility reasons
-	return inventory:getDurability( 16 );		-- 16=Main Hand
-end;
-
--- Make a full update
--- or update slot 1 to _maxslot
 function CInventory:update( _maxslot )
 
 	self.Money = memoryReadInt( getProc(), addresses.moneyPtr );
 
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
-	-- printf(language[1000], _maxslot);  -- Updating
-
-	keyboardSetDelay(0);
 	for slotNumber = 1, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
 	end
-	--printf("\n");
-	keyboardSetDelay(50);
 
-	-- player.InventoryDoUpdate = false;			-- set back update trigger
-	-- player.InventoryLastUpdate = os.time();		-- remember update time
-
-	--cprintf(cli.green, language[1002], settings.profile.options.INV_UPDATE_INTERVAL );	-- inventory update not later then
 end;
 
 -- update x slots until given time in ms is gone
@@ -345,6 +91,137 @@ function CInventory:updateNextSlot(_times)
 	end;
 end;
 
+-- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
+function CInventory:reloadAmmunition(type)
+	local item = self:bestAvailableConsumable(type);
+	-- if theres no ammunition, open a ammunition bag
+	if not item then
+		local openItem
+		if type == "arrow" then
+			openItem = self:bestAvailableConsumable("arrow_quiver");
+		elseif type == "thrown" then
+			openItem = self:bestAvailableConsumable("thrown_bag");
+		end
+
+		if not openItem then
+			return false;
+		end
+
+		local checkItemName = openItem.Name;
+		yrest(300);
+		item = self:bestAvailableConsumable(type);
+		if( item and checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)); -- NOTICE: Item mismatch
+			openItem:update();
+		else
+			openItem:use();
+			yrest( 500 ); --give time to server to respond with the opened item
+		end
+
+		item = self:bestAvailableConsumable(type);
+	end
+
+	if item then
+		-- use it
+		-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
+		local checkItemName = item.Name;
+		item:update();
+		if( checkItemName ~= item.Name ) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)); -- NOTICE: Item mismatch
+			item:update();
+		else
+			item:use();
+		end
+	end
+end;
+
+-- Here for compatibility reasons
+function CInventory:getItemCount(itemId, range)
+	if(itemId == nil) then
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );
+		return 0;
+	end
+
+	return self:itemTotalCount( itemId, range );
+end;
+
+-- No longer uses cached information, it updates before checking
+function CInventory:itemTotalCount(itemNameOrId, range)
+	local first, last = getInventoryRange(range) -- get bag slot range
+	if first == nil then
+		-- Default values - 1-240 for items, 61-240 for empties.
+		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
+			first = 61
+		else
+			first = 1
+		end
+		last = 240 -- default, search only bags
+	end
+
+	local item
+	local totalCount = 0;
+	for slot = first, last do
+		item = inventory.BagSlot[slot]
+		item:update()
+
+ 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
+				totalCount = totalCount + 1
+			else
+				totalCount = totalCount + item.ItemCount;
+			end
+		end;
+	end;
+
+	return totalCount;
+end;
+
+function CInventory:findItem( itemNameOrId, range)
+	local first, last, location = getInventoryRange(range) -- get bag slot range
+
+	if location ~= "inventory" and location ~= nil then
+		printf("You can only use inventory ranges with 'inventory:findItem'. You cannot use '%s' which is in %s\n", range, location)
+	end
+
+	if first == nil then
+		first , last = 1, 240 -- default, search all
+	end
+
+	local smallestStack = nil
+	local item
+
+	for slot = first, last do
+		item = self.BagSlot[slot]
+		item:update()
+ 	    if item.Available and (not item.InUse) and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
+			if (os.clock() - item.LastMovedTime) > ITEM_REUSE_DELAY then
+				if item.ItemCount > 1 then
+					-- find smallest stack
+					if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
+						smallestStack = item
+					end
+				else
+					return item
+				end
+			end
+		end;
+	end;
+
+	return smallestStack
+end
+
+function CInventory:useItem(itemNameOrId)
+	local item = self:findItem(itemNameOrId)
+	if item then
+		item:use();
+		return true, item.Id, item.Name;
+	end;
+
+	return false;
+end;
+
+-- Make a full update
+-- or update slot 1 to _maxslot
 -- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
 	local bestLevel = 0;		-- required player level of a potion
@@ -811,25 +688,90 @@ function getInventoryRange(range)
 	end
 	local rangeLower = string.lower(range)
 	if rangeLower == "all" then
-		return 1, 240
+		return 1, 240, "inventory"
 	elseif rangeLower == "itemshop" then
-		return 1, 50
+		return 1, 50, "inventory"
 	elseif rangeLower == "magicbox" then
-		return 51, 60
+		return 51, 60, "inventory"
 	elseif rangeLower == "bag1" then
-		return 61, 90
+		return 61, 90, "inventory"
 	elseif rangeLower == "bag2" then
-		return 91, 120
+		return 91, 120, "inventory"
 	elseif rangeLower == "bag3" then
-		return 121, 150
+		return 121, 150, "inventory"
 	elseif rangeLower == "bag4" then
-		return 151, 180
+		return 151, 180, "inventory"
 	elseif rangeLower == "bag5" then
-		return 181, 210
+		return 181, 210, "inventory"
 	elseif rangeLower == "bag6" then
-		return 211, 240
-	elseif rangeLower == "bags" then
-		return 61, 240
+		return 211, 240, "inventory"
+	elseif rangeLower == "bag" or rangeLower == "bags" then
+		return 61, 240, "inventory"
+
+	elseif rangeLower == "bank1" then
+		return 1, 40, "bank"
+	elseif rangeLower == "bank2" then
+		return 41, 80, "bank"
+	elseif rangeLower == "bank3" then
+		return 81, 120, "bank"
+	elseif rangeLower == "bank4" then
+		return 121, 160, "bank"
+	elseif rangeLower == "bank5" then
+		return 161, 200, "bank"
+	elseif rangeLower == "bank" or rangeLower == "banks" then
+		return 1, 200, "bank"
+
+	elseif rangeLower == "equipment" then
+		return 0, 21, "equipment"
+	elseif rangeLower == "head" then
+		return 0, 0, "equipment"
+	elseif rangeLower == "hands" then
+		return 1, 1, "equipment"
+	elseif rangeLower == "feet" then
+		return 2, 2, "equipment"
+	elseif rangeLower == "chest" then
+		return 3, 3, "equipment"
+	elseif rangeLower == "legs" then
+		return 4, 4, "equipment"
+	elseif rangeLower == "cape" then
+		return 5, 5, "equipment"
+	elseif rangeLower == "belt" then
+		return 6, 6, "equipment"
+	elseif rangeLower == "shoulders" then
+		return 7, 7, "equipment"
+	elseif rangeLower == "necklace" then
+		return 8, 8, "equipment"
+	elseif rangeLower == "ammunition" then
+		return 9, 9, "equipment"
+	elseif rangeLower == "ranged weapon" then
+		return 10, 10, "equipment"
+	elseif rangeLower == "left ring" then
+		return 11, 11, "equipment"
+	elseif rangeLower == "right ring" then
+		return 12, 12, "equipment"
+	elseif rangeLower == "left earring" then
+		return 13, 13, "equipment"
+	elseif rangeLower == "right earring" then
+		return 14, 14, "equipment"
+	elseif rangeLower == "main hand" then
+		return 15, 15, "equipment"
+	elseif rangeLower == "off hand" then
+		return 16, 16, "equipment"
+	elseif rangeLower == "unknown" then
+		return 17, 17, "equipment"
+	elseif rangeLower == "amulets" then
+		return 18, 20, "equipment"
+	elseif rangeLower == "amulet1" then
+		return 18, 18, "equipment"
+	elseif rangeLower == "amulet2" then
+		return 19, 19, "equipment"
+	elseif rangeLower == "amulet3" then
+		return 20, 20, "equipment"
+	elseif rangeLower == "wings" then
+		return 21, 21, "equipment"
+
+	elseif rangeLower == "guildbank" or rangeLower == "guild" then
+		return 1, 100, "guildbank"
 	end
 end
 
@@ -965,3 +907,44 @@ function CInventory:bestAvailablepotion(type)
 	end
 	return bestItem;
 end
+
+--==     Superseded Functions     ==--
+
+-- Obsolete. Kept for backward compatability
+function CInventory:updateEquipment()
+	if equipment then
+		equipment:update()
+	end
+end;
+
+-- Obsolete. Kept for backward compatability
+function CInventory:getAmmunitionCount()
+	if equipment then
+		return equipment:getAmmunitionCount()
+	end
+end;
+
+-- Obsolete. Kept for backward compatability
+function CInventory:isEquipped( __space )
+	if equipment then
+		return equipment:isEquipped( __space )
+	end
+end;
+
+-- Obsolete. Kept for backward compatability
+function CInventory:getDurability( _slot )
+	if equipment then
+		return equipment:getDurability( _slot )
+	else
+		return 0
+	end
+end;
+
+-- Obsolete. Kept for backward compatability
+function CInventory:getMainHandDurability()
+	-- return values in percent from 0 - 100
+	if equipment then
+		return equipment:getDurability( 15 );		-- 15=Main Hand
+	end
+end;
+

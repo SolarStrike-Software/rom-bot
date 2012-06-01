@@ -1,18 +1,3 @@
---local proc = getProc();
-
--- Tooltip parser keywords
-ITEM_TOOLTIP_DURABILITY = {
-	DE		= "Haltbarkeit",
-	FR		= "Structure",
-	ENEU	= "Durability",
-	ENUS	= "Durability",
-	PH		= "Durability",
-	RU		= "\143\224\174\231\173\174\225\226\236",
-	PL		= "Trwa\136o\152\143",
-	ES		= "Durabilidad",
-	SA 		= "Durabilidad",
-	ENAR 	= "Durability",
-};
 
 -- itemquality -> color code
 ITEMCOLOR = {
@@ -37,29 +22,20 @@ ITEMQUALITYCOLOR = {
 	tonumber("0xFFA864A8"),
 };
 
+ITEM_REUSE_DELAY = 1 -- How long it wont use the item after being placed.
+
 ITEMFLAGs_ITEMSHOPITEM_MASK = 0X4
 ITEMFLAGs_CANBESOLD_MASK = 0X200
--- ITEMFLAGs_NOTDROPEDONPKDEATH_MASK = 0X2
+-- ITEMFLAGs_NOTDROPEDONPKDEATH_MASK = 0X2 -- noted for possible future use
 
 CItem = class(
-	function( self, slotnumber )
-		self.Available = false; -- If slot is in unrented bag then = false
-
-		if slotnumber > 60 then -- Is Bag Item
-			self.BagId = memoryReadUByte(getProc(), addresses.inventoryBagIds + slotnumber - 1) + 1
-		else
-			self.BagId = slotnumber
-		end
-
-		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
+	function( self )
 		self.BaseItemAddress = nil;
 		self.Empty = true;
 		self.Id = 0;
-		--self.BagId = bagId;
 		self.Name = "<EMPTY>";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
-		self.SlotNumber = slotnumber
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 		self.Durability = 0;
@@ -68,7 +44,8 @@ CItem = class(
 		self.Value = 0;
 		self.Worth = 0;
 		self.InUse = false;
-		self.BoundStatus = 1; -- 0 = bound on pickup, 1 = not bound, 2 = binds on equip 3 = binds on equip and bound
+		self.BoundStatus = 1; -- 0 = bound on pickup, 1 = not bound, 2 = binds on equip and bound, 3 = binds on equip and not bound
+		self.Bound = true
 		self.RequiredLvl = 0;
 		self.CoolDownTime = 0;
 		self.LastTimeUsed = 0;
@@ -79,92 +56,16 @@ CItem = class(
 		self.Stats = {}; -- list of named stats and their ids.
 		self.ItemShopItem = false
 		self.CanBeSold = false
-
-		if ( self.Address ~= nil and self.Address ~= 0 ) then
-			self:update();
-		end;
+		self.LastMovedTime = 0
 	end
 );
-
-
-function CItem:use()
-	local canUse = true;
-	local reason = "";
-	self:update();
-
-	if self.Available == false or self.Empty then
-		return
-	end
-
-	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
-	if not self.InUse then
-		if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
-		( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
-			canUse = false;
-			reason = "Cooldown";
-		end;
-	else -- Item is in use, locked, we can't use it
-		reason = "In use";
-		canUse = false;
-	end;
-
-	if ( canUse ) then
-		RoMScript("UseBagItem("..self.BagId..")");
-		self.LastTimeUsed = getTime();
-		yrest( 500 ); -- give time for server to respond with new item count
-	else
-		cprintf( cli.yellow, "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason );
-		logMessage( sprintf( "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason ) );
-	end;
-
-	self:update();
-
-	if ( settings.profile.options.DEBUG_INV ) then
-		cprintf( cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
-	end;
-
-	return self.ItemCount;
-end
-
-function CItem:delete()
-	if self.Available and not self.Empty then
-		RoMScript("PickupBagItem("..self.BagId..");");
-		RoMScript("DeleteCursorItem();");
-
-		-- Update it!
-		self:update();
-	else
-		cprintf(cli.yellow, language[182]);	-- item in unrented bag
-	end
-end
-
-function CItem:__tonumber()
-	return self.Id;
-end
 
 function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
-	local oldBagId = self.BagId;
-
-	if self.SlotNumber > 60 then -- Is Bag Item
-		self.BagId = memoryReadUByte(getProc(), addresses.inventoryBagIds + self.SlotNumber - 1) + 1
-	else
-		self.BagId = self.SlotNumber
-	end
-
-	if self.BagId ~= oldBagId then -- need new address
-		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
-	end
-
-	-- Check if not rented
-	if self.BagId > 120 then
-		self.Available = memoryReadUInt(getProc(), addresses.rentBagBase + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
-	else
-		self.Available = true
-	end
 
 	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
+	self.Available = (self.Available ~= false)
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
 		self.BaseItemAddress = GetItemAddress( self.Id );
@@ -188,6 +89,7 @@ function CItem:update()
 		end;
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
 		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.boundStatusOffset );
+		self.Bound = not bitAnd(self.BoundStatus,1)
 		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
 		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
 		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset );
@@ -277,7 +179,6 @@ function CItem:update()
 		self.Name = "<EMPTY>";
 		self.ItemCount = 0;
 		self.Color = "ffffff";
-		--self.SlotNumber = -1;
 		self.Icon = "";
 		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
 		self.Durability = 0;
@@ -296,82 +197,21 @@ function CItem:update()
 		end;
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
 		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
+		self.Bound = not bitAnd(self.BoundStatus,1)
 	end;
+end
 
-	if( settings.profile.options.DEBUG_INV ) then
-		if ( self.Empty ) then
-			printf( "BagID: %d is <EMPTY>.\n", self.BagId );
-		else
-			local _color = cli.white;
-			printf( "BagID: %d\tcontains: %d\t (%d) ", self.BagId, self.ItemCount, self.Id );
-			if ( self.Quality == 1 ) then
-				_color = cli.lightgreen;
-			end;
-			if ( self.Quality == 2 ) then
-				_color = cli.blue;
-			end;
-			if ( self.Quality == 3 ) then
-				_color = cli.purple;
-			end;
-			if ( self.Quality == 4 ) then
-				_color = cli.yellow;
-			end;
-			if ( self.Quality == 5 ) then
-				_color = cli.forestgreen;
-			end;
-			cprintf(  _color, "[%s]\n", self.Name );
-		end;
-	end;
---[[
---	local old_BagId = self.BagId;	-- remember bagId before update
-	local itemLink, bagId, icon, name, itemCount = RoMScript("GetBagItemLink(GetBagItemInfo("..self.SlotNumber..")),GetBagItemInfo("..self.SlotNumber..")");
-	local id, color;
 
--- FIX: THERE SEEM TO BE A BUG IN THE ROM CLIENT COMMUNICATION
--- in very rar cases, the client deliver an empty or wrong bagId
--- e.g. if we press a modifier while running the bot in background
--- sometimes slot 1-10 don't have bagid 61-70? I don't know the rule :-(
--- so we can only check missing bagIds, but not wrong bagIds
---	if( old_BagId ~= nil  and				-- not the default value
---		old_BagId ~= 0	  and
---		old_BagId ~= bagId ) then			-- but a wrong value back, so we skip that item update
-	if( type(bagId) ~= "number" or			-- no valid bagId return
-		bagId < 1	or						-- bag I-VI are from 61-240 / itemshop bag from 1-50 / arcaner transmutor from 51-55
-		bagId > 240 ) then
-		cprintf(cli.yellow, "Item:update(): empty or wrong bagid return, we don't update slot %s name %s\n", self.SlotNumber, self.Name);
-		return;		-- dont' change the values, the new ones are wrong
+function CItem:delete()
+	if self.Available and not self.Empty then
+		self:pickup()
+
+		if RoMScript("CursorHasItem()") then
+			RoMScript("DeleteCursorItem()")
+		end
+
+		self:update()
 	end
-
-	if (itemLink == "") then		-- no item in slot
-		self = CItem(self.SlotNumber);
-		self.BagId = bagId;			-- always there
---		self.ItemCount = 0;			-- 0 if no item at the slot
---		self.Name = "";
---		self.Id	= 0;
-	else
-		id, color = self:parseItemLink(itemLink);
-
-		self.Id = id			     -- The real item id
-		self.BagId = bagId;          -- GetBagItemLink and other RoM functions need this..
-    	self.Name = name;
-    	self.Icon = icon;
-    	self.ItemCount = itemCount;  -- How many?
-    	self.Color = color; 		 -- Rarity
-    	self.ItemLink = itemLink     -- Item link, so that you can use it in chat messages
-	end
-
-	if( settings.profile.options.DEBUG_INV) then
-		local msg = "DEBUG item:update(): ";
-		if(self.SlotNumber) then msg = msg.."slot "..self.SlotNumber; end;
-		if(self.BagId) then msg = msg.." bagId "..self.BagId; end;
-		if(self.Id) then msg = msg.." Id "..self.Id; else msg = msg .. "<unable to parse Id> "; end;
---		if(itemLink) then msg = msg.."/"..itemLink; end;
-		if(self.Name) then msg = msg.." name "..self.Name; end;
-		if(self.ItemCount) then msg = msg.." qty "..self.ItemCount; end;
-		cprintf(cli.lightblue, "%s\n", msg);				-- Open/eqipt item:
-	end;
-
-]]--
 end
 
 function CItem:getGameTooltip(_place)
@@ -397,11 +237,22 @@ function CItem:getGameTooltip(_place)
 --	return tooltip_right;
 -- ----------------------------------
 
+	local setcommand
+	if self.Location == "inventory" then
+		setcommand = "SetBagItem"
+	elseif self.Location == "equipment" then
+		setcommand = "SetEquipmentItem"
+	elseif self.Location == "bank" then
+		setcommand = "SetBankItem"
+	else
+		print("No getGameTooltip \"SetItem\" function defined for \""..self.Location.."\"class.")
+	end
+
 	if _place ~= "Left" then
 		_place = "Right"
 	end
 
-	local t = { RoMScript("igf_GetTooltip('".._place.."',"..self.BagId..")") }
+	local t = { RoMScript("igf_GetTooltip('".._place.."','"..setcommand.."',"..self.BagId..")") }
 
 --cprintf(cli.yellow, "it %s\n", t[1]);
 --cprintf(cli.yellow, "it %s\n", t[2]);
@@ -409,11 +260,6 @@ function CItem:getGameTooltip(_place)
 --cprintf(cli.yellow, "it %s\n", t[4]);
 --cprintf(cli.yellow, "it %s\n", t[5]);
 --cprintf(cli.yellow, "it %s\n", t[6]);
---
---	local code1 = "GameTooltip:SetBagItem("..self.BagId..");";
---	local code2 = "local t={};for i=1,40,1 do local l,t=_G[\"GameTooltipText".._place.."\"..i];x=l:GetText();l:SetText(\"\");t[i]=x;end;return t;";
---	RoMScript(code1);	-- load the tooltip for the item
---	local tooltip = RoMScript(code2);	-- read the tooltip
 
 	if( t[1]  and
 		t[1] ~= false ) then
@@ -439,15 +285,15 @@ function CItem:getColorString()
 end
 
 function CItem:moveTo(bag)
-	--inventory:update()
+	self:update()
+
 	if self.Empty or not self.Available then
 		return
 	end
 
-	local first, last = getInventoryRange(bag)
-	if first == nil or bag == "all" then
-		printf("You must specify an inventory location to move the item to. You cannot use \"all\".\n")
-		return
+	-- Cursor should be clear before starting a move
+	if cursor:hasItem() then
+		cursor:clear()
 	end
 
 	-- Check if itemshop item
@@ -456,59 +302,113 @@ function CItem:moveTo(bag)
 		return
 	end
 
+	-- Get range to move to
+	local first, last, location = getInventoryRange(bag)
+	if first == nil or bag == "all" then
+		printf("You must specify a valid location to move the item to. You cannot use \"all\".\n")
+		return
+	end
+
 	-- Check if already in bag
-	if self.SlotNumber >= first and self.SlotNumber <= last then
+	if self.SlotNumber >= first and self.SlotNumber <= last and self.Location == location then
+		return
+	end
+
+	-- Can't move bound items to guild bank
+	if location == "guildbank" and self.Bound then
+		return
+	end
+
+	-- Get the tolocation class
+	local toLocation
+	if location == "inventory" then
+		toLocation = inventory
+	elseif location == "bank" then
+		toLocation = bank
+	elseif location == "equipment" then
+		toLocation = equipment
+	elseif location == "guildbank" then
+		toLocation = guildbank
+	end
+
+	-- Deal with moving to equipment first. It has special needs.
+	if location == "equipment" then
+		-- Check if is type equipment
+		if self.ObjType ~= 0 and self.ObjType ~= 1 then
+			return
+		end
+
+		if bag == "equipment" or bag == "amulets" then -- No particular slot. Just use item to equip.
+			self:use()
+		else
+			self:pickup()
+			equipment.BagSlot[first]:pickup()
+		end
+
 		return
 	end
 
 	-- Try to find a stack to merge with
-	local toItem = nil
 	if self.MaxStack > 1 and self.ItemCount < self.MaxStack then
-		local tmpItem = inventory:findItem(self.Id, bag) -- returns smallest stack in destination bag
-		if tmpItem and tmpItem.ItemCount + self.ItemCount <= self.MaxStack then -- can merge with this stack
-			toItem = tmpItem
+		for slot = first, last do
+			local toItem = toLocation.BagSlot[slot]
+			toItem:update()
+			if toItem.Available and self.Id == toItem.Id and toItem.ItemCount < toItem.MaxStack then -- merge
+				if (location == "guildbank" or self.Location == "guildbank") and location ~= self.Location then
+					-- Guild bank need 2 step merge
+					local tmpempty = toLocation:findItem(0,bag)
+					if tmpempty then
+
+						self:pickup()
+
+						-- If couldn't pick up, give up
+						if not cursor:hasItem() then
+							return
+						end
+
+						tmpempty:pickup() -- put down
+
+						-- If failed to place item then return to origin
+						if cursor:hasItem() then
+							self:pickup()
+							return
+						end
+
+						tmpempty:pickup() -- pick up
+
+						toItem:pickup()
+
+						-- If failed to place item then return to origin
+						if cursor:hasItem() then
+							tmpempty:pickup()
+						end
+					end
+				else
+					-- Normal merge
+					self:pickup()
+
+					toItem:pickup()
+				end
+
+				if self.ItemCount + toItem.ItemCount <= self.MaxStack then
+					return
+				else
+					yrest(ITEM_REUSE_DELAY)
+				end
+			end
 		end
 	end
 
-	-- Else we find an empty slot to place item
-	if toItem == nil then
-		toItem = inventory:findItem(0, bag)
-	end
+	-- Put the rest in an empty slot
+	if not self.Empty then
+		local empty = toLocation:findItem(0, bag)
 
-	-- If have 'toItem' then move there.
-	if toItem then
-		-- Pick up
-		local x = 0
-		repeat
-			x = x + 1
-			RoMScript("PickupBagItem("..self.BagId..");");
-			local c = 0 repeat c = c + 1 yrest(50) until RoMScript("CursorHasItem()") or c > 10 -- Wait max time about 500ms
-		until RoMScript("CursorHasItem()") or x >= 4 -- try to pick up max 4 times (about 2s)
+		if empty then
+			self:pickup()
 
-		-- If couldn't pick up, give up
-		if not RoMScript("CursorHasItem()") then
-			return
+			empty:pickup()
+			if self.Location == "guildbank" then yrest(500) end
 		end
-
-		-- Place item
-		x = 0
-		repeat
-			x = x + 1
-			RoMScript("PickupBagItem("..toItem.BagId..");");
-			local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20 -- Wait max time about 1000ms
-		until not RoMScript("CursorHasItem()") or x >= 3  -- try to drop max 3 times (about 3s)
-
-		-- If failed to place item then return to origin
-		if RoMScript("CursorHasItem()") then
-			x = 0
-			repeat
-				x = x + 1
-				RoMScript("PickupBagItem("..self.BagId..");");
-				local c = 0 repeat c = c + 1 yrest(50) self:update() until ((not RoMScript("CursorHasItem()")) and (not self.InUse)) or c > 20 -- Wait max time about 1000ms
-			until not RoMScript("CursorHasItem()") or x >= 3  -- try to drop max 3 times (about 3s)
-		end
-		self:update()
-		toItem:update()
 	end
 end
 
@@ -552,3 +452,69 @@ function CItem:getTypes()
 
 	return objtype, objsubtype, objsubsubtype, objsubsubuniquetype
 end
+
+function CItem:pickup()
+	-- FACTS ABOUT PICKING UP ITEMS
+	--
+	-- 1. The moment you pick up an item, the slot becomes 'InUse' and remains so until it can be used again.
+	-- 2. The moment you pick up an item, the cursor has an item - 'cursor:hasItem()'.
+	-- 3. The moment you put an item down, the cursor wont have an item.
+	-- 4. The moment you put an item down, the 'to' slot wont neccessarily be 'InUse' yet. That's why I added the LastMovedTime to it so it doesn't get used again right away.
+
+	self:update()
+
+	-- Not rented or closed
+	if not self.Available then
+		return
+	end
+
+	-- Wait till ready.
+	if self.InUse and cursor:hasItem() and cursor.ItemLocation == self.Location and cursor.ItemBagId == self.BagId then
+		-- Returning item. No waiting.
+
+	elseif self.InUse then
+		-- Wait till not in use
+		local starttime = os.clock()
+		repeat yrest(50) self:update() until (not self.InUse) or (os.clock() - starttime) > ITEM_REUSE_DELAY
+
+	elseif (os.clock() - self.LastMovedTime) < ITEM_REUSE_DELAY then
+		-- Wait delay time. Break if becomes locked
+		repeat yrest(50) self:update() until self.InUse or (os.clock() - self.LastMovedTime) > ITEM_REUSE_DELAY
+
+		-- Wait until it is no longer locked.
+		if self.InUse then
+			repeat yrest(50) self:update() until (not self.InUse) or (os.clock() - self.LastMovedTime) > ITEM_REUSE_DELAY
+		end
+	end
+
+	-- Still InUse. Abort
+	if self.InUse then
+		if cursor:hasItem() then
+			printf("Failed to place item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, Self.Location)
+		else
+			printf("Failed to pickup item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, Self.Location)
+		end
+		return
+	end
+
+	local pickupmethod
+	if self.Location == "inventory" then
+		pickupmethod = "PickupBagItem"
+	elseif self.Location == "equipment" then
+		pickupmethod = "PickupEquipmentItem"
+	elseif self.Location == "bank" then
+		pickupmethod = "PickupBankItem"
+	elseif self.Location == "guildbank" then
+		pickupmethod = "GuildBank_PickupItem"
+	else
+		error("No \"pickup\" function defined for \""..self.Location.."\"class.")
+	end
+
+	-- If dropping, remember last move time
+	if cursor:hasItem() then
+		self.LastMovedTime = os.clock()
+	end
+
+	RoMScript(pickupmethod.."("..self.BagId..")");
+end
+

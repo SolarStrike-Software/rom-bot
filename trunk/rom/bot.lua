@@ -32,7 +32,11 @@ include("addresses.lua");
 include("database.lua");
 include("functions.lua");
 include("classes/player.lua");
+include("classes/equipment.lua");
 include("classes/inventory.lua");
+include("classes/bank.lua");
+include("classes/guildbank.lua");
+include("classes/cursor.lua");
 include("classes/camera.lua");
 include("classes/waypoint.lua");
 include("classes/waypointlist.lua");
@@ -230,7 +234,11 @@ function main()
 
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 
+	equipment = CEquipment()
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
+	bank = CBank()
+	guildbank = CGuildbank()
+	cursor = CCursor()
 
 	LoadItemTypes()     -- Needs macros to already be set up.
 
