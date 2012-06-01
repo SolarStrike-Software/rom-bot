@@ -354,7 +354,6 @@ local updatePatterns =
 		startloc = 0x840000,
 	},
 
-
 	pawnPetPtr_offset = {
 		pattern = string.char(0x8B, 0xE9,
 			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -610,6 +609,42 @@ local updatePatterns =
 		offset = 4,
 		startloc = 0x630000,
 	},
+
+	bankOpenPtr = {
+		pattern = string.char(
+			0x8B, 0x4C, 0x24, 0xFF,
+			0xA1, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x56,
+			0x8B, 0x30),
+		mask = "xxx?x????xxx",
+		offset = 5,
+		startloc = 0x780000,
+	},
+
+	staticGuildBankBase = {
+		pattern = string.char(
+			0xC2, 0xFF, 0xFF,
+			0x8B, 0x96, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x52,
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x5F),
+		mask = "x??xx????xx????xx????x",
+		offset = 11,
+		startloc = 0x5E0000,
+	},
+
+	cursorBase = {
+		pattern = string.char(
+			0x56,
+			0x8B, 0xF1,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x85, 0xC9,
+			0x57),
+		mask = "xxxxx????xxx",
+		offset = 5,
+		startloc = 0x5F0000,
+	},
 }
 
 
@@ -617,7 +652,16 @@ local updatePatterns =
 -- from RoM, even if they have moved.
 -- Only works on MicroMacro v1.0 or newer.
 function findOffsets()
-	for name,values in pairs(updatePatterns) do
+	-- Sort names so the output is in order
+    local new_patterns = {}
+	for n in pairs(updatePatterns) do
+		table.insert(new_patterns, n)
+	end
+	table.sort(new_patterns)
+
+    for __,name in ipairs(new_patterns) do
+		local values = updatePatterns[name]
+
 		local found = 0;
 		local readFunc = nil;
 		local pattern = values["pattern"];
@@ -689,8 +733,12 @@ function findOffsets()
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x6934);
 	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16758);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xB1EC);
+	assumptionUpdate("rentBankBase", addresses.charClassInfoBase + 0xB214);
+	assumptionUpdate("rentGuildBankBase", addresses.charClassInfoBase + 0xB264);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x3960);
 	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179E4);
+	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x693C);
+	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0xDB80);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)

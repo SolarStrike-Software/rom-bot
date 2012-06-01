@@ -1950,3 +1950,9 @@ function FindSkillBookSkill(_nameorid, _tabs)
 
 	return false
 end
+
+function ItemQueueCount()
+	-- Returns the number of items in the ItemQueue. That's the queue of items going into the backpack.
+	return memoryReadInt(getProc(), addresses.itemQueueCount)
+end
+
