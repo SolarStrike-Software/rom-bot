@@ -31,6 +31,7 @@ CEggPet = class(
 	function (self, eggSlot)
 		self.EggSlot = eggSlot
 		self.Name = ""
+		self.Available = false
 		self.EggId = 0
 		self.PetId = 0
 		self.Level = 0
@@ -70,8 +71,14 @@ function CEggPet:update()
 		return
 	end
 
+	if self.EggSlot > 2 then
+		self.Available = memoryReadUInt(getProc(), addresses.rentEggSlotBase + (self.EggSlot - 3) * 4) ~= 0xFFFFFFFF
+	else
+		self.Available = true
+	end
+
 	self.EggId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetEggId_offset)
-	if self.EggId ~= nil and self.EggId > 0 then -- There is an egg pet
+	if self.EggId ~= nil and self.EggId > 0 and self.Available then -- There is an egg pet
 		self.Name = memoryReadString(getProc(), eggPetAddress)
 		self.PetId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetPetId_offset)
 		self.Level = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetLevel_offset)
@@ -130,7 +137,6 @@ function CEggPet:update()
 		self.Level = 0
 		self.Crafting = false
 		self.Summoned = false
-		self.Id = 0
 		self.Exp = 0
 		self.MaxExp = 0
 		self.TP = 0

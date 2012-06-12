@@ -134,10 +134,10 @@ local updatePatterns =
 	},
 
 	staticEquipBase = {
-		pattern = string.char(0x0F, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0xC8, 0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF, 0x8D, 0x64, 0x24),
-		mask = "xx????xxx????x????xxx",
+		pattern = string.char(0x0F, 0x8D, 0xFF, 0xFF, 0xFF, 0xFF, 0x8B, 0xC8, 0xE9, 0xFF, 0xFF, 0xFF, 0xFF, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF),
+		mask = "xx????xxx????x????",
 		offset = 14,
-		startloc = 0x5E0000,
+		startloc = 0x5F0000,
 	},
 
 	boundStatusOffset = {
@@ -612,13 +612,22 @@ local updatePatterns =
 
 	bankOpenPtr = {
 		pattern = string.char(
-			0x8B, 0x4C, 0x24, 0xFF,
-			0xA1, 0xFF, 0xFF, 0xFF, 0xFF,
-			0x56,
-			0x8B, 0x30),
-		mask = "xxx?x????xxx",
-		offset = 5,
-		startloc = 0x780000,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x01,
+			0x8B, 0x40, 0xFF,
+			0xFF, 0xE0,
+			0xCC,
+			0xCC,
+			0xCC,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x01,
+			0x8B, 0x50, 0xFF,
+			0x68, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xFF, 0xD2,
+			0xC3),
+		mask = "xx????xxxx?xxxxxxx????xxxx?x????xxx",
+		offset = 2,
+		startloc = 0x680000,
 	},
 
 	staticGuildBankBase = {
@@ -645,6 +654,35 @@ local updatePatterns =
 		offset = 5,
 		startloc = 0x5F0000,
 	},
+
+	guildBankOpen_offset = {
+		pattern = string.char(
+			0xD9, 0x9E, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xC6, 0x86, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x5E,
+			0x83, 0xC4),
+		mask = "xx????xx?????x????xxx",
+		offset = 8,
+		startloc = 0x850000,
+	},
+
+	high9sBase = {
+		pattern = string.char(
+			0x57,
+			0x8D, 0x4C, 0x24, 0xFF,
+			0xFF, 0x15, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8D, 0x54, 0x24, 0xFF,
+			0x52),
+		mask = "xxxx?xx????xx????xxx?x",
+		offset = 13,
+		startloc = 0x680000,
+	},
+
+
+
+
 }
 
 
@@ -727,18 +765,18 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("eggPetBaseAddress", addresses.charClassInfoBase + 0xDC28);
-	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xA644);
-	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0xF7E0);
+	assumptionUpdate("eggPetBaseAddress", addresses.charClassInfoBase + 0xF388);
+	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xBDA4);
+	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x10F40);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x6934);
-	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x16758);
-	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xB1EC);
-	assumptionUpdate("rentBankBase", addresses.charClassInfoBase + 0xB214);
-	assumptionUpdate("rentGuildBankBase", addresses.charClassInfoBase + 0xB264);
+	assumptionUpdate("partyMemberList_address", addresses.high9sBase + 0xE88);
+	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xC94C);
+	assumptionUpdate("rentBankBase", addresses.rentBagBase + 0x28);
+	assumptionUpdate("rentEggSlotBase", addresses.rentBagBase + 0x78);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x3960);
-	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x179E4);
+	assumptionUpdate("tablesBase", addresses.high9sBase + 0x2114);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x693C);
-	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0xDB80);
+	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0xF2E0);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)

@@ -14,7 +14,7 @@ CGuildbankItem = class(CItem,
 );
 
 function CGuildbankItem:update()
-	local baseAddress = memoryReadIntPtr(getProc(),addresses.staticGuildBankBase,{0xB4, 0x0}) + 0x10
+	local baseAddress = memoryReadIntPtr(getProc(),addresses.staticGuildBankBase,{0xC4, 0x0}) + 0x10
 	self.Address = baseAddress + ( (self.BagId - 1) * 68 );
 
 	-- Check if available
