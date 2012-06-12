@@ -490,9 +490,9 @@ function CItem:pickup()
 	-- Still InUse. Abort
 	if self.InUse then
 		if cursor:hasItem() then
-			printf("Failed to place item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, Self.Location)
+			printf("Failed to place item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, self.Location)
 		else
-			printf("Failed to pickup item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, Self.Location)
+			printf("Failed to pickup item %s in slot %d of the %s. Slot is locked.\n", self.Name, self.BagId, self.Location)
 		end
 		return
 	end
