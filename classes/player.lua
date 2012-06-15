@@ -83,7 +83,7 @@ function CPlayer:update()
 	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
 	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
 
-	self.ActualSpeed = memoryReadRepeat("float", getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
+	self.ActualSpeed = memoryReadFloatPtr(getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
 	self.Moving = (self.ActualSpeed > 0)
 
 	local tmp = self:getBuff(503827)
