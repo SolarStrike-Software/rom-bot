@@ -975,7 +975,9 @@ function settings.loadProfile(_name)
 			string.lower(name) == "skills_priest"  or
 			string.lower(name) == "skills_knight"  or
 			string.lower(name) == "skills_warden"  or
-			string.lower(name) == "skills_druid" ) then
+			string.lower(name) == "skills_druid"  or
+			string.lower(name) == "skills_warlock"  or
+			string.lower(name) == "skills_champion" ) then
 				loadSkills(v);
 		else		-- warning for other stuff and misspellings
 			if ( string.lower(name) ~= "skills_warrior"     and
@@ -984,8 +986,10 @@ function settings.loadProfile(_name)
 	 		     string.lower(name) ~= "skills_mage"        and
 			     string.lower(name) ~= "skills_priest"      and
 			     string.lower(name) ~= "skills_knight"      and
-			     string.lower(name) ~= "skills_warden"  and
-			     string.lower(name) ~= "skills_druid" )     then
+			     string.lower(name) ~= "skills_warden"      and
+			     string.lower(name) ~= "skills_druid"       and
+				 string.lower(name) ~= "skills_warlock"     and
+				 string.lower(name) ~= "skills_champion" ) then
 				cprintf(cli.yellow, tostring(language[60]), string.lower(tostring(name)),
 					tostring(hf_temp));
 			end;
@@ -1169,13 +1173,15 @@ function settings.loadSkillSet(class)
 		if( player.Class1 == CLASS_WARRIOR or
 		    player.Class1 == CLASS_ROGUE   or
 		    player.Class1 == CLASS_WARDEN  or
-		    player.Class1 == CLASS_KNIGHT  ) then
+		    player.Class1 == CLASS_KNIGHT  or
+			player.Class1 == CLASS_CHAMPION  ) then
 			settings.profile.options.COMBAT_TYPE  = "melee";
 		elseif(
 		    player.Class1 == CLASS_PRIEST  or
 		    player.Class1 == CLASS_SCOUT   or
 		    player.Class1 == CLASS_DRUID   or
-		    player.Class1 == CLASS_MAGE    ) then
+		    player.Class1 == CLASS_MAGE    or
+			player.Class1 == CLASS_WARLOCK ) then
 			settings.profile.options.COMBAT_TYPE  = "ranged";
 		else
 			error("undefined player.Class1 in settings.lua", 0);

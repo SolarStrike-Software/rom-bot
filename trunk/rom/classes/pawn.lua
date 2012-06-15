@@ -7,6 +7,7 @@ PT_NODE = 4;
 
 RACE_HUMAN = 0;
 RACE_ELF = 1;
+RACE_DWARF = 2;
 
 CLASS_NONE = -1;
 CLASS_WARRIOR = 1;
@@ -17,6 +18,8 @@ CLASS_PRIEST = 5;
 CLASS_KNIGHT = 6;
 CLASS_WARDEN = 7;
 CLASS_DRUID = 8;
+CLASS_WARLOCK = 9;
+CLASS_CHAMPION = 10;
 
 NTYPE_WOOD = 1
 NTYPE_ORE = 2
@@ -36,8 +39,10 @@ armorMap = {
 	[CLASS_MAGE] = "cloth",
 	[CLASS_PRIEST] = "cloth",
 	[CLASS_KNIGHT] = "chain",
-	[CLASS_WARDEN] = "chain",	-- ???
-	[CLASS_DRUID] = "cloth",		-- ???
+	[CLASS_WARDEN] = "chain",
+	[CLASS_DRUID] = "cloth",
+	[CLASS_WARLOCK] = "cloth",
+	[CLASS_CHAMPION] = "chain",
 	};
 
 local classEnergyMap = {
@@ -50,6 +55,8 @@ local classEnergyMap = {
 	[CLASS_KNIGHT] = "mana",
 	[CLASS_WARDEN] = "mana",
 	[CLASS_DRUID] = "mana",
+	[CLASS_WARLOCK] = "concentration",
+	[CLASS_CHAMPION] = "rage",
 };
 
 CPawn = class(
