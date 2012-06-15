@@ -212,6 +212,22 @@
 		<skill name="DRUID_EARTH_ARROW"      	hotkey="MACRO" priority="80" />
 	</skills_druid>
 
+	<skills_warlock>
+		<skill name="WARLOCK_PERCEPTION_EXTRACTION"   	hotkey="MACRO" priority="90" />
+		<skill name="WARLOCK_WARP_CHARGE"   			hotkey="MACRO" priority="80" />
+		<skill name="WARLOCK_PSYCHIC_ARROWS"   			hotkey="MACRO" priority="70" />
+	</skills_warlock>
+
+	<skills_champion>
+		<skill name="CHAMPION_FORGE" 		  		hotkey="MACRO" priority="110" />
+		<skill name="CHAMPION_RUNE_PULSE"   		hotkey="MACRO" priority="100" pullonly="true" />
+		<skill name="CHAMPION_RUNE_DRAW" 	  		hotkey="MACRO" priority="90" pullonly="true" />
+		<skill name="CHAMPION_ELECTROCUTION"   		hotkey="MACRO" priority="80" />
+		<skill name="CHAMPION_ENERGY_INFLUX_STRIKE" hotkey="MACRO" priority="70" />
+		<skill name="CHAMPION_HEAVY_BASH"   		hotkey="MACRO" priority="60" />
+	</skills_champion>
+
+
 	<onLoad><![CDATA[
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here
