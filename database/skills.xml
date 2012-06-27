@@ -350,6 +350,7 @@
 	<skill name="SCOUT_ARCHERS_GLORY" id="495477" concentration="35" cooldown="180" type="buff" buffname="506451" target="self" />
 	<skill name="SCOUT_SHATTERSTAR_STORM" id="495478" concentration="30" cooldown="60" range="120" type="damage" target="enemy" />
 	<skill name="SCOUT_ARROW_SHIELD" id="495714" cooldown="120" type="buff" buffname="506867" target="self" />
+	<skill name="SCOUT_CREATE_TENDRILS" id="495729" type="buff" casttime="4" autouse="false"/>
 
 	<!-- Unknown skills or superseded names-->
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
@@ -380,7 +381,7 @@
 	<skill name="DRUID_MOTHER_EARTHS_FOUNTAIN" id="493529" mana="60" range="200" cooldown="5" type="heal" target="self" />
 	<skill name="DRUID_WITHERING_SEED" id="493545" mana="50" range="180" cooldown="20"/>
 	<skill name="DRUID_MOTHER_NATURES_WRATH" id="493549" mana="65" range="180" cooldown="15" type="dot" buffname="503819"/>
-	<skill name="DRUID_SUMMON_SANDSTORM" id="493542" mana="70" range="180" cooldown="8" type="damage" clicktocast="true"/>
+	<skill name="DRUID_SUMMON_SANDSTORM" id="493542" mana="70" range="180" cooldown="8" type="damage" clicktocast="true" aoerange="40"/>
 
 	<!-- Elite -->
 	<skill name="DRUID_EARTH_CHAIN" id="494025" mana="35" range="180" casttime="2" cooldown="4" type="damage" target="enemy" aoecenter="target" aoerange="60" />
@@ -437,28 +438,40 @@
 
 
 	<!-- Warlock skills -->
-	<skill name="WARLOCK_PSYCHIC_ARROWS" id="497957" concentration="20" range="225" castingtime="2" type="damage" target="enemy"/>
-	<skill name="WARLOCK_WEAKENING_WEAVE_CURSE" id="497957" concentration="20" range="200" castingtime="1" type="damage" target="enemy"/>
-	<skill name="WARLOCK_WARP_CHARGE" id="497958" concentration="30" range="200" cooldown="6" type="damage" target="enemy"/>
-	<skill name="WARLOCK_SOUL_PAIN" id="497964" concentration="15" range="225" casttime="1" type="damage" target="enemy"/>
+	<skill name="WARLOCK_PSYCHIC_ARROWS" id="497957" concentration="20" range="225" castingtime="2" type="damage" target="enemy" />
+	<skill name="WARLOCK_WEAKENING_WEAVE_CURSE" id="497957" concentration="20" range="200" castingtime="1" type="damage" target="enemy" />
+	<skill name="WARLOCK_WARP_CHARGE" id="497958" concentration="30" range="200" cooldown="6" type="damage" target="enemy" />
+	<skill name="WARLOCK_SOUL_PAIN" id="497964" concentration="15" range="225" casttime="1" type="damage" target="enemy" />
+	<skill name="WARLOCK_SURGE_OF_MALICE" id="497966" concentration="20" range="225" cooldown="6" type="damage" target="enemy" aoecenter="target" />
+	<skill name="WARLOCK_SACES_SCORN" id="498541" concentration="30" range="225" casttime="1" cooldown="10" type="damage" target="enemy" />
+	<skill name="WARLOCK_PERPLEXED" id="498935" concentration="25" range="150" casttime="2" cooldown="10" type="buff" buffname="621184" target="enemy" />
+	<skill name="WARLOCK_PERCEPTION_EXTRACTION" id="497960" concentration="30" range="200" cooldown="6" type="damage" target="enemy" />
+	<skill name="WARLOCK_SHIELD_OF_SOLID_MIND" id="497965" concentration="35" range="150" type="buff" target="friendly" buffname="621189" inbattle="true" />
+	<skill name="WARLOCK_SUBLIMATION_WEAVE_CURSE" id="498914" concentration="50" type="buff" target="self" buffname="621736" />
+	<skill name="WARLOCK_HEART_COLLECTION_STRIKE" id="498545" range="225" cooldown="8" type="damage" target="enemy" />
 
-	<skill name="WARLOCK_PERPLEXED" id="498935" concentration="25" range="150" casttime="2" cooldown="10" type="buff" buffname="621184" target="enemy"/>
-	<skill name="WARLOCK_PERCEPTION_EXTRACTION" id="497960" concentration="30" range="200" cooldown="6" type="damage" target="enemy"/>
+	<!-- Elite -->
+	<skill name="WARLOCK_MIND_RUNE" concentration="15" id="498665" type="buff" target="self" buffname="621395" />
 
 
 	<!-- Champion skills -->
-	<skill name="CHAMPION_ELECTROCUTION" id="498522" rage="20" range="50" cooldown="8" type="damage" target="enemy"/>
-	<skill name="CHAMPION_HEAVY_BASH" id="498521" rage="20" range="50" type="damage" target="enemy"/>
-	<skill name="CHAMPION_ENERGY_INFLUX_STRIKE" id="498526" rage="25" range="50" cooldown="6" type="damage" target="enemy"/>
+	<skill name="CHAMPION_ELECTROCUTION" id="498522" rage="20" range="50" cooldown="8" type="damage" target="enemy" />
+	<skill name="CHAMPION_HEAVY_BASH" id="498521" rage="20" range="50" type="damage" target="enemy" />
+	<skill name="CHAMPION_ENERGY_INFLUX_STRIKE" id="498526" rage="25" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="CHAMPION_SHOCK_STRIKE" id="498534" rage="25" range="100" cooldown="6" type="damage" target="enemy" aoecenter="self" />
+	<skill name="CHAMPION_FORGE" id="498523" type="buff" buffname="621167" target="self" />
+	<skill name="CHAMPION_RUNE_DRAW" id="498564" range="150" cooldown="40" type="damage" target="enemy" />
+	<skill name="CHAMPION_RUNE_PULSE" id="498529" range="225" casttime="2" cooldown="6" type="damage" target="enemy" />
+	<skill name="CHAMPION_FEARLESS_BLOW" id="498531" rage="15" range="200" cooldown="25" type="damage" target="enemy" />
+	<skill name="CHAMPION_KINETIC_BURN" id="498481" rage="30" range="50" cooldown="60" type="damage" target="enemy" aoecenter="player" />
 
-	<skill name="CHAMPION_FORGE" id="498523" type="buff" buffname="621167" target="self"/>
-	<skill name="CHAMPION_RUNE_DRAW" id="498564" range="150" cooldown="40" type="damage" target="enemy"/>
-	<skill name="CHAMPION_RUNE_PULSE" id="498529" range="225" casttime="2" cooldown="6" type="damage" target="enemy"/>
+	<!-- Elite -->
+	<skill name="CHAMPION_SOUL_FORGE_MYSTERY" id="498652" type="buff" buffname="621339" target="self" />
 
 
 	<!-- ALL -->
-	<skill name="ALL_SPIRIT_HERB_ESSENCE" id="495491" casttime="3" cooldown="8" type="heal" target="self" inbattle="false"/>
-	<skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" id="495492" casttime="3" type="heal" target="self" inbattle="false"/>
+	<skill name="ALL_SPIRIT_HERB_ESSENCE" id="495491" casttime="3" cooldown="8" type="heal" target="self" inbattle="false" />
+	<skill name="ALL_ELEMENTAL_SPIRIT_STONE_ESSENCE" id="495492" casttime="3" type="heal" target="self" inbattle="false" />
 	<skill name="ALL_ENERGY_RESTORE" id="495494" casttime="5" cooldown="45" target="self" />
 	<skill name="ALL_FIRE_TRAINING" id="495174" cooldown="240" target="self" type="buff" buffname="506060" />
 	<Skill name="ALL_SOLDIERS_ATTACK" id="495176" cooldown="240" target="self" type="buff" buffname="506062" />

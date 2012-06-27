@@ -285,7 +285,14 @@ function angleDifference(angle1, angle2)
 end
 
 function distance(x1, z1, y1, x2, z2, y2)
-	if z2 == nil and y2 == nil then -- assume x1,z1,x2,z2 values (2 dimensional)
+	if type(x1) == "table" and type(z1) == "table" then
+        y2 = z1.Y or z1[3]
+        z2 = z1.Z or z1[2]
+        x2 = z1.X or z1[1]
+        y1 = x1.Y or x1[3]
+        z1 = x1.Z or x1[2]
+        x1 = x1.X or x1[1]
+    elseif z2 == nil and y2 == nil then -- assume x1,z1,x2,z2 values (2 dimensional)
 		z2 = x2
 		x2 = y1
 		y1 = nil
@@ -589,7 +596,7 @@ function SlashCommand(script)
 end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
-function RoMScript(script, default)
+function RoMScript(script)
 	-- Check for loading screen
 	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0 then
 		-- Cannot execute RoMScript during loading screen.
@@ -1525,7 +1532,7 @@ function Attack()
 			end
 
 			-- freeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
+			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.rep(string.char(0x90),#addresses.functionTargetBytes));
 
 			-- Target it
 			memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, player.TargetPtr);

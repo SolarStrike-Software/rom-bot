@@ -1,5 +1,6 @@
 <potions>
 	<!-- Healing potions -->
+	<potion type="hot" id="208474" level="71" name="Mysterious Herb" />
 	<potion type="hot" id="208473" level="66" name="Herbs of Hope" />
 	<potion type="hot" id="208213" level="61" name="Herbs of Omnipotence" />
 	<potion type="hot" id="207273" level="56" name="Infinite Herb" />
@@ -26,6 +27,7 @@
 	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />
 
 	<!-- Mana potions -->
+	<potion type="mot" id="208481" level="71" name="Mysterious Magic Stone" />
 	<potion type="mot" id="208480" level="66" name="Rare Magic Stone" />
 	<potion type="mot" id="208214" level="61" name="Elemental Stone of Omnipotence" />
 	<potion type="mot" id="207274" level="56" name="Infinite Elemental Stone" />

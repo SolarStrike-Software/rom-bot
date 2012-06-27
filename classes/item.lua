@@ -84,9 +84,7 @@ function CItem:update()
 			self.Durability = self.Durability / 100;
 		end;
 		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.valueOffset );
-		if ( self.Value > 0 ) then
-			self.Worth = self.Value / 10;
-		end;
+		self.Worth = self.Value / 10;
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
 		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.boundStatusOffset );
 		self.Bound = not bitAnd(self.BoundStatus,1)

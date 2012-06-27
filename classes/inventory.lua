@@ -490,7 +490,9 @@ function CInventory:autoSell()
 
 	end
 
-
+	local sellstartstring = "} local U=UseBagItem; if StoreFrame:IsVisible() then a={true};"
+	local sellendstring = "end;z={"
+	local sellstring = sellstartstring
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
 	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 60, settings.profile.options.INV_AUTOSELL_TOSLOT + 60, 1 do
@@ -563,17 +565,31 @@ function CInventory:autoSell()
 				end
 
 				-- We didn't break? Then sell the item
-				if RoMScript("StoreFrame:IsVisible()") then
-					hf_wesell = true;
-					RoMScript("UseBagItem("..slotitem.BagId..")")
-				else
-					break
+				sellstring = sellstring .. "U("..slotitem.BagId..");" -- max length 7
+				if #sellstring >= (254 - 7 - #sellendstring) then -- Can't fit more
+					sellstring = sellstring .. sellendstring
+					if RoMScript(sellstring) then
+						yrest(100)
+						hf_wesell = true;
+						sellstring = sellstartstring -- Reset for more
+					else
+						break
+					end
 				end
 
 			until true
 
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
 
+	end
+
+	-- Sell any left over in list
+	if #sellstring > #sellstartstring then
+		sellstring = sellstring .. sellendstring
+		if RoMScript(sellstring) then
+			yrest(100)
+			hf_wesell = true;
+		end
 	end
 
 	if( hf_wesell == true ) then
@@ -657,6 +673,10 @@ function CInventory:getMount()
 	{first = 240086, last = 240088},
 	{first = 240928, last = 240930},
 	{first = 240933, last = 240935},
+	241101,
+	{first = 241103, last = 241104},
+	{first = 241316, last = 241318},
+	{first = 241620, last = 241622},
 
 
 	-- Temp mounts
@@ -665,7 +685,7 @@ function CInventory:getMount()
 
  	for slot,item in pairs(self.BagSlot) do
 		if item.Available then
-			for i, mount in pairs(mounts) do
+			for i, mount in ipairs(mounts) do
 				if type(mount) == "number" then
 					if item.Id == mount then
 						return item;
