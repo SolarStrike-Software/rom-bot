@@ -79,8 +79,9 @@ function CEggPet:update()
 
 	self.EggId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetEggId_offset)
 	if self.EggId ~= nil and self.EggId > 0 and self.Available then -- There is an egg pet
-		self.Name = memoryReadString(getProc(), eggPetAddress)
 		self.PetId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetPetId_offset)
+		self.Name = memoryReadString(getProc(), eggPetAddress)
+		if self.Name == "" then self.Name = GetIdName(self.PetId) end
 		self.Level = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetLevel_offset)
 		self.Summoned = (memoryReadInt(getProc(), eggPetAddress + addresses.eggPetSummoned_offset) == 2)
 		self.Exp = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetExp_offset)

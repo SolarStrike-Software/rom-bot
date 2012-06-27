@@ -481,7 +481,7 @@ function CSkill:canUse(_only_friendly, target)
 				return false
 			end
 		elseif self.AOECenter == SAOE_TARGET and self.AOERange and self.AOERange > 0 then
-			if target:countMobs(self.AOERange, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
+			if target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
 				debug_skilluse("MOBCOUNTLOWNEARTARGET");
 				return false
 			end
@@ -637,17 +637,17 @@ function CSkill:use()
 		local addressX1 = addresses.functionMousePatchAddr
 		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
 		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
-		memoryWriteString(getProc(), addressX1, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- left of window
-		memoryWriteString(getProc(), addressX2, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- right of window
-		memoryWriteString(getProc(), addressX3, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- over window
+		memoryWriteString(getProc(), addressX1, string.rep(string.char(0x90),#addresses.functionMouseX1Bytes)); -- left of window
+		memoryWriteString(getProc(), addressX2, string.rep(string.char(0x90),#addresses.functionMouseX2Bytes)); -- right of window
+		memoryWriteString(getProc(), addressX3, string.rep(string.char(0x90),#addresses.functionMouseX3Bytes)); -- over window
 
 		-- y axis
 		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
 		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
 		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
-		memoryWriteString(getProc(), addressY1, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- above window
-		memoryWriteString(getProc(), addressY2, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- below window
-		memoryWriteString(getProc(), addressY3, string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90)); -- over window
+		memoryWriteString(getProc(), addressY1, string.rep(string.char(0x90),#addresses.functionMouseY1Bytes)); -- above window
+		memoryWriteString(getProc(), addressY2, string.rep(string.char(0x90),#addresses.functionMouseY2Bytes)); -- below window
+		memoryWriteString(getProc(), addressY3, string.rep(string.char(0x90),#addresses.functionMouseY3Bytes)); -- over window
 	end
 
 	-- Unfreeze mouse function
@@ -670,21 +670,24 @@ function CSkill:use()
 	end
 
 	if self.ClickToCast == true then
-		player:aimAt(target)
+		target:update()
+		local mobcount, x, z = target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY)
+		player:aimAt({X=x, Z=z, Y=target.Y})
 
 		local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
 		local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
 		local clickX = math.ceil(ww/2)
 		local clickY = math.ceil(wh/2)
-
+		yrest(50)
 		nopmouse()
 		yrest(50)
 		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
 		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
 		yrest(50)
-		RoMScript("SpellTargetUnit()")
 
+		RoMScript("SpellTargetUnit()")
 		yrest(50)
+
 		-- unfreeze TargetPtr
 		unnopmouse()
 	end

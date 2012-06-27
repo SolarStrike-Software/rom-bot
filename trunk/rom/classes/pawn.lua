@@ -252,7 +252,12 @@ function CPawn:update()
 		self.Id = tmp
 		if self.Id > 999999 then self.Id = 0 end
 	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
-		self.Id = tmp
+		if tmp < 1000 or tmp >= 1004 then
+			-- Misread data. Maybe loading screen?
+			return
+		else
+			self.Id = tmp
+		end
 	else -- see if it changed
 		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
 			self.Id = 0
@@ -689,4 +694,142 @@ function CPawn:countMobs(inrange, onlyaggro, idorname)
 	end
 
 	return count
+end
+
+function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
+	-- Finds best place to click to get most mobs including this pawn.
+	local MobList = {}
+	local EPList = {}
+
+	local function CountMobsInRangeOfCoords(x,z)
+		local c = 0
+		local list = {}
+		for k,mob in ipairs(MobList) do
+			if distance(x,z,mob.X,mob.Z) <= aoerange then
+				table.insert(list,k)
+				c=c+1
+			end
+		end
+		return c, list
+	end
+
+	local function GetEquidistantPoints(p1, p2, dist)
+		-- Returns the 2 points that are both 'dist' away from both p1 and p2
+		local xvec = p2.X - p1.X
+		local zvec = p2.Z - p1.Z
+		local ratio = math.sqrt(dist*dist/(xvec*xvec +zvec*zvec) - 0.25)
+		-- transpose
+		local newxvec = zvec * ratio
+		local newzvec = xvec * ratio
+
+		local ep1 = {X = (p1.X + p2.X)/2 + newxvec, Z = (p1.Z + p2.Z)/2 - newzvec}
+		local ep2 = {X = (p1.X + p2.X)/2 - newxvec, Z = (p1.Z + p2.Z)/2 + newzvec}
+
+		return ep1, ep2
+	end
+
+	-- The value this function needs to beat or match (if aoe center is this pawn)
+	local countmobs = self:countMobs(aoerange, onlyaggro)
+
+	-- First get list of mobs within (2 x aoerange) of this pawn and (skillrange + aoerange) from player.
+	local objectList = CObjectList();
+	objectList:update();
+	for i = 0,objectList:size() do
+		local obj = objectList:getObject(i);
+		if obj ~= nil and obj.Type == PT_MONSTER and (settings.profile.options.FORCE_BETTER_AOE_TARGETING == true or 0.5 > math.abs(obj.Y - self.Y)) and -- only count mobs on flat floor, results would be unpredictable on hilly surfaces when clicking.
+		  aoerange*2 >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) and (skillrange + aoerange >= distance(player.X, player.Z, obj.X, obj.Z)) then
+			local pawn = CPawn(obj.Address);
+			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
+				if onlyaggro == true then
+					if pawn.TargetPtr == player.Address then
+						table.insert(MobList,pawn)
+					end
+				else
+					table.insert(MobList,pawn)
+				end
+			end
+		end
+	end
+
+	-- Deal with easy solutions
+	if countmobs > #MobList or #MobList == 1 then
+		return countmobs, self.X, self.Z
+	elseif #MobList == 2 then
+		local averageX = (MobList[1].X + MobList[2].X)/2
+		local averageZ = (MobList[1].Z + MobList[2].Z)/2
+		return 2, averageX, averageZ
+	end
+
+	-- Get list of best equidistant points(EPs) and add list of mobs in range for each point
+	local bestscore = 0
+	for p1 = 1, #MobList-1 do
+		local mob1 = MobList[p1]
+		for p2 = p1+1, #MobList do
+			local mob2 = MobList[p2]
+			local ep1, ep2 = GetEquidistantPoints(mob1, mob2, aoerange - 3) -- '-1' buffer
+			-- Check ep1 and add
+			if aoerange >= distance(ep1, self) then -- EP doesn't miss primary target(self)
+				local tmpcount, tmplist = CountMobsInRangeOfCoords(ep1.X, ep1.Z)
+				if tmpcount > bestscore then
+					bestscore = tmpcount
+					EPList = {} -- Reset for higher scoring EPs
+				end
+				if tmpcount == bestscore then
+					ep1.Mobs = tmplist
+					table.insert(EPList,ep1)
+				end
+			end
+			-- Check ep2 and add
+			if aoerange > distance(ep2,self) then -- EP doesn't miss primary target(self)
+				local tmpcount, tmplist = CountMobsInRangeOfCoords(ep2.X, ep2.Z)
+				if tmpcount > bestscore then
+					bestscore = tmpcount
+					EPList = {} -- Reset for higher scoring EPs
+				end
+				if tmpcount == bestscore then
+					ep2.Mobs = tmplist
+					table.insert(EPList,ep2)
+				end
+			end
+		end
+	end
+
+	-- Is best score good enough to beat self:countMobs?
+	if countmobs > bestscore then
+		return countmobs, self.X, self.Z
+	end
+
+	-- Sort EP mob lists for easy comparison
+	for i = 1, #EPList do
+		table.sort(EPList[i].Mobs)
+	end
+
+	-- Find a set of EPs with matching mob list to first
+	local BestEPSet = {EPList[1]}
+	for i = 2, #EPList do
+		local match = true
+		for k,v in ipairs(EPList[1].Mobs) do
+			if v ~= EPList[i].Mobs[k] then
+				match = false
+				break
+			end
+		end
+		-- Same points
+		if match then
+			table.insert(BestEPSet,EPList[i])
+		end
+	end
+
+	-- Get average of EP points. That is our target point
+	local totalx, totalz = 0, 0
+	for k,v in ipairs(BestEPSet) do
+		totalx = totalx + v.X
+		totalz = totalz + v.Z
+	end
+
+	-- Average x,z
+	local AverageX = totalx/#BestEPSet
+	local AverageZ = totalz/#BestEPSet
+
+	return bestscore, AverageX, AverageZ
 end

@@ -12,6 +12,8 @@ CCamera = class(
 		self.XFocus = 0;
 		self.YFocus = 0;
 		self.ZFocus = 0;
+
+		self.Distance = 0
 		if( self.Address ) then
 			self:update();
 		end
@@ -36,9 +38,12 @@ function CCamera:update()
 	self.ZFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camZFocus_offset), memerrmsg);
 	self.YFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camYFocus_offset), memerrmsg);
 
+	-- camera distance
+	self.Distance = debugAssert(memoryReadFloatPtr( proc, addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}))
+
 	if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
 	self.X == nil or self.Y == nil or self.Z == nil or
-	self.XFocus == nil or self.YFocus == nil or self.ZFocus == nil ) then
+	self.XFocus == nil or self.YFocus == nil or self.ZFocus == nil or self.Distance == nil) then
 		error("Error reading memory in CCamera:update()");
 	end
 end
@@ -61,10 +66,6 @@ function CCamera:setRotation(angle)
 
 	local yangle = 0.35 -- About 20 degrees. Angle in radians from the horizontal. Can be changed.
 
-	-- current camera distance
-	local currentDistance = distance(self.XFocus,self.ZFocus,self.YFocus,self.X,self.Z,self.Y)
-	if currentDistance > 150 then currentDistance = 150 end
-
 	-- y vector
 	local playerYAngle = player.DirectionY
 	if playerYAngle > 0.35 then
@@ -72,10 +73,10 @@ function CCamera:setRotation(angle)
 	elseif playerYAngle < -0.35 then
 		playerYAngle = -0.35
 	end
-	local vec3 = math.sin(yangle-playerYAngle) * currentDistance
+	local vec3 = math.sin(yangle-playerYAngle) * self.Distance
 
 	-- x and z vectors
-	local hypotenuse = (currentDistance^2 - vec3^2)^.5
+	local hypotenuse = (self.Distance^2 - vec3^2)^.5
 	local vec1 = math.cos(angle + math.pi) * hypotenuse;
 	local vec2 = math.sin(angle + math.pi) * hypotenuse;
 
@@ -87,4 +88,23 @@ function CCamera:setRotation(angle)
 	memoryWriteFloat(proc, self.Address + addresses.camX_offset, nx);
 	memoryWriteFloat(proc, self.Address + addresses.camZ_offset, nz);
 	memoryWriteFloat(proc, self.Address + addresses.camY_offset, ny);
+end
+
+function CCamera:setDistance(distance)
+	if type(distance) == "number" then
+		if distance < 1 then
+			distance = 1
+		elseif distance > 150 then
+			distance = 150
+		end
+	else
+		-- invalid value.
+		return
+	end
+
+	-- Change distance
+	memoryWriteFloatPtr( getProc(), addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}, distance)
+
+	-- Save distance setting
+	memoryWriteFloatPtr( getProc(), addresses.staticbase_char, addresses.camDistanceSave_offset, distance)
 end

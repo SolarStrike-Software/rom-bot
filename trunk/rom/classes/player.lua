@@ -52,6 +52,10 @@ function CPlayer:update()
 
 	if addressChanged or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
 		settings.loadSkillSet(self.Class1)
+		-- Reset editbox false flag on start up
+		if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+			RoMScript("GetKeyboardFocus():ClearFocus()")
+		end
 		addressChanged = false
 	end
 
@@ -1670,6 +1674,7 @@ function CPlayer:loot()
 		if( self.Battling  and
 			settings.profile.options.LOOT_IN_COMBAT ~= true ) and
 			self:findEnemy(true, nil, evalTargetDefault) then
+			self:clearTarget()
 			cprintf(cli.green, language[178]); 	-- Loot skiped because of aggro
 			return
 		end
@@ -3918,7 +3923,7 @@ function CPlayer:waitTillCastingEnds()
 end
 
 function CPlayer:aimAt(target)
-	target:update()
+	if target.Address then target:update() end -- only update if a pawn
 	camera:update()
 
 	-- camera distance to camera focus
