@@ -252,7 +252,7 @@ function CPawn:update()
 		self.Id = tmp
 		if self.Id > 999999 then self.Id = 0 end
 	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
-		if tmp < 1000 or tmp >= 1004 then
+		if tmp < 1000 or tmp > 1004 then
 			-- Misread data. Maybe loading screen?
 			return
 		else
