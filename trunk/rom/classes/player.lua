@@ -61,10 +61,9 @@ function CPlayer:update()
 
 	-- If have 2nd class, look for 3rd class
 	-- Class1 and Class2 are done in the pawn class. Class3 only works for player.
-	local classInfoSize = 0x294
 	if self.Class2 ~= -1 then
 		for i = 1, 8 do
-			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (classInfoSize * i) + addresses.charClassInfoLevel_offset)
+			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (addresses.charClassInfoSize * i) + addresses.charClassInfoLevel_offset)
 			if level > 0 and i ~= self.Class1 and i ~= self.Class2 then
 				-- must be class 3
 				self.Class3 = i
@@ -74,11 +73,11 @@ function CPlayer:update()
 	end
 
 
-	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
-	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
-	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
-	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
-	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (classInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
+	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
+	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
+	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
+	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
 
 	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 
