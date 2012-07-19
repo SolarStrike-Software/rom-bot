@@ -878,6 +878,8 @@ function findOffsets()
 	readBytesUpdate("functionMouseY2Bytes", addresses.functionMousePatchAddr + addresses.mousePatchY2_offset, 6)
 	readBytesUpdate("functionMouseY3Bytes", addresses.functionMousePatchAddr + addresses.mousePatchY3_offset, 6)
 	readBytesUpdate("swimAddressBytes", addresses.swimAddress, 10)
+	addresses.mouseX_offset = memoryReadUInt (getProc(), addresses.functionMousePatchAddr + addresses.mousePatchX3_offset + 2)
+	addresses.mouseY_offset = memoryReadUInt (getProc(), addresses.functionMousePatchAddr + addresses.mousePatchY3_offset + 2)
 end
 
 function rewriteAddresses()

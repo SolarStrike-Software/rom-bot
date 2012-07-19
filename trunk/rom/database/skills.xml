@@ -345,6 +345,8 @@
 	<skill name="SCOUT_ENTLING_OFFERING" id="494038" type="buff" target="self" buffname="504547"/>
 	<skill name="SCOUT_HIDDEN_PERIL" id="494039" consumable="1" concentration="30" range="180" cooldown="10" type="damage" target="enemy" />
 	<skill name="SCOUT_GRYPHON_BASH" id="494629" mana="50" range="120" cooldown="10" type="damage" target="enemy" aoecenter="target" aoerange="80"/>
+	<skill name="SCOUT_SNAKE_POISON_ARROW" id="494041" mana="50" range="180" cooldown="6" type="damage" target="enemy" />
+	<skill name="SCOUT_FOCUS" id="494529" cooldown="1800" type="buff" target="self" />
 
 	<!-- Itemset skills -->
 	<skill name="SCOUT_ARCHERS_GLORY" id="495477" concentration="35" cooldown="180" type="buff" buffname="506451" target="self" />
@@ -476,4 +478,5 @@
 	<skill name="ALL_FIRE_TRAINING" id="495174" cooldown="240" target="self" type="buff" buffname="506060" />
 	<Skill name="ALL_SOLDIERS_ATTACK" id="495176" cooldown="240" target="self" type="buff" buffname="506062" />
 	<skill name="ALL_RECOVER_MAGIC" id="495481" casttime="1" cooldown="180" type="buff" buffname="506455" target="self" />
+	<skill name="ALL_SOLDIERS_CHARGE" id="495187" range="150" type="buff" cooldown="240" buffname="506077" target="self" />
 </skills>
