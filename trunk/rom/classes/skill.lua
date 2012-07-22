@@ -558,7 +558,7 @@ function CSkill:use()
 	--=== warden usage
 	if player.Class1 == CLASS_WARDEN then
 		local skillName = GetIdName(self.Id)
-		if self.Type == STYPE_BUFF then
+		--[[if self.Type == STYPE_BUFF then
 			if not player.Battling then
 				--=== sacrifice pet buffs
 				if GetIdName(self.Id) == GetIdName(491668) then -- heart of the oak
@@ -576,7 +576,7 @@ function CSkill:use()
 			else
 				return
 			end
-		end
+		end]]
 		if self.Type == STYPE_SUMMON and not player.Battling then
 			petupdate()		-- code in classes/pet.lua
 			-- dont summon warden pet if already summoned.
