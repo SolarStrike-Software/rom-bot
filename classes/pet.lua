@@ -11,63 +11,63 @@ function setpettable()
 		[1] = {
 		name = GetIdName(102297), -- spirit of the oak
 		skillid = 493333,
-		skill6name = "PUNCH",
-		skill6auto = "true",
-		skill7name = "ENTANGLE",
-		skill7auto = "false"},
+		skill5name = "PUNCH",
+		skill5auto = "true",
+		skill6name = "ENTANGLE",
+		skill6auto = "false"},
 
 		[2] = {
 		name = GetIdName(102325), -- nature crystal
 		skillid = 493344,
-		skill6name = "PROTECTION",
-		skill6auto = "true",
-		skill7name = "ACCELERATION",
-		skill7auto = "true"},
+		skill5name = "PROTECTION",
+		skill5auto = "true",
+		skill6name = "ACCELERATION",
+		skill6auto = "true"},
 
 		[3] = {
 		name = GetIdName(102324), -- oak walker
 		skillid = 493343,
-		skill6name = "STAB",
-		skill6auto = "true",
-		skill7name = "INTERFERENCE",
-		skill7auto = "false"},
+		skill5name = "STAB",
+		skill5auto = "true",
+		skill6name = "INTERFERENCE",
+		skill6auto = "false"},
 
 		[4] = {
 		name = GetIdName(102803), -- chiron the centaur
 		skillid = 494212,
-		skill6name = "CENTAURS_ARROW",
-		skill6auto = "true",
-		skill7name = "VALIANT_SHOT",
-		skill7auto = "true"}
+		skill5name = "CENTAURS_ARROW",
+		skill5auto = "true",
+		skill6name = "VALIANT_SHOT",
+		skill6auto = "true"}
 	}
 end
 
 function setpetautoattacks()
 	petupdate()
 	--=== set pet to counter attack except for nature crystal
-	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
+	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
 	if pet.Name ~= GetIdName(102325) then
 		if active ~= true then
-			RoMScript("UsePetAction(5)")
+			RoMScript("UsePetAction(4)")
 		end
 	else
 		if active == true then
-			RoMScript("UsePetAction(5)")
+			RoMScript("UsePetAction(4)")
 		end
 	end
 
 	for k,v in pairs(pettable) do
 		if v.name == pet.Name then
-			if v.skill6auto == "true" then
+			if v.skill5auto == "true" then
+				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
+				if active ~= true then
+					RoMScript("UsePetAction(5,true)")
+				end
+			end
+			if v.skill5auto == "true" then
 				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(6)")
 				if active ~= true then
 					RoMScript("UsePetAction(6,true)")
-				end
-			end
-			if v.skill7auto == "true" then
-				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(7)")
-				if active ~= true then
-					RoMScript("UsePetAction(7,true)")
 				end
 			end
 		end
@@ -81,6 +81,9 @@ function petupdate()
 end
 
 function wardenbuff(_nameorid)
+	return
+	--no longer needed.
+--[[
 	keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
 	petupdate()
 	local buffid
@@ -155,6 +158,7 @@ function wardenbuff(_nameorid)
 		summonbuff()
 	end
 	PetWaitTimer = 1 -- So it immediately resummons assist pet if used.
+	]]
 end
 
 function petstartcombat()
@@ -198,9 +202,9 @@ function checkfairy()
 		until not (memoryReadRepeat("int", getProc(), player.Address + addresses.pawnCasting_offset) ~= 0);
 
 		petupdate()
-		local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
+		local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
 		if active == true then
-			sendMacro("UsePetAction(5)")
+			sendMacro("UsePetAction(4)")
 		end
 		player.LastDistImprove = os.time();   -- global, because we reset it while skill use
 	else
@@ -208,11 +212,11 @@ function checkfairy()
 	end
 
 	if not pet:hasBuff(fairy.Buff) then -- Frost Halo, Accuracy Halo...
-		sendMacro("UsePetAction(6)")
+		sendMacro("UsePetAction(5)")
 		yrest(500)
 	end
 	if not pet:hasBuff(503753) then -- Conceal
-		sendMacro("UsePetAction(7)")
+		sendMacro("UsePetAction(6)")
 		yrest(500)
 	end
 end

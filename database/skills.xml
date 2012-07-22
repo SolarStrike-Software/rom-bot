@@ -413,14 +413,14 @@
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" id="493344" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<!-- TODO: Damage Transfer requires pet -->
 	<skill name="WARDEN_DAMAGE_TRANSFER" id="493399" mana="30" cooldown="180" type="buff" target="self" />
-	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" mana="55" type="buff" buffname="503946" target="self" />
+	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346"  cooldown="60" mana="55" type="buff" buffname="503946" target="self" />
 	<skill name="WARDEN_FRANTIC_BRIAR" id="493391" mana="70" casttime="2" range="80" type="damage" target="enemy" aoecenter="player" />
 	<!-- TODO: Requires pet HP > 0.3 -->
 	<skill name="WARDEN_SOUL_ATTACK" id="493404" range="150" casttime="2" cooldown="6" />
 	<skill name="WARDEN_SUMMON_OAK_WALKER" id="493343" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
-	<skill name="WARDEN_PROTECTION_OF_NATURE" id="493348" mana="55" type="buff" buffname="503581" target="self" />
+	<skill name="WARDEN_PROTECTION_OF_NATURE" id="493348" mana="55"  cooldown="300" type="buff" buffname="503581" target="self" />
 	<skill name="WARDEN_BANISH" id="493397" mana="50" range="150" casttime="1" cooldown="60" hpper="15" />
-	<skill name="WARDEN_POWER_OF_THE_OAK" id="493347" mana="55" type="buff" buffname="503580" target="self" />
+	<skill name="WARDEN_POWER_OF_THE_OAK" id="493347" cooldown="90" mana="55" type="buff" buffname="503580" target="self" />
 	<!-- TODO: Explosion of Power requires pet -->
 	<skill name="WARDEN_EXPLOSION_OF_POWER" id="493403" mana="50" cooldown="180" type="buff" target="self" />
 	<!-- TODO: Elven Guidance requires pet -->

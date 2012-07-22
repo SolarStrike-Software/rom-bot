@@ -673,6 +673,9 @@ function RoMScript(script)
 			local startWaitTime = getTime();
 			while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
 				if( deltaTime(getTime(), startWaitTime) > 800 ) then
+					if settings.options.DEBUGGING then
+						printf("0x%X\n", addresses.editBoxHasFocus_address)
+					end
 					if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
 						keyboardPress(settings.hotkeys.ESCAPE.key); yrest(500)
 						if RoMScript("GameMenuFrame:IsVisible()") then
@@ -1331,41 +1334,12 @@ function parseItemLink(itemLink)
 end
 
 
-
---partyMemberList_address = 0x9DD9E8 3.0.11
---partyMemberList_address = 0x9E6F38 -- 4.0.0
---partyMemberList_offset = 0x134
---== addresses moved to addresses.lua ==--
-
 function GetPartyMemberName(_number)
-	--[[if type(_number) ~= "number" or _number < 1 then
-		print("GetPartyMemberName(number): incorrect value for 'number'.")
-		return
-	end
-
-	if partymembers == nil or _lastupdated == nil or (os.time() - _lastupdated) >= 60 then
-		partymembers={}
-		-- 0 = no party 2 = 1 partymember ...
-		local nummembers = sendMacro("GetNumPartyMembers()")
-		-- exclude player with -1
-		for i = 1, nummembers - 1 do
-			local _name = sendMacro("GetPartyMember("..i..")")
-			table.insert(partymembers,i, _name)
-		end
-		_lastupdated = os.time()
-	end
-	return partymembers[_number] ]]
-
 
 	if type(_number) ~= "number" or _number < 1 then
 		print("GetPartyMemberName(number): incorrect value for 'number'.")
 		return
 	end
-
-
-	--partyMemberList_offset = 0x13C
-	--local partmembername = memoryReadStringPtr(getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset + (_number - 1) * 0x60)
-	--return partmembername
 
 	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
@@ -1374,27 +1348,28 @@ function GetPartyMemberName(_number)
 	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
 		return nil
 	end
-	return memoryReadRepeat("string", getProc(), memberAddress + 8)
+	if memoryReadRepeat("byte", getProc(), memberAddress + 0x1C) == 31 then
+		memberAddress = memoryReadRepeat("int", getProc(), memberAddress + 8 )
+		local name = memoryReadString(getProc(), memberAddress)
+			if( bot.ClientLanguage == "RU" ) then
+				name = utf82oem_russian(name);
+			else
+				name = utf8ToAscii_umlauts(name);   -- only convert umlauts
+			end		
+		return name
+	else
+		local name = memoryReadString(getProc(), memberAddress + 8)
+			if( bot.ClientLanguage == "RU" ) then
+				name = utf82oem_russian(name);
+			else
+				name = utf8ToAscii_umlauts(name);   -- only convert umlauts
+			end		
+		return name	
+	end
 end
 
 function GetPartyMemberAddress(_number)
-
-	if type(_number) ~= "number" or _number < 1 then
-		print("GetPartyMemberName(number): incorrect value for 'number'.")
-		return
-	end
-
-	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
-	local memberAddress = listAddress + (_number - 1) * 0x60
-
-	-- Check if that number exists
-	if memoryReadRepeat("byte", getProc(), memberAddress) ~= 1 then
-
-		return
-	end
-		local memberName = memoryReadRepeat("string", getProc(), memberAddress + 8 )
-	return player:findNearestNameOrId(memberName)
-	--return player:findNearestNameOrId(GetPartyMemberName(_number))
+	return player:findNearestNameOrId(GetPartyMemberName(_number))
 end
 
 function EventMonitorStart(monitorName, event, filter)

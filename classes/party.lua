@@ -67,7 +67,7 @@ _timexx = os.time()
 			partymemberpawn[i]:updateBuffs()
 			target = player:getTarget();
 			if target.HP/target.MaxHP*100 > 10 then
-			player:checkSkills(true);
+				player:checkSkills(true);
 			end
 			if (not player.Battling) then 
 				getNameFollow()
@@ -128,34 +128,35 @@ end
 function getNameFollow()
 	while (true) do	
   		if ( settings.profile.options.PARTY_FOLLOW_NAME ) then
-    	if GetPartyMemberName(1) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party1');"); break  end
-		if GetPartyMemberName(2) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party2');"); break  end
-		if GetPartyMemberName(3) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party3');"); break  end
-		if GetPartyMemberName(4) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party4');"); break  end
-		if GetPartyMemberName(5) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party5');"); break  end
-		RoMScript("FollowUnit('party1');");
-		else RoMScript("FollowUnit('party1');");		
-
+			for i = 1,5 do
+				if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party"..i.."');"); break  end
+			end	
+			RoMScript("FollowUnit('party1');");
+		else 
+			RoMScript("FollowUnit('party1');");		
 		end
 		break
 	end
 end
 
 function checkparty(_dist)
+	local proc = getProc();
+	local partyX, partyZ
 	local _dist = _dist or 200
 	PartyTable()
 	local _go = true
 	local partynum = RoMScript("GetNumPartyMembers()")
 	if partynum == #partymemberpawn then
-		for i = 2,#partymemberpawn do
-			player:update()
-			partymemberpawn[i]:update()
-			if partymemberpawn[i].X ~= nil then 
-				if distance(partymemberpawn[i].X,partymemberpawn[i].Z,player.X,player.Z) > _dist then
+		player:update()
+		for i = 2,#partymemberpawn do		
+			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnX_offset) or partymemberpawn[i].X
+			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z			
+			if partyX ~= nil then 
+				if distance(partyX,partyZ,player.X,player.Z) > _dist then
 					_go = false
 				end
 			else
-			_go = false
+				_go = false
 			end
 		end
 	else
