@@ -135,6 +135,7 @@ function CSkill:canUse(_only_friendly, target)
 		player:update();
 		target = player:getTarget();
 	end
+
 	if( self.hotkey == 0 ) then return false; end; --hotkey must be set!
 
 	-- a local function to make it more easy to insert debuging lines
@@ -671,25 +672,26 @@ function CSkill:use()
 
 	if self.ClickToCast == true then
 		target:update()
-		local mobcount, x, z = target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY)
-		player:aimAt({X=x, Z=z, Y=target.Y})
-
-		local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
-		local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
-		local clickX = math.ceil(ww/2)
-		local clickY = math.ceil(wh/2)
-		yrest(50)
-		nopmouse()
-		yrest(50)
-		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
-		memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
-		yrest(50)
-
-		RoMScript("SpellTargetUnit()")
-		yrest(50)
-
-		-- unfreeze TargetPtr
-		unnopmouse()
+		if target.Id ~= 0 then
+			local mobcount, x, z = target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY)
+			player:aimAt({X=x, Z=z, Y=target.Y})
+			local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
+			local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
+			local clickX = math.ceil(ww/2)
+			local clickY = math.ceil(wh/2)
+			yrest(50)
+			nopmouse()
+			yrest(50)
+			memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
+			memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
+			yrest(50)
+			RoMScript("SpellTargetUnit()")
+			yrest(50)
+			-- unfreeze TargetPtr
+			unnopmouse()
+		else
+			RoMScript("SpellStopCasting()")
+		end
 	end
 
 	if( self.Toggleable ) then

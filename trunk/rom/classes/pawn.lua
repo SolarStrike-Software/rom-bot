@@ -731,6 +731,11 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 	-- The value this function needs to beat or match (if aoe center is this pawn)
 	local countmobs = self:countMobs(aoerange, onlyaggro)
 
+	-- Check if user wants to bypass this function
+	if settings.profile.options.FORCE_BETTER_AOE_TARGETING == false then
+		return countmobs, self.X, self.Z
+	end
+
 	-- First get list of mobs within (2 x aoerange) of this pawn and (skillrange + aoerange) from player.
 	local objectList = CObjectList();
 	objectList:update();
@@ -752,7 +757,7 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 	end
 
 	-- Deal with easy solutions
-	if countmobs > #MobList or #MobList == 1 then
+	if countmobs > #MobList or #MobList < 2 then
 		return countmobs, self.X, self.Z
 	elseif #MobList == 2 then
 		local averageX = (MobList[1].X + MobList[2].X)/2
