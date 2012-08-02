@@ -465,10 +465,13 @@
 	<skill name="CHAMPION_RUNE_DRAW" id="498564" range="150" cooldown="40" type="damage" target="enemy" />
 	<skill name="CHAMPION_RUNE_PULSE" id="498529" range="225" casttime="2" cooldown="6" type="damage" target="enemy" />
 	<skill name="CHAMPION_FEARLESS_BLOW" id="498531" rage="15" range="200" cooldown="25" type="damage" target="enemy" />
+	<skill name="CHAMPION_RUNE_GROWTH" id="498536" cooldown="15" type="buff" target="self" buffname="621209" />
 	<skill name="CHAMPION_KINETIC_BURN" id="498481" rage="30" range="50" cooldown="60" type="damage" target="enemy" aoecenter="player" />
 
 	<!-- Elite -->
 	<skill name="CHAMPION_SOUL_FORGE_MYSTERY" id="498652" type="buff" buffname="621339" target="self" />
+	<skill name="CHAMPION_DETERMINATION_RUNE" id="498584" cooldown="30" type="buff" target="self" buffname="621246" />
+	<skill name="CHAMPION_EYE_FOR_AN_EYE" id="498585" cooldown="120" type="buff" target="self" buffname="621247" />
 
 
 	<!-- ALL -->
