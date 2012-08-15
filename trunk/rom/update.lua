@@ -667,19 +667,6 @@ local updatePatterns =
 		startloc = 0x850000,
 	},
 
-	high9sBase = {
-		pattern = string.char(
-			0x57,
-			0x8D, 0x4C, 0x24, 0xFF,
-			0xFF, 0x15, 0xFF, 0xFF, 0xFF, 0xFF,
-			0x8B, 0x1D, 0xFF, 0xFF, 0xFF, 0xFF,
-			0x8D, 0x54, 0x24, 0xFF,
-			0x52),
-		mask = "xxxx?xx????xx????xxx?x",
-		offset = 13,
-		startloc = 0x680000,
-	},
-
 	charStance_offset = {
 		pattern = string.char(
 			0x74, 0x0B,
@@ -742,7 +729,7 @@ local updatePatterns =
 		offset = 12,
 		startloc = 0x620000,
 	},
-	
+
 	charClassInfoSize = {
 		pattern = string.char(
 			0xDD, 0x44, 0x24, 0xFF,
@@ -842,12 +829,12 @@ function findOffsets()
 	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xD6A4);
 	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x12840);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x8234);
-	assumptionUpdate("partyMemberList_address", addresses.high9sBase + 0xE74);
+	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x19A50);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xE24C);
 	assumptionUpdate("rentBankBase", addresses.rentBagBase + 0x28);
 	assumptionUpdate("rentEggSlotBase", addresses.rentBagBase + 0x78);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x5260);
-	assumptionUpdate("tablesBase", addresses.high9sBase + 0x2100);
+	assumptionUpdate("tablesBase", addresses.charClassInfoBase + 0x1ACDC);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x823C);
 	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0x10BE0);
 

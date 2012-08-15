@@ -189,13 +189,13 @@
 	<!-- Rogue skills -->
 	<skill name="ROGUE_SHADOWSTAB" id="490306" energy="20" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_THROW" id="490309" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
-	<skill name="ROGUE_BLIND_STAB" id="490317" energy="35" range="50" cooldown="10" type="damage" target="enemy" />
+	<skill name="ROGUE_BLIND_STAB" id="490317" energy="20" range="50" cooldown="10" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_STAB must be in front of target -->
 	<skill name="ROGUE_SHADOW_STEP" id="490344" energy="20" range="100" cooldown="20" type="damage" target="enemy" />
 	<skill name="ROGUE_ASSASSINS_RAGE" id="490506" type="buff" cooldown="300" target="self" inbattle="true" />
-	<skill name="ROGUE_LOW_BLOW" id="490323" energy="30" range="50" type="damage" target="enemy" />
+	<skill name="ROGUE_LOW_BLOW" id="490323" energy="25" range="50" type="damage" target="enemy" />
 	<skill name="ROGUE_WOUND_ATTACK" id="490313" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
-	<skill name="ROGUE_BLIND_SPOT" id="490311" energy="35" range="50" cooldown="6" type="damage" target="enemy" />
+	<skill name="ROGUE_BLIND_SPOT" id="490311" energy="25" range="50" cooldown="6" type="damage" target="enemy" />
 	<!-- TODO: ROGUE_BLIND_SPOT must have dagger equiped and be behind target -->
 	<skill name="ROGUE_NUMBING_DAGGER" id="490347" consumable="1" range="150" casttime="1" type="damage" buffname="501494" target="enemy" />
 	<!-- TODO: ROGUE_NUMBING_DAGGER sleeps the target for 30secs, target awakens when attacked -->
@@ -203,12 +203,12 @@
 	<skill name="ROGUE_HIDE" id="490312" type="buff" buffname="500675" target="self" inbattle="false"  />
 	<skill name="ROGUE_PREMEDITATION" id="490507" energy="20" type="buff" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_PREMEDITATION only useful shortly before starting a fight, hence we use target=enemy even it is a self buff -->
-	<skill name="ROGUE_SNEAK_ATTACK" id="490337" energy="20" range="50" cooldown="10" type="damage" target="enemy" />
+	<skill name="ROGUE_SNEAK_ATTACK" id="490337" energy="30" range="50" type="damage" target="enemy" inbattle="false" />
 	<!-- TODO: ROGUE_SNEAK_ATTACK Can only use when behind the target -->
 	<skill name="ROGUE_VANISH" id="490354" cooldown="600" type="buff" target="self" />
 	<skill name="ROGUE_SPRINT" id="490341" range="100" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_EVASION" id="490355" cooldown="120" type="buff" target="self" />
-	<skill name="ROGUE_COMBO_THROW" id="490338" consumable="1" range="150" cooldown="3.3" type="damage" target="enemy" />
+	<skill name="ROGUE_COMBO_THROW" id="490338" consumable="1" range="150" cooldown="4" type="damage" target="enemy" />
 	<skill name="ROGUE_SHADOW_PRISON" id="490346" energy="50" range="180" type="damage" buffname="500735" target="enemy" />
 	<skill name="ROGUE_INFORMER" id="490350" cooldown="300" type="buff" target="self" />
 	<skill name="ROGUE_FERVENT_ATTACK" id="490333" cooldown="300" type="buff" target="self" />
@@ -221,7 +221,7 @@
 	<skill name="ROGUE_ENERGY_THIEF" id="491528" concentration="20" cooldown="120" type="buff" target="self" />
 	<skill name="ROGUE_COMBAT_MASTER" id="491525" concentration="30" type="buff" buffname="501921" target="self" />
 	<skill name="ROGUE_SUBSTITUTE" id="492626" concentration="30" cooldown="60" type="buff" target="self" />
-	<skill name="ROGUE_TONGUE_POISON" id="492922" range="120" casttime="1" cooldown="30" type="damage" target="enemy" />
+	<skill name="ROGUE_TONGUE_POISON" id="492922" range="120" consumable="1" casttime="1" cooldown="30" type="damage" target="enemy" />
 	<skill name="ROGUE_POISON_TRAP" id="491340" mana="30" manainc="3" cooldown="10" />
 	<skill name="ROGUE_BOOBY_TRAP" id="491341" mana="30" manainc="3" cooldown="10" />
 	<skill name="ROGUE_PARALYSING_TRAP" id="491342" mana="20" cooldown="20" />
@@ -299,27 +299,26 @@
 
 
 	<!-- Scout skills -->
-	<skill name="SCOUT_SHOT" id="490423" consumable="1" range="200" cooldown="2" type="damage" target="enemy" />
-	<skill name="SCOUT_VAMPIRE_ARROWS" id="491292" concentration="20" cooldown="10" range="200" type="dot" target="enemy" />
-	<skill name="SCOUT_JOINT_BLOW" id="490420" concentration="30" range="50" type="damage" buffname="500848" target="enemy" />
-	<skill name="SCOUT_BLOOD_ARROW" id="490434" type="buff" buffname="500871" target="self" />
+	<skill name="SCOUT_SHOT" id="490423" consumable="1" range="180" cooldown="2" type="damage" target="enemy" />
+	<skill name="SCOUT_VAMPIRE_ARROWS" id="491292" concentration="20" cooldown="10" range="180" type="dot" target="enemy" />
+	<skill name="SCOUT_JOINT_BLOW" id="490420" concentration="15" range="50" type="damage" buffname="500848" target="enemy" />
+	<skill name="SCOUT_BLOOD_ARROW" id="490434" cooldown="120" type="buff" buffname="500871" target="self" />
 	<skill name="SCOUT_THROAT_ATTACK" id="490428" concentration="15" range="50" cooldown="12" type="damage" target="enemy" />
 	<skill name="SCOUT_WRIST_ATTACK" id="490451" concentration="35" range="50" cooldown="30" type="damage" target="enemy" />
-	<skill name="SCOUT_ARROW_OF_ESSENCE" id="490494" cooldown="300" type="buff" target="self" maxhpper="30" />
-	<skill name="SCOUT_AUTOSHOT" id="492589" consumable="1" range="200" cooldown="2" type="damage" target="enemy" toggleable="true" />
+	<skill name="SCOUT_ARROW_OF_ESSENCE" id="490494" cooldown="300" type="buff" target="self" />
+	<skill name="SCOUT_AUTOSHOT" id="492589" consumable="1" range="180" cooldown="2" type="damage" target="enemy" toggleable="true" />
 	<skill name="SCOUT_WIND_ARROWS" id="491128" concentration="15" range="225" type="damage" target="enemy" />
 	<skill name="SCOUT_FROST_ARROW" id="491163" concentration="20" type="buff" buffname="501530" target="self" />
-	<skill name="SCOUT_MANA_DRAIN_SHOT" id="491160" concentration="35" range="180" cooldown="10" type="buff" target="enemy" />
+	<skill name="SCOUT_MANA_DRAIN_SHOT" id="491160" concentration="35" range="180" cooldown="90" type="buff" target="enemy" />
 	<skill name="SCOUT_LASSO" id="490454" concentration="35" range="150" casttime="1" type="buff" buffname="500924" target="enemy" />
-	<skill name="SCOUT_PIERCING_ARROW" id="490400" range="240" cooldown="8" type="damage" target="enemy" />
-	<skill name="SCOUT_SNIPE" id="490450" consumable="1" range="260" casttime="4" cooldown="15" type="damage" target="enemy" />
+	<skill name="SCOUT_PIERCING_ARROW" id="490400" consumable="2" range="220" cooldown="4" type="damage" target="enemy" />
+	<skill name="SCOUT_SNIPE" id="490450" consumable="1" range="240" casttime="3" cooldown="15" type="damage" target="enemy" />
 	<skill name="SCOUT_DETECTION" id="490463" concentration="9" type="buff" buffname="500933" target="self" />
-	<skill name="SCOUT_COMBO_SHOT" id="490424" consumable="3" range="200" cooldown="8" type="damage" target="enemy" />
+	<skill name="SCOUT_COMBO_SHOT" id="490424" consumable="3" range="180" casttime="1" cooldown="8" type="damage" target="enemy" />
 	<skill name="SCOUT_NECK_STRIKE" id="490438" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
-	<skill name="SCOUT_REFLECTED_SHOT" id="490457" consumable="1" cooldown="10" range="200" type="damage" target="enemy" />
+	<skill name="SCOUT_REFLECTED_SHOT" id="490457" consumable="1" cooldown="10" range="180" type="damage" target="enemy" />
 	<skill name="SCOUT_CONCENTRATION" id="490460" cooldown="300" type="buff" target="self" inbattle="true" />
 	<skill name="SCOUT_TARGET_AREA" id="490464" concentration="3" type="buff" buffname="500934" target="self" />
-	<skill name="SCOUT_SERENITY" id="490465" cooldown="480" type="buff" target="self" />
 
 	<!-- Elite -->
 	<skill name="SCOUT_SHOOT" id="494070" consumable="1" range="180" cooldown="2" type="damage" target="enemy" />
@@ -358,6 +357,7 @@
 	<skill name="SCOUT_NECK_SHOT" concentration="30" range="50" cooldown="30" type="buff" target="enemy" />
 	<skill name="SCOUT_INTENSIFY" type="buff" target="self"/>
 	<skill name="SCOUT_POISONOUS_BITE" concentration="25" range="160" casttime="1" cooldown="10" />
+	<skill name="SCOUT_SERENITY" id="490465" cooldown="480" type="buff" target="self" />
 
 	<!-- Druid skills -->
 	<skill name="DRUID_RECOVER" id="493528" mana="56" manainc="5.4" range="250" casttime="2" type="heal" buffname="503797" target="friendly" />

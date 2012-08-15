@@ -193,14 +193,9 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- only friendly skill types?
-	if( _only_friendly ) then
-		if( self.Type ~= STYPE_HEAL  and
-		    self.Type ~= STYPE_BUFF  and
-			self.Type ~= STYPE_SUMMON and
-		    self.Type ~= STYPE_HOT ) then
-		    debug_skilluse("ONLYFRIENDLY", self.Type);
-			return false;
-		end;
+	if _only_friendly and self.Target == STARGET_ENEMY then
+		debug_skilluse("ONLYFRIENDLY", self.Type);
+		return false;
 	end
 
 
@@ -619,6 +614,22 @@ function CSkill:use()
 			end
 		end
 
+	end
+
+	-- See if we have to stop or move
+	if( self.CastTime > 0 ) then
+		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
+		yrest(200); -- Wait to stop only if not an instant cast spell
+	elseif player.TargetPtr ~= 0 then -- see if we have to stop because we are in range
+		local target = CObject(player.TargetPtr)
+		if target then
+			local dist = distance(player,target)
+			if settings.profile.options.COMBAT_DISTANCE >= dist and settings.profile.options.COMBAT_STOP_DISTANCE >= dist then
+				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
+			else
+				keyboardHold( settings.hotkeys.MOVE_FORWARD.key);
+			end
+		end
 	end
 
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
