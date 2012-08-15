@@ -991,12 +991,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 					break;
 				end
 
-				if( v.CastTime > 0 ) then
-					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-					yrest(200); -- Wait to stop only if not an instant cast spell
-				end
-
-				if settings.profile.options.PRIORITY_CASTING == true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
+				if settings.profile.options.PRIORITY_CASTING ~= true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
 					attack_skill_used = true
 				end
 
@@ -1287,7 +1282,6 @@ function CPlayer:fight()
 	if self.Mounted then
 		self:dismount()
 	end
-	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
 	if ( settings.profile.options.PARTY == true ) and (settings.profile.options.PARTY_ICONS == true) then
 		sendMacro('SetRaidTarget("target", 1);')
@@ -1491,7 +1485,7 @@ function CPlayer:fight()
 			if( settings.profile.options.COMBAT_TYPE == "ranged" or
 			  self.ranged_pull == true ) then		-- melees with timed ranged pull
 				if dist > suggestedRange then -- move closer
-					success, reason = self:moveTo(target, true, nil, suggestedRange);
+					success, reason = self:moveTo(target, true, true, suggestedRange);
 				end
 			else 	-- normal melee
 				success, reason = self:moveTo(target, true);
@@ -1505,7 +1499,9 @@ function CPlayer:fight()
 				self:unstick();
 			end
 
-			yrest(500);
+		elseif suggestedRange >= dist and dist <= settings.profile.options.COMBAT_STOP_DISTANCE then
+
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 		end
 
 		if( settings.profile.options.QUICK_TURN ) then
@@ -1514,7 +1510,6 @@ function CPlayer:fight()
 			self:faceDirection(angle, yangle);
 
 			camera:setRotation(angle);
-			yrest(50);
 		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
 			-- Make sure we're facing the enemy
 			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
@@ -1579,6 +1574,7 @@ function CPlayer:fight()
 --			break;
 --		end
 	end
+	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
 	self:resetSkills();
 	self.Cast_to_target = 0;	-- reset cast to target counter
@@ -2170,7 +2166,11 @@ function evalTargetDefault(address, target)
 
 
 	-- PK protect
-	if settings.profile.options.PVP ~= true then
+	if settings.profile.options.PVP == false then
+		if( target.Type == PT_PLAYER ) then
+			return false;
+		end
+	elseif settings.profile.options.PVP ~= true then
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
 			if ( player.Battling == false ) then   -- if we don't have aggro then
 				debug_target("PK player, but not fighting us")
@@ -2184,6 +2184,7 @@ function evalTargetDefault(address, target)
 			end;
 		end;
 	end
+
 	-- Friends aren't enemies
 	if( player:isFriend(target) ) then
 		if ( player.Battling == false ) then   -- if we don't have aggro then
@@ -2566,7 +2567,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	until false
 
 	if (settings.profile.options.WP_NO_STOP ~= false) then
-		if (success == false) or (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
+		if (dontStopAtEnd ~= true) or (settings.profile.options.QUICK_TURN == false) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 		end
 	else

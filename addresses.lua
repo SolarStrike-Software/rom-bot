@@ -78,7 +78,6 @@ addresses = {
 	functionTargetBytes = {0x56, 0x8B, 0xCD, 0xE8, 0x49, 0x35, 0x28, 0x00},
 	functionTargetPatchAddr = 0x5F296F,
 	guildBankOpen_offset = 0xBC,
-	high9sBase = 0x9FD3B8,
 	hotkeysKey_offset = 0x54,
 	hotkeysName_offset = 0x4,
 	hotkeysPtr = 0xA35820,

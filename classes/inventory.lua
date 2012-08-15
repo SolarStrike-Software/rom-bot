@@ -651,6 +651,7 @@ function CInventory:getMount()
 	{first = 206944, last = 206946},
 	{first = 207501, last = 207503},
 	{first = 207515, last = 207536},
+	{first = 207546, last = 207551},
 	{first = 207558, last = 207560},
 	{first = 207566, last = 207571},
 	207624,

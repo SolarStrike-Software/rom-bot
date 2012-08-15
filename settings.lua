@@ -1207,6 +1207,10 @@ function settings.loadSkillSet(class)
 		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE or 0, best_range);	-- Maximum range of range attack skills is lesser
 		settings.profile.options.COMBAT_DISTANCE = best_range
 	end
+
+	if settings.profile.options.COMBAT_STOP_DISTANCE == nil or settings.profile.options.COMBAT_STOP_DISTANCE > settings.profile.options.COMBAT_DISTANCE then
+		settings.profile.options.COMBAT_STOP_DISTANCE = settings.profile.options.COMBAT_DISTANCE
+	end
 end
 
 function settings.updateSkillsAvailability()
