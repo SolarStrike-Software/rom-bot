@@ -1596,6 +1596,7 @@ end
 function AcceptQuestByName(_name)
 
 	local DEBUG = false
+	if settings.options.DEBUGGING == true then DEBUG = true end
 
 	-- Check if we have target
 	player:update()
@@ -1662,7 +1663,7 @@ end
 function CompleteQuestByName(_name, _rewardnumberorname)
 
 	local DEBUG = false
-
+	if settings.options.DEBUGGING == true then DEBUG = true end
 	-- Check if we have target
 	player:update()
 	yrest(100)
@@ -1696,9 +1697,11 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 
 		if (questToComplete == "" or questToComplete == "all") or -- Complete all
 		  FindNormalisedString(questOnBoard,questToComplete) then -- Or match name
+			local _counttime = os.time()
 			repeat
 				RoMScript("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
 				yrest(100)
+				
 				if _rewardnumberorname then
 							if DEBUG then
 								printf("_rewardnumberorname: %s \n",_rewardnumberorname)
@@ -1712,9 +1715,9 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 						for rewardNum = 1, RoMScript("SpeakQuestReward1.itemcount") do
 							-- rewardID = RoMScript("SpeakQuestReward1_Item"..rewardNum..".ID")
 							-- rewardType = RoMScript("SpeakQuestReward1_Item"..rewardNum..".Type")
-							-- set Tooptip
+							-- set Tooltip
 							-- RoMScript("GameTooltip:SetQuestItem("..rewardType..","..rewardID..")")
-							-- get Tooptip data
+							-- get Tooltip data
 							local rewardName = RoMScript("SpeakQuestReward1_Item"..rewardNum.."_Desc:GetText()")
 							if FindNormalisedString(rewardName, _rewardnumberorname) then
 								found = true
@@ -1731,6 +1734,9 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 						printf("Invalid reward type specified. Expected \"number\" or \"string\", got \""..type(_rewardnumberorname).."\".\n")
 						return
 					end
+				elseif (os.time() - _counttime) >= 2 then -- quest still there because of reward item needs choosing
+					RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item1)")
+					yrest(100)
 				end
 				RoMScript("CompleteQuest()") -- Completes the quest
 				yrest(100)
