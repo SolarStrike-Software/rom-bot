@@ -108,7 +108,10 @@ function main()
 			settings.profile.options.DEBUG_WAYPOINT = true;
 			settings.profile.options.DEBUG_AUTOSELL = true;
 	
-			-- reset bot language to clients language
+		
+			-- adds the numbers to the prints while in debug mode, 
+			-- normal language code is in settings.lua 
+			
 			if( settings.options.USE_CLIENT_LANGUAGE ) then
 				local hf_language;
 				if( bot.ClientLanguage == "DE" ) then
