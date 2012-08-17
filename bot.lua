@@ -107,6 +107,35 @@ function main()
 			settings.profile.options.DEBUG_HARVEST = true;
 			settings.profile.options.DEBUG_WAYPOINT = true;
 			settings.profile.options.DEBUG_AUTOSELL = true;
+	
+			-- reset bot language to clients language
+			if( settings.options.USE_CLIENT_LANGUAGE ) then
+				local hf_language;
+				if( bot.ClientLanguage == "DE" ) then
+					hf_language = "deutsch";
+				elseif(bot.ClientLanguage  == "FR" ) then
+					hf_language = "french";
+				elseif(bot.ClientLanguage  == "RU" ) then
+					hf_language = "russian";
+				elseif(bot.ClientLanguage == "PL" ) then
+					hf_language = "polish";
+				else
+					hf_language = "english";
+				end
+				local function setLanguage(_name)
+					include("/language/" .. _name .. ".lua");
+				end
+				local lang_base = {};
+				for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
+				setLanguage(hf_language);
+				for i,v in pairs(lang_base) do
+					if( language[i] == nil ) then
+						language[i] = "["..i.."] "..v;
+					end
+				end;
+				lang_base = nil; -- Not needed anymore, destroy it.
+				logMessage("Load Language for debugging with numbers");
+			end			
 		end
 
 		local foundpos = string.find(args[i], ":", 1, true);

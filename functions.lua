@@ -936,7 +936,7 @@ function levelupSkill(_skillname, _times)
 		yrest(600);
 		local name, _, icon, _, rank, type, upgradeCost, isSkillable, isAvailable = RoMScript("GetSkillDetail("..skill_from_db.skilltab..","..skill_from_db.skillnum..")")
 		player:update()
-		if player.TP >= upgradeCost then
+		if upgradeCost ~= nil and player.TP >= upgradeCost then
 			sendMacro("SetSpellPoint("..skill_from_db.skilltab..","..skill_from_db.skillnum..");");
 			hf_return = true;
 		else
