@@ -114,6 +114,7 @@ addresses = {
 	nameOffset = 0xC,
 	partyIconList_base = 0xA359F0,
 	partyIconList_offset = 0xC,
+	partyLeader_address = 0x9FBF18,
 	partyMemberList_address = 0x9FE238,
 	partyMemberList_offset = 0x134,
 	pawnAttackable_offset = 0x388,
