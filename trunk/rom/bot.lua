@@ -107,11 +107,11 @@ function main()
 			settings.profile.options.DEBUG_HARVEST = true;
 			settings.profile.options.DEBUG_WAYPOINT = true;
 			settings.profile.options.DEBUG_AUTOSELL = true;
-	
-		
-			-- adds the numbers to the prints while in debug mode, 
-			-- normal language code is in settings.lua 
-			
+
+
+			-- adds the numbers to the prints while in debug mode,
+			-- normal language code is in settings.lua
+
 			if( settings.options.USE_CLIENT_LANGUAGE ) then
 				local hf_language;
 				if( bot.ClientLanguage == "DE" ) then
@@ -138,7 +138,7 @@ function main()
 				end;
 				lang_base = nil; -- Not needed anymore, destroy it.
 				logMessage("Load Language for debugging with numbers");
-			end			
+			end
 		end
 
 		local foundpos = string.find(args[i], ":", 1, true);
@@ -851,11 +851,16 @@ function main()
 
 					-- Too many tries, logout
 					if( settings.profile.options.MAX_UNSTICK_TRIALS > 0 and
-						player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) then
-						cprintf(cli.yellow, language[55],
-						  player.Unstick_counter,
-						  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
+						player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS ) or
+						(not isInGame()) then
 
+						if isInGame() then
+							cprintf(cli.yellow, language[55],
+							  player.Unstick_counter,
+							  settings.profile.options.MAX_UNSTICK_TRIALS );	-- max unstick reached
+						else
+							cprintf(cli.yellow, language[56]);	-- The game has been disconnected
+						end
 
 						-- check if onUnstickFailure event is used in profile
 						if( type(settings.profile.events.onUnstickFailure) == "function" ) and

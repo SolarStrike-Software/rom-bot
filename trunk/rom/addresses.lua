@@ -87,6 +87,7 @@ addresses = {
 	idRecipeItemOffset = 0xF0,
 	inUseOffset = 0x1C,
 	inventoryBagIds = 0x9F1E8C,
+	isInGame = 0x9FAE5C,
 	itemCountOffset = 0x10,
 	itemFlagsOffset = 0x28,
 	itemInfoOffset = 0x10,

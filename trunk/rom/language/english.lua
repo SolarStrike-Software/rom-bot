@@ -57,6 +57,7 @@ language = {
 	[53] = "Elapsed time %d greater then scheduled time %d. We will logout.\n",
 	[54] = "Counted deaths %d greater then maximum allowed deaths %d. We will logout.\n",
 	[55] = "Unstick tries %d greater then maximum allowed unstick tries %d.\n",
+	[56] = "The game has been disconnected.\n",
 
 	[60] = "Unknown tag %s found in profile %s.xml. Please check your profile!\n",
 	[61] = "Invalid option \'%s\' for bot.lua\n\nSyntax: rom/bot.lua [profile:profname] [path:pathname] [retpath:retname] [character:charname]\n\nprofile:profname\tforce the use of profile \'profname.xml\'\npath:pathname\t\tforce the use of waypoint file \'pathname.xml\'\nretpath:retname\t\tforce the use of return waypoint file \'retname.xml\'\ncharacter:charname\tforce the use of client with \'charname\' loaded\n",

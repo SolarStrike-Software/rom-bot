@@ -597,9 +597,9 @@ end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
 function RoMScript(script)
-	-- Check for loading screen
-	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0 then
-		-- Cannot execute RoMScript during loading screen.
+	-- Check if in game
+	if not isInGame() then
+		-- Cannot execute RoMScript. Not in game.
 		return
 	end
 
@@ -1317,6 +1317,16 @@ function waitForLoadingScreen(_maxWaitTime)
 	return true
 end
 
+function isInGame()
+	-- Note: if not in game, addresses.isInGame + 0xBF4 is 1 when at the character selection screen.
+	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 and
+	   memoryReadInt(getProc(), addresses.isInGame) == 1 then
+		return true
+	else
+		return false
+	end
+end
+
 -- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h
 -- hmm, i whonder if we could get more information out of it than id, color and name.
 function parseItemLink(itemLink)
@@ -1355,7 +1365,7 @@ function GetPartyMemberName(_number)
 				name = utf82oem_russian(name);
 			else
 				name = utf8ToAscii_umlauts(name);   -- only convert umlauts
-			end		
+			end
 		return name
 	else
 		local name = memoryReadString(getProc(), memberAddress + 8)
@@ -1363,8 +1373,8 @@ function GetPartyMemberName(_number)
 				name = utf82oem_russian(name);
 			else
 				name = utf8ToAscii_umlauts(name);   -- only convert umlauts
-			end		
-		return name	
+			end
+		return name
 	end
 end
 
@@ -1701,7 +1711,7 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 			repeat
 				RoMScript("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
 				yrest(100)
-				
+
 				if _rewardnumberorname then
 							if DEBUG then
 								printf("_rewardnumberorname: %s \n",_rewardnumberorname)
