@@ -21,7 +21,7 @@ function Party(heal)
 		if not player.Mounted then
 			player:checkSkills(true);
 			player:checkPotions();
-				
+
 			if playericon and playericon >= 4 then
 				--=== If character has icon 4,5,6 or 7 then ===--
 				--=== Kill leaders target ===--
@@ -36,7 +36,7 @@ function Party(heal)
 				end
 			elseif settings.profile.options.ICON_FIGHT == true then
 				--=== Find mobs with I icon and kill them ===--
-				player:target(player:findEnemy(nil,nil,icontarget,nil)) 
+				player:target(player:findEnemy(nil,nil,icontarget,nil))
 				if player:haveTarget() then
 					if heal then
 						healfight()
@@ -48,9 +48,9 @@ function Party(heal)
 				player:target(player:findEnemy(nil, nil, evalTargetDefault, player.IgnoreTarget));
 				if player:haveTarget() then
 					player:fight();
-				end		
-			end	
-			
+				end
+			end
+
 			if heal then
 				for i,v in ipairs(partymemberpawn) do
 					player:target(partymemberpawn[i])
@@ -71,14 +71,14 @@ function Party(heal)
 					else
 						player:fight()
 					end
-				end				
+				end
 			end
 		end
 		if (not player.Battling) then
 			if settings.profile.options.LOOT == true and
-				settings.profile.options.LOOT_ALL == true then 
+				settings.profile.options.LOOT_ALL == true then
 				local Lootable = player:findEnemy(nil, nil, evalTargetLootable)
-				if not Lootable then			
+				if not Lootable then
 					getNameFollow()   --includes mount/dismount code
 				else
 					player:target(Lootable)
@@ -90,7 +90,7 @@ function Party(heal)
 			else
 				getNameFollow()
 			end
-		end	
+		end
 		Mount(true) -- check to (dismount only) even while in combat.
 		partyCommands()
 	end
@@ -100,7 +100,7 @@ function icontarget(address) -- looks for icon I on mobs
 	local pawn = CPawn(address);
 	local icon = pawn:GetPartyIcon()
 	pawn:update()
-	if icon == 1 then 
+	if icon == 1 then
 		return true
 	end
 end
@@ -124,7 +124,7 @@ function PartyTable()
 				_firsttimes = true
 			end
 		end
-	
+
 		if os.time() - _timexx >= 60  then --only post party names every 60 seconds
 			if GetPartyMemberName(i) ~= nil then
 				cprintf(cli.yellow,"Party member "..i.." has the name of ")
@@ -144,7 +144,7 @@ function PartyTable()
 end
 
 function getPartyLeaderpawn()
-	partyleader = getPartyLeaderName()	
+	partyleader = getPartyLeaderName()
 	leaderobj = player:findNearestNameOrId(partyleader)
 	if leaderobj then
 		leaderpawn = CPawn(leaderobj.Address)
@@ -159,8 +159,8 @@ function Mount(_dismount)
 		mounted = bitAnd(attackableFlag, 0x10000000)
 		if not _dismount then
 			if not player.Mounted then
-				if mounted then 
-					player:mount() 
+				if mounted then
+					player:mount()
 				end
 			end
 		end
@@ -169,7 +169,7 @@ function Mount(_dismount)
 				player:dismount()
 			end
 		end
-	end	
+	end
 end
 
 function getNameFollow()
@@ -177,10 +177,10 @@ function getNameFollow()
 	if ( settings.profile.options.PARTY_FOLLOW_NAME ) then
 		for i = 1,5 do
 			if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party"..i.."');"); Mount() return  end
-		end	
+		end
 		RoMScript("FollowUnit('party1');");
-	else 
-		RoMScript("FollowUnit('party1');");		
+	else
+		RoMScript("FollowUnit('party1');");
 	end
 	Mount()
 end
@@ -194,10 +194,10 @@ function checkparty(_dist)
 	local partynum = RoMScript("GetNumPartyMembers()")
 	if partynum == #partymemberpawn then
 		player:update()
-		for i = 2,#partymemberpawn do		
+		for i = 2,#partymemberpawn do
 			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnX_offset) or partymemberpawn[i].X
-			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z			
-			if partyX ~= nil then 
+			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z
+			if partyX ~= nil then
 				if distance(partyX,partyZ,player.X,player.Z) > _dist then
 					_go = false
 				end
@@ -236,14 +236,13 @@ function sendPartyChat(_msg)
 end
 
 function getPartyLeaderName()
-	--local name = memoryReadString(getProc(), addresses.partyLeader_address)
-	local name = memoryReadString(getProc(), 0x9FBF18)
+	local name = memoryReadString(getProc(), addresses.partyLeader_address)
 	if( bot.ClientLanguage == "RU" ) then
 		name = utf82oem_russian(name)
 	else
 		name = utf8ToAscii_umlauts(name)
-	end		
-	return name	
+	end
+	return name
 end
 
 function getTarget(name)
@@ -263,10 +262,10 @@ function getQuestNameStatus(_name)
 	i = 0
 	repeat
 		i = i + 1
-		local index, catalogID, name, track, level, daily, bDaily_num, iQuestType, 
+		local index, catalogID, name, track, level, daily, bDaily_num, iQuestType,
 		questID, completed, QuestGroup = RoMScript("GetQuestInfo("..i..")")
-		if name ~= nil then 
-			if string.find(string.lower(name),string.lower(_name)) then 
+		if name ~= nil then
+			if string.find(string.lower(name),string.lower(_name)) then
 				return name, completed
 			end
 		end
@@ -286,14 +285,14 @@ function partyCommands()
 		if _quest then _quest = string.lower(_quest) end
 		if _npc then _npc = string.lower(_npc) end
 		if _command then _command = string.lower(_command) end
-		
+
 		if _quest then
 			local quest, status = getQuestNameStatus(_quest)
-			if quest == nil then 
+			if quest == nil then
 				sendPartyChat("no quest with that name")
 			else
-				if status then 
-					sendPartyChat("quest: "..quest.." ,completed") 
+				if status then
+					sendPartyChat("quest: "..quest.." ,completed")
 				else
 					sendPartyChat("quest: "..quest.." ,incomplete")
 				end
@@ -320,7 +319,7 @@ function partyCommands()
 		elseif _npc then
 			local npc = getTarget(_name)
 			if npc then
-				player:target_NPC(npc.Name)			
+				player:target_NPC(npc.Name)
 				if ChoiceOptionByName(_npc) then
 					sendMacro('StaticPopup_OnClick(StaticPopup1, 1);')
 					waitForLoadingScreen(10)
@@ -329,7 +328,7 @@ function partyCommands()
 					sendPartyChat("no option available by that name")
 				end
 			else
-				sendPartyChat("npc: No target")			
+				sendPartyChat("npc: No target")
 			end
 		elseif _command == "nofollow" then
 			keyboardPress(settings.hotkeys.MOVE_FORWARD.key);
@@ -339,7 +338,7 @@ function partyCommands()
 			stop = false
 			sendPartyChat("following")
 		elseif _command == "farm" then
-			if not healer then 
+			if not healer then
 				settings.profile.options.ICON_FIGHT = false
 				sendPartyChat("Set to farm mobs")
 			end
@@ -347,7 +346,7 @@ function partyCommands()
 				settings.profile.options.ICON_FIGHT = true
 				sendPartyChat("Set to kill icon I")
 		elseif _command == "portal" then
-			if GoThroughPortal then 
+			if GoThroughPortal then
 				if GoThroughPortal(200) == true then
 					sendPartyChat("I should be through the portal now")
 				else
@@ -366,7 +365,7 @@ function PartyHeals() -- backward compatible
 
 function PartyDPS() -- backward compatible
 	Party()
-end	
+end
 
 function healfight()
 	if not settings.profile.options.HEAL_FIGHT then return end
@@ -410,7 +409,7 @@ function healfight()
 			if party.HP/party.MaxHP*100 > 10 then
 				player:checkSkills(true);
 			end
-		end	
+		end
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if( os.difftime(os.time(), player.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
 			printf(language[83]);			-- Taking too long to damage target
@@ -462,7 +461,7 @@ function healfight()
 			end
 			yrest(500);
 		end
-		if mob then 
+		if mob then
 			player:target(mob) -- make sure to target mob again after healing
 			if( settings.profile.options.QUICK_TURN ) then
 				local angle = math.atan2(mob.Z - player.Z, mob.X - player.X);
@@ -470,7 +469,7 @@ function healfight()
 				player:faceDirection(angle, yangle);
 				camera:setRotation(angle);
 				yrest(50);
-			end		
+			end
 			if( player:checkPotions() or player:checkSkills() ) then
 				player.LastDistImprove = os.time();
 			end
