@@ -1225,21 +1225,19 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 end
 
-function getQuestStatus(_questname)
+function getQuestStatus(_questnameorid)
 	-- Used when you need to make 3 way decision, get quest, complete quest or gather quest items.
 	if (bot.IgfAddon == false) then
 		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
 	end
 
-	if type(_questname) == "number" then
-		_questname = GetIdName(_questname)
+	if type(tonumber(_questnameorid)) == "number" then
+		return RoMScript("igf_questStatus(".._questnameorid..")")
+	elseif type(_questnameorid) == "string" then
+		return RoMScript("igf_questStatus(\""..NormaliseString(_questnameorid).."\")")
 	end
 
-	if type(_questname) == "string" then
-		return RoMScript("igf_questStatus(\""..NormaliseString(_questname).."\")")
-	end
-
-	error("Invalid id sent to getQuestStatus()")
+	error("Invalid argument used with getQuestStatus(): Expected type 'number' or 'string'")
 end
 
 -- Read the ping variable from the client
@@ -1603,10 +1601,50 @@ function loadProfile(forcedProfile)
 end
 
 -- Thanks to JackBlonder for his work on the QuestByName functions
-function AcceptQuestByName(_name)
-
+function AcceptQuestByName(_nameorid, _questgroup)
 	local DEBUG = false
 	if settings.options.DEBUGGING == true then DEBUG = true end
+
+	-- Check for valid _nameorid
+	local questToAccept
+	if _nameorid == nil then
+		questToAccept = "all"
+	elseif type(_nameorid) == "number" then
+		questToAccept = GetIdName(_nameorid)
+	else
+		questToAccept = _nameorid
+	end
+
+	if type(questToAccept) ~= "string" then
+		error("Invalid name or id used in AcceptQuestByName")
+	end
+				if DEBUG then
+					printf("questToAccept: %s\n",questToAccept)
+				end
+
+	-- Check for valid _questgroup
+	if _questgroup ~= nil then
+		if type(_questgroup) == "string" then
+			_questgroup = string.lower(_questgroup)
+			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
+		end
+		if _questgroup == "normal" then _questgroup = 1
+		elseif _questgroup == "daily" then _questgroup = 2
+		elseif _questgroup == "public" then _questgroup = 3
+		else _questgroup = nil
+		end
+	end
+
+	-- If no _questgroup specified and Id used, get quest group from memory.
+	if _questgroup == nil and type(_nameorid) == "number" then
+		local baseaddress = GetItemAddress(_nameorid)
+		if baseaddress then
+			_questgroup = memoryReadInt(getProc(), baseaddress + addresses.questGroup_offset)
+			if _questgroup ~= 2 and _questgroup ~= 3 then
+				_questgroup = 1 -- questgroup 1 comes up as 0 in memory
+			end
+		end
+	end
 
 	-- Check if we have target
 	player:update()
@@ -1615,15 +1653,11 @@ function AcceptQuestByName(_name)
 		print("No target! Target NPC before using AcceptQuestByName")
 		return
 	end
+
 	-- Target NPC again to get updated questlist
 	Attack()
 	yrest(500)
-	--------------------------------------------
-	_name = _name or "all"
-	local questToAccept = _name
-				if DEBUG then
-					printf("questToAccept: %s\n",questToAccept)
-				end
+
 	local questOnBoard
 	local availableQuests = RoMScript("GetNumQuest(1)") -- Get number of available quests
 				if DEBUG then
@@ -1636,13 +1670,14 @@ function AcceptQuestByName(_name)
 		-- Check to see if we have room to accept quests
 		if (30 > RoMScript("GetNumQuestBookButton_QuestBook()"))  then
 			-- Get quest name
-			questOnBoard = RoMScript("GetQuestNameByIndex(1, "..i..")")
+			questOnBoard, daily, qgroup = RoMScript("GetQuestNameByIndex(1, "..i..")")
 						if DEBUG then
 							printf("questOnBoard: %s \n",questOnBoard)
 						end
 
-			if (questToAccept == "" or questToAccept == "all") or -- Accept all
-			  FindNormalisedString(questOnBoard,questToAccept) then -- Or match name
+			if ((questToAccept == "" or questToAccept == "all") or -- Accept all
+			  FindNormalisedString(questOnBoard,questToAccept)) and -- Or match name
+			  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
 				matchFound = true
 				repeat
 					RoMScript("OnClick_QuestListButton(1,"..i..")") -- Clicks the quest
@@ -1670,10 +1705,58 @@ function AcceptQuestByName(_name)
 	return matchFound
 end
 
-function CompleteQuestByName(_name, _rewardnumberorname)
-
+function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 	local DEBUG = false
 	if settings.options.DEBUGGING == true then DEBUG = true end
+
+	-- Check for valid _nameorid
+	local questToComplete
+	if _nameorid == nil then
+		questToComplete = "all"
+	elseif type(_nameorid) == "number" then
+		questToComplete = GetIdName(_nameorid)
+	else
+		questToComplete = _nameorid
+	end
+
+	if type(questToComplete) ~= "string" then
+		error("Invalid name or id used in CompleteQuestByName")
+	end
+				if DEBUG then
+					printf("questToComplete: %s\n",questToComplete)
+				end
+
+	-- Check if user put questgroup in second argument
+	if type(_rewardnumberorname) == "string" and
+	   (string.lower(_rewardnumberorname) == "normal" or string.lower(_rewardnumberorname) == "daily" or string.lower(_rewardnumberorname) == "public") then
+		_questgroup = _rewardnumberorname
+		_rewardnumberorname = nil
+	end
+
+	-- Check for valid _questgroup
+	if _questgroup ~= nil then
+		if type(_questgroup) == "string" then
+			_questgroup = string.lower(_questgroup)
+			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
+		end
+		if _questgroup == "normal" then _questgroup = 1
+		elseif _questgroup == "daily" then _questgroup = 2
+		elseif _questgroup == "public" then _questgroup = 3
+		else _questgroup = nil
+		end
+	end
+
+	-- If no _questgroup specified and Id used, get quest group from memory.
+	if _questgroup == nil and type(_nameorid) == "number" then
+		local baseaddress = GetItemAddress(_nameorid)
+		if baseaddress then
+			_questgroup = memoryReadInt(getProc(), baseaddress + addresses.questGroup_offset)
+			if _questgroup ~= 2 and _questgroup ~= 3 then
+				_questgroup = 1 -- questgroup 1 comes up as 0 in memory
+			end
+		end
+	end
+
 	-- Check if we have target
 	player:update()
 	yrest(100)
@@ -1681,16 +1764,11 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 		print("No target! Target NPC before using CompleteQuestByName")
 		return
 	end
+
 	-- Target NPC again to get updated questlist
 	Attack()
 	yrest(500)
-	--------------------------------------------
 
-	_name = _name or "all"
-	local questToComplete = _name
-				if DEBUG then
-					printf("questToComplete: %s\n",questToComplete)
-				end
 	local questOnBoard = ""
 	local availableQuests = RoMScript("GetNumQuest(3)")
 				if DEBUG then
@@ -1700,13 +1778,14 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 	-- For each quest
 	for i=1,availableQuests do
 		-- Get quest name
-		questOnBoard = RoMScript("GetQuestNameByIndex(3, "..i..")")
+		questOnBoard, daily, qgroup = RoMScript("GetQuestNameByIndex(3, "..i..")")
 				if DEBUG then
 					printf("questOnBoard / Index: %s \t %d\n",questOnBoard,i)
 				end
 
-		if (questToComplete == "" or questToComplete == "all") or -- Complete all
-		  FindNormalisedString(questOnBoard,questToComplete) then -- Or match name
+		if ((questToComplete == "" or questToComplete == "all") or -- Complete all
+		  FindNormalisedString(questOnBoard,questToComplete)) and -- Or match name
+		  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
 			local _counttime = os.time()
 			repeat
 				RoMScript("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
@@ -1766,12 +1845,12 @@ function CompleteQuestByName(_name, _rewardnumberorname)
 	yrest(750)
 end
 
-function AcceptAllQuests()
-	AcceptQuestByName()
+function AcceptAllQuests(_questgroup)
+	AcceptQuestByName("all", _questgroup)
 end
 
-function CompleteAllQuests()
-	CompleteQuestByName()
+function CompleteAllQuests(_questgroup)
+	CompleteQuestByName("all", nil, _questgroup)
 end
 
 function CancelQuest(nameorid)

@@ -1090,11 +1090,13 @@ function settings.loadProfile(_name)
 
 	-- check if igf addon is active
 	local igf_version = RoMScript("IGF_INSTALLED")
+	local current_version = 4 -- Change this value to match the value in "ingamefunctions.lua".
 	if igf_version then
 		bot.IgfAddon = true;
+		bot.IgfVersion = igf_version
 		-- Check version
-		if igf_version ~= 3 then -- Change this value to match the value in "ingamefunctions.lua".
-			error(language[1006], 0)
+		if igf_version ~= current_version then
+			error(string.format(language[1006], current_version, igf_version), 0)
 		end
 	else
 		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
