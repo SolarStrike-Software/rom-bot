@@ -159,6 +159,7 @@ addresses = {
 	playerCraftLevel_offset = 0x1508,
 	qualityBaseOffset = 0x40,
 	qualityTierOffset = 0x16,
+	questGroup_offset = 0x4F0,
 	realItemIdOffset = 0x98,
 	rentBagBase = 0x9F2A34,
 	rentBankBase = 0x9F2A5C,
