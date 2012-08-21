@@ -224,5 +224,5 @@ language = {
 	[1003] = "INV_MAX_SLOTS (%d) is lower then INV_AUTOSELL_TOSLOT (%d). You can only sell items, that are within the inventory update range. Please adjust the option INV_MAX_SLOTS.\n",
 	[1004] = "The ingamefunctions addon (igf) is not installed! It is required for the bot to run. Please install it (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ). Then restart the game.\n",
 	[1005] = "Unable to autosell: not supported by client language.",
-	[1006] = "The 'ingamefunctions' folder, in the games 'interface/addons' folder, is out of date. To update, right-click the 'interface/addons/ingamefunctions' folder and select 'SVN Update' or copy the 'ingamefunctions' folder from 'rom/devtools' to the games 'interface/addons' folder. Then restart the game.\n",
+	[1006] = "The 'ingamefunctions' folder, in the games 'interface/addons' folder, is out of date. Current version is %d, you have %d. To update, right-click the 'interface/addons/ingamefunctions' folder and select 'SVN Update' or copy the 'ingamefunctions' folder from 'rom/devtools' to the games 'interface/addons' folder. Then restart the game.\n",
 };
