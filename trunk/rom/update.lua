@@ -864,7 +864,7 @@ function findOffsets()
 	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xD6A4);
 	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x12840);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x8234);
-	assumptionUpdate("partyMemberList_address", addresses.charClassInfoBase + 0x2320);
+	assumptionUpdate("partyMemberList_address", addresses.partyLeader_address + 0x2320);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xE24C);
 	assumptionUpdate("rentBankBase", addresses.rentBagBase + 0x28);
 	assumptionUpdate("rentEggSlotBase", addresses.rentBagBase + 0x78);
