@@ -778,6 +778,17 @@ local updatePatterns =
 		startloc = 0x770000,
 	},
 
+	partyMemberList_address = {
+		pattern = string.char(
+			0x56,
+			0x51,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x0D),
+		mask = "xxxx????x????xx",
+		offset = 4,
+		startloc = 0x5E0000,
+	},
 }
 
 
@@ -864,12 +875,11 @@ function findOffsets()
 	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xD6A4);
 	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x12840);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x8234);
-	assumptionUpdate("partyMemberList_address", addresses.partyLeader_address + 0x2328);
 	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xE24C);
 	assumptionUpdate("rentBankBase", addresses.rentBagBase + 0x28);
 	assumptionUpdate("rentEggSlotBase", addresses.rentBagBase + 0x78);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x5260);
-	assumptionUpdate("tablesBase", addresses.partyLeader_address + 0x35B4);
+	assumptionUpdate("tablesBase", addresses.partyMemberList_address + 0x45A8);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x823C);
 	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0x10BE0);
 
