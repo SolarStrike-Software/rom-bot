@@ -871,17 +871,17 @@ function findOffsets()
 	assumptionUpdate("camZUVec_offset", addresses.camXUVec_offset + 8);
 	assumptionUpdate("camY_offset", addresses.camX_offset + 4);
 	assumptionUpdate("camZ_offset", addresses.camX_offset + 8);
-	assumptionUpdate("eggPetBaseAddress", addresses.charClassInfoBase + 0x10C88);
-	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xD6A4);
-	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x12840);
+	assumptionUpdate("eggPetBaseAddress", addresses.charClassInfoBase + 0x12718);
+	assumptionUpdate("inventoryBagIds", addresses.charClassInfoBase + 0xF134);
+	assumptionUpdate("itemSetSkillsBase", addresses.charClassInfoBase + 0x142D0);
 	assumptionUpdate("moneyPtr", addresses.charClassInfoBase + 0x8234);
-	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xE24C);
+	assumptionUpdate("rentBagBase", addresses.charClassInfoBase + 0xFCDC);
 	assumptionUpdate("rentBankBase", addresses.rentBagBase + 0x28);
 	assumptionUpdate("rentEggSlotBase", addresses.rentBagBase + 0x78);
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x5260);
 	assumptionUpdate("tablesBase", addresses.partyMemberList_address + 0x45A8);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x823C);
-	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0x10BE0);
+	assumptionUpdate("itemQueueCount", addresses.charClassInfoBase + 0x12670);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)
