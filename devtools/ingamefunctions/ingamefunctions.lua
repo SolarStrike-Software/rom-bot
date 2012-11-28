@@ -1,4 +1,4 @@
-IGF_INSTALLED = 4;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 5;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
@@ -209,8 +209,17 @@ function ToggleUI_TITLE()
 		ResultOutput = ''
 		local func = loadstring("local a={".. body .. "} return a")
 		local a = {}
+
 		if func then
-			a = func()
+			local status,err = pcall(func);
+			if status == false then
+				a = {err}
+			else
+				a = err -- Not an error but results
+			end
+			table.insert(a,1,status)
+		else -- Faulty command that breaks the function
+			a = {false, "Error in command sent to IGF."}
 		end
 		for i = 1, #a do
 			ResultOutput = ResultOutput .. tostring(a[i]) .. string.char(9)
