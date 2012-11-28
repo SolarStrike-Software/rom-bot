@@ -173,10 +173,13 @@ function main()
 	attach(getWin(forcedCharacter));
 
 	if( not checkExecutableCompatible() ) then
-		cprintf(cli.yellow, "!! Notice: !!\n");
-		printf(language[43]);	-- is recommended that you run rom/update.lua
-
-		logMessage("Game exectuable may have changed. You should run rom/update.lua");
+		printf("Addresses seem off, trying to update.\n")
+		include("update.lua")
+		if( not checkExecutableCompatible() ) then
+			error("The addresses didn't update, you will have to wait until there is an SVN update that updates the addresses.\n")
+		else
+			cprintf(cli.yellow,"update.lua seems to have worked, addresses.lua has been updated.\n")
+		end
 	end
 
 	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);

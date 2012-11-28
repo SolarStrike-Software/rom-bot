@@ -724,6 +724,13 @@ function RoMScript(script)
 		end
 	end
 
+	local err = ret[1]
+	if err == false then
+		error("IGF:"..ret[2],0)
+	elseif err == true then
+		table.remove(ret,1)
+	end
+
 	return unpack(ret);
 end
 
@@ -1349,7 +1356,7 @@ function GetPartyMemberName(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("intptr", getProc(), addresses.partyMemberList_address, {addresses.partyMemberList_offset1, addresses.partyMemberList_offset2})
+	local listAddress = memoryReadRepeat("int", getProc(), addresses.partyMemberList_address ) + addresses.partyMemberList_offset
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists
