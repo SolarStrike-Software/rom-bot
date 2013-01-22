@@ -1,0 +1,36 @@
+<waypoints type="TRAVEL">
+<onload>
+	player:mount()
+	__WPL:setWaypointIndex(1)
+</onload>
+	<!-- #  1 --><waypoint x="-3313" z="-8755">	</waypoint>
+	<!-- #  2 --><waypoint x="-3429" z="-8678">	</waypoint>
+	<!-- #  3 --><waypoint x="-3535" z="-8695">	</waypoint>
+	<!-- #  4 --><waypoint x="-3664" z="-8688">
+		player:target_NPC(110482); -- Leighton
+		CompleteQuestByName(420666) -- Testing Your Skills
+		AcceptQuestByName(420667) -- Lively Reward
+	</waypoint>
+	<!-- #  1 --><waypoint x="-3727" z="-8678">	</waypoint>
+	<!-- #  2 --><waypoint x="-3752" z="-8717">
+		player:target_NPC(110490); -- Port
+		CompleteQuestByName(420667) -- Lively Reward
+		AcceptQuestByName(424800) -- Embedding Runes
+		CompleteQuestByName(424800) -- Embedding Runes
+		AcceptQuestByName(420669) -- A Friend's Convern
+		inventory:update();
+		inventory:useItem(201709); -- Generous Gift
+	</waypoint>
+	<!-- #  4 --><waypoint x="-3695" z="-8666">	</waypoint>
+	<!-- #  1 --><waypoint x="-3667" z="-8712">
+		player:target_NPC(110073); -- Shikha
+		CompleteQuestByName(420669) -- A Friend's Convern
+		AcceptQuestByName(420670) -- Making Winter Clothes
+	</waypoint>
+	<!-- #  1 --><waypoint x="-3471" z="-8685">	</waypoint>
+	<!-- #  2 --><waypoint x="-3286" z="-8774">	</waypoint>
+	<!-- #  3 --><waypoint x="-3122" z="-8878">	</waypoint>
+	<!-- #  4 --><waypoint x="-2835" z="-8996">
+		loadPaths("1-10PioneersQuests/l2-3_wolf");
+	</waypoint>
+</waypoints>

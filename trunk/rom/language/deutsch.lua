@@ -15,12 +15,12 @@ language = {
 	[11] = "MACRO: Benutze Manatrank %s/%s (%d%%): %s (Anz %s)\n",
 	[12] = "R\129ckkehrpfad ist n\132her als normale Wegepunkte. Beginne mit dem R\129ckkehrpfad!\n",
 	[13] = "Wir gehen zum R\129ckkehrpfad-Wegpunkt #%d, (%d, %d)\n",
-	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",	
+	[14] = "Wir befinden uns im Kampf. Stehenbleiben und auf den Angreifer warten.\n",
 	[15] = "Wegepunkt #%d ist n\132her als #1. Wir starten daher mit Wegepunkt #%d.\n",
 	[16] = "Keine (benutzbaren) Manatr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
 	[17] = "Keine (benutzbaren) Heiltr\132nke mehr in den Taschenpl\132tzen 1 bis %d vorhanden.\n",
 	[18] = "NOTIZ: Fehler beim Gegenstand (%s~=%s); hole neue Infos (dauert nur kurz).\n",
-
+	[19] = "Ziel verloren.\n",
 	[20] = "Aus\129bung abgeschlossen\n",
 	[21] = "Dr\129cke %s: %s",
 	[22] = "Wir greifen den Gegner \'%s\' an.\n",
@@ -40,8 +40,8 @@ language = {
 	[36] = "Im Kampf bevor wir unser Ziel angegriffen haben. Wir brechen unser aktuelles Ziel ab: %s\n",
 	[37] = "Neues Ziel \'%s\' ausgew\132hlt. Entfernung %d\n",
 	[38] = "Pausiere f\129r %s Sekunden um Mana und Gesundheit zu regenerien.\n",
-	[39] = "Wir werden angegriffen. Pausieren wird abgebrochen.\n",	
-	
+	[39] = "Wir werden angegriffen. Pausieren wird abgebrochen.\n",
+
 
 	[40] = "Spieleradresse ge\132ndert: 0x%X\n",
 	[41] = "Speicherlesung schlug fehl",
@@ -51,24 +51,28 @@ language = {
 	[45] = "Mehrere RoM Fenster gefunden. Holen Sie das Fenster in den Vordergrund, dem Sie den Bot zuordnen m\148chten und dr\129cken Sie %s.\n",
 	[46] = "Bot pausiert. (%s) dr\129cken um weiterzumachen, (CTRL+L) beendet den Bot, (CTRL+C) schlie\225t das Micromacro Fenster\n",
 	[47] = "RoM Fenster nicht gefunden! RoM mu\225 vor dem Bot gestartet werden!",
-	[48] = "Fehler beim Lesen der Speicheradresse f\129r \'%s\'. Das Spiel wurde ge\132ndert!!! Bitte \'rom/bot.lua update\' ausf\129hren UND die neue Version des RoM Bot installieren!",	
-	
+	[48] = "Fehler beim Lesen der Speicheradresse f\129r \'%s\'. Das Spiel wurde ge\132ndert!!! Bitte \'rom/bot.lua update\' ausf\129hren UND die neue Version des RoM Bot installieren!",
+
 	[50] = "%s  Automatisches Ausloggen\n",
 	[51] = "Herunterfahren des Systems.\n",
 	[52] = "Verbindung zum Spiele Fenster verloren (Client abgestr\129rzt oder geschlossen?). Skript bitte neu starten.",
-	[53] = "Laufzeit %d gr\148\225er als maximale Laufzeit %d. Wir loggen uns aus.\n",	
+	[53] = "Laufzeit %d gr\148\225er als maximale Laufzeit %d. Wir loggen uns aus.\n",
 	[54] = "Anzahl Tode %d gr\148\225er als maximal erlaubte Tode %d. Wir loggen uns aus.\n",
-	[55] = "Anzahl Freikommversuche %d gr\148\225er als maximal erlaubte Anzahl %d.\n",	
+	[55] = "Anzahl Freikommversuche %d gr\148\225er als maximal erlaubte Anzahl %d.\n",
+	[56] = "Wir wurden vom Spiel getrennt.\n",
 
 	[60] = "Unbekanntes Tag %s im Profil %s.xml. Bitte \129berpr\129fen Sie Ihr Profil!\n",
 	[61] = "Fehlerhafte Option \'%s\' f\129r bot.lua\n\nSyntax: rom/bot.lua [profile:name] [path:name] [retpath:name]\n\nprofile:profname\tBenutze Profil \'profname.xml\'\npath:pathname\t\tBenutze Wegepunkt Datei \'pathname.xml\'\nretpath:retname\t\tBenutze R\129ckkehrpfad \'retname.xml\'\n",
 	[62] = "Fehler beim Lesen der Spracheinstellung des Spiels. Haben Sie Ihr leeres MACRO im Spiel richtig zugeordnet? Bitte den Bot und gegebenenfalls das Spiel nochmal starten.",
-	
-	[70] = "Pausieren nach %s Sekunden beendet.\n",	
-	[71] = "Pausiere f\129r %s Sekunden.\n",
-	[78] = "Sammeln abgebrochen. Es wurde Aggro gezogen.\n",
-	[79] = "Es wurden keine Ressourcen in der Nähe gefunden.\n",
 
+	[70] = "Pausieren nach %s Sekunden beendet.\n",
+	[71] = "Pausiere f\129r %s Sekunden.\n",
+	
+	[75] = "Fehler in Ihrem Profil: onLevelUp Fehler: %s",
+	[76] = "Fertigkeitsstufe im Sammeln nicht hoch genug.",
+	[77] = "Ung\129ltige Auswahl genutzt in 'player:getCraftLevel'",
+	[78] = "Sammeln abgebrochen. Es wurde Aggro gezogen.\n",
+	[79] = "Es wurden keine Ressourcen in der N\132he gefunden.\n",
 	[80] = "N\132her herangehen.\n",
 	[81] = "Unerwartete Unterbrechung beim Erntebeginn. Wir versuchen es nochmal.\n",
 	[82] = "=>   * abgebrochen *\n",
@@ -102,7 +106,7 @@ language = {
 	[111] = "Sie haben keinen R\129cklaufpfad angegeben!!! Wir benutzen daher die normale Wegepunktedatei \'%s\' . Bitte pr\129fen Sie das.\n",
 	[112] = "Wir benutzen die normale Wegepunktdatei \'%s\' nach der automatischen Wiederbelebung.\n",
 	[113] = "Wegepunkt Typ TRAVEL: wir stoppen und k\132mpfen nicht.\n",
-	-- [114] = "", empty
+	[114] = "Keine Wegepunkte in der Wegepunkt-Datei.",
 	[115] = "Fehler: Die Taste f\129r \'%s\' ist leer!\n",
 	[116] = "Fehler: Die Taste \'%s\' f\129r \'%s\' ist ung\129ltig!\n",
 	[117] = "Fehler: Die Modifikatortaste \'%s\' f\129r \'%s\' ist ung\129ltig (VK_SHIFT, VK_ALT, VK_CONTROL)!\n",
@@ -116,7 +120,7 @@ language = {
 	[125] = "Ihr Tastatureinstellungen f\129r \'%s\' in settings.xml passen nicht zu den Ingame Tastatureinstellungen.\nBitte \129berpr\129fen Sie Ihre Einstellungen!",
 	[126] = "Fehler: Globale Taste nicht gesetzt: ",
 	[127] = "Profil Fehler: Bitte der Funktion %s eine g\129ltige Taste im Profil \'%s.xml\' zuordnen.",
-	[128] = "Die Optionen \'mana\', \'manainc\', \'rage\', \'energy\', \'concentration\', \'range\', \'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' sein ung\129ltig bei der F\132higkeit \'%s\' im Profil \'%s.xml\'. Bitte l\148schen Sie die Option und starten Sie den Bot neu!\n",
+	[128] = "Die Optionen \'mana\', \'rage\', \'energy\', \'focus\', \'range\', \'cooldown\', \'minrange\', \'type\', \'target\' and \'casttime\' sein ung\129ltig bei der F\132higkeit \'%s\' im Profil \'%s.xml\'. Bitte l\148schen Sie die Option und starten Sie den Bot neu!\n",
 	[129] = "Die Option \'modifier\' bei der F\132higkeit \'%s\' im Profil \'%s.xml\' wird zur Zeit nicht unterst\129tzt. Bitte l\148schen Sie die Option und starten Sie den Bot neu!\n",
 	[130] = "Sie haben eine \'leere\' F\132higkeit im Profil \'%s.xml\'. Bitte l\148schen oder berichtigen Sie diese Einstellung!\n",
 	[131] = "Sie haben eine falsche Einstellunge f\129r die Option inbattle=\'%s\' bei der F\132higkeit %s im Profil \'%s.xml\'. Bitte l\148schen oder berichtigen Sie diese Einstellung!\n",
@@ -137,21 +141,28 @@ language = {
 	[146] = "Sie haben ausgew\132hlt: %s\n",
 	[147] = "Falsche Auswahl. Bitte pr\129fen Sie Ihre Eingabe und w\132hlen Sie erneut!\n",
 	[148] = "Wir gehen nach diesem Kampf in den Schlafmodus / sobald als m\148glich.\n",
-	[149] = "Sie sind gestorben... Sorry.\n",	
+	[149] = "Sie sind gestorben... Sorry.\n",
 
 	[150] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Wegpunkt #%d. Bitte pr\129fen Sie den Lua Code an diesem Wegepunkt.",
 	[151] = "Fehler beim Kompilieren und Lua Code auszuf\129hren beim Event %s im Charakter-Profil. Bitte \129berpr\129fen Sie den Lua Code zu dem angegebenen Event in Ihrem Profile.",
 	[152] = "Fehler beim kompilieren und ausfuhren des LUA codes. Fehler in dem onLoad Event in der Wegpunkt Datei.",
-
+	[153] = "Wegepunkt-Datei \'%s\' konnte nicht gefunden werden. Bitte w\132hlen Sie eine aus der Liste aus.\n",
+	[154] = "Sie m\129ssen sowohl \'reqbuffname\' als auch \'reqbufftarget\' definieren f\129r Skill %s in Ihrem Profil \'%s.xml\'. Bitte korrigieren oder l\148schen Sie beide!\n",
+	[155] = "Sie m\129ssen sowohl \'nobuffname\' als auch \'nobufftarget\' definieren f\129r Skill %s in Ihrem Profil \'%s.xml\'. Bitte korrigieren oder l\148schen Sie beide!\n",
+	[156] = "Ung\129ltige Auswahl f\129r reqbufftarget=\'%s\' beim Skill %s in Ihrem Profil \'%s.xml\'. Nur \'player\' oder \'target\' ist m\148glich. Bitte korrigieren oder l\148schen Sie diese Option!\n",
+	[157] = "Ung\129ltige Auswahl f\129r nobufftarget=\'%s\' beim Skill %s in Ihrem Profil \'%s.xml\'. Nur \'player\' oder \'target\' ist m\148glich. Bitte korrigieren oder l\148schen Sie diese Option!\n",
+	[158] = "Es gibt keine Skill-ID 'id' f\129r Skill %s in der Skill Datenbank. Bitte tragen Sie eine g\129ltige ID oder Hotkey in Ihrem Profil ein.",
+	
+	[159] = "Bewege in die Item-Shop-Tasche: %s.\n",
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
 	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
 	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[163] = "Es wurde keine R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[164] = "Wir kommen von einem R\129ckkehrpfade. Daher werden wir auch jetzt den R\129ckkehrpfad %s benutzen.\n",
 	[165] = "Wir benutzen nun die normale Wegepunktdatei %s.\n",
-	[166] = "Bitte neue Profiloption <hotkey name=\"MACRO\" key=\"VK_7\" /> zur automatischen Wiederbelebung setzen.\n",	
+	[166] = "Bitte neue Profiloption <hotkey name=\"MACRO\" key=\"VK_7\" /> zur automatischen Wiederbelebung setzen.\n",
 	[167] = "Tastenzuordnungen kommen aus Datei %s:",
-	[168] = "Wir wandern in einem Radius von %d umher.\n",	
+	[168] = "Wir wandern in einem Radius von %d umher.\n",
 	[169] = "Dr\129cke %s: RoMScript ausf\129hren \"%s\".\n",
 	[170] = "Level %d Geschenkbeutel \148ffnen bzw. ausr\129sten.\n",
 	[171] = "\148ffne/anziehen Gegenstand: %s\n",
@@ -159,14 +170,18 @@ language = {
 	[173] = "Unbekannte Option \'%s\'. Wir k\148nnen den Wert nicht ver\132ndern. Bitte Einstellungen pr\129fen.\n",
 	[174] = "Gegenstand wurde nicht gefunden: %s\n",
 	[175] = "Sturobold",
-	[176] = "Fernkampff\132higkeit gefunden: %s\n",	
+	[176] = "Fernkampff\132higkeit gefunden: %s\n",
 	[177] = "Aktueller Kampf abgebrochen.\n",
 	[178] = "Looten wegen Aggro \129bersprungen.\n",
 	[179] = "Maximale Reichweite der Fernkampff\132higkeiten ist kleiner als die Einstellung COMBAT_DISTANCE=%d. Bitte die COMBAT_DISTANCE Einstellung reduzieren.\n",
 	[180] = " =>   * Cast gescheitert *\n",
 	[181] = "target_Object(): Bitte gebe dem Objekt einen Namen fur diese Funktion.\n",
 	[182] = "Diese Aktion kann nicht ausgefuhrt werden, Gegenstand befindet sich in einem gesperrtem Rucksackfach",
-
+	[183] = "Das ingamefunctions Addon (igf) ist nicht installiert oder muss geupdated werden. Sie k\148nnen nicht in-game Ereignisse \129berwachen solange Sie das nicht gemacht haben.",
+	[184] = "Unbekannter Profil Skill \'%s\'. Der Skill ist nicht in ihrem Profil definiert. Bitte pr\129fen Sie Ihre Einstellungen.\n",
+	[185] = "Wir die Option \'%s\' ge\132ndert f\129r den Skill \'%s\' von \'%s\' zu \'%s\'.\n",
+	[186] = "Lade Profil %s.xml\n",
+	
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 
 	-- createpath.lua
@@ -187,23 +202,31 @@ language = {
 	[514] = "%d: Wegepunkt hinzugef\129gt: Dialog mit NPC %s wird ge\148ffnet.\n",
 	[515] = "\'mouseclickL()\' Befehl eingef\129gt (%d,%d).\n",
 	[516] = "\'ChoiceOption(%d)\' Befehl einf\129gt.\n",
-	[517] = "  (%s)\t\'ChoiceOption()\' Befehl einf\129gen\n",	
+	[517] = "  (%s)\t\'ChoiceOption()\' Befehl einf\129gen\n",
 	[518] = "  (%s)   Reset des Wegpunkt und Neustart\n",
+	[519] = "  (%s)\tF\129ge lua Code Befehl ein. \n",
+	[520] = "F\129gen Sie gew\129nschten Code am letzten Wegepunkt ein. > ",
+	[521] = "Code \'%s\' eingef\129gt.\n",
+	[522] = "  (%s)\tF\129gen Sie Zielobjekt Befehl ein.\n",
+	[523] = "F\129gen Sie \'player:target_object(\"%s\") Befehl ein.\n",
+	
+	
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d Minuten bis Stufe nach oben",
 
 	[900] = "Wir benutzen eine neue Macro Funktion um mit dem Spiel zu kommunizieren.\n",
 	[901] = "Bitte den neuen Hotkey:   <hotkey name=\"MACRO\" key=\"VK_0\" />\n",
-	[902] = "im Profil anlegen. Die folgenden alten Hotkeys k\148nnen gel\148scht werden:\n",	
+	[902] = "im Profil anlegen. Die folgenden alten Hotkeys k\148nnen gel\148scht werden:\n",
 	[903] = "RES_MACRO, LOGOUT_MACRO, HP_POTION, MP_POTION, ATTACK.\n",
-	[904] = "Legen Sie im Spiel auf dem ERSTEN Makroplatz ein leeres Makro an und ordnen Sie dieses dem MACRO Hotkey \'%s\' zu.\n",	
+	[904] = "Legen Sie im Spiel auf dem ERSTEN Makroplatz ein leeres Makro an und ordnen Sie dieses dem MACRO Hotkey \'%s\' zu.\n",
 	[905] = "Bitte berichtigen Sie das Profile \'%s\' und starten Sie den Bot nochmal.\n",
-	[906] = "Die Makro\129bergabe an das Spiel scheint nicht zu funktionieren.\n",		
-	
+	[906] = "Die Makro\129bergabe an das Spiel scheint nicht zu funktionieren.\n",
+
 	-- Inventory.lua
 	[1000] = "Aktualisierung Inventar (Taschenplatz 1 bis %d)...\n",
 	[1001] = "Einkaufen",
 	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
 	[1003] = "The ingamefunctions addon (igf) is not installed! You set options, that need igf. We will not sell items! Please install igf (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ) or delete the autosell options INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n",
 	[1004] = "Das Addon ingamefunctions ist nicht installiert! Wir k\148nnen keine Gegenst\132nde verkaufen! Bitte igf installieren (den Ordner 'ingamefunctions' aus 'rom/devtools' in die RoM Installation in '/interface/addons' kopieren) oder l\148schen Sie die Optionen INV_AUTOSELL_NOSELL_DURA und INV_AUTOSELL_STATS_NOSELL aus Ihrem Profil.\n",
-	[1005] = "AutoSell gescheitert: Deine Client Sprache wird nicht unterstutzt."
+	[1005] = "AutoSell gescheitert: Deine Client Sprache wird nicht unterstutzt.",
+	[1006] = "Der 'ingamefunctions' Ordner im Spieleordner 'interface/addons', ist veraltet. Die aktuelle Version ist %d, Sie haben %d. Um zu updaten, rechtsklicken Sie den 'interface/addons/ingamefunctions' Ordner und w\132hlen Sie 'SVN Update' oder kopieren Sie den 'ingamefunctions' Ordner von 'rom/devtools' in den Spieleordner 'interface/addons'. Danach das Spiel neustarten.\n",
 };

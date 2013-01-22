@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="TRAVEL">
+<onload> player:mount() </onload>
+	<!-- #  1 --><waypoint x="-1592" z="-6136" y="85">	</waypoint>
+	<!-- #  2 --><waypoint x="-1466" z="-6141" y="48">	</waypoint>
+	<!-- #  3 --><waypoint x="-1289" z="-6036" y="46">	</waypoint>
+	<!-- #  4 --><waypoint x="-1159" z="-6014" y="54">	</waypoint>
+	<!-- #  5 --><waypoint x="-851" z="-5968" y="48">	</waypoint>
+	<!-- #  6 --><waypoint x="-651" z="-6018" y="44">
+		player:target_NPC(110052); -- Dell
+		CompleteQuestByName(420486) -- A Beautiful Necklace
+		AcceptQuestByName(420679) -- Assist the Mayor
+		inventory:useItem(221447) -- Beetle Necklace
+	</waypoint>
+	<!-- # 11 --><waypoint x="-612" z="-6005" y="42">	</waypoint>
+	<!-- # 12 --><waypoint x="-515" z="-6058" y="37">	</waypoint>
+	<!-- # 13 --><waypoint x="-398" z="-6164" y="22">	</waypoint>
+	<!-- # 14 --><waypoint x="-292" z="-6128" y="27">
+		player:target_NPC(110078); -- George
+		CompleteQuestByName(420679) -- Assist the Mayor
+		AcceptQuestByName(420482) -- A Letter from Varanas
+	</waypoint>
+	<!-- # 19 --><waypoint x="-390" z="-6162" y="23">	</waypoint>
+	<!-- # 20 --><waypoint x="-529" z="-5979" y="39">	</waypoint>
+	<!-- # 23 --><waypoint x="-773" z="-5645" y="62">	</waypoint>
+	<!-- # 24 --><waypoint x="-1044" z="-5391" y="11">	</waypoint>
+	<!-- # 25 --><waypoint x="-1377" z="-5201" y="5">	</waypoint>
+	<!-- # 26 --><waypoint x="-1742" z="-4986" y="-2">	</waypoint>
+	<!-- # 27 --><waypoint x="-1836" z="-4913" y="-9">	</waypoint>
+	<!-- # 28 --><waypoint x="-1894" z="-4791" y="-11">	</waypoint>
+	<!-- # 29 --><waypoint x="-1962" z="-4723" y="0">	</waypoint>
+	<!-- # 30 --><waypoint x="-1942" z="-4675" y="4">
+		player:target_NPC(110062); -- Furganda
+		CompleteQuestByName(420482) -- A Letter from Varanas
+		AcceptQuestByName(420469) -- Delayed Supplies
+	</waypoint>
+	<!-- # 36 --><waypoint x="-1877" z="-4620" y="5">	</waypoint>
+	<!-- # 37 --><waypoint x="-1631" z="-4771" y="-12">	</waypoint>
+	<!-- # 38 --><waypoint x="-1616" z="-4807" y="-13">
+		player:target_NPC(110601); -- Black Bolton
+		AcceptQuestByName(420531) -- Strong Boars
+	</waypoint>
+	<!-- # 42 --><waypoint x="-1506" z="-4851" y="-10">	</waypoint>
+	<!-- # 43 --><waypoint x="-1401" z="-4998" y="-12">
+		player:target_NPC(110056); -- Pnor
+		CompleteQuestByName(420469) -- Delayed Supplies
+		AcceptQuestByName(420064) -- The Lost Supplies
+	</waypoint>
+	<!-- # 48 --><waypoint x="-1431" z="-4909" y="-21">	</waypoint>
+	<!-- # 49 --><waypoint x="-1467" z="-4776" y="-16">	</waypoint>
+	<!-- # 50 --><waypoint x="-1324" z="-4343" y="-1">
+		loadPaths("1-10pioneersquests/l7-8_boar")
+	</waypoint>
+</waypoints>

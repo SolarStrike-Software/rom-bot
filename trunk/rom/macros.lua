@@ -12,38 +12,25 @@ function setupMacros()
 	else
 		scriptDef = "/script";
 	end
-	local oldpattern = scriptDef.." r='' a={.*" ..
-	"} for i=1,#a do r=r\.\.tostring.a.i.." ..
-	" r=r\.\.'\t' end" ..
-	" EditMacro.2,'',7,r.;";
 
-	if name ~= COMMAND_MACRO_NAME and
-			string.match(body,oldpattern) then
-		-- Safe to assume old macros so use macro 1 and 2
-		commandMacro = 1
-		writeToMacro(commandMacro, null, COMMAND_MACRO_NAME, 1)
-		resultMacro = 2
-		writeToMacro(resultMacro, null, RESULT_MACRO_NAME, 7)
-	else
-		-- Find commandMacro
-		commandMacro = findMacroByName(COMMAND_MACRO_NAME)
-		if commandMacro == null then -- No command macro found.
-			commandMacro = findEmptyMacro() -- Find an empty.
-			if commandMacro then -- Name the new macro
-				writeToMacro(commandMacro, null, COMMAND_MACRO_NAME, 1)
-			else
-				error("No empty macros left.")
-			end
+	-- Find commandMacro
+	commandMacro = findMacroByName(COMMAND_MACRO_NAME)
+	if commandMacro == null then -- No command macro found.
+		commandMacro = findEmptyMacro() -- Find an empty.
+		if commandMacro then -- Name the new macro
+			writeToMacro(commandMacro, null, COMMAND_MACRO_NAME, 1)
+		else
+			error("No empty macros left.")
 		end
-		-- Find resultMacro
-		resultMacro = findMacroByName(RESULT_MACRO_NAME)
-		if resultMacro == null then -- No result macro found.
-			resultMacro = findEmptyMacro() -- Find an empty.
-			if resultMacro then -- Name the new macro
-				writeToMacro(resultMacro, null, RESULT_MACRO_NAME, 7)
-			else
-				error("No empty macros left.")
-			end
+	end
+	-- Find resultMacro
+	resultMacro = findMacroByName(RESULT_MACRO_NAME)
+	if resultMacro == null then -- No result macro found.
+		resultMacro = findEmptyMacro() -- Find an empty.
+		if resultMacro then -- Name the new macro
+			writeToMacro(resultMacro, null, RESULT_MACRO_NAME, 7)
+		else
+			error("No empty macros left.")
 		end
 	end
 
@@ -58,14 +45,6 @@ function setupMacros()
 end
 
 function setupMacroHotkey()
-	-- Find the action key that points to the command macro.
-	local actionKey, hotkey = findActionKeyForMacro(commandMacro)
-	if actionKey then
-		-- A hotkey for the macro is no longer needed.
-		printf("You no longer need to place the macro into the actionbar. It will be removed.\n")
-		setActionKeyToId(actionKey, "delete")
-	end
-
 	-- Set settings.profile.hotkeys.MACRO.key
 	local hotkey, modifier = getHotkeyByName("TOGGLEPLATES") -- The "Toggle title/guild" hotkey
 	if hotkey == 0 or modifier ~= nil then
@@ -317,8 +296,8 @@ end
 
 -- Hotkey functions
 function getHotkey(number)
-	local hotkeysTableAddress = memoryReadIntPtr(getProc(), addresses.hotkeysPtr, addresses.hotkeys_offset)
-	local hotkeyAddress = memoryReadInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
+	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), addresses.hotkeysPtr, addresses.hotkeys_offset)
+	local hotkeyAddress = memoryReadUInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
 	if hotkeyAddress < 1 then return end -- invalid number
 	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset)
 

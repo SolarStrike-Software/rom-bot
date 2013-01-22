@@ -11,7 +11,7 @@ function CObjectList:update()
 	local size = memoryReadInt(getProc(), addresses.staticTableSize);
 
 	for i = 0,size do
-		local addr = memoryReadIntPtr(getProc(), addresses.staticTablePtr, i*4);
+		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
 		if( addr ) then
 			self.Objects[i] = CObject(addr);
 		end

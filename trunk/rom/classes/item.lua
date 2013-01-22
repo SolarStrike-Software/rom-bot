@@ -112,7 +112,7 @@ function CItem:update()
 			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idCardNPCOffset );
 			npcInfoAddress = GetItemAddress( tmp );
 			if npcInfoAddress then
-				nameAddress = memoryReadInt( getProc(), npcInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadUInt( getProc(), npcInfoAddress + addresses.nameOffset );
 			else
 				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
 			end
@@ -122,13 +122,13 @@ function CItem:update()
 			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idRecipeItemOffset )
 			itemInfoAddress = GetItemAddress(  tmp );
 			if itemInfoAddress then
-				nameAddress = memoryReadInt( getProc(), itemInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadUInt( getProc(), itemInfoAddress + addresses.nameOffset );
 			else
 				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
 			end
 			self.Name = "Recipe - "; -- We should add a string so we can localize this
 		else
-			nameAddress = memoryReadInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
+			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
 		end;
 
 		if( nameAddress == nil or nameAddress == 0 ) then
@@ -156,14 +156,16 @@ function CItem:update()
 
 		-- Get Stats (only named stats)
 		self.Stats = {}
-		for i = 1, 6 do
-			local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
-			if tmpid == 0 then -- No More stats
-				break
+		if self.ObjType == 0 or self.ObjType == 1 or self.ObjType == 5 then -- Weapons, Armor and Equipment Enhancements
+			for i = 1, 6 do
+				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
+				if tmpid == 0 then -- No More stats
+					break
+				end
+				tmpid = tmpid + 500000
+				local tmpname = GetIdName(tmpid)
+				self.Stats[i] = {Id = tmpid, Name = tmpname}
 			end
-			tmpid = tmpid + 500000
-			local tmpname = GetIdName(tmpid)
-			self.Stats[i] = {Id = tmpid, Name = tmpname}
 		end
 
 		-- Get base item flag values

@@ -50,16 +50,48 @@ function CBank:findItem( itemNameOrId, range)
 		item = self.BagSlot[slot]
 		item:update()
  	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
-			if item.ItemCount > 1 then
-				-- find smallest stack
-				if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
-					smallestStack = item
+			if (os.clock() - item.LastMovedTime) > ITEM_REUSE_DELAY then
+				if item.ItemCount > 1 then
+					-- find smallest stack
+					if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
+						smallestStack = item
+					end
+				else
+					return item
 				end
-			else
-				return item
 			end
 		end;
 	end;
 
 	return smallestStack
 end
+
+function CBank:itemTotalCount(itemNameOrId, range)
+	local first, last, location = getInventoryRange(range) -- get bag slot range
+
+	if location and location ~= "bank" then
+		print("bank:itemTotalCount() only supports ranges in the bank, eg. \"bank\",\"bank1\",\"bank2\",etc.")
+		return
+	end
+
+	if first == nil then
+		first = 1
+		last = 200
+	end
+
+	local item
+	local totalCount = 0;
+	for slot = first, last do
+		item = bank.BagSlot[slot]
+		item:update()
+ 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
+				totalCount = totalCount + 1
+			else
+				totalCount = totalCount + item.ItemCount;
+			end
+		end;
+	end;
+
+	return totalCount;
+end;

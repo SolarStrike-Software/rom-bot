@@ -1,0 +1,18 @@
+<waypoints>
+	<onLoad>
+		settings.profile.mobs = {100054}; -- Wolf
+	</onLoad>
+	<!-- #  5 --><waypoint x="-2551" z="-9057">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  7 --><waypoint x="-2403" z="-9111">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  8 --><waypoint x="-2138" z="-9208">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  9 --><waypoint x="-2047" z="-9258">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- # 10 --><waypoint x="-2043" z="-9335">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- # 11 --><waypoint x="-2212" z="-9346">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- # 12 --><waypoint x="-2290" z="-9382">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- # 13 --><waypoint x="-2307" z="-9180">if getQuestStatus(420670) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- # 14 --><waypoint x="-2515" z="-9144">
+		if getQuestStatus(420670) == "complete" then -- Making Winter Clothes
+			loadPaths("1-10PioneersQuests/l4t_pioneer")
+		end
+	</waypoint>
+</waypoints>

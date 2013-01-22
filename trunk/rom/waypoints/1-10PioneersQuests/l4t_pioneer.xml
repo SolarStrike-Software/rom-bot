@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="TRAVEL">
+<onload> player:mount()	</onload>
+	<!-- # 16 --><waypoint x="-2852" z="-8993">	</waypoint>
+	<!-- # 17 --><waypoint x="-3154" z="-8839">	</waypoint>
+	<!-- # 18 --><waypoint x="-3380" z="-8729">	</waypoint>
+	<!-- # 19 --><waypoint x="-3492" z="-8737">	</waypoint>
+	<!-- # 20 --><waypoint x="-3631" z="-8724">
+		player:target_NPC(110073); -- Shikha
+		CompleteQuestByName(420670); -- Making Winter Clothes
+		AcceptQuestByName(420671) -- Progress Update
+	</waypoint>
+	<!-- #  1 --><waypoint x="-3696" z="-8678">
+		player:target_NPC(110482); -- Leighton
+		CompleteQuestByName(420671) -- Progress Update
+		AcceptQuestByName(420672) -- Learn Herbalism
+	</waypoint>
+	<!-- #  5 --><waypoint x="-3735" z="-8690">	</waypoint>
+	<!-- #  6 --><waypoint x="-3802" z="-8750">	</waypoint>
+	<!-- #  7 --><waypoint x="-3830" z="-8819">
+		player:target_NPC(110471); -- Alice
+		CompleteQuestByName(420672) -- Learn Herbalism
+		AcceptQuestByName(420673) -- Learn Woodcutting
+	</waypoint>
+	<!-- # 11 --><waypoint x="-3810" z="-8870">	</waypoint>
+	<!-- # 12 --><waypoint x="-3651" z="-8944">
+		player:target_NPC(110470); -- Woody Woods
+		CompleteQuestByName(420673) -- Learn Woodcutting
+		AcceptQuestByName(420674) -- Learn Mining
+	</waypoint>
+	<!-- # 16 --><waypoint x="-3742" z="-8909">	</waypoint>
+	<!-- # 17 --><waypoint x="-3836" z="-8923">	</waypoint>
+	<!-- # 18 --><waypoint x="-3916" z="-8888">	</waypoint>
+	<!-- # 19 --><waypoint x="-4112" z="-8708">	</waypoint>
+	<!-- # 20 --><waypoint x="-4173" z="-8658">	</waypoint>
+	<!-- # 21 --><waypoint x="-4226" z="-8639">	</waypoint>
+	<!-- # 22 --><waypoint x="-4239" z="-8645">
+		player:target_NPC(110469); -- Hansen
+		CompleteQuestByName(420674) -- Learn Mining
+		AcceptQuestByName(420675) -- Help with the Collecting
+	</waypoint>
+	<!-- # 26 --><waypoint x="-4146" z="-8649">	</waypoint>
+	<!-- # 27 --><waypoint x="-4017" z="-8674">	</waypoint>
+	<!-- # 28 --><waypoint x="-3867" z="-8700">	</waypoint>
+	<!-- # 29 --><waypoint x="-3702" z="-8681">
+		player:target_NPC(110482); -- Leighton
+		CompleteQuestByName(420675) -- Help with the Collecting
+		AcceptQuestByName(420108) -- Regular Report on Pioneers Colony
+		loadPaths("1-10pioneersQuests/l4t_bear_quest")
+	</waypoint>
+</waypoints>

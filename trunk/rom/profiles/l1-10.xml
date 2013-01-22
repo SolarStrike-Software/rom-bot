@@ -29,11 +29,11 @@
 		<!-- Combat options -->
 		<option name="COMBAT_TYPE"        	value="" />				<!-- leave empty or choose ranged/melee if not using class default -->
 		<option name="COMBAT_RANGED_PULL" 	value="true" /> 		<!-- only important for melees -->
-		<option name="COMBAT_DISTANCE"    	value="200" />
-		<option name="MAX_FIGHT_TIME"     	value="15" />			<!-- Max time without damage before break -->
+		<option name="COMBAT_DISTANCE"    	value="150" />
+		<option name="MAX_FIGHT_TIME"     	value="10" />			<!-- Max time without damage before break -->
 		<option name="DOT_PERCENT"        	value="90" />
 		<option name="ANTI_KS"            	value="true" />
-		<option name="MAX_TARGET_DIST"    	value="225" />
+		<option name="MAX_TARGET_DIST"    	value="180" />
 
 		<!-- Attack monsters 3 levels above or 10 below your level -->
 		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
@@ -51,7 +51,7 @@
 		<option name="LOOT"               	value="true" />
 		<option name="LOOT_ALL"			  	value="false" />  		<!-- Loot all nearby dead mobs after combat -->
 		<option name="LOOT_IN_COMBAT"     	value="true" />
-		<option name="LOOT_DISTANCE"      	value="100" />
+		<option name="LOOT_DISTANCE"      	value="225" />
 		<option name="LOOT_PAUSE_AFTER"   	value="0" />			<!-- probability in % for a short rest -->
 
 		<!-- Auto selling options when used with player:merchant -->
@@ -59,6 +59,7 @@
 		<option name="INV_AUTOSELL_FROMSLOT" value="1" /> 			<!-- 1 = bag 1 slot 1 -->
 		<option name="INV_AUTOSELL_TOSLOT"	value="60" /> 			<!-- 30 = last slot bag 1 -->
 		<option name="INV_AUTOSELL_QUALITY"	value="white,green" /> 	<!-- white,green,blue,purple  -->
+		<option name="INV_AUTOSELL_TYPES"	value="Weapons,Armor" />
 
 		<!-- Harvest options -->
 		<option name="HARVEST_DISTANCE"		value="120" />
@@ -93,7 +94,7 @@
 
 		<!-- pvp -->
 		<!--option name="PVP"			value="true" /> --> 		<!-- To enable PVP, with this set to true it will auto attack any players with red names -->
-			
+
 		<!-- For more options and documentation see the RoM Bot Wiki:  -->
 		<!-- http://www.solarstrike.net/wiki/index.php5?title=RoM_Bot  -->
 
@@ -132,7 +133,7 @@
 		<skill name="PRIEST_URGENT_HEAL"     	hotkey="MACRO" priority="100" hpper="50"  />
 		<skill name="PRIEST_REGENERATE"      	hotkey="MACRO" priority="90"  hpper="80" />
 		<skill name="PRIEST_RISING_TIDE"     	hotkey="MACRO" priority="80" />
-		<skill name="PRIEST_WAVE_ARMOR"      	hotkey="MACRO" priority="40"  inbattle="true" />
+		<!--skill name="PRIEST_WAVE_ARMOR"      	hotkey="MACRO" priority="40"  inbattle="true" /-->
 		<skill name="PRIEST_AMPLIFIED_ATTACK" 	hotkey="MACRO" priority="20" rebuffcut="60" inbattle="false" />
 		<skill name="PRIEST_GRACE_OF_LIFE" 		hotkey="MACRO" priority="20" rebuffcut="60" inbattle="false" />
 		<skill name="PRIEST_HOLY_AURA"       	hotkey="MACRO" priority="100" inbattle="true" hpper="24" />
@@ -142,7 +143,7 @@
 
 	<skills_warrior>
 		<skill name="WARRIOR_SLASH"          	hotkey="MACRO" priority="90" />
-		<skill name="WARRIOR_TACTICAL_ATTACK"   hotkey="MACRO" priority="70" />
+		<!--skill name="WARRIOR_TACTICAL_ATTACK"   hotkey="MACRO" priority="70" /--> -- Requires 2-h weapon
 		<skill name="WARRIOR_PROBING_ATTACK" 	hotkey="MACRO" priority="80" />
 		<skill name="WARRIOR_OPEN_FLANK"      	hotkey="MACRO" priority="70" />
 		<skill name="WARRIOR_SURPRISE_ATTACK"   hotkey="MACRO" priority="70" pullonly="true" />
@@ -153,11 +154,11 @@
 	</skills_warrior>
 
 	<skills_scout>
+		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_SHOT"          		hotkey="MACRO" priority="90" />
+		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="85" />
 		<skill name="SCOUT_AUTOSHOT"      		hotkey="MACRO" priority="80" />
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />
-		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="70" />
-		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" maxhpper="60" inbattle="true"/>
 	</skills_scout>
 
@@ -207,6 +208,21 @@
 		<skill name="DRUID_RECOVER"          	hotkey="MACRO" priority="90" hpper="30" />
 		<skill name="DRUID_EARTH_ARROW"      	hotkey="MACRO" priority="80" />
 	</skills_druid>
+
+	<skills_warlock>
+		<skill name="WARLOCK_PERCEPTION_EXTRACTION"   	hotkey="MACRO" priority="90" />
+		<skill name="WARLOCK_WARP_CHARGE"   			hotkey="MACRO" priority="80" />
+		<skill name="WARLOCK_PSYCHIC_ARROWS"   			hotkey="MACRO" priority="70" />
+	</skills_warlock>
+
+	<skills_champion>
+		<skill name="CHAMPION_FORGE" 		  		hotkey="MACRO" priority="110" />
+		<skill name="CHAMPION_RUNE_PULSE"   		hotkey="MACRO" priority="100" pullonly="true" />
+		<skill name="CHAMPION_RUNE_DRAW" 	  		hotkey="MACRO" priority="90" pullonly="true" />
+		<skill name="CHAMPION_ELECTROCUTION"   		hotkey="MACRO" priority="80" />
+		<skill name="CHAMPION_ENERGY_INFLUX_STRIKE" hotkey="MACRO" priority="70" />
+		<skill name="CHAMPION_HEAVY_BASH"   		hotkey="MACRO" priority="60" />
+	</skills_champion>
 
 	<onLoad>
 		-- Additional Lua code to execute after loading the profile

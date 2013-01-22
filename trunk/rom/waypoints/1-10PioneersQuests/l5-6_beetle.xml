@@ -1,0 +1,21 @@
+<waypoints>
+	<!-- # 1 --><waypoint x="-1948" z="-6378" y="33">	</waypoint>
+	<!-- # 2 --><waypoint x="-2096" z="-6500" y="54">	</waypoint>
+	<!-- # 3 --><waypoint x="-2190" z="-6476" y="51">	</waypoint>
+	<!-- # 4 --><waypoint x="-2304" z="-6291" y="68">	</waypoint>
+	<!-- # 5 --><waypoint x="-2381" z="-6167" y="54">	</waypoint>
+	<!-- # 6 --><waypoint x="-2454" z="-6018" y="48">	</waypoint>
+	<!-- # 7 --><waypoint x="-2616" z="-6074" y="22">	</waypoint>
+	<!-- # 8 --><waypoint x="-2633" z="-5979" y="47">	</waypoint>
+	<!-- # 9 --><waypoint x="-2771" z="-6058" y="65">	</waypoint>
+	<!-- # 9 --><waypoint x="-2707" z="-6346" y="55">	</waypoint>
+	<!-- # 10 --><waypoint x="-2345" z="-6193" y="67">	</waypoint>
+	<!-- # 11 --><waypoint x="-2139" z="-6335" y="52">	</waypoint>
+	<!-- # 12 --><waypoint x="-1986" z="-6486" y="48">	</waypoint>
+	<!-- # 13 --><waypoint x="-1905" z="-6255" y="48">	</waypoint>
+	<!-- # 14 --><waypoint x="-1852" z="-6124" y="69">
+		if getQuestStatus(420486) ~= "incomplete" then -- A beautiful Necklace
+			loadPaths("1-10PioneersQuests/l7t_Logar")
+		end
+	</waypoint>
+</waypoints>

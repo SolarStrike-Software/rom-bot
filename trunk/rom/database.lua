@@ -13,24 +13,20 @@ function database.load()
 
 	for i,v in pairs(elements) do
 		local tmp = CSkill();
-		local name, id, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, concentration, nature;
-		local range, minrange, casttime, cooldown, type, target;
-		local toggleable, minmanaper, inbattle, priority, manainc, level, aslevel, skilltab, skillnum;
+		local name, id, mana, targetmaxhpper, targetmaxhp, maxhpper, maxmanaper, rage, energy, focus, nature;
+		local range, minrange, casttime, cooldown, type, target, autouse;
+		local toggleable, minmanaper, inbattle, priority, level, aslevel, skilltab, skillnum;
 		local buffname, reqbuffcount, reqbufftarget, reqbuffname, nobuffcount, nobufftarget, nobuffname;
 
 		name = v:getAttribute("name");
 		id = v:getAttribute("id");
-		mana = v:getAttribute("mana");
-		rage = v:getAttribute("rage");
-		energy = v:getAttribute("energy");
-		concentration = v:getAttribute("concentration");
-		nature = v:getAttribute("nature");
 		range = v:getAttribute("range");
 		minrange = v:getAttribute("minrange");
 		casttime = v:getAttribute("casttime");
 		cooldown = v:getAttribute("cooldown");
 		type = v:getAttribute("type");
 		target = v:getAttribute("target");
+		autouse = v:getAttribute("autouse");
 		toggleable = v:getAttribute("toggleable");
 		maxhpper = v:getAttribute("maxhpper");
 		maxmanaper = v:getAttribute("maxmanaper");
@@ -38,12 +34,7 @@ function database.load()
 		targetmaxhpper = v:getAttribute("targetmaxhpper");
 		targetmaxhp = v:getAttribute("targetmaxhp");
 		inbattle = v:getAttribute("inbattle");
-		manainc = v:getAttribute("manainc");
-		level = v:getAttribute("level");
 		priority = v:getAttribute("priority");
-		aslevel = v:getAttribute("aslevel");
-		skilltab = v:getAttribute("skilltab");
-		skillnum = v:getAttribute("skillnum");
 
 		buffname = tostring(v:getAttribute("buffname") or "");
 		reqbuffcount = tonumber(v:getAttribute("reqbuffcount") or 0);
@@ -56,10 +47,8 @@ function database.load()
 		aoecenter = string.lower(v:getAttribute("aoecenter") or "");
 		aoerange = v:getAttribute("aoerange") or ""
 		clicktocast = v:getAttribute("clicktocast")
+		globalcooldown = v:getAttribute("globalcooldown")
 
-
-		if( level == nil ) then level = 1; end;
-		if( level < 1 ) then level = 1; end;
 
 		if( cooldown == 0 ) then
 			cooldown = 1;
@@ -124,7 +113,7 @@ function database.load()
 		if(mana) then tmp.Mana = mana; end;
 		if(rage) then tmp.Rage = rage; end;
 		if(energy) then tmp.Energy = energy; end;
-		if(concentration) then tmp.Concentration = concentration; end;
+		if(focus) then tmp.focus = focus; end;
 		if(nature) then tmp.Nature = nature end
 		if(range) then tmp.Range = range; end;
 		if(minrange) then tmp.MinRange = minrange; end;
@@ -132,6 +121,7 @@ function database.load()
 		if(cooldown) then tmp.Cooldown = cooldown; end;
 		if(type) then tmp.Type = type; end;
 		if(target) then tmp.Target = target; end;
+		if(autouse~=nil) then tmp.AutoUse = autouse; end;
 		if(toggleable) then tmp.Toggleable = toggleable; end;
 		if(targetmaxhp) then tmp.TargetMaxHp = targetmaxhp; end;
 		if(targetmaxhpper) then tmp.TargetMaxHpPer = targetmaxhpper; end;
@@ -140,7 +130,6 @@ function database.load()
 		if(minmanaper) then tmp.MinManaPer = minmanaper; end;
 		if(inbattle ~= nil) then tmp.InBattle = inbattle; end;
 		if(priority) then tmp.priority = priority; end;
-		if(manainc) then tmp.ManaInc = manainc; end;
 		if(level) then tmp.Level = level; end;
 		if(aslevel) then tmp.aslevel = aslevel; end;
 		if(skilltab) then tmp.skilltab = skilltab; end;
@@ -156,6 +145,7 @@ function database.load()
 		if(aoecenter ~= "") then tmp.AOECenter = aoecenter; end;
 		if(aoerange ~= "") then tmp.AOERange = aoerange; end;
 		if(clicktocast ~= "") then tmp.ClickToCast = clicktocast; end;
+		if(globalcooldown ~= nil) then tmp.GlobalCooldown = globalcooldown; end;
 
 		database.skills[name] = tmp;
 	end

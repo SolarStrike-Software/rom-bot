@@ -48,14 +48,14 @@ armorMap = {
 local classEnergyMap = {
 	[CLASS_NONE] = "none",
 	[CLASS_WARRIOR] = "rage",
-	[CLASS_SCOUT] = "concentration",
+	[CLASS_SCOUT] = "focus",
 	[CLASS_ROGUE] = "energy",
 	[CLASS_MAGE] = "mana",
 	[CLASS_PRIEST] = "mana",
 	[CLASS_KNIGHT] = "mana",
 	[CLASS_WARDEN] = "mana",
 	[CLASS_DRUID] = "mana",
-	[CLASS_WARLOCK] = "concentration",
+	[CLASS_WARLOCK] = "focus",
 	[CLASS_CHAMPION] = "rage",
 };
 
@@ -74,6 +74,7 @@ CPawn = class(
 		self.Level2 = 1;
 		self.Level3 = 1;
 		self.HP = 1000;
+		self.LastDamage = 0;
 		self.MaxHP = 1000;
 		self.MP = 1000;
 		self.MaxMP = 1000;
@@ -119,9 +120,10 @@ CPawn = class(
 		self.MaxRage = 0;
 		self.Energy = 0;
 		self.MaxEnergy = 0;
-		self.Concentration = 0;
-		self.MaxConcentration = 0;
+		self.Focus = 0;
+		self.MaxFocus = 0;
 		self.Nature = 0;
+		self.Psi = 0;
 
 		self.PotionLastUseTime = 0;
 		self.PotionHpUsed = 0;			-- counts use of HP over time potions
@@ -160,7 +162,7 @@ CPawn = class(
 		self.LastTargetPtr = 0;		-- last invalid target
 		self.Last_ignore_target_time = 0;		-- last target to ignore time
 		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
-		self.lastHitTime = 0;				-- last time the HP of the target changed
+		self.fightStartTime = 0;				-- time fight started
 		self.ranged_pull = false;			-- ranged pull phase active
 		self.free_debug1 = 0;				-- free field for debug use
 		self.free_field1 = nil;				-- free field for user use
@@ -172,9 +174,6 @@ CPawn = class(
 		self.free_flag1 = false;			-- free flag for user use
 		self.free_flag2 = false;			-- free flag for user use
 		self.free_flag3 = false;			-- free flag for user use
-		self.LastSkillCastTime = 0;			-- CastTime of last skill with CastTime >0
-		self.LastSkillStartTime = 0;		-- StartTime of last skill with CastTime >0
-		self.LastSkillType = 0				-- SkillType of last skill with CastTime >0
 		self.SkillQueue = {};				-- Holds any queued skills, obviously
 		self.TargetIcon = true
 		self.InParty = false
@@ -182,6 +181,9 @@ CPawn = class(
 		self.Speed = 50
 		self.ActualSpeed = 0
 		self.Moving = false
+		self.GlobalCooldown = 0
+		self.LastSkill = {}
+		self.failed_casts_in_a_row = 0
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -237,116 +239,71 @@ function memoryReadRepeat(_type, proc, address, offset)
 	end
 
 	if( settings.options.DEBUGGING ) then
-		print("Error in memory reading");
+		printf("Error in memory reading: memoryread%s(proc,0x%X", _type, address)
+		if ptr then
+			if type(offset) == "number" then
+				printf(" ,0x%X)\n",offset)
+			elseif type(offset) == "table" then
+				printf(" ,{")
+				for k,v in pairs(offset) do
+					printf("0x%X,",v)
+				end
+				printf("})\n")
+			end
+		else
+			print(")")
+		end
 	end
 end
 
+function CPawn.new(address)
+	local np = CPawn()
+	np.Address = address
+	return np
+end
+
+function CPawn:hasAddress()
+	if self.Address == nil or self.Address == 0 then
+		return false
+	else
+		return true
+	end
+end
 
 function CPawn:update()
 	local proc = getProc();
 	local memerrmsg = "Failed to read memory";
 	local tmp;
 
-	tmp = memoryReadRepeat("uint", proc, self.Address + addresses.pawnId_offset) or 0;
-	if self.Id == -1 then -- First time. Get it.
-		self.Id = tmp
-		if self.Id > 999999 then self.Id = 0 end
-	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
-		if tmp < 1000 or tmp > 1004 then
-			-- Misread data. Maybe loading screen?
-			return
-		else
-			self.Id = tmp
-		end
-	else -- see if it changed
-		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
-			self.Id = 0
-			self.Type = 0
-			self.Name = ""
-		end
+	if not self:exists() then -- Updates and checks pawn.Id
+		return
 	end
-	if self.Id == 0 then return end
-
-	tmp = memoryReadRepeat("byte", proc, self.Address + addresses.charAlive_offset);
-	self.Alive = not(tmp == 9 or tmp == 8);
-	self.HP = memoryReadRepeat("int", proc, self.Address + addresses.pawnHP_offset) or self.HP;
-
-	self.MaxHP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxHP_offset) or self.MaxHP;
-	self.MP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP_offset) or self.MP;
-	self.MaxMP = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP_offset) or self.MaxMP;
-	self.MP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMP2_offset) or self.MP2;
-	self.MaxMP2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnMaxMP2_offset) or self.MaxMP2;
+	self:updateName()
+	self:updateAlive();
+	self:updateHP() -- Also updates MaxHP
+	self:updateClass()
+	self:updateMP() -- Also updates MP2, MaxMP, MaxMP2, Rage, Focus, Energy
+	self:updateLastDamage()
 
 	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
 
 
-	self.GUID = memoryReadShort(proc, self.Address + addresses.pawnGUID_offset) or self.GUID;
-	self.Type = memoryReadRepeat("int", proc, self.Address + addresses.pawnType_offset) or self.Type;
+	self:updateGUID()
+	self:updateType()
 
-	self.Harvesting = memoryReadRepeat("int", proc, self.Address + addresses.pawnHarvesting_offset) ~= 0;
-	self.Casting = (memoryReadRepeat("int", proc, self.Address + addresses.pawnCasting_offset) ~= 0);
+	self:updateHarvesting()
+	self:updateCasting()
 
 	self:updateBuffs()
 
-	tmp = memoryReadRepeat("int", proc, self.Address + addresses.pawnLootable_offset);
-	if( tmp ) then
-		self.Lootable = bitAnd(tmp, 0x4);
-	else
-		self.Lootable = false;
-	end
-
-	-- Disable memory warnings for name reading only
-	showWarnings(false);
-	local namePtr = memoryReadRepeat("uint", proc, self.Address + addresses.pawnName_offset);
---	self.Name = debugAssert(memoryReadString(proc, namePtr), memerrmsg);
-	if( namePtr == nil or namePtr == 0 ) then
-		tmp = nil;
-	else
-		tmp = memoryReadString(proc, namePtr); -- Don't use memoryReadRepeat here; this CAN fail!
-	end
-	showWarnings(true); -- Re-enable warnings after reading
-
-
-	-- UTF8 -> ASCII translation not for player names
-	-- because that would need the whole table and there we normaly
-	-- don't need it, we don't print player names in the MM window or so
-	if( tmp == nil ) then
-		self.Name = "<UNKNOW>";
---	elseif(self.Type == PT_PLAYER ) then
---		self.Name = tmp;
-	else
-		-- time for only convert 8 characters is 0 ms
-		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
---		local hf_before = getTime();
-
-		if( bot.ClientLanguage == "RU" ) then
-			self.Name = utf82oem_russian(tmp);
-		else
-			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
---			self.Name = convert_utf8_ascii( tmp )	-- convert the whole UTF8_ASCII.xml table
-		end
---		cprintf(cli.yellow, "DEBUG utf8 %s %d\n", self.Name, deltaTime(getTime(), hf_before) );
-	end
+	self:updateLootable()
 
 	self.Level = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel_offset) or self.Level;
 	self.Level2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel2_offset) or self.Level2;
 
 	self:updateTargetPtr()
-
-	self.X = memoryReadRepeat("float", proc, self.Address + addresses.pawnX_offset) or self.X;
-	self.Y = memoryReadRepeat("float", proc, self.Address + addresses.pawnY_offset) or self.Y;
-	self.Z = memoryReadRepeat("float", proc, self.Address + addresses.pawnZ_offset) or self.Z;
-
-	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
-	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirZUVec_offset);
-	local Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
-
-	if( Vec1 == nil ) then Vec1 = 0.0; end;
-	if( Vec2 == nil ) then Vec2 = 0.0; end;
-	if( Vec3 == nil ) then Vec3 = 0.0; end;
-
-	self.Direction = math.atan2(Vec2, Vec1);
-	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
+	self:updateXYZ()
+	self:updateDirection() -- Also updates DirectionY
 
 	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
 
@@ -381,22 +338,159 @@ function CPawn:update()
 		end
 	else
 		self.Attackable = false;
-		--[[
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_PLAYER) ) then
-			self.Attackable = true;
-		else
-			self.Attackable = false;
-		end]]
 	end
-
-	self.Class1 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass1_offset) or self.Class1;
-	self.Class2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnClass2_offset) or self.Class2;
 
 	self.Speed = memoryReadRepeat("float", proc, self.Address + addresses.pawnSpeed_offset)
 
 	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
 	self.Swimming = (tmp == 3 or tmp == 4)
 
+	if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
+		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
+		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
+		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
+
+		error("Error reading memory in CPawn:update()");
+	end
+
+end
+
+function CPawn:updateId()
+	if not self:hasAddress() then
+		self.Id = 0
+		self.Type = 0
+		self.Name = "<UNKNOWN>"
+		return
+	end
+
+	-- Get Id
+	local tmp = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnId_offset) or 0;
+	if self.Id == -1 then -- First time. Get it.
+		self.Id = tmp
+		if self.Id > 999999 then self.Id = 0 end
+	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
+		if tmp >= 1000 and tmp <= 1004 then
+			self.Id = tmp
+		end
+	else -- see if it changed
+		if tmp ~= self.Id then -- Id changed. Pawn no longer valid
+			self.Id = 0
+			self.Type = 0
+			self.Name = "<UNKNOWN>"
+		end
+	end
+end
+
+function CPawn:exists()
+	self:updateId()
+
+	return self.Id ~= 0
+end
+
+function CPawn:updateName()
+	if not self:hasAddress() then
+		self.Name = "<UNKNOWN>"
+		return
+	end
+
+	showWarnings(false);-- Disable memory warnings for name reading only
+	local namePtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnName_offset);
+	if( namePtr == nil or namePtr == 0 ) then
+		tmp = nil;
+	else
+		tmp = memoryReadString(getProc(), namePtr); -- Don't use memoryReadRepeat here; this CAN fail!
+	end
+	showWarnings(true); -- Re-enable warnings after reading
+	-- UTF8 -> ASCII translation not for player names
+	-- because that would need the whole table and there we normaly
+	-- don't need it, we don't print player names in the MM window or so
+	if( tmp == nil ) then
+		self.Name = "<UNKNOWN>";
+	else
+		-- time for only convert 8 characters is 0 ms
+		-- time for convert the whole UTF8_ASCII.xml table is about 6-7 ms
+
+		if( bot.ClientLanguage == "RU" ) then
+			self.Name = utf82oem_russian(tmp);
+		else
+			self.Name = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
+		end
+	end
+end
+
+function CPawn:updateGUID()
+	if not self:hasAddress() then
+		self.GUID = 0
+		return
+	end
+
+	self.GUID = memoryReadShort(getProc(), self.Address + addresses.pawnGUID_offset) or self.GUID;
+end
+
+function CPawn:updateType()
+	if not self:hasAddress() then
+		self.Type = PT_NONE
+		return
+	end
+
+	self.Type = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnType_offset) or self.Type;
+end
+
+function CPawn:updateAlive()
+	if not self:hasAddress() then
+		self.Alive = false
+		return
+	end
+
+	local tmp = memoryReadRepeat("byte", getProc(), self.Address + addresses.charAlive_offset);
+	self.Alive = not(tmp == 9 or tmp == 8);
+end
+
+function CPawn:updateHP()
+	if not self:hasAddress() then
+		self.HP = 0
+		return
+	end
+
+	self.HP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnHP_offset) or self.HP;
+
+	self.MaxHP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxHP_offset) or self.MaxHP;
+end
+
+function CPawn:updateLastDamage()
+	if not self:hasAddress() then
+		self.LastDamage = 0
+		return
+	end
+
+	local tmpLastDamage = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnLastDamage_offset)
+	if tmpLastDamage then
+		self.LastDamage = tmpLastDamage/1000
+	end
+end
+
+function CPawn:updateClass()
+	if not self:hasAddress() then
+		self.Class1 = CLASS_NONE;
+		self.Class2 = CLASS_NONE;
+		return
+	end
+
+	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass1_offset) or self.Class1;
+	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnClass2_offset) or self.Class2;
+end
+
+function CPawn:updateMP()
+	if not self:hasAddress() then
+		self.MP = 0;
+		self.MP2 = 0;
+		return
+	end
+
+	self.MP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP_offset) or self.MP;
+	self.MaxMP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP_offset) or self.MaxMP;
+	self.MP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMP2_offset) or self.MP2;
+	self.MaxMP2 = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxMP2_offset) or self.MaxMP2;
 	if( self.MaxMP == 0 ) then
 		-- Prevent division by zero for entities that have no mana
 		self.MP = 1;
@@ -409,26 +503,16 @@ function CPawn:update()
 		self.MaxMP2 = 1;
 	end
 
-	if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
-		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
-		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
-		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
-
-		error("Error reading memory in CPawn:update()");
+	if self.Class1 == CLASS_NONE then
+		self:updateClass()
 	end
 
-
 	-- Set the correct mana/rage/whatever
-	local energyStorage1;
-	local energyStorage2;
-
-	energyStorage1 = classEnergyMap[self.Class1];
-	energyStorage2 = classEnergyMap[self.Class2];
+	local energyStorage1 = classEnergyMap[self.Class1];
+	local energyStorage2 = classEnergyMap[self.Class2];
 	if( energyStorage1 == energyStorage2 ) then
 		energyStorage2 = "none";
 	end;
-
-
 
 	if( energyStorage1 == "mana" ) then
 		self.Mana = self.MP;
@@ -439,9 +523,9 @@ function CPawn:update()
 	elseif( energyStorage1 == "energy" ) then
 		self.Energy = self.MP;
 		self.MaxEnergy = self.MaxMP;
-	elseif( energyStorage1 == "concentration" ) then
-		self.Concentration = self.MP;
-		self.MaxConcentration = self.MaxMP;
+	elseif( energyStorage1 == "focus" ) then
+		self.Focus = self.MP;
+		self.MaxFocus = self.MaxMP;
 	end
 
 	if( energyStorage2 == "mana" ) then
@@ -453,17 +537,22 @@ function CPawn:update()
 	elseif( energyStorage2 == "energy" ) then
 		self.Energy = self.MP2;
 		self.MaxEnergy = self.MaxMP2;
-		elseif( energyStorage2 == "concentration" ) then
-		self.Concentration = self.MP2;
-		self.MaxConcentration = self.MaxMP2;
+		elseif( energyStorage2 == "focus" ) then
+		self.Focus = self.MP2;
+		self.MaxFocus = self.MaxMP2;
 	end
 end
 
 function CPawn:updateBuffs()
+	if not self:hasAddress() then
+		self.buffs = {};
+		return
+	end
+
 	local proc = getProc()
 	local BuffSize = 0x54
-	local buffStart = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsStart_offset);
-	local buffEnd = memoryReadRepeat("int", proc, self.Address + addresses.pawnBuffsEnd_offset);
+	local buffStart = memoryReadRepeat("uint", proc, self.Address + addresses.pawnBuffsStart_offset);
+	local buffEnd = memoryReadRepeat("uint", proc, self.Address + addresses.pawnBuffsEnd_offset);
 
 	self.Buffs = {} -- clear old values
 	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
@@ -518,6 +607,163 @@ function CPawn:updateBuffs()
 	self.LastBuffUpdateTime = getTime();]]
 end
 
+function CPawn:updateLootable()
+	if not self:hasAddress() then
+		self.Lootable = false;
+		return
+	end
+
+	local tmp = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnLootable_offset);
+	if( tmp ) then
+		self.Lootable = bitAnd(tmp, 0x4);
+	else
+		self.Lootable = false;
+	end
+end
+
+function CPawn:updateHarvesting()
+	if not self:hasAddress() then
+		self.Harvesting = false;
+		return
+	end
+
+	self.Harvesting = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnHarvesting_offset) ~= 0;
+end
+
+function CPawn:updateCasting()
+	if not self:hasAddress() then
+		self.Casting = false;
+		return
+	end
+
+	self.Casting = (memoryReadRepeat("int", getProc(), self.Address + addresses.pawnCasting_offset) ~= 0);
+end
+
+function CPawn:updateLevel()
+	if not self:hasAddress() then
+		self.Level = 1;
+		return
+	end
+
+	self.Level = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnLevel_offset) or self.Level;
+end
+
+function CPawn:updateTargetPtr()
+	if not self:hasAddress() then
+		self.TargetPtr = 0;
+		return
+	end
+
+
+	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnTargetPtr_offset) or 0
+
+	if tmpTargetPtr ~= 0 then
+		self.TargetPtr = tmpTargetPtr
+		return
+	end
+
+	if self.TargetPtr ~= 0 then
+		-- Check if still valid
+		local addressId = memoryReadRepeat("uint", getProc(), self.TargetPtr + addresses.pawnId_offset) or 0;
+
+		if addressId == 0 or addressId > 999999 then -- The target no longer exists
+			self.TargetPtr = 0
+		end
+	end
+
+	return 0
+end
+
+function CPawn:updateXYZ()
+	if not self:hasAddress() then
+		self.X = 0;
+		self.Y = 0;
+		self.Z = 0;
+		return
+	end
+
+	self.X = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnX_offset) or self.X;
+	self.Y = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnY_offset) or self.Y;
+	self.Z = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnZ_offset) or self.Z;
+end
+
+function CPawn:updateDirection()
+	if not self:hasAddress() then
+		return
+	end
+
+	local Vec1 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirXUVec_offset);
+	local Vec2 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirZUVec_offset);
+	local Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+
+	if( Vec1 == nil ) then Vec1 = 0.0; end;
+	if( Vec2 == nil ) then Vec2 = 0.0; end;
+	if( Vec3 == nil ) then Vec3 = 0.0; end;
+
+	self.Direction = math.atan2(Vec2, Vec1);
+	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
+end
+
+function CPawn:updateMounted()
+	if not self:hasAddress() then
+		self.Mounted = false;
+		return
+	end
+
+	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
+
+	self.Mounted = bitAnd(attackableFlag, 0x10000000)
+end
+
+function CPawn:updateInParty()
+	if not self:hasAddress() then
+		self.InParty = false;
+		return
+	end
+
+	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
+
+	--=== InParty indicator ===--
+	if bitAnd(attackableFlag,0x80000000) then
+		self.InParty = true
+	else
+		self.InParty = false
+	end
+end
+
+function CPawn:updateAttackable()
+	if not self:exists() then
+		return
+	end
+
+	self:updateType()
+	if( self.Type == PT_MONSTER ) then
+		local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
+		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) ) then
+			self.Attackable = true;
+		else
+			self.Attackable = false;
+		end
+
+		if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
+			self.Aggressive = true;
+		else
+			self.Aggressive = false;
+		end
+	else
+		self.Attackable = false;
+	end
+end
+
+function CPawn:updateSwimming()
+	if not self:hasAddress() then
+		return
+	end
+
+	local tmp = memoryReadRepeat("byteptr",getProc(), self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
+	self.Swimming = (tmp == 3 or tmp == 4)
+end
+
 function CPawn:haveTarget()
 	-- Update TargetPtr
 	self:updateTargetPtr()
@@ -526,22 +772,17 @@ function CPawn:haveTarget()
 		return false;
 	end;
 
-	local tmp = CPawn(self.TargetPtr);
+	local tmp = CPawn.new(self.TargetPtr)
 
-	-- You can't be your own target!
-	if self.TargetPtr == self.Address or tmp.InParty == true then
---	print("can't target yourself or party members.\n")
-		return false;
+	if not tmp:isAlive() then
+		return false
 	end
 
-	if( tmp.HP < 1 ) then
-		return false;
-	end;
-
-	return (tmp.Alive);
+	return true
 end
 
 function CPawn:getTarget()
+	self:updateTargetPtr();
 	if( self.TargetPtr ) then
 		return CPawn(self.TargetPtr);
 	else
@@ -549,19 +790,39 @@ function CPawn:getTarget()
 	end
 end
 
-function CPawn:alive()
-	self:update();
+function CPawn:isAlive()
+	-- Check if still valid target
+	if not self:exists() then
+		return false
+	end
+
+	-- Dead
+	self:updateHP()
+	if( self.HP < 1 ) then
+		return false;
+	end
+
+	-- Also dead (and has loot)
+	self:updateLootable()
+	if( self.Lootable ) then
+		return false;
+	end
+
+	self:updateAlive()
 	if( not self.Alive ) then
 		return false;
-	else
-		return true;
 	end
+
+	return true
 end
 
 function CPawn:distanceToTarget()
+	self:updateTargetPtr()
 	if( self.TargetPtr == 0 ) then return 0; end;
 
-	local target = CPawn(self.TargetPtr);
+	local target = CPawn.new(self.TargetPtr);
+	target:updateXYZ()
+	self:updateXYZ()
 	local tx,ty,tz = target.X, target.Y, target.Z;
 	local px,py,pz = self.X, self.Y, self.Z;
 
@@ -574,7 +835,7 @@ function CPawn:hasBuff(buffname, count)
 	if buff then
 		return true, buff.Count -- count returned for backward compatibility
 	else
-		return false
+		return false, 0
 	end
 end
 
@@ -641,36 +902,18 @@ function parseBuffName(buffname)
 end
 
 function CPawn:GetPartyIcon()
-   local listStart = memoryReadRepeat("intptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
-   for i = 0, 6 do
-      local guid = memoryReadShort(getProc(), listStart + i * 12)
-      if guid == self.GUID then
-         return i + 1
-      end
-   end
-end
-
-function CPawn:updateTargetPtr()
-	local tmpTargetPtr = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnTargetPtr_offset) or 0
-
-	if tmpTargetPtr ~= 0 then
-		self.TargetPtr = tmpTargetPtr
-		return
-	end
-
-	if self.TargetPtr ~= 0 then
-		-- Check if still valid
-		local addressId = memoryReadRepeat("uint", getProc(), self.TargetPtr + addresses.pawnId_offset) or 0;
-
-		if addressId == 0 or addressId > 999999 then -- The target no longer exists
-			self.TargetPtr = 0
+	self:updateGUID()
+	local listStart = memoryReadRepeat("uintptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
+	for i = 0, 6 do
+		local guid = memoryReadShort(getProc(), listStart + i * 12)
+		if guid == self.GUID then
+			return i + 1
 		end
 	end
-
-	return 0
 end
 
 function CPawn:countMobs(inrange, onlyaggro, idorname)
+	self:updateXYZ()
 	local count = 0
 
 	local objectList = CObjectList();
@@ -680,9 +923,13 @@ function CPawn:countMobs(inrange, onlyaggro, idorname)
 		if obj ~= nil and obj.Type == PT_MONSTER and
 		  (inrange == nil or inrange >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) ) and
 		  (idorname == nil or idorname == obj.Name or idorname == obj.Id) then
-			local pawn = CPawn(obj.Address);
+			local pawn = CPawn.new(obj.Address)
+			pawn:updateAlive()
+			pawn:updateHP()
+			pawn:updateAttackable()
 			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
 				if onlyaggro == true then
+					pawn:updateTargetPtr()
 					if pawn.TargetPtr == player.Address then
 						count = count + 1
 					end
@@ -698,6 +945,9 @@ end
 
 function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 	-- Finds best place to click to get most mobs including this pawn.
+	self:updateXYZ()
+
+	player:updateXYZ()
 	local MobList = {}
 	local EPList = {}
 
@@ -743,9 +993,14 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 		local obj = objectList:getObject(i);
 		if obj ~= nil and obj.Type == PT_MONSTER and (settings.profile.options.FORCE_BETTER_AOE_TARGETING == true or 0.5 > math.abs(obj.Y - self.Y)) and -- only count mobs on flat floor, results would be unpredictable on hilly surfaces when clicking.
 		  aoerange*2 >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) and (skillrange + aoerange >= distance(player.X, player.Z, obj.X, obj.Z)) then
-			local pawn = CPawn(obj.Address);
+			local pawn = CPawn.new(obj.Address);
+			pawn:updateAlive()
+			pawn:updateHP()
+			pawn:updateAttackable()
+			pawn:updateXYZ() -- For the rest of the function
 			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
 				if onlyaggro == true then
+					pawn:updateTargetPtr()
 					if pawn.TargetPtr == player.Address then
 						table.insert(MobList,pawn)
 					end
@@ -838,3 +1093,71 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 
 	return bestscore, AverageX, AverageZ
 end
+
+-- returns true if this CPawn is registered as a friend
+function CPawn:isFriend( aggroonly)
+	-- Is self still valid
+	if not self:exists() then
+		return false
+	end
+
+	-- Pets are friends
+	if( player.PetPtr ~= 0 and self.Address == player.PetPtr ) then
+		return true;
+	end
+
+	-- Following options need 'settings'
+	if( not settings ) then
+		return false;
+	end;
+
+	-- Are they in party
+	self:updateInParty()
+	if settings.profile.options.PARTY == true and self.InParty then
+		return true
+	end
+
+	-- If passed above tests and not friend and only interested in pawn that cause aggro, then return false
+	if aggroonly == true then
+		return false
+	end
+
+	-- Are they on the friends list
+	self:updateName()
+	for i,v in pairs(settings.profile.friends) do
+		if( string.find( string.lower(self.Name), string.lower(v), 1, true) ) or tonumber(v) == self.Id then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+-- returns true if this CPawn target is registered as a friend
+function CPawn:targetIsFriend(aggroonly)
+	-- Is self still valid
+	if not self:exists() then
+		return false
+	end
+
+	self:updateTargetPtr()
+	if self.TargetPtr == 0 then
+		return false
+	end
+
+	local target = CPawn.new(self.TargetPtr)
+
+	return target:isFriend(aggroonly)
+end
+
+function CPawn:getRemainingCastTime()
+	local casttime = memoryReadFloat( getProc(), self.Address + addresses.pawnCasting_offset)
+	local castsofar = memoryReadFloat( getProc(), self.Address + addresses.pawnCastingElapsed_offset)
+
+	if casttime and castsofar then
+		return casttime - castsofar, casttime
+	else
+		return 0,0
+	end
+end
+

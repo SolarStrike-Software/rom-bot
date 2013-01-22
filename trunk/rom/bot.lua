@@ -52,11 +52,32 @@ include("classes/pet.lua");
 include("settings.lua");
 include("macros.lua");
 
+if( fileExists(getExecutionPath().."/../romglobal/userfunctions.lua") ) then
+	include("../romglobal/userfunctions.lua");
+end
+
 if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
 
--- Install bot addons
+-- Allow include to check global folders too
+if originalInclude == nil then
+	originalInclude = include
+end
+function include(file, forceInclude)
+	if file then
+		if fileExists(getExecutionPath().."/"..file) then
+			return originalInclude(file, forceInclude)
+		elseif (not string.find(string.lower(file),"romglobal",1,true)) and fileExists(getExecutionPath().."/../romglobal/"..file) then
+			return originalInclude("../romglobal/"..file, forceInclude)
+		end
+	end
+
+	return originalInclude(file, forceInclude)
+end
+
+printf("Installing userfunctions. ") -- Message to help tell when userfunctions are a problem
+-- Install bot userfunctions
 local addondir = getDirectory(getExecutionPath() .. "/userfunctions/");
 for i,v in pairs(addondir) do
 	local match = string.match(v, "addon_(.*)%.lua");
@@ -64,10 +85,33 @@ for i,v in pairs(addondir) do
 
 	if( match ~= nil ) then
 		include("/userfunctions/" .. v);
-		logMessage("Bot addon \'" .. match .. "\' successfully loaded.");
+		logMessage("Bot userfunction \'" .. match .. "\' successfully loaded.");
 	end
 end
 
+-- Install global bot userfunctions
+local globaladdondir = getDirectory(getExecutionPath() .. "/../romglobal/userfunctions/");
+if globaladdondir then
+	local localdir = getExecutionPath() .. "/userfunctions/"
+	for i,v in pairs(globaladdondir) do
+		if not(fileExists(localdir .. v)) then -- if not in local 'userfunctions'
+			local match = string.match(v, "addon_(.*)%.lua");
+			if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
+
+			if( match ~= nil ) then
+				include("../romglobal/userfunctions/" .. v);
+				logMessage("Global bot userfunction \'" .. match .. "\' successfully loaded.");
+			end
+		end
+	end
+end
+printf("\n") -- Return to indicate end of userfunction installation. User wont notice this but
+             -- if error is on same line as "Installing userfunctions" then we know it a userfunction error.
+
+-- Check for old userfunction_questbyname
+if compareQuestnames then
+	error("The QuestByName functions are now part of the bot. The old userfunction is obsolete. Please remove the 'userfunctions_questbyname.lua' file from the userfunctions folder.")
+end
 
 setPriority(priority.high);
 
@@ -94,6 +138,7 @@ function main()
 	local forcedCharacter = nil;
 
 	for i = 2,#args do
+		args[i] = string.lower(args[i])
 		if( args[i] == "update" ) then
 			include("update.lua");
 		end
@@ -182,7 +227,7 @@ function main()
 		end
 	end
 
-	local playerAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
@@ -213,15 +258,15 @@ function main()
 		printf("[DEBUG] player in battle: %s\n", tostring(player.Battling));
 	end
 
-	mousePawn = CPawn( memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) );
 
 	if( settings.options.DEBUGGING ) then
 		-- Mouse pawn debugging info
+		local mousePawn = CPawn( memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) );
 		printf("[DEBUG] mousePawn: 0x%X\n", mousePawn.Address);
 		printf("[DEBUG] mousePawn id: %d\n", mousePawn.Id);
 	end
 
-	local cameraAddress = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset);
+	local cameraAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset);
 	if( cameraAddress == nil ) then cameraAddress = 0; end;
 	if( settings.options.DEBUGGING ) then
 		printf("[DEBUG] camAddress: 0x%X\n", cameraAddress);
@@ -234,6 +279,7 @@ function main()
 		printf("[DEBUG] Cam XU: %0.2f, YU: %0.2f, ZU: %0.2f\n", camera.XUVec, camera.YUVec, camera.ZUVec);
 	end
 
+	cprintf(cli.turquoise, "Game Version is %s\n", getGameVersion())
 	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
 	cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
@@ -246,9 +292,13 @@ function main()
 	end
 
 	-- Set window name, install timer to automatically do it once a second
-	local displayname = string.sub(load_profile_name, 1, 4) .. "****";
+	local displayname = player.Name
+	if #displayname > 8 then
+		displayname = string.sub(displayname, 1, 7) .. "*";
+	end
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
+	player:update()
 	settingsPrintKeys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
 	player.BotStartTime_nr = os.time();	-- remember bot start time no reset
@@ -282,22 +332,36 @@ function main()
 	-- only files with filetype '.xml' are listed
 	-- only folders without '.' are listed
 	-- only 1 level of subfolders will be listed
+	local current_folder = ""
+	local show_subfiles = settings.profile.options.WPL_SHOW_SUBFOLDER_FILES
+	if show_subfiles ~= true then show_subfiles = false end -- default true
+
 	local function list_waypoint_files()
 
 		local hf_counter = 0;
 		local pathlist = { }
 
 		local function read_subdirectory(_folder)
-			local subdir = getDirectory(getExecutionPath() .. "/waypoints/".._folder);
-			if( not subdir) then return; end
+			local tmpfolder = _folder
+			if current_folder ~= "" then
+				tmpfolder = current_folder .. "/" .. _folder
+			end
+			local subdir = getDirectory(getExecutionPath() .. "/waypoints/" .. tmpfolder)
 
-			for i,v in pairs(subdir) do
-				if( string.find (v,".xml",1,true) ) then
-					hf_counter = hf_counter + 1;
+			if( not subdir) then return; end
+			if show_subfiles then
+				for i,v in pairs(subdir) do
+					if( string.find (v,".xml",1,true) ) then
+						hf_counter = hf_counter + 1;
 						pathlist[hf_counter] = { };
 						pathlist[hf_counter].folder = _folder;
 						pathlist[hf_counter].filename = v;
+					end
 				end
+			else
+				hf_counter = hf_counter + 1
+				pathlist[hf_counter] = { };
+				pathlist[hf_counter].folder = _folder;
 			end
 
 		end		-- end of: local function read_subdirectory(_folder)
@@ -310,20 +374,33 @@ function main()
 			local hf_dots = "";
 			local hf_slash = "";
 
-			if( _folder  and  string.len(_folder) > 8 )  then
-				hf_folder = string.sub(_folder, 1, 6);
-				hf_dots = "..";
-				hf_slash = "/";
-			elseif( _folder  and  string.len(_folder) > 0 )  then
-				hf_folder = _folder;
-				hf_slash = "/";
+			if _folder  then
+				if _filename then
+					if string.len(_folder) > 8 then
+						hf_folder = string.sub(_folder, 1, 6);
+						hf_dots = "..";
+						hf_slash = "/";
+					elseif( _folder  and  string.len(_folder) > 0 )  then
+						hf_folder = _folder;
+						hf_slash = "/";
+					end
+				else
+					if string.len(_folder) > 20 then
+						hf_folder = string.sub(_folder, 1, 18);
+						hf_dots = "..";
+						hf_slash = "/";
+					elseif( _folder  and  string.len(_folder) > 0 )  then
+						hf_folder = _folder;
+						hf_slash = "/";
+					end
+				end
 			end
 
 			hf_newname = sprintf("%s%s%s%s",
 			  hf_folder,
 			  hf_dots,
 			  hf_slash,
-			  _filename);
+			  _filename or "");
 
 			hf_nr = sprintf("%3d:", _i);
 
@@ -331,18 +408,19 @@ function main()
 
 		end
 
-		-- choose a path from the waypoints folder
-		local dir = getDirectory(getExecutionPath() .. "/waypoints/")
-
-		cprintf(cli.green, language[144], getExecutionPath());	-- Waypoint files in %s
-
+		-- Get file info from waypoints folder
+		local dir = getDirectory(getExecutionPath() .. "/waypoints/" .. current_folder)
 
 		-- copy table dir to table pathlist
 		-- select only xml files
 		pathlist[0] = { };
-		pathlist[0].filename = "wander";
-		for i,v in pairs(dir) do
+		if current_folder == "" then
+			pathlist[0].filename = "wander";
+		else
+			pathlist[0].folder = ".."
+		end
 
+		for i,v in pairs(dir) do
 			-- no . means perhaps folder
 			if( not string.find (v,".",1,true) ) then
 				read_subdirectory(v);
@@ -354,20 +432,48 @@ function main()
 				pathlist[hf_counter].filename = v;
 			end
 		end
+		local last_local = hf_counter
 
-		local inc = math.ceil(#pathlist/3);
+		if current_folder == "" then
+			-- Get file info from global waypoints folder
+			local globdir = getDirectory(getExecutionPath() .. "/../romglobal/waypoints")
 
-		for i = 0, inc do
+			if globdir then
+				-- copy table dir to table pathlist
+				-- select only xml files
+				for i,v in pairs(globdir) do
+
+					-- no . means perhaps folder
+					if( not string.find (v,".",1,true) ) then
+						read_subdirectory("../../romglobal/waypoints/"..v);
+
+					-- only list files with extension .xml
+					elseif( string.find (v,".xml",1,true) ) then
+						hf_counter = hf_counter + 1;
+						pathlist[hf_counter] = { };
+						pathlist[hf_counter].folder = "../../romglobal/waypoints";
+						pathlist[hf_counter].filename = v;
+					end
+				end
+			end
+		end
+
+		-- Print local waypoint files
+		cprintf(cli.green, language[144], getExecutionPath());	-- Waypoint files in %s
+		if current_folder ~= "" then print("Sub folder: "..current_folder) end
+
+		local inc = math.ceil((last_local+1)/3);
+		for i = 0, inc - 1 do
 
 			local column1 = ""; local column2 = ""; local column3 = "";
 			local col1nr = ""; local col2nr = ""; local col3nr = "";
 
 			col1nr, column1 = concat_filename(i, pathlist[i].folder, pathlist[i].filename)
 
-			if ( (i + inc) <= #pathlist ) then
+			if ( (i + inc) <= last_local ) then
 				col2nr, column2 = concat_filename(i+inc, pathlist[i+inc].folder, pathlist[i+inc].filename);
 			end
-			if ( (i+inc*2) <= #pathlist ) then
+			if ( (i+inc*2) <= last_local ) then
 				col3nr, column3 = concat_filename(i+inc*2, pathlist[i+inc*2].folder, pathlist[i+inc*2].filename);
 			end
 
@@ -381,6 +487,36 @@ function main()
 
 		end
 
+		-- Print global waypoint files
+		if #pathlist > last_local then
+			cprintf(cli.green, language[144], getExecutionPath() .. "/../romglobal");	-- Waypoint files in %s
+
+			local inc = math.ceil((#pathlist-last_local)/3);
+			for i = last_local + 1, last_local + inc do
+
+				local column1 = ""; local column2 = ""; local column3 = "";
+				local col1nr = ""; local col2nr = ""; local col3nr = "";
+
+				col1nr, column1 = concat_filename(i, string.gsub(pathlist[i].folder,"%.%./%.%./romglobal/waypoints/*",""), pathlist[i].filename)
+
+				if ( (i + inc) <= #pathlist ) then
+					col2nr, column2 = concat_filename(i+inc, string.gsub(pathlist[i+inc].folder,"%.%./%.%./romglobal/waypoints/*",""), pathlist[i+inc].filename);
+				end
+				if ( (i+inc*2) <= #pathlist ) then
+					col3nr, column3 = concat_filename(i+inc*2, string.gsub(pathlist[i+inc*2].folder,"%.%./%.%./romglobal/waypoints/*",""), pathlist[i+inc*2].filename);
+				end
+
+				cprintf(cli.green,"%s %s %s %s %s %s\n",
+					col1nr,
+					string.sub(column1.."                    ", 1, 21),
+					col2nr,
+					string.sub(column2.."                    ", 1, 21),
+					col3nr,
+					string.sub(column3.."                    ", 1, 20) );
+
+			end
+		end
+
 		-- ask for pathname to choose
 		keyboardBufferClear();
 		io.stdin:flush();
@@ -390,10 +526,23 @@ function main()
 			hf_choose_path_nr >= 0 and
 			hf_choose_path_nr <= #pathlist ) then
 			printf(language[146], hf_choose_path_nr );	-- You choose %s\n
-			if( pathlist[hf_choose_path_nr].folder ) then
-				wp_to_load = pathlist[hf_choose_path_nr].folder.."/"..pathlist[hf_choose_path_nr].filename;
+			if pathlist[hf_choose_path_nr].filename then
+				if( pathlist[hf_choose_path_nr].folder ) then
+					wp_to_load = pathlist[hf_choose_path_nr].folder.."/"..pathlist[hf_choose_path_nr].filename;
+				else
+					if current_folder == "" then
+						wp_to_load = pathlist[hf_choose_path_nr].filename;
+					else
+						wp_to_load = current_folder .. "/" .. pathlist[hf_choose_path_nr].filename;
+					end
+				end
 			else
-				wp_to_load = pathlist[hf_choose_path_nr].filename;
+				if pathlist[hf_choose_path_nr].folder == ".." then
+					current_folder = string.match(current_folder,"(.*)/[^/]*$") or ""
+					if string.lower(current_folder) == "/../../romglobal/waypoints" then current_folder = "" end
+				else
+					current_folder = current_folder .. "/" .. pathlist[hf_choose_path_nr].folder
+				end
 			end
 
 			return wp_to_load;
@@ -412,8 +561,11 @@ function main()
 	-- get wp filename to load
 	if( forcedPath ) then			-- waypointfile or 'wander'
 		local filename = getExecutionPath() .. "/waypoints/" .. string.gsub(forcedPath,".xml","") .. ".xml";
+		local globalfilename = getExecutionPath() .. "/../romglobal/waypoints/" .. string.gsub(forcedPath,".xml","") .. ".xml";
 		if fileExists(filename) or ( string.lower(forcedPath) == "wander" ) then
 			wp_to_load = forcedPath;
+		elseif fileExists(globalfilename) then
+			wp_to_load = "../../romglobal/waypoints/"..forcedPath;
 		else
 			cprintf(cli.yellow,language[153], filename ); -- We can't find your waypoint file
 		end;
@@ -445,20 +597,23 @@ function main()
 		while( wp_to_load == nil or wp_to_load == "" or wp_to_load == false	or wp_to_load == " " ) do
 			wp_to_load = list_waypoint_files();
 		end;
-		bot_starting_skip_waypoint_onload = true
 		if( wp_to_load == "wander" ) then
-			--__WPL = CWaypointListWander();
+			cprintf(cli.lightgray,language[187])
+			local radius = tonumber(io.stdin:read())
+			if type(radius) ~= "number" or 0 > radius then
+				cprintf(cli.lightgray,"Expecting number more than or equal to 0. Using default value.\n")
+				yrest(2000)
+			else
+				settings.profile.options.WANDER_RADIUS = radius
+			end
+
 			loadPaths("wander", rp_to_load);
-			__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
-			__WPL:setMode("wander");
-			cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS );	-- we wander around
 		else
 			loadPaths(wp_to_load, rp_to_load);	-- load the waypoint path / return path
 		end;
-		bot_starting_skip_waypoint_onload = false
 	end;
 
-	player:update() -- update player coords
+	player:updateXYZ() -- update player coords
 
 	-- special option for use waypoint file from profile in a reverse order / not if forced path
 	if( settings.profile.options.WAYPOINTS_REVERSE == true  and
@@ -500,34 +655,26 @@ function main()
 		end
 	end
 
-	-- Waypoint onLoad event should follow profile onload
-	if( type(__WPL.onLoadEvent) == "function" ) then
-		local status,err = pcall(__WPL.onLoadEvent);
-		if( status == false ) then
-			local msg = sprintf("onLoad error: %s", err);
-			error(msg);
-		end
-	end
-
-	if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
-		error(language[114],1) -- No waypoints to go to
-	end
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
-		player:update();
+		while __WPL.DoOnload do
+			__WPL.DoOnload = false
+			__WPL.onLoadEvent()
+		end
+		if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
+			error(language[114],1) -- No waypoints to go to
+		end
+
+		player:checkAddress()
 		player:logoutCheck();
 		player.Fighting = false;		-- we are now not in the fight routines
 
+		player:updateAlive()
 		if( not player.Alive ) then
 			player:resetSkillLastCastTime();	-- set last use back, so we can rebuff
 			resurrect();
 		end
-
-		if( player.TargetPtr ~= 0 and not player:haveTarget() ) then
-			player:clearTarget();
-		end
-
 
 		-- reloading ammunition
 		if ( settings.profile.options.RELOAD_AMMUNITION ) then
@@ -545,7 +692,7 @@ function main()
 		-- go back to sleep, if in sleep mode
 		if( player.Sleeping == true ) then
 			yrest(800);	-- wait a little for the aggro flag
-			player:update();
+			player:updateBattling();
 			if( player.Battling == false ) then
 				player:sleep();
 			end;
@@ -560,6 +707,7 @@ function main()
 
 		-- update inventory if update flag is set
 		-- TODO: rolling update while resting?
+		player:updateBattling();
 		if(player.InventoryDoUpdate == true and
 		   not player.Battling ) then
 			player.InventoryDoUpdate = false;
@@ -571,6 +719,7 @@ function main()
 		-- check if levelup happens / execute after aggro is gone
 		-- we do it here , to be sure, aggro flag is gone
 		--  aggro flag would needs a wait (if no loot), so we don't check it
+		player:updateLevel()
 		if(player.Level > player.level_detect_levelup   and
 		   not player.Battling )  then
 
@@ -580,7 +729,7 @@ function main()
 			if( type(settings.profile.events.onLevelup) == "function" ) then
 				local status,err = pcall(settings.profile.events.onLevelup);
 				if( status == false ) then
-					local msg = sprintf(language[85], err);
+					local msg = sprintf(language[75], err);
 					error(msg);
 				end
 			end
@@ -591,7 +740,9 @@ function main()
 
 		-- rest after getting new target and before starting fight
 		-- rest between 50 until 99 sec, at most until full, after that additional rnd(10)
-		if player.Current_waypoint_type ~= WPT_RUN then	-- no resting if running waypoin type
+		if player.Current_waypoint_type ~= WPT_TRAVEL then	-- no resting if running waypoin type
+			player:updateHP()
+			player:updateMP()
 
 			local manaRest, healthRest = false, false;
 			if( player.MaxMana > 0 ) then
@@ -605,86 +756,29 @@ function main()
 		end;
 
 
-		-- if aggro then wait for target from client
-		-- we come back to that coding place if we stop moving because of aggro
-		local aggroWaitStart = os.time();
+		-- If aggro, look for target
 		local msg_print = false;
-		while(player.Battling) do
+		player:updateBattling()
+		if player.Battling then
 
 			if( player.Current_waypoint_type == WPT_TRAVEL ) then
 				cprintf(cli.green, language[113]);	-- we don't stop and don't fight back
-				break;
-			end;
-
-			if ( settings.profile.options.PARTY ~= true  ) then
-
-				player:target(player:findEnemy(true, nil, evalTargetDefault, player.IgnoreTarget));
-
-				-- wait a second with the aggro message to avoid wrong msg
-				-- because of slow battle flag from the client
-				if( msg_print == false  and  os.difftime(os.time(), aggroWaitStart) > 1 ) then
-					cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
-					msg_print = true;
-				end;
-				if( player:haveTarget() ) then
-					if( msg_print == false ) then
-						cprintf(cli.green, language[35]);	-- Waiting on aggressive enemies.
-						msg_print = true;
-					end;
-
-					break;
-				end;
-
-				if( os.difftime(os.time(), aggroWaitStart) > 4 ) then
-					cprintf(cli.red, language[34]);		-- Aggro wait time out
-					break;
-				end;
-
-				yrest(10);
-				player:update();
 			else
-				player:target(player:findEnemy(true, nil, nil));
-				local target = player:getTarget();
-				if player:haveTarget() then
-					if( settings.profile.options.ANTI_KS ) then
-						if( target:haveTarget() and
-							target:getTarget().Address ~= player.Address and
-							 (not player:isFriend(CPawn(target.TargetPtr))) and
-							target:getTarget().Address ~= 0 -- because of distance limitation
-							and target:getTarget().InParty ~= true )then
-								cprintf(cli.red, language[5], target.Name);
-						else
-							player:fight();
-						end
-
-					else
-							player:fight();
-					end
-					yrest(10);
-					player:update();
+				if player:target(player:findEnemy(true,nil,evalTargetDefault)) then
+					cprintf(cli.green, language[35]);	-- Got aggro. Attacking aggressive enemies.
 				end
-			end
+				yrest(10);
+			end;
 		end
 
-		if( player:haveTarget() and player.Current_waypoint_type ~= WPT_TRAVEL ) then
+		if( player.Current_waypoint_type ~= WPT_TRAVEL and player:haveTarget() ) then
 			-- only fight back if it's not a TRAVEL waypoint
 			-- remember players position at fight start
 			local FightStartX = player.X;
 			local FightStartZ = player.Z;
 
-			local target = player:getTarget();
-			if( settings.profile.options.ANTI_KS ) then
-				if( target:haveTarget() and
-				  target:getTarget().Address ~= player.Address and
-				  (not player:isFriend(CPawn(target.TargetPtr))) and target:getTarget().InParty ~= true ) then
-					cprintf(cli.red, language[5], target.Name);
-				else
-					player:fight();
-				end
-			else
-				player:fight();
-			end
-
+			-- Other check were done in defaultEvalFunction
+			player:fight();
 
 			-- check if we (as melee) can skip a waypoint because we touched it while moving to the fight place
 			-- we do the check for all classes, even mostly only melees are touched by that, because only
@@ -762,6 +856,8 @@ function main()
 
 		else
 		-- don't fight, move to wp
+			if player.TargetPtr ~= 0 then player:clearTarget(); end
+
 			-- First check up on eggpet
 			checkEggPets()
 
@@ -781,9 +877,7 @@ function main()
 
 			local success, reason = player:moveTo(wp,nil,true);
 
-			if( player.TargetPtr ~= 0 and (not player:haveTarget()) ) then
-				player:clearTarget();
-			end
+			player:updateMounted()
 			if not player.Mounted then
 				player:checkPotions();
 				player:checkSkills( ONLY_FRIENDLY );	-- only cast hot spells to ourselfe
@@ -843,6 +937,10 @@ function main()
 					if( distBreakCount > 0 ) then
 						distBreakCount = 0;
 					end
+				end
+
+				if reason == WF_PULLBACK and #__WPL.Waypoints > 2 then
+					__WPL:setWaypointIndex(__WPL:findPulledBeforeWaypoint())
 				end
 
 				if( reason == WF_STUCK or distBreakCount > 3 ) then
@@ -979,7 +1077,7 @@ function resurrect()
 
 	end
 
-	player:update();
+	player:updateAlive();
 	-- pause if still death
 	if( not player.Alive ) then
 		pauseOnDeath();

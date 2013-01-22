@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="RUN">
+<onload>
+		settings.profile.mobs = {100061}; -- Boar
+		function getBag()
+			if getQuestStatus(420064) == "incomplete" then -- The Lost Supplies
+				player:target_Object({110080,110433}) -- Full Grain Bag
+			elseif getQuestStatus(420531) == "incomplete" then -- Strong Boars
+				__WPL:setForcedWaypointType("NORMAL")
+			else
+				__WPL:setForcedWaypointType("RUN")
+			end
+		end
+</onload>
+	<!-- #  1 --><waypoint x="-1013" z="-4434" y="-16"> getBag()	</waypoint>
+	<!-- #  2 --><waypoint x="-1127" z="-4232" y="0">
+		if getQuestStatus(420064) ~= "incomplete" and getQuestStatus(420531) ~= "incomplete" then
+			loadPaths("1-10pioneersquests/l8t_camp")
+		end
+	</waypoint>
+	<!-- #  3 --><waypoint x="-1105" z="-4191" y="6"> getBag()	</waypoint>
+	<!-- #  4 --><waypoint x="-840" z="-4093" y="-4"> getBag()	</waypoint>
+	<!-- #  5 --><waypoint x="-770" z="-4286" y="-20">	</waypoint>
+	<!-- #  6 --><waypoint x="-671" z="-4351" y="-8"> getBag()	</waypoint>
+	<!-- #  7 --><waypoint x="-552" z="-4534" y="-50"> getBag()	</waypoint>
+	<!-- #  8 --><waypoint x="-826" z="-4613" y="-48"> getBag()	</waypoint>
+	<!-- #  9 --><waypoint x="-1034" z="-4761" y="-22">	getBag()
+		if getQuestStatus(420064) ~= "incomplete" and getQuestStatus(420531) ~= "incomplete" then
+			loadPaths("1-10pioneersquests/l8t_camp")
+		end
+	</waypoint>
+	<!-- # 10 --><waypoint x="-1029" z="-4502" y="-21">	</waypoint>
+	<!-- # 11 --><waypoint x="-1010" z="-4464" y="-19">	</waypoint>
+</waypoints>

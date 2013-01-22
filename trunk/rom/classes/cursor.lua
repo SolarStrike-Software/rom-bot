@@ -11,7 +11,7 @@ CCursor = class(
 );
 
 function CCursor:update()
-	self.Address = memoryReadInt(getProc(), addresses.cursorBase)
+	self.Address = memoryReadUInt(getProc(), addresses.cursorBase)
 
 	self.ItemLocation = memoryReadInt(getProc(), self.Address + addresses.cursorItemLocation_offset)
 	if self.ItemLocation == 0 then

@@ -1,0 +1,40 @@
+<waypoints type="TRAVEL">
+<onload>
+	player:mount()
+	__WPL:setWaypointIndex(1) -- Because otherwise it might start at the wrong WP
+</onload>
+	<!-- # 65 --><waypoint x="-1591" z="-6148" y="83">	</waypoint>
+	<!-- # 66 --><waypoint x="-1426" z="-6111" y="51">	</waypoint>
+	<!-- # 67 --><waypoint x="-1299" z="-6034" y="46">	</waypoint>
+	<!-- # 68 --><waypoint x="-1159" z="-6004" y="53">	</waypoint>
+	<!-- # 69 --><waypoint x="-952" z="-6016" y="49">
+		player:target_Object(110055); -- Agnes
+		CompleteQuestByName(420068) -- A Bit Worrying
+	</waypoint>
+	<!-- # 72 --><waypoint x="-777" z="-5885" y="60">
+		player:target_Object(110051); -- Highly-skilled Doctor
+		CompleteQuestByName(420075) -- Gathering Spider Venom
+		yrest(2000)
+		inventory:useItem(222007) -- Reagent Ring
+	</waypoint>
+	<!-- # 73 --><waypoint x="-784" z="-6078" y="49">
+		player:target_Object(110057); -- Gil
+		local reward = 1
+		if player.MaxMana > 0 then
+			reward = 2
+		end
+		CompleteQuestByName(420093, reward); -- Strange Request
+		AcceptQuestByName(420094) -- Not Your Grandmother's Soup
+	</waypoint>
+	<!-- # 73 --><waypoint x="-652" z="-6017" y="28">
+		player:target_Object(110052); -- Dell
+		CompleteQuestByName(420094); -- Not Your Grandmother's Soup
+		AcceptQuestByName(420486) -- A beautiful Necklace
+	</waypoint>
+	<!-- # 65 --><waypoint x="-845" z="-5977" y="49">	</waypoint>
+	<!-- # 66 --><waypoint x="-1289" z="-6025" y="51">	</waypoint>
+	<!-- # 67 --><waypoint x="-1666" z="-6275" y="46">	</waypoint>
+	<!-- # 68 --><waypoint x="-1851" z="-6316" y="33">
+		loadPaths("1-10pioneersquests/l5-6_beetle")
+	</waypoint>
+</waypoints>

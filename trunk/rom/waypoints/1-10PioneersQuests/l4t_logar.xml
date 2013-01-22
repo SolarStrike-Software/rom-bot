@@ -1,0 +1,93 @@
+<waypoints type="TRAVEL">
+<onload> player:mount() </onload>
+	<!-- # 1 --><waypoint x="-1864" z="-9634"></waypoint>
+	<!-- # 2 --><waypoint x="-1680" z="-9638"></waypoint>
+	<!-- # 3 --><waypoint x="-1404" z="-9554"></waypoint>
+	<!-- # 4 --><waypoint x="-1164" z="-9452"></waypoint>
+	<!-- # 5 --><waypoint x="-1089" z="-9264"></waypoint>
+	<!-- # 6 --><waypoint x="-993" z="-9060"></waypoint>
+	<!-- # 7 --><waypoint x="-755" z="-9051"></waypoint>
+	<!-- # 8 --><waypoint x="-567" z="-9048"></waypoint>
+	<!-- # 9 --><waypoint x="-405" z="-8905"></waypoint>
+	<!-- #10 --><waypoint x="-228" z="-8737"></waypoint>
+	<!-- #11 --><waypoint x="79" z="-8532"></waypoint>
+	<!-- #12 --><waypoint x="95" z="-8397"></waypoint>
+	<!-- #13 --><waypoint x="148" z="-8190"></waypoint>
+	<!-- #14 --><waypoint x="144" z="-8014"></waypoint>
+	<!-- #15 --><waypoint x="38" z="-7687"></waypoint>
+	<!-- #16 --><waypoint x="-33" z="-7311"></waypoint>
+	<!-- #17 --><waypoint x="-63" z="-7022"></waypoint>
+	<!-- #18 --><waypoint x="-77" z="-6856"></waypoint>
+	<!-- #19 --><waypoint x="-169" z="-6750"></waypoint>
+	<!-- #20 --><waypoint x="-216" z="-6547"></waypoint>
+	<!-- #  2 --><waypoint x="-261" z="-6282">	</waypoint>
+	<!-- #  3 --><waypoint x="-259" z="-6137">
+		player:target_NPC(110078); -- George
+        AcceptQuestByName(420727) -- Golden Statue Auction
+		CompleteQuestByName(420678) -- Love Express
+        CompleteQuestByName(420108) -- Regular Report on Pioneers Colony
+        inventory:useItem(221446); -- Cubskin Piecemeal Belt
+	</waypoint>
+	<!-- #  1 --><waypoint x="-400" z="-6171">	</waypoint>
+	<!-- #  9 --><waypoint x="-553" z="-6028">	</waypoint>
+	<!-- # 10 --><waypoint x="-690" z="-5968">	</waypoint>
+	<!-- # 11 --><waypoint x="-1087" z="-5966">	</waypoint>
+	<!-- # 12 --><waypoint x="-1181" z="-5874">	</waypoint>
+	<!-- # 13 --><waypoint x="-1247" z="-5841">
+        player:target_NPC(110770); -- O'shel
+        CompleteQuestByName(420727,1); -- Golden Statue Auction
+		AcceptQuestByName(420728) -- Golden Statue Letter
+	</waypoint>
+	<!-- #  4 --><waypoint x="-1110" z="-5946">	</waypoint>
+	<!-- #  5 --><waypoint x="-1011" z="-5974">	</waypoint>
+	<!-- #  6 --><waypoint x="-796" z="-5960">	</waypoint>
+	<!-- #  7 --><waypoint x="-651" z="-5976">	</waypoint>
+	<!-- #  8 --><waypoint x="-430" z="-5991">
+		player:target_Object(110771); -- Logar mailbox
+		CompleteQuestByName(420728); -- Golden Statue Letter
+		AcceptQuestByName(420729) -- Return of the Golden Statue
+	</waypoint>
+	<!-- # 13 --><waypoint x="-269" z="-6120">
+		player:target_NPC(110078); -- George
+		CompleteQuestByName(420729,1); -- Return of the Golden Statue
+		AcceptQuestByName(420838) -- House Angel
+	</waypoint>
+	<!-- # 17 --><waypoint x="-315" z="-6093">	</waypoint>
+	<!-- # 18 --><waypoint x="-440" z="-5974">
+		player:target_NPC(110773); -- Meydo
+		CompleteQuestByName(420838); -- House Angel
+		AcceptQuestByName(420664) -- Registering Your Transport Portal
+	</waypoint>
+	<!-- #  1 --><waypoint x="-555" z="-5903">	</waypoint>
+	<!-- #  2 --><waypoint x="-661" z="-5816">	</waypoint>
+	<!-- #  3 --><waypoint x="-769" z="-5655">	</waypoint>
+	<!-- #  4 --><waypoint x="-887" z="-5623">
+		player:target_NPC(110591); -- Christine
+		CompleteQuestByName(420664); -- Registering Your Transport Portal
+		player:target_NPC(111256) -- Snoop the Stubborn
+	</waypoint>
+	<!-- #  1 --><waypoint x="-1064" z="-5585" y="52">	</waypoint>
+	<!-- #  2 --><waypoint x="-793" z="-5645" y="63">	</waypoint>
+	<!-- #  3 --><waypoint x="-705" z="-5812" y="37">	</waypoint>
+	<!-- #  7 --><waypoint x="-648" z="-5999" y="43">
+		player:target_Object(110052); -- Dell
+		AcceptQuestByName(420093) -- Strange Request
+	</waypoint>
+	<!-- # 10 --><waypoint x="-677" z="-6049" y="43">	</waypoint>
+	<!-- # 11 --><waypoint x="-677" z="-6049" y="43">
+		player:target_Object(111622); -- Lola
+		AcceptQuestByName(421531) -- Tresure Hunt
+		Attack() yrest(2000)
+		RoMScript("ChoiceOption(1)")
+		CompleteQuestByName(421531) -- Tresure Hunt
+	</waypoint>
+	<!-- # 18 --><waypoint x="-761" z="-5906" y="57">
+		player:target_Object(110051); -- Highly-skilled Doctor
+		AcceptQuestByName(420075) -- Gathering Spider Venom
+	</waypoint>
+	<!-- # 22 --><waypoint x="-922" z="-6019" y="49">
+		player:target_Object(110055); -- Agnes
+		AcceptQuestByName(420068) -- A Bit Worrying
+		loadPaths("1-10PioneersQuests/l5-7_BeetleBatSpider")
+	</waypoint>
+</waypoints>

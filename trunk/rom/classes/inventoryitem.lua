@@ -34,6 +34,9 @@ function CInventoryItem:update()
 		self.Available = true
 	end
 
+	-- Don't waste time updating if not available.
+	if not self.Available then return end
+
 	CItem.update(self)
 
 	if( settings.profile.options.DEBUG_INV ) then
