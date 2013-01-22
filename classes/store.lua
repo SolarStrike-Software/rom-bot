@@ -3,17 +3,21 @@ CStore = class(
 		self.Name = "<UNKNOWN>"
 		self.Id = 0
 		self.Item = {}
-
-		player:update()
-		if player:getTarget() then
-			self:update()
-		end
+		self.CanRepair = false
 	end
 )
 
 function CStore:update()
-	player:update()
 	local target = player:getTarget()
+	if not target:exists() then
+		print("NPC not targeted. Clearing 'store'.")
+		self.Name = "<UNKNOWN>"
+		self.Id = 0
+		self.Item = {}
+		self.CanRepair = false
+		return
+	end
+
 
 	-- NPC not targeted
 	if target.Type ~= PT_NPC then

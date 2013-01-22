@@ -49,7 +49,7 @@ settings_default = {
 			HARVEST_WOOD = true,
 			HARVEST_HERB = true,
 			HARVEST_ORE = true,
-			MAX_FIGHT_TIME = 12,
+			MAX_FIGHT_TIME = 10,
 			DOT_PERCENT = 90,
 			LOGOUT_TIME = 0,
 			LOGOUT_SHUTDOWN = false,
@@ -79,11 +79,11 @@ settings_default = {
 
 
 			-- expert options
-			MAX_SKILLUSE_NODMG = 3,				-- maximum casts without damaging the target before break it
+			MAX_SKILLUSE_NODMG = 4,				-- maximum casts without damaging the target before break it
 			MAX_TARGET_DIST = 250,			-- maximum distance to select a target (helpfull to limit at small places)
 			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			AUTO_TARGET = true,				-- bot will target mobs automaticly (set it to false if you want to use the bot only as fight support)
-			SKILL_GLOBALCOOLDOWN = 1200,	-- Global Skill Use Cooldown (1000ms) we use a little more
+--			SKILL_GLOBALCOOLDOWN = 1200,	-- Global Skill Use Cooldown (1000ms) we use a little more
 			SKILL_USE_PRIOR = "auto",			-- cast x ms before cooldown is finished
 			PK_COUNTS_AS_DEATH = true,		-- count playerkill's as death
 			POTION_COOLDOWN = 15,			-- always 15
@@ -182,6 +182,18 @@ end
 settings = table.copy(settings_default);
 
 check_keys = { name = { } };
+
+SKILLUSES_MANA = 2
+--SKILLUSES_HPPER = 3 -- Not used by bot
+--SKILLUSES_MPPER = 4 -- Not used by bot
+SKILLUSES_RAGE = 5
+SKILLUSES_FOCUS = 6
+SKILLUSES_ENERGY = 7
+SKILLUSES_ITEM = 9
+SKILLUSES_PROJECTILE = 13
+SKILLUSES_ARROW = 14
+SKILLUSES_PSI = 15
+
 function checkKeySettings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
@@ -407,7 +419,7 @@ function settings.load()
 		bindings = { name = { } };
 		-- read the lines in table 'lines'
 		for line in file:lines() do
-			for name, key1, key2 in string.gfind(line, "(%w*)%s([%w+]*)%s*([%w+]*)") do
+			for name, key1, key2 in string.gmatch(line, "(%w*)%s([%w+]*)%s*([%w+]*)") do
 				bindings[name] = {};
 				bindings[name].key1 = key1;
 				bindings[name].key2 = key2;
@@ -565,7 +577,7 @@ end
 
 
 function settings.loadProfile(_name)
-	printf(language[186], _name)
+	cprintf(cli.yellow,language[186], _name)
 
 	-- Delete old profile settings (if they even exist), restore defaults
 	settings.profile = table.copy(settings_default.profile);
@@ -770,17 +782,11 @@ function settings.loadProfile(_name)
 			autouse = v:getAttribute("autouse");
 			mobcount = v:getAttribute("mobcount");
 
-		-- Ensure that autouse is a proper type.
-			if( not (autouse == true or autouse == false) ) then
-				autouse = true;
-			end;
-
 			-- check if 'wrong' options are set
 			if( v:getAttribute("mana")      or
-			    v:getAttribute("manainc")   or
 			    v:getAttribute("rage")      or
 			    v:getAttribute("energy")    or
-			    v:getAttribute("concentration")      or
+			    v:getAttribute("focus")      or
 			    v:getAttribute("range")     or
 			    v:getAttribute("minrange")  or
 			    v:getAttribute("type")      or
@@ -876,7 +882,7 @@ function settings.loadProfile(_name)
 			if( nobuffcount ) then tmp.NoBuffCount = nobuffcount; end;
 			if( nobufftarget ) then tmp.NoBuffTarget = nobufftarget; end;
 			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
-			if( autouse == false ) then tmp.AutoUse = false; end;
+			if( autouse ~= nil ) then tmp.AutoUse = (autouse == true) ; end;
 			if( mobcount ) then tmp.MobCount = mobcount; end;
 
 			table.insert(settings.profile.skillsData[classNum], tmp);
@@ -1144,7 +1150,7 @@ function settings.loadSkillSet(class)
 		setupMacros()
 	end
 
-	-- Updates skill availability and some values(Id,Level,aslevel,TPToLevel)
+	-- Updates skill availability and some values(Id,Level,aslevel,TPToLevel,Mana,Rage,Focus,Energy,Consumable,ConsumableNumber)
 	settings.updateSkillsAvailability()
 
 	-- Check if the player has any ranged damage skills
@@ -1209,10 +1215,6 @@ function settings.loadSkillSet(class)
 		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE or 0, best_range);	-- Maximum range of range attack skills is lesser
 		settings.profile.options.COMBAT_DISTANCE = best_range
 	end
-
-	if settings.profile.options.COMBAT_STOP_DISTANCE == nil or settings.profile.options.COMBAT_STOP_DISTANCE > settings.profile.options.COMBAT_DISTANCE then
-		settings.profile.options.COMBAT_STOP_DISTANCE = settings.profile.options.COMBAT_DISTANCE
-	end
 end
 
 function settings.updateSkillsAvailability()
@@ -1222,6 +1224,12 @@ function settings.updateSkillsAvailability()
 	--   Level
 	--   aslevel
 	--   Available
+	--   Mana
+	--   Rage
+	--   Focus
+	--   Energy
+	--   Consumable
+	--   ConsumableNumber
 
 	-- First collect tab skill info
 	local tabData = GetSkillBookData({2,3,4}) -- tabs of interest 2,3 and 4
@@ -1234,9 +1242,50 @@ function settings.updateSkillsAvailability()
 			local name = GetIdName(id)
 			if name ~= nil and name ~= "" and address ~= nil then
 				local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
+
+				-- Get power and consumables
+				local baseAddress = GetItemAddress(id)
+				local mana, rage, focus, energy, consumable, consumablenumber, psi
+				for count = 0, 1 do
+					local uses = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset)
+					if uses == 0 then
+						break
+					end
+					local usesnum = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+					if uses == SKILLUSES_MANA then
+						mana = usesnum
+					elseif uses == SKILLUSES_RAGE then
+						rage = usesnum
+					elseif uses == SKILLUSES_FOCUS then
+						focus = usesnum
+					elseif uses == SKILLUSES_ENERGY then
+						energy = usesnum
+					elseif uses == SKILLUSES_ITEM then
+						consumable = "item"
+						consumableNumber = usesnum
+					elseif uses == SKILLUSES_PROJECTILE then
+						consumable = "projectile"
+						consumableNumber = usesnum
+					elseif uses == SKILLUSES_ARROW then
+						consumable = "arrow"
+						consumableNumber = usesnum
+					elseif uses == SKILLUSES_PSI then
+						psi = usesnum
+					end
+				end
+
 				tabData[name] = {
+					Address = address,
+					BaseItemAddress = baseAddress,
 					Id = id,
-					aslevel = aslevel
+					aslevel = aslevel,
+					Mana = mana,
+					Rage = rage,
+					Focus = focus,
+					Energy = energy,
+					Consumable = consumable,
+					ConsumableNumber = consumablenumber,
+					Psi = psi,
 				}
 			end
 		end
@@ -1259,12 +1308,22 @@ function settings.updateSkillsAvailability()
 			-- Do we currently have this skill?
 			if tabData[realName] ~= nil then
 				-- update profile values
+				skill.Address = tabData[realName].Address
+				skill.BaseItemAddress = tabData[realName].BaseItemAddress
 				skill.Id = tabData[realName].Id
 				skill.aslevel = tabData[realName].aslevel
 				if tabData[realName].TPToLevel then skill.TPToLevel = tabData[realName].TPToLevel end
 				if tabData[realName].Level then skill.Level = tabData[realName].Level end
 				if tabData[realName].skilltab then skill.skilltab = tabData[realName].skilltab end
 				if tabData[realName].skillnum then skill.skillnum = tabData[realName].skillnum end
+				if tabData[realName].Mana then skill.Mana = tabData[realName].Mana end
+				if tabData[realName].Rage then skill.Rage = tabData[realName].Rage end
+				if tabData[realName].Focus then skill.Focus = tabData[realName].Focus end
+				if tabData[realName].Energy then skill.Energy = tabData[realName].Energy end
+				if tabData[realName].Consumable then skill.Consumable = tabData[realName].Consumable end
+				if tabData[realName].ConsumableNumber then skill.ConsumableNumber = tabData[realName].ConsumableNumber end
+				if tabData[realName].Psi then skill.Psi = tabData[realName].Psi end
+
 				-- update database values(some functions access the database values)
 				database.skills[skill.Name].Id = tabData[realName].Id
 				database.skills[skill.Name].aslevel = tabData[realName].aslevel

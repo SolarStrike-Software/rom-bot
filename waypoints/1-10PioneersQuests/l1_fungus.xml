@@ -1,0 +1,16 @@
+<waypoints type="NORMAL">
+	<onLoad>
+		settings.profile.mobs = {GetIdName(100052)}; -- Fungus
+	</onLoad>
+	<!-- #  2 --><waypoint x="-3068" z="-8846">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  3 --><waypoint x="-3021" z="-8993">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  4 --><waypoint x="-3034" z="-9131">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  5 --><waypoint x="-3045" z="-9270">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  6 --><waypoint x="-3204" z="-9059">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  7 --><waypoint x="-3166" z="-8983">if getQuestStatus(420666) == "complete" then __WPL:setForcedWaypointType("RUN") end	</waypoint>
+	<!-- #  8 --><waypoint x="-3224" z="-8832">
+		if getQuestStatus(420666) == "complete" then
+			loadPaths("1-10PioneersQuests/l3t_pioneer");
+		end
+	</waypoint>
+</waypoints>

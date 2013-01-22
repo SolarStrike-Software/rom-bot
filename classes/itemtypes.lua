@@ -41,8 +41,8 @@ function LoadItemTypes_memory()
 	local data={}
 
 	-- Get Base type level data
-	local t1_data={RoMScript("} A=0 repeat n='AC_ITEMTYPENAME_'..A T=TEXT(n)" ..
-		" if n==T then break end table.insert(a,A..','..T) A=A+1 until false z={")}
+	local t1_data={RoMCode("A=0 repeat n='AC_ITEMTYPENAME_'..A T=TEXT(n)" ..
+		" if n==T then break end table.insert(a,A..','..T) A=A+1 until false")}
 	for k,v in pairs(t1_data) do
 		local t1, name = string.match(v,"(%d*),(.*)")
 		t1 = tonumber(t1)
@@ -52,9 +52,9 @@ function LoadItemTypes_memory()
 	displayProgressBar((1/(#data+3)) * 100, 20);
 
 	-- Get second level data
-	local t2_data={RoMScript("} for A=0,".. #data .." do B=0 repeat " ..
+	local t2_data={RoMCode("for A=0,".. #data .." do B=0 repeat " ..
 		"n='AC_ITEMTYPENAME_'..A..'_'..B T=TEXT(n) if n==T then break end " ..
-		"table.insert(a,A..','..B..','..T) B=B+1 until false end z={")}
+		"table.insert(a,A..','..B..','..T) B=B+1 until false end")}
 	for k,v in pairs(t2_data) do
 		local t1, t2, name = string.match(v,"(%d*),(%d*),(.*)")
 		t1, t2 = tonumber(t1), tonumber(t2)
@@ -64,9 +64,9 @@ function LoadItemTypes_memory()
 	-- Get third level data
 	for t1= 0, #data do
 		displayProgressBar(((t1+2)/(#data+3)) * 100, 20);
-		local t3_data = {RoMScript("} for B=0," .. #data[t1] .. " do C=0 repeat " ..
+		local t3_data = {RoMCode("for B=0," .. #data[t1] .. " do C=0 repeat " ..
 			"n='AC_ITEMTYPENAME_"..t1.."_'..B..'_'..C T=TEXT(n) if n==T then break end " ..
-			"table.insert(a,B..','..C..','..T) C=C+1 until false end z={")}
+			"table.insert(a,B..','..C..','..T) C=C+1 until false end")}
 		for k,v in pairs(t3_data) do
 			local t2, t3, name = string.match(v,"(%d*),(%d*),(.*)")
 			t2, t3 = tonumber(t2), tonumber(t3)

@@ -849,7 +849,7 @@ local updatePatterns =
 			0x85, 0xC0),
 		mask = "xxxx????xxxxx?xxxx????x????xx",
 		offset = 18,
-		startloc = 0x870000,
+		startloc = 0x850000,
 	},
 
 	pawnLastDamage_offset = {
@@ -859,7 +859,7 @@ local updatePatterns =
 			0x89, 0x91),
 		mask = "xxxxxx",
 		offset = 6,
-		startloc = 0x870000,
+		startloc = 0x850000,
 	},
 
 	staticCooldownsBase = {
@@ -876,13 +876,11 @@ local updatePatterns =
 
 	partyMemberList_address = {
 		pattern = string.char(
-			0x56,
-			0x51,
 			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
-			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
-			0x8B, 0x0D),
-		mask = "xxxx????x????xx",
-		offset = 4,
+			0x83, 0xC4, 0x08,
+			0x6A, 0xFF),
+		mask = "xx????xxxxx",
+		offset = 2,
 		startloc = 0x5E0000,
 	},
 
@@ -1020,7 +1018,7 @@ function findOffsets()
 		end
 
 		if tmp[1] == 0x90 then
-			error("Patch bytes = 0x90. Please restart the game before trying to run \"rom\update\" again.")
+			error("Patch bytes = 0x90. Please restart the game before trying to run \"rom\\update\" again.")
 		end
 
 		printf(readBytesUpdateMsg, name, address, bytesString)

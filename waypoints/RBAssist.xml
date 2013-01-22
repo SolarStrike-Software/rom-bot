@@ -2,7 +2,6 @@
 	<onLoad>
 	--==              Rock5's Rombot Assist                 ==--
 	--==  www.solarstrike.net/phpBB3/viewtopic.php?p=10289  ==--
-	local Version = "1.5"
 
 	-- User Options ------------------------------------
 	local attackMode = "auto"
@@ -14,8 +13,7 @@
 	----------------------------------------------------
 
 	-- Start messages
-	cprintf(cli.lightblue, "Rock5's Rombot Assist\n");
-	cprintf(cli.white, "Version: %s\n\n", Version);
+	cprintf(cli.lightblue, "\nRock5's Rombot Assist\n");
 	cprintf(cli.white, "Attack mode is set to: %s\n", attackMode);
 	if attackMode == "trigger" then
 		cprintf(cli.yellow, "Use the \"triggerKEY\" to attack targeted mobs.\n");
@@ -32,6 +30,31 @@
 
 	-- Main loop
 	while (true) do
+		yrest(250)
+		if not isInGame() or not player:exists() or not player:isAlive() then
+			if not isInGame() or not player:exists() then
+				printf("Not in game. Waiting till you reenter game... ")
+			else
+				printf("Player dead. Waiting for resurection... ")
+			end
+			repeat
+				yrest(1000)
+				local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+				local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
+				local hp = memoryReadRepeat("int", getProc(), address + addresses.pawnHP_offset)
+			until isInGame() and id and id >= 1000 and 1004 >= id and hp > 1
+			yrest(3000)
+			print("Continuing.")
+			player:update()
+		end
+
+		local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		local class1 = memoryReadRepeat("int", getProc(), address + addresses.pawnClass1_offset)
+		local class2 = memoryReadRepeat("int", getProc(), address + addresses.pawnClass2_offset)
+		if address ~= player.Address or class1 ~= player.Class1 or class2 ~= player.Class2 then
+			player:update()
+		end
+
 		if attackMode == "disabled" then
 			attack = false
 		else
@@ -54,23 +77,53 @@
 				attack = false
 			end
 
-			if (player.Battling == true) or (attack == true) then
-				if player:getTarget().Address == player.Address then
+			-- clearTarget if battling
+			player:updateBattling()
+			player:updateTargetPtr()
+			if player.Battling and player.TargetPtr ~= 0 then
+				local target = CPawn.new(player.TargetPtr)
+				target:updateType()
+				if target.Type ~= PT_MONSTER or target:isAlive() == false then
 					player:clearTarget()
 				end
-				player:fight()
+			end
+
+			-- If mob attacks me
+			player:updateBattling()
+			local aggrotarget=player:findEnemy(true,nil,evalTargetDefault)
+			if player.Battling or aggrotarget then
+				-- Attack back only if not moving
+				player:updateActualSpeed()
+				if not player.Moving then
+					player:target(aggrotarget)
+					player:fight()
+				else
+					player:updateTargetPtr()
+				end
+
+			-- if I attack a mob
+			elseif attack == true then
+				player:updateTargetPtr()
+				if player.TargetPtr ~=0 and player.TargetPtr ~= player.Address then
+					local target = CPawn.new(player.TargetPtr)
+					target:updateType()
+					if target.Type == PT_MONSTER then
+						player:fight()
+					end
+				end
 			end
 		end
 
 		inventory:update()
 
-		player:checkPotions()
-		local target = player:getTarget();
-		player:checkSkills(true, target);
-
-		player:update()
-
-		checkEggPets()
+		player:updateMounted()
+		if not player.Mounted then
+			player:checkPotions()
+			player:updateTargetPtr()
+			local target = CPawn.new(player.TargetPtr)
+			player:checkSkills(true, target);
+			checkEggPets()
+		end
 	end
 	</onLoad>
 </waypoints>

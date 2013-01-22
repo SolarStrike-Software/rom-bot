@@ -7,6 +7,7 @@
 	<giftbag itemid="221669" type=""    armor="cloth"   level="2" name="Stoffg\129rtel (Geschenk des Pionierdorfs" />
 	<giftbag itemid="221670" type=""    armor="leather" level="2" name="Lederr\129stung (Geschenk des Pionierdorfs" />
 	<giftbag itemid="221671" type=""    armor="chain"   level="2" name="Ketteng\129rtel (Geschenk des Pionierdorfs" />
+	<giftbag itemid="203571" type="is"  armor=""        level="2" name="Brown Horse (1 Day)" />
 	<giftbag itemid="201845" type="bag" armor=""        level="3" name="Pionier-Geschenkbeutel" />
 	<giftbag itemid="221672" type=""    armor=""        level="3" name="Ohrringe (Geschenk des Pionierdorfs)" />
 	<giftbag itemid="201846" type="bag" armor=""        level="4" name="Siedlungs-Geschenkbeutel" />
@@ -15,6 +16,8 @@
 	<giftbag itemid="221674" type=""    armor="cloth"   level="5" name="Stoff\129berhose (Geschenk des Pionierdorfs)" />
 	<giftbag itemid="221675" type=""    armor="leather" level="5" name="Leder\129berhose (Geschenk des Pionierdorfs)" />
 	<giftbag itemid="221676" type=""    armor="chain"   level="5" name="Kettenr\129stungs\129berhose (Geschenk des Pionierdorfs)" />
+	<giftbag itemid="202902" type="is"  armor=""        level="5" name="Marking Ink" />
+	<giftbag itemid="202903" type="is"  armor=""        level="5" name="Transport Rune" />
 	<giftbag itemid="201848" type="bag" armor=""        level="6" name="Logar-Geschenkbeutel" />
 	<giftbag itemid="221677" type=""    armor=""        level="6" name="Ohrringe (Geschenk aus Logar)" />
 	<giftbag itemid="201849" type="bag" armor=""        level="7" name="Toter-Baum-Geschenkbeutel" />
@@ -31,6 +34,9 @@
 	<giftbag itemid="221685" type=""    armor="cloth"   level="10" name="Stoffhandschuhe (Geschenk aus Logar" />
 	<giftbag itemid="221686" type=""    armor="leather" level="10" name="Lederhandschuhe (Geschenk aus Logar" />
 	<giftbag itemid="221687" type=""    armor="chain"   level="10" name="Kettenhandschuhe (Geschenk aus Logar" />
+	<giftbag itemid="202902" type="is"  armor=""        level="10" name="Marking Ink" />
+	<giftbag itemid="202903" type="is"  armor=""        level="10" name="Transport Rune" />
+	<giftbag itemid="202435" type="is"  armor=""        level="10" name="Home-sweet Home" />
 
 	<!-- Elf Giftbags Lvl 3 - 9 -->
 	<giftbag itemid="205931" type="bag" armor=""        level="3" name="Academy Package" />

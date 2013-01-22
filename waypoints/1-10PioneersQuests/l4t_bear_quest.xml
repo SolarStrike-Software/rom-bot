@@ -1,0 +1,30 @@
+<waypoints type="TRAVEL">
+<onload> player:mount()	</onload>
+	<!-- #  1 --><waypoint x="-3499" z="-8667">	</waypoint>
+	<!-- #  2 --><waypoint x="-3215" z="-8590">	</waypoint>
+	<!-- #  3 --><waypoint x="-3049" z="-8618">	</waypoint>
+	<!-- #  4 --><waypoint x="-2904" z="-8662">	</waypoint>
+	<!-- #  5 --><waypoint x="-2618" z="-8647">	</waypoint>
+	<!-- #  6 --><waypoint x="-2283" z="-8661">	</waypoint>
+	<!-- #  7 --><waypoint x="-1707" z="-8605">	</waypoint>
+	<!-- #  8 --><waypoint x="-991" z="-8524">	</waypoint>
+	<!-- #  9 --><waypoint x="-839" z="-8508">	</waypoint>
+	<!-- # 10 --><waypoint x="-770" z="-8434">	</waypoint>
+	<!-- # 11 --><waypoint x="-656" z="-8365">	</waypoint>
+	<!-- # 12 --><waypoint x="-351" z="-8281">	</waypoint>
+	<!-- # 13 --><waypoint x="182" z="-8236">	</waypoint>
+	<!-- # 14 --><waypoint x="313" z="-8256">	</waypoint>
+	<!-- # 15 --><waypoint x="497" z="-8297">
+        player:target_NPC(110486); -- Mrs. Helen
+		if getQuestStatus(420677) == "complete" then -- Bear Fur Gloves
+			CompleteQuestByName(420677); -- Bear Fur Gloves
+			AcceptQuestByName(420678) -- Love Express
+			player:mount();
+			loadPaths("1-10PioneersQuests/l4t_logar");
+		else
+			AcceptQuestByName(420677) -- Bear Fur Gloves
+			loadPaths("1-10PioneersQuests/l4-5_bear");
+			__WPL:setWaypointIndex(12)
+		end
+	</waypoint>
+</waypoints>

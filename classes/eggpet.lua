@@ -222,17 +222,20 @@ end
 
 function CEggPet:Summon()
 	self:update()
-	while self.EggId > 0 and self.Summoned == false and player.Alive and player.HP > 0 do
+	while self.EggId > 0 and player.Level > self.Level-5 and self.Summoned == false and player.Alive and player.HP > 0 do
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200)
 		RoMScript("SummonPet("..self.EggSlot..")")
 		repeat
 			yrest(500)
 			self:update()
-			player:update()
+			player:updateBattling()
+			player:updateCasting()
 		until self.Summoned or player.Battling or player.Casting == false
 		yrest(500)
 		if player.Battling then
-			player:fight()
+			if player:target(player:findEnemy(true, nil, evalTargetDefault)) then
+				player:fight()
+			end
 		end
 		self:update()
 	end
@@ -496,9 +499,14 @@ function checkEggPets()
 	if settings.profile.options.EGGPET_ENABLE_ASSIST and
 	  settings.profile.options.EGGPET_ASSIST_SLOT ~= NIL then
 		assistEgg = CEggPet(settings.profile.options.EGGPET_ASSIST_SLOT)
-		if assistEgg.EggId == 0 then -- Bad edd
+		if assistEgg.EggId == 0 then -- Bad egg
 			printf("Bad egg slot given to EGGPET_ASSIST_SLOT in profile.\n")
 			assistEgg = nil
+		else
+			player:updateLevel()
+			if assistEgg.Level >= player.Level + 5 then
+				assistEgg = nil
+			end
 		end
 	end
 

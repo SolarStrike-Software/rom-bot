@@ -14,9 +14,6 @@ CGuildbankItem = class(CItem,
 );
 
 function CGuildbankItem:update()
-	local baseAddress = memoryReadIntPtr(getProc(),addresses.staticGuildBankBase,{0xC4, 0x0}) + 0x10
-	self.Address = baseAddress + ( (self.BagId - 1) * 68 );
-
 	-- Check if available
 	local GuildBankClosed = memoryReadBytePtr(getProc(),addresses.staticGuildBankBase, addresses.guildBankOpen_offset) ~= 1
 	if GuildBankClosed then
@@ -24,6 +21,17 @@ function CGuildbankItem:update()
 	else
 		self.Available = true
 	end
+	if self.Available == false then return end
+
+	if guildbank:updatePageAddresses() == false then
+		-- Unable to update at this moment
+		return
+	end
+
+	local page = math.floor((self.BagId-1)/100)+1
+	local pageslot = self.BagId - (page-1)*100
+	local baseAddress = guildbank.PageAddresses[page] + 0x10
+	self.Address = baseAddress + ( (pageslot - 1) * 68 );
 
 	CItem.update(self)
 

@@ -82,7 +82,7 @@ end
 
 local wpList = {};
 
-local playerPtr = memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+local playerPtr = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 player = CPlayer(playerPtr);
 player:update();
 
@@ -116,62 +116,70 @@ function saveWaypoints(list)
 	local str = sprintf("<waypoints%s>\n", p_wp_gtype);	-- create first tag
 	file:write(str);					-- write first tag
 
-	local hf_line, tag_open = "", false;
+	local hf_line, tag_open, line_num = "", false, 1;
 	for i,v in pairs(list) do
 		if( v.wp_type == "HP" ) then -- Harvest point
 			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_hp_type, p_harvest_command) .. closeformat;
+			hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_hp_type, p_harvest_command) .. closeformat;
+			line_num = line_num + 1
 			tag_open = false;
 		elseif( v.wp_type == "WP" ) then -- Waypoint
 			if( tag_open ) then hf_line = hf_line .. "\t" .. closeformat; end;
-			hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type, "");
+			hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type, "");
+			line_num = line_num + 1
 			tag_open = true;
 		elseif( v.wp_type == "MER" ) then -- Merchant
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_merchant_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_merchant_command, v.npc_name) ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		elseif( v.wp_type == "NPC" ) then -- Open NPC Dialog
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_targetNPC_command, string.gsub(v.npc_name, "\"", "\\\"")) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_targetNPC_command, v.npc_name) ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		elseif( v.wp_type == "CO" ) then -- Choice Option
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_choiceOption_command, v.co_num) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_choiceOption_command, v.co_num) ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		elseif( v.wp_type == "MC" ) then -- Mouse click (left)
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_mouseClickL_command, v.mx, v.my, v.wide, v.high) ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		elseif( v.wp_type == "COD" ) then -- Code
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. v.com .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. v.com ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		elseif( v.wp_type == "OBJ" ) then -- Target Object
 			if( tag_open ) then
 				hf_line = hf_line .. "\t\t" .. sprintf(p_targetObj_command, v.obj_name) .. "\n";
 			else
-				hf_line = hf_line .. sprintf(openformat, i, v.X, v.Z, v.Y, p_wp_type,
+				hf_line = hf_line .. sprintf(openformat, line_num, v.X, v.Z, v.Y, p_wp_type,
 				"\n\t\t" .. sprintf(p_targetObj_command, v.obj_name) ) .. "\n";
+				line_num = line_num + 1
 				tag_open = true;
 			end
 		end
@@ -236,47 +244,47 @@ function main()
 
 			hf_key_pressed = false;
 
-			if( keyPressed(wpKey) ) then	-- normal waypoint key pressed
+			if( keyPressedLocal(wpKey) ) then	-- normal waypoint key pressed
 				hf_key_pressed = true;
 				hf_key = "WP";
 			end;
-			if( keyPressed(harvKey) ) then	-- harvest waypoint key pressed
+			if( keyPressedLocal(harvKey) ) then	-- harvest waypoint key pressed
 				hf_key_pressed = true;
 				hf_key = "HP";
 			end;
-			if( keyPressed(saveKey) ) then	-- save key pressed
+			if( keyPressedLocal(saveKey) ) then	-- save key pressed
 				hf_key_pressed = true;
 				hf_key = "SAVE";
 			end;
-			if( keyPressed(merchantKey ) ) then	-- merchant NPC key pressed
+			if( keyPressedLocal(merchantKey ) ) then	-- merchant NPC key pressed
 				hf_key_pressed = true;
 				hf_key = "MER";
 			end;
-			if( keyPressed(targetNPCKey) ) then	-- target NPC key pressed
+			if( keyPressedLocal(targetNPCKey) ) then	-- target NPC key pressed
 				hf_key_pressed = true;
 				hf_key = "NPC";
 			end;
-			if( keyPressed(choiceOptionKey) ) then	-- choice option key pressed
+			if( keyPressedLocal(choiceOptionKey) ) then	-- choice option key pressed
 				hf_key_pressed = true;
 				hf_key = "CO";
 			end;
-			if( keyPressed(codeKey) ) then	-- choice option key pressed
+			if( keyPressedLocal(codeKey) ) then	-- choice option key pressed
 				hf_key_pressed = true;
 				hf_key = "COD";
 			end;
-			if( keyPressed(mouseClickKey) ) then	-- target MouseClick key pressed
+			if( keyPressedLocal(mouseClickKey) ) then	-- target MouseClick key pressed
 				hf_key_pressed = true;
 				hf_key = "MC";
 			end;
-			if( keyPressed(restartKey) ) then	-- restart key pressed
+			if( keyPressedLocal(restartKey) ) then	-- restart key pressed
 				hf_key_pressed = true;
 				hf_key = "RESTART";
 			end;
-			if( keyPressed(resetKey) ) then	-- reset key pressed
+			if( keyPressedLocal(resetKey) ) then	-- reset key pressed
 				hf_key_pressed = true;
 				hf_key = "RESET";
 			end;
-			if( keyPressed(targetObjKey) ) then	-- reset key pressed
+			if( keyPressedLocal(targetObjKey) ) then	-- reset key pressed
 				hf_key_pressed = true;
 				hf_key = "OBJ";
 			end;
@@ -300,8 +308,8 @@ function main()
 					break;
 				end;
 
-
-				player:update();
+				player.Address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+				player:updateXYZ();
 
 				local tmp = {}, hf_type;
 				tmp.X = player.X;
@@ -364,7 +372,7 @@ function main()
 					tmp.mx, tmp.my, tmp.wide, tmp.high )); -- Mouseclick
 				elseif( hf_key == "OBJ" ) then 	-- target object
 					tmp.wp_type = "OBJ";
-					local mouseObj = CObject(memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
+					local mouseObj = CObject(memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
 					tmp.obj_name = mouseObj.Name
 					hf_type = sprintf("target object %s", tmp.obj_name );
 					addMessage(sprintf(language[523],tmp.obj_name)); -- target object

@@ -6,6 +6,8 @@ WF_TARGET = 1; -- Failed waypoint because we have a target
 WF_DIST = 2;   -- Broke because our distance somehow increased. It happens.
 WF_STUCK = 3;  -- Failed waypoint because we are stuck on something.
 WF_COMBAT = 4; -- stopped waypoint because we are in combat
+WF_PULLBACK = 5; -- Failed because pulled back to before last waypoint
+
 
 ONLY_FRIENDLY = true;	-- only cast friendly spells HEAL / HOT / BUFF
 JUMP_FALSE = false		-- dont jump to break cast
@@ -23,11 +25,12 @@ CRAFT_WOODCUTTING = 7
 CRAFT_HERBALISM = 8
 
 local BreakFromFight = false
+local break_fight = false;	-- flag to avoid kill counts for breaked fights
 
 CPlayer = class(CPawn);
 
 function CPlayer.new()
-	local playerAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 	local np = CPlayer(playerAddress);
 	np:initialize();
 	np:update();
@@ -38,8 +41,8 @@ function CPlayer:update()
 	local addressChanged = false
 
 	-- Ensure that our address hasn't changed. If it has, fix it.
-	local tmpAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
-	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
+	local tmpAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+	if( tmpAddress ~= self.Address and tmpAddress ~= 0 and tmpAddress ~= nil) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
 		addressChanged = true
@@ -48,13 +51,15 @@ function CPlayer:update()
 		end
 	end;
 
+	local oldClass1 = self.Class1
+	local oldClass2 = self.Class2
 	CPawn.update(self); -- run base function
 
-	if addressChanged or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
+	if addressChanged or self.Class1 ~= oldClass1 or self.Class2 ~= oldClass2 or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
 		settings.loadSkillSet(self.Class1)
 		-- Reset editbox false flag on start up
 		if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-			RoMScript("GetKeyboardFocus():ClearFocus()")
+			RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 		end
 		addressChanged = false
 	end
@@ -79,31 +84,11 @@ function CPlayer:update()
 	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
 	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
 
-	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
-
-	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
-
-	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
-	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
-
-	self.ActualSpeed = memoryReadFloatPtr(getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
-	self.Moving = (self.ActualSpeed > 0)
-
-	local tmp = self:getBuff(503827)
-	if tmp then -- has natures power
-		self.Nature = tmp.Level + 1
-	else
-		self.Nature = 0
-	end
-
-	-- remember aggro start time, used for timed ranged pull
-	if( self.Battling == true ) then
-		if(self.aggro_start_time == 0) then
-			self.aggro_start_time = os.time();
-		end
-	else
-		self.aggro_start_time = 0;
-	end
+	self:updateCasting()
+	self:updateBattling()
+	self:updateStance() -- Also updates Stance2
+	self:updateActualSpeed() -- Also updates Moving
+	self:updateNature()
 
 	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
 		error("Error reading memory in CPlayer:update()");
@@ -118,8 +103,11 @@ function CPlayer:update()
 			self.Pet:update();
 		end
 	end
+	self:updatePsi()
+	self:updateLastHitTime()
+	self:updateGlobalCooldown()
 
-	-- Update our exp gain
+	--[[ Update our exp gain
 	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
 		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
 		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
@@ -167,7 +155,77 @@ function CPlayer:update()
 				self.TimeTillLevel = 9999;
 			end
 		end
+	end]]
+end
+
+function CPlayer:exists()
+	local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+	if address then
+		local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
+		if id and id >= 1000 and 1004 >= id then
+			return true
+		else
+			return false
+		end
 	end
+end
+
+function CPlayer:checkAddress()
+	local tmpAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
+		self:update()
+	end
+end
+
+function CPlayer:updateCasting()
+	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
+end
+
+function CPlayer:updateBattling()
+	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
+
+	-- remember aggro start time, used for timed ranged pull
+	if( self.Battling == true ) then
+		if(self.aggro_start_time == 0) then
+			self.aggro_start_time = os.time();
+		end
+	else
+		self.aggro_start_time = 0;
+	end
+end
+
+function CPlayer:updateStance()
+	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
+	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
+end
+
+function CPlayer:updateActualSpeed()
+	self.ActualSpeed = memoryReadFloatPtr(getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
+	self.Moving = (self.ActualSpeed > 0)
+end
+
+function CPlayer:updateNature()
+	local tmp = self:getBuff(503827)
+	if tmp then -- has natures power
+		self.Nature = tmp.Level + 1
+	else
+		self.Nature = 0
+	end
+end
+
+function CPlayer:updatePsi()
+	self.Psi = memoryReadRepeat("uint",getProc(), addresses.psi)
+end
+
+function CPlayer:updateLastHitTime()
+	self.LastHitTime = memoryReadRepeat("int", getProc(), addresses.charLastHitTime)/1000
+	if self.LastHitTime < self.fightStartTime then
+		self.LastHitTime = self.fightStartTime
+	end
+end
+
+function CPlayer:updateGlobalCooldown()
+	self.GlobalCooldown = memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase)/10
 end
 
 -- Inserts a skill at the end of the queue.
@@ -221,6 +279,7 @@ end
 
 function CPlayer:harvest(_id, _second_try)
 	local function findNearestHarvestable(_id, ignore)
+		self:updateXYZ()
 		ignore = ignore or 0;
 		local closestHarvestable = nil;
 		local obj = nil;
@@ -282,10 +341,11 @@ function CPlayer:harvest(_id, _second_try)
 		return false;
 	end
 
-	yrest(200); -- Make sure we come to a stop before attempting to harvest.
+	-- Make sure we come to a stop before attempting to harvest.
+	self:waitTillStopMoving()
+
 	local lastHarvestedNodeAddr = nil;
 	while(true) do
-		self:update();
 		closestHarvestable = findNearestHarvestable(_id, lastHarvestedNodeAddr);
 		if( closestHarvestable == nil ) then
 			printf(language[79]);
@@ -344,14 +404,16 @@ function CPlayer:harvest(_id, _second_try)
 
 		yrest(500);
 
-		self:update();
+		self:updateBattling();
+		self:updateHarvesting();
 		local timeStart = getTime();
 		local skip = false;
 		while( not self.Harvesting ) do
 			-- Wait to start harvesting
 			yrest(100);
-			self:update();
-			if( self.Battling ) then
+			self:updateBattling();
+			self:updateHarvesting();
+			if( self.Battling ) and self:findEnemy(true,nil,evalTargetDefault) then
 				printf(language[78]);
 				skip = true;
 				break;
@@ -364,12 +426,14 @@ function CPlayer:harvest(_id, _second_try)
 				break;
 			end
 		end
-		self:update();
+		self:updateBattling();
+		self:updateHarvesting();
 		timeStart = getTime();
 		while( self.Harvesting and skip == false ) do
 			yrest(100);
-			self:update();
-			if( self.Battling ) then
+			self:updateBattling();
+			self:updateHarvesting();
+			if( self.Battling and self:findEnemy(true,nil,evalTargetDefault) ) then
 				printf(language[78]);
 				break;
 			end
@@ -385,24 +449,40 @@ function CPlayer:harvest(_id, _second_try)
 			end
 		end
 
-		self:update();
-		if( not self.Battling ) then
-			lastHarvestedNodeAddr = closestHarvestable.Address;
-		else
-			while( self.Battling ) do
-				local enemy = self:findEnemy(true, nil, nil, nil)
-				self:target(enemy);
-				self:update();
-				if( self:haveTarget() ) then
-					self:fight();
-				end
+		self:updateBattling();
+		local interrupted = false
+		while( self.Battling ) do
+			if self:target(self:findEnemy(true,nil,evalTargetDefault0)) then
+				interrupted = true
+				self:fight();
+			else
+				break
 			end
+		end
+
+		if not interrupted then
+			lastHarvestedNodeAddr = closestHarvestable.Address;
 		end
 	end
 end
 
 -- Returns nil if nothing found, otherwise returns a pawn
 function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
+	-- If aggroonly, check to see if you have already started attacking current target
+	if aggroOnly then
+		if self:haveTarget() then
+			local target = CPawn.new(self.TargetPtr)
+			target:updateLastDamage()
+			if target.TargetPtr == self.Address or
+			target:targetIsFriend() or
+			target.LastDamage > 0 then
+				return target
+			end
+		end
+	end
+
+	-- Otherwise look for target
+	self:updateXYZ()
 	ignore = ignore or 0;
 	local aggroOnly = aggroOnly or false;
 	local bestEnemy = nil;
@@ -418,7 +498,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	-- The 'max' values that each scoring sub-part uses
 	local SCORE_DISTANCE = 60;      -- closer = more score; actually score will usually be less than half
 	local SCORE_AGGRESSIVE = 80;    -- aggressive = score
-	local SCORE_ATTACKING = 100;    -- attacking = score
+	local SCORE_ATTACKING = 200;    -- attacking = score
 	local SCORE_HEALTHPERCENT = 75; -- lower health = more score
 
 	for i = 0,objectList:size() do
@@ -427,28 +507,32 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset) or 0;
 			if not bitAnd(inp,0x4000000) then -- Invisible/attackable?
 				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
-					local dist = distance(self.X, self.Z, obj.X, obj.Z);
-					local pawn = CPawn(obj.Address);
-					local _target = pawn:getTarget();
+					local dist = distance(self.X, self.Z, obj.X, obj.Z)
+					if dist < settings.profile.options.MAX_TARGET_DIST then
 
-					if( evalFunc(pawn.Address, pawn) == true ) then
-						if( distance(self.X, self.Z, pawn.X, pawn.Z ) < settings.profile.options.MAX_TARGET_DIST and
-						(( (pawn.TargetPtr == self.Address or (pawn.TargetPtr == self.PetPtr and self.PetPtr ~= 0) or _target.InParty == true ) and
-						aggroOnly == true) or aggroOnly == false) ) then
-							local currentScore = 0;
-							currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
-							currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
-							if( pawn.TargetPtr == self.Address ) then currentScore = currentScore + SCORE_ATTACKING; end;
-							if( pawn.Aggressive ) then
-								currentScore = currentScore + SCORE_AGGRESSIVE;
-							end;
-							if _target.InParty == true  then currentScore = currentScore + 5000 end
-							if( bestEnemy == nil ) then
-								bestEnemy = obj;
-								bestScore = currentScore;
-							elseif( currentScore > bestScore ) then
-								bestEnemy = obj;
-								bestScore = currentScore;
+						local pawn = CPawn.new(obj.Address);
+						pawn:updateTargetPtr()
+
+						if( evalFunc(pawn.Address, pawn) == true ) then
+							pawn:updateXYZ()
+							pawn:updateInParty()
+							if ((pawn.TargetPtr == self.Address or pawn:targetIsFriend()) and
+							aggroOnly == true) or aggroOnly == false then
+								local currentScore = 0;
+								pawn:updateHP()
+								currentScore = currentScore + ( (settings.profile.options.MAX_TARGET_DIST - dist) / settings.profile.options.MAX_TARGET_DIST * SCORE_DISTANCE );
+								currentScore = currentScore + ( (pawn.MaxHP - pawn.HP) / pawn.MaxHP * SCORE_HEALTHPERCENT );
+								if( pawn.TargetPtr == self.Address or pawn:targetIsFriend() ) then currentScore = currentScore + SCORE_ATTACKING; end;
+								if( pawn.Aggressive ) then
+									currentScore = currentScore + SCORE_AGGRESSIVE;
+								end;
+								if( bestEnemy == nil ) then
+									bestEnemy = obj;
+									bestScore = currentScore;
+								elseif( currentScore > bestScore ) then
+									bestEnemy = obj;
+									bestScore = currentScore;
+								end
 							end
 						end
 					end
@@ -472,231 +556,29 @@ function CPlayer:target(pawnOrAddress)
 		address = pawnOrAddress.Address;
 	end
 
-	if( address == nil ) then return; end;
+	if( address == nil ) then return false; end;
 
 	local addressId = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset) or 0;
 
 	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
 		self.TargetPtr = 0
-		return
+		return false
 	end
 
 	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 	self.TargetPtr = address
+
+	return true
 end
-
---[[
-function CPlayer:harvest( _id, _second_try )
-	if( foregroundWindow() ~= getWin() ) then
-		cprintf(cli.yellow, language[94]);
-		return;
-	end
-
-	local function scan()
-		local mousePawn;
-		-- Screen dimension variables
-		local wx, wy, ww, wh = windowRect(getWin());
-		local halfWidth = ww/2;
-		local halfHeight = wh/2;
-
-		-- Scan rect variables
-		local scanWidth = settings.profile.options.HARVEST_SCAN_WIDTH; -- Width, in 'steps', of the area to scan
-		local scanHeight = settings.profile.options.HARVEST_SCAN_HEIGHT; -- Height, in 'steps', of area to scan
-		local scanXMultiplier = settings.profile.options.HARVEST_SCAN_XMULTIPLIER;	-- multiplier for scan width
-		local scanYMultiplier = settings.profile.options.HARVEST_SCAN_YMULTIPLIER;	-- multiplier for scan line height
-		local scanStepSize = settings.profile.options.HARVEST_SCAN_STEPSIZE; -- Distance, in pixels, between 'steps'
-		local scan_yrest = settings.profile.options.HARVEST_SCAN_YREST;	-- yrest between mouse movements
-
-		-- readaption stepsize to games client size
-		-- node width at 975 screen width is about 66 (for moxa)
-		scanStepSize = scanStepSize * ww / 1024;
-		if (settings.profile.options.DEBUG_HARVEST) then
-			cprintf(cli.yellow, "Your original stepsize is %d for 1024 screen width. We recalutate it to %d by %d screen width.\n",
-			  settings.profile.options.HARVEST_SCAN_STEPSIZE, scanStepSize, ww);
-			scan_yrest = scan_yrest + 200;
-			cprintf(cli.yellow, "Your rest between scan movements: %d ms, we add 200 ms for debugging resons.\n",
-			  settings.profile.options.HARVEST_SCAN_YREST);
-		end
-
-		local mx, my; -- Mouse x/y temp values
-
-		mouseSet(wx + (halfWidth*scanXMultiplier - (scanWidth/2*scanStepSize)),
-		wy  + (halfHeight*scanYMultiplier - (scanHeight/2*scanStepSize)));
-		yrest(100);
-
-		local scanstart, scanende, scanstep;
-		-- define scan direction top/down  or   bottom/up
-		if( settings.profile.options.HARVEST_SCAN_TOPDOWN == true ) then
-			scanstart = 0;
-			scanende = scanHeight-1;
-			scanstep = 1;
-		else
-			scanstart = scanHeight;
-			scanende = 0;
-			scanstep = -1;
-		end;
-
-		-- Scan nearby area for a node
-		keyboardHold(key.VK_SHIFT);	-- press shift so you can scan trough players
-		for y = scanstart, scanende, scanstep do
-			my = math.ceil(halfHeight * scanYMultiplier * settings.profile.options.HARVEST_SCAN_YMOVE
-			               - (scanHeight / 2 * scanStepSize) + ( y * scanStepSize ));
-
-			for x = 0,scanWidth-1 do
-				mx = math.ceil(halfWidth * scanXMultiplier - (scanWidth / 2 * scanStepSize) + ( x * scanStepSize ));
-				if (settings.profile.options.DEBUG_HARVEST) then
-					cprintf(cli.yellow, " %d.%d", wx + mx, wy + my);
-				end
-				mouseSet(wx + mx, wy + my);
-				yrest(scan_yrest);
-				mousePawn = CPawn(memoryReadIntPtr(getProc(),
-				addresses.staticbase_char, addresses.mousePtr_offset));
-
-				-- list found ids if id "test" was given
-				if( mousePawn.Address ~= 0
-					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
-					and _id == "test" ) then
-					cprintf(cli.yellow, "Object found id %d %s\n", mousePawn.Id, mousePawn.Name);
-				end
-
-				-- id was given, return them if found
-				if( mousePawn.Address ~= 0
-					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
-					and _id == mousePawn.Id ) then
-					return mousePawn.Address, mx, my, mousePawn.Id;
-				end
-
-				-- normal harvesting
-				if( mousePawn.Address ~= 0 and mousePawn.Type == PT_NODE
-					and distance(self.X, self.Z, mousePawn.X, mousePawn.Z) < 150
-					and database.nodes[mousePawn.Id] ) then
-					return mousePawn.Address, mx, my, mousePawn.Id;
-				end
-			end
-			if (settings.profile.options.DEBUG_HARVEST) then
-				printf("\n");
-			end
-		end
-		keyboardRelease(key.VK_SHIFT);
-
-
-		return 0, nil, nil, 0;
-	end
-
-
-	detach(); -- Remove attach bindings
-	local mouseOrigX, mouseOrigY = mouseGetPos();
-	local foundHarvestNode, nodeMouseX, nodeMouseY, hf_node_id = scan();
-	local hf_found = false;
-	local startHarvestTime = os.time();
-
-	if( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) then
-
-		-- If out of distance, move and rescan
-		local mousePawn = CPawn(foundHarvestNode);
-		local dist = distance(self.X, self.Z, mousePawn.X, mousePawn.Z)
-
-		-- We found something. Lets harvest it.
-		hf_found = true;
-		cprintf(cli.green, language[95], mousePawn.Name);		-- we found ...
-
-		if( dist > 35 and dist < 150 ) then
-			printf(language[80]);		-- Move in
-			self:moveTo( CWaypoint(mousePawn.X, mousePawn.Z), true );
-			yrest(200);
-			foundHarvestNode, nodeMouseX, nodeMouseY = scan();
-		end
-
-		while( foundHarvestNode ~= 0 and nodeMouseX and nodeMouseY ) do
-
-			self:update();
-
-			if( self.Battling ) then	-- we get aggro, stop harvesting
-				keyboardRelease(key.VK_SHIFT);
-				if( self.Returning ) then	-- set wp one back to harverst wp
-					__RPL:backward();	-- again after the fight
-				else
-					__WPL:backward();
-				end;
-				break;
-			end;
-
-			if( os.difftime(os.time(), startHarvestTime) > settings.profile.options.HARVEST_TIME ) then
-				break;
-			end
-
-			local wx,wy = windowRect(getWin());
-			--mouseSet(wx + nodeMouseX, wy + nodeMouseY);
-			mouseSet(wx + nodeMouseX, wy + nodeMouseY);
-			yrest(50);
-			mousePawn = CPawn(memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
-			yrest(50);
-
-			if( mousePawn.Address ~= 0 and mousePawn.Id == hf_node_id ) then
-				-- Node/Object is still here
-
-				-- Begin gathering
-				keyboardHold(key.VK_SHIFT);
-				mouseLClick();
-				yrest(100);
-				mouseLClick();
-				keyboardRelease(key.VK_SHIFT);
-
-				-- Wait for a few seconds... constantly check for aggro
-				local startWaitTime = os.time();
-				while( os.difftime(os.time(), startWaitTime) < 2 ) do
-
---					yrest(100);
-					inventory:updateSlotsByTime(100);	-- use time to update inventory
-
-					self:update();
-
-					-- Make sure it didn't disapear
-					mousePawn = CPawn(memoryReadIntPtr(getProc(),
-					addresses.staticbase_char, addresses.mousePtr_offset));
-
-					if( mousePawn.Address == 0 ) then
-						break;
-					end;
-
-					if( self.Battling ) then
-						break;
-					end
-				end
-
-				self:update();
-
-			else
-				-- Node/Object is gone
-				break;
-			end
-		end
-	end
-
-	mouseSet(mouseOrigX, mouseOrigY);
-	attach(getWin()); -- Re-attach bindings
-
-	-- sometimes harvesting breaks at begin after found, because camera is still
-	-- moving, in that case, wait a little and harvest again
-	if( hf_found == true   and
-	    not _second_try    and 			-- only one extra harverst try
-	    os.difftime(os.time(), startHarvestTime) < 5 ) then
-		cprintf(cli.green, language[81]);		-- Unexpected interruption at harvesting begin
-			yrest(5000);
-		self:harvest( _id, true );
-	end
-
-end
-]]
 
 function CPlayer:initialize()
 	memoryWriteInt(getProc(), self.Address + addresses.pawnCasting_offset, 0);
 end
 
--- Resets "toggled" skills to off & used counter to 0
+-- Resets "toggled" combat skills to off & used counter to 0
 function CPlayer:resetSkills()
 	for i,v in pairs(settings.profile.skills) do
-		if( v.Toggled ) then
+		if v.Toggled and (v.Type == STYPE_DAMAGE or v.Type ==STYPE_DOT) then
 			v.Toggled = false;
 		end
 		if( v.used ) then
@@ -716,7 +598,8 @@ function CPlayer:resetSkillLastCastTime()
 end
 
 local function RestWhileCheckingForWaypoint(_duration)
-	if #__WPL.Waypoints > 0 and player.Moving then
+	player:updateActualSpeed()
+	if #__WPL.Waypoints > 0 and player.Moving and not player.Fighting then
 		-- rest for _duration but if moving stop when reaching waypoint
 		local starttime = os.clock()
 		local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
@@ -724,16 +607,228 @@ local function RestWhileCheckingForWaypoint(_duration)
 		repeat
 			startdist = lastdist
 			yrest(10)
-			player:update()
+			player:updateXYZ()
 			lastdist = distance(player.X, player.Z, curWP.X, curWP.Z)
-		until (os.clock() - starttime) > _duration/1000 or
-					 (lastdist < 10 or lastdist > startdist) -- and wp reached or moving away
+			if (lastdist < 10 or lastdist > startdist) then -- and wp reached or moving away
+				return false
+			end
+		until (os.clock() - starttime) > _duration/1000
 	else
 		yrest(_duration)
+	end
+	return true
+end
+
+-- Make sure you face the target
+local function faceTarget()
+
+	if player.Cast_to_target == 0 or
+		player.LastSkill.CastTime == 0 or
+		player.LastSkill.ClickToCast ~= true then
+
+		player:updateTargetPtr()
+		local target = CPawn.new(player.TargetPtr)
+		target:updateType()
+		if not target:exists() or target.Type ~= PT_MONSTER then return end
+
+		target:updateXYZ()
+		if( settings.profile.options.QUICK_TURN ) then
+			local angle = math.atan2(target.Z - player.Z, target.X - player.X);
+			local yangle = math.atan2(target.Y - player.Y, ((target.X - player.X)^2 + (target.Z - player.Z)^2)^.5 );
+			player:faceDirection(angle, yangle);
+
+			camera:setRotation(angle);
+		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
+			-- Make sure we're facing the enemy
+			local angle = math.atan2(target.Z - player.Z, target.X - player.X);
+			local yangle = math.atan2(target.Y - player.Y, ((target.X - player.X)^2 + (target.Z - player.Z)^2)^.5 );
+			player:faceDirection(player.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
+			local angleDif = angleDifference(angle, player.Direction);
+			local correctingAngle = false;
+			local startTime = os.time();
+
+			while( angleDif > math.rad(15) ) do
+				if( player.HP < 1 or player.Alive == false ) then
+					player.Fighting = false;
+					return;
+				end;
+
+				if( os.difftime(os.time(), startTime) > 5 ) then
+					printf(language[26]);
+					break;
+				end;
+
+				correctingAngle = true;
+				if( angleDifference(angle, player.Direction + 0.01) < angleDif ) then
+					-- rotate left
+					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
+				else
+					-- rotate right
+					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
+				end
+
+				yrest(100);
+				player:updateDirection();
+				target:updateXYZ();
+				angle = math.atan2(target.Z - player.Z, target.X - player.X);
+				angleDif = angleDifference(angle, player.Direction);
+			end
+
+			if( correctingAngle ) then
+				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
+				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			end
+
+		end
 	end
 end
 
 function CPlayer:cast(skill)
+	local last_globalcooldown
+	-- Waits till casting or GCD ends minus SKILL_USE_PRIOR. Assumes if both then GDC follows casting
+	local function waitTillCastingEnds()
+		local prior = getSkillUsePrior();
+		self:updateCasting()
+		while(self.Casting) do
+			-- break cast with jump if aggro before casting finished
+			if( self:check_aggro_before_cast(JUMP_TRUE, self.LastSkill.Type)) then	--  with jump
+				printf(language[82]);	-- close print 'Casting ..."
+				return;
+			end;
+
+			-- break if target is dead
+			if( self.LastSkill.Type == STYPE_DAMAGE or
+				self.LastSkill.Type == STYPE_DOT ) and
+				not self:haveTarget() then
+				return;
+			end
+
+			-- Waiting for casting to finish...
+			yrest(10);
+			self:updateCasting();
+
+			faceTarget()
+
+			-- leave before Casting flag is gone, so we can cast faster, but only if skill doesn't trigger global cooldown
+			if self.LastSkill.GlobalCooldown ~= true then
+				if self:getRemainingCastTime() <= prior/1000 then
+					-- end of waiting
+					break;
+				end
+			end
+		end
+		if skill.Cooldown > 0 then
+			while skill:getRemainingCooldown() > prior/1000 do
+				-- Waiting for cooldown to finish...
+				yrest(10)
+			end
+		end
+		if (self.LastSkill.CastTime and self.LastSkill.CastTime > 0) or
+				(self.LastSkill.Mana == 0 and self.LastSkill.Rage == 0 and self.LastSkill.Energy == 0 and self.LastSkill.Focus == 0) then
+
+			self:updateGlobalCooldown()
+			while self.GlobalCooldown > prior/1000 do
+				-- Waiting for global cooldown to finish...
+				yrest(10)
+				self:updateGlobalCooldown();
+			end
+		end
+	end
+
+	-- If during last moments of cast or GCD, wait will ends
+	local function waitTillPriorEnds()
+		local prior = getSkillUsePrior();
+		self:updateCasting()
+		self:updateGlobalCooldown()
+		if self.Casting and self:getRemainingCastTime() <= prior/1000 then
+			repeat
+				yrest(10)
+				self:updateCasting()
+			until not self.Casting or self:getRemainingCastTime() > prior/1000
+		elseif skill.Cooldown > 0 and skill:getRemainingCooldown() <= prior/1000 then
+			local remainingCooldown
+			repeat
+				yrest(10)
+				remainingCooldown = skill:getRemainingCooldown()
+			until remainingCooldown == 0 or remainingCooldown > prior/1000
+		elseif self.GlobalCooldown > 0 and self.GlobalCooldown < last_globalcooldown then
+			-- Wait until global cooldown is 0 or jumps to the next skill
+			repeat
+				yrest(10)
+				self:updateGlobalCooldown();
+			until self.GlobalCooldown == 0 or self.GlobalCooldown > last_globalcooldown
+		end
+	end
+
+	-- Wait for casting or GCD to start
+	local function waitTillCastingStarts()
+		local startTime = getTime();
+		self:updateCasting();
+		if( skill.CastTime > 0 ) then
+			while( not self.Casting ) do -- wait for casting to start
+				-- break cast with jump if aggro before casting finished
+				if self:check_aggro_before_cast(JUMP_TRUE, skill.Type) then	-- with jump
+					printf(language[82]);	-- close print 'Casting ..." / aborted
+					return false
+				end;
+
+				yrest(50);
+				self:updateCasting();
+				if( deltaTime(getTime(), startTime) > 1500 ) then -- Assume failed to caste after 1.5 sec
+					printf(language[180]);	-- close print 'Casting ..." / aborted
+					if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
+						self.failed_casts_in_a_row = self.failed_casts_in_a_row + 1
+					end
+					return false
+				end
+			end;
+		elseif skill.Cooldown > 0 then
+			while skill:getRemainingCooldown() == 0 do
+				if not skill.Toggleable then
+					if(skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil ) then
+						SlashCommand("/script CastSpellByName(\""..GetIdName(skill.Id).."\");");
+					else
+						keyboardPress(skill.hotkey, skill.modifier);
+					end
+				end
+				if RestWhileCheckingForWaypoint(300) == false then break end -- break to head to new wp
+				if( deltaTime(getTime(), startTime) > 1500 ) then -- Assume failed to caste after .7 sec
+					printf(language[180]);	-- close print 'Casting ..." / aborted
+					if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
+						self.failed_casts_in_a_row = self.failed_casts_in_a_row + 1
+					end
+					return false
+				end
+			end;
+			local remaining = skill:getRemainingCooldown()
+			if remaining > 0 then
+				skill.LastCastTime = getTime()
+				skill.LastCastTime.low = skill.LastCastTime.low +remaining*1000 * bot.GetTimeFrequency
+			end
+		elseif skill.GlobalCooldown ~= false then -- Wait for global cooldown to start
+			self:updateGlobalCooldown()
+			while self.GlobalCooldown == 0 do -- wait for casting to start
+				if RestWhileCheckingForWaypoint(50) == false then break end -- break to head to new wp
+				self:updateGlobalCooldown();
+				if( deltaTime(getTime(), startTime) > 1000 ) then -- Assume failed to caste after .7 sec
+					printf(language[180]);	-- close print 'Casting ..." / aborted
+					if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
+						self.failed_casts_in_a_row = self.failed_casts_in_a_row + 1
+					end
+					return false
+				end
+			end;
+		end
+		skill.LastCastTime = getTime()
+		local left,casttime = self:getRemainingCastTime()
+		skill.LastCastTime.low = skill.LastCastTime.low + casttime*1000 * bot.GetTimeFrequency;
+		if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
+			self.failed_casts_in_a_row = 0
+		end
+	end
+
 	-- If given a string, look it up.
 	-- If given a skill object, use it natively.
 	if( type(skill) == "string" ) then
@@ -749,6 +844,11 @@ function CPlayer:cast(skill)
 			  "(e.g. in the events or waypoint files). Be sure the skill is in the "..
 			  "skills section of your profile.\n", skill);
 		end
+	end
+
+	-- Still on cooldown
+	if skill.Cooldown > 0 and skill:getRemainingCooldown() > 1 then
+		return
 	end
 
 	local hf_temp;
@@ -774,75 +874,86 @@ function CPlayer:cast(skill)
 	end
 
 	if(continue == true) then
-		if self.Casting then self:waitTillCastingEnds() end -- Wait for previous cast to end minus undercut
-		while skill.CastTime == 0 and self.Casting do  -- fixes instant cast after timed cast timing problem, waits till finished
-			self:update(); yrest(50);
+		-- Wait for previous cast or GCD to end minus undercut.
+		waitTillCastingEnds()
+
+		-- break if target is dead
+		if( skill.Type == STYPE_DAMAGE or
+			skill.Type == STYPE_DOT ) and
+			not self:haveTarget() and skill.AOECenter ~= SAOE_PLAYER then
+			return;
 		end
-		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));	-- first part of 'casting ...'
+
+		-- fixes instant cast after timed cast timing problem, waits till finished
+		while skill.CastTime == 0 and self.Casting do
+			self:updateCasting(); yrest(10);
+		end
+
+		-- first part of 'casting ...'
+		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));
+
+		faceTarget()
+
+		self:updateGlobalCooldown()
+		last_globalcooldown = self.GlobalCooldown
+		self:updateMP()
+		local oldMana, oldRage, oldEnergy, oldFocus = self.Mana, self.Rage, self.Energy, self.Focus
 		skill:use();
-		local startTime = getTime();
-		-- yrest(100);
-		self:update();
 
-		-- Wait for casting to start (if it has a decent cast time)
-		if( skill.CastTime > 0 ) then
-			-- wait for previous cast to finish. >PRIOR assume missed it
-			local prior = getSkillUsePrior();
-
-			while (self.Casting) and (deltaTime(getTime(),startTime) < prior) do
-				self:update(); yrest(10);
-			end
-	--		local startTime = os.time();
-			startTime = getTime();
-			while( not self.Casting ) do -- wait for casting to start
-				-- break cast with jump if aggro before casting finished
-				if( self:check_aggro_before_cast(JUMP_TRUE, skill.Type) and
-				   ( skill.Type == STYPE_DAMAGE or
-					 skill.Type == STYPE_DOT ) ) then	-- with jump
-					printf(language[82]);	-- close print 'Casting ..." / aborted
-					return;
-				end;
-				yrest(50);
-				self:update();
-	--			if( os.difftime(os.time(), startTime) > skill.CastTime ) then
-				if( deltaTime(getTime(), startTime) > 1500 ) then -- Assume failed to caste after 1.5 sec
-					printf(language[180]);	-- close print 'Casting ..." / aborted
-					return;
-				end
-			end;
-
-			self.LastSkillStartTime=getTime() -- now that casting = true reset starttime to now
-		else
-			RestWhileCheckingForWaypoint(700); -- assume .7 second yrest
-		end
-
-		-- count cast to enemy targets
+		-- count attempted cast to enemy targets
 		if( skill.Target == STARGET_ENEMY ) then	-- target is unfriendly
 			self.Cast_to_target = self.Cast_to_target + 1;
 		end;
 
-	-- ??? why wait?
-	-- we have above a 500 wait if no CastTime or the self.Casting flag
-	--	if( skill.CastTime == 0 ) then
-	--		yrest(500);
-	--	else
-	--		yrest(100);
-	--	end;
+		-- Bypass the rest as Warden Summon is alread completed
+		if self.Class1 == CLASS_WARDEN and skill.Type == STYPE_SUMMON then
+			return
+		end
+
+		-- wait for previous cast or GCD to finish if last moments of casting.
+		waitTillPriorEnds()
+
+		-- Wait for casting or GCD to start
+		if waitTillCastingStarts() == false then -- failed to cast/aborted
+			return
+		end
+
+		if( skill.Toggleable ) then
+			skill.Toggled = true;
+		end
+
+		-- Wait until energy use in memory updates. Only for instants
+		if skill.CastTime == 0 then
+			if skill.GlobalCooldown ~= false then
+				local mpstart = getTime()
+				repeat
+					yrest(10)
+					player:updateMP()
+					if skill.Mana > 0 then
+						if self.Mana < oldMana then break end
+					elseif skill.Rage > 0 then
+						if self.Rage < oldRage then break end
+					elseif skill.Energy > 0 then
+						if self.Energy < oldEnergy then break end
+					elseif skill.Focus > 0 then
+						if self.Focus < oldFocus then break end
+					else
+						break
+					end
+				until deltaTime(getTime(),mpstart) > 700
+			end
+		end
 
 		-- print HP of our target
 		-- we do it later, because the client needs some time to change the values
-		 local target = self:getTarget();
-		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
-
-		-- the check was only done after every complete skill round
-		-- hence the message is not really needed anymore
-		-- we move the check INTO the skill round to be more accurate
-		-- by the max_fight_time option could be reduced
-		if( target.HP ~= lastTargetHP ) then
-			self.lastHitTime = os.time();
-			lastTargetHP = target.HP;
-	--				printf(language[23]);		-- target HP changed
+		local target = CPawn.new(self.TargetPtr);
+		if target:exists() then
+			target:updateName()
+			target:updateHP()
 		end
+
+		target:updateHP()
+		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
 
 		if( type(settings.profile.events.onSkillCast) == "function" ) then
 			arg1 = skill;
@@ -859,30 +970,29 @@ function CPlayer:cast(skill)
 	else
 		continue = true;
 	end
+
 end
 
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
-	self:update();
-	--=== don't cast any skills if mounted ===--
 	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
 
-	local target = target or self:getTarget();
-	if ( target ~= nil and _only_friendly ~= true ) then
-			target:update();
+	local target = target or CPawn.new(self.TargetPtr);
+	if ( target ~= nil and target:exists() and _only_friendly ~= true ) then
+		target:updateLastDamage()
 	end
 
 	local useQueue = true;
 	if( #self.SkillQueue > 0 ) then
 		-- Queue is not empty. See if we can cast anything
 		local skill = self:getNextQueuedSkill();
-		local target = self:getTarget();
 		if( skill.Blocking ) then
 			if( skill:canUse(false, target) ) then
-				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
-					target.HP == target.MaxHP ) then
+				self:updateCasting()
+				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
+					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
 					printf(language[83]);			-- Taking too long to damage target
 					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
 					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
@@ -893,7 +1003,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 					   yrest(1000);
 					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-					   self:update();
+					   self:updateXYZ();
 					end
 
 					break_fight = true;
@@ -901,7 +1011,8 @@ function CPlayer:checkSkills(_only_friendly, target)
 
 				if( skill.CastTime > 0 ) then
 					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-					yrest(200); -- Wait to stop only if not an instant cast spell
+					 -- Wait to stop only if not an instant cast spell
+					self:waitTillStopMoving()
 				end
 
 				self:cast(skill);
@@ -912,8 +1023,9 @@ function CPlayer:checkSkills(_only_friendly, target)
 			end
 		else
 			if( skill:canUse(false, target) ) then
-				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
-					target.HP == target.MaxHP ) then
+				self:updateCasting()
+				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
+					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
 					printf(language[83]);			-- Taking too long to damage target
 					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
 					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
@@ -924,7 +1036,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 					   yrest(1000);
 					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-					   self:update();
+					   self:updateXYZ();
 					end
 
 					break_fight = true;
@@ -932,7 +1044,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 
 				if( skill.CastTime > 0 ) then
 					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-					yrest(200); -- Wait to stop only if not an instant cast spell
+					self:waitTillStopMoving(); -- Wait to stop only if not an instant cast spell
 				end
 
 				self:cast(skill);
@@ -952,7 +1064,9 @@ function CPlayer:checkSkills(_only_friendly, target)
 		local attack_skill_used = false -- Used for priority casting
 		for i,v in pairs(settings.profile.skills) do
 			if( v.AutoUse and v:canUse(_only_friendly, target) ) and
-			  (settings.profile.options.PRIORITY_CASTING ~= true or attack_skill_used == false) then
+			  (settings.profile.options.PRIORITY_CASTING ~= true or attack_skill_used == false or (v.Type ~= STYPE_DAMAGE and v.Type ~= STYPE_DOT)) then
+				self:updateActualSpeed()
+				self:updateXYZ()
 				-- break if just checking buff, moving and reached WP. So it can turn
 				if _only_friendly and #__WPL.Waypoints > 0 and self.Moving then
 					local curWP = __WPL.Waypoints[__WPL.CurrentWaypoint]
@@ -971,27 +1085,32 @@ function CPlayer:checkSkills(_only_friendly, target)
 				self:checkPotions();
 
 				-- Short time break target: after x casts without damaging
-				local target = self:getTarget();
-				if( self.Cast_to_target > settings.profile.options.MAX_SKILLUSE_NODMG  and
-					target.HP == target.MaxHP ) then
+				self:updateTargetPtr()
+				local target = CPawn.new(self.TargetPtr)
+				target:updateLastDamage()
+				self:updateCasting()
+				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
+					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
 					printf(language[83]);			-- Taking too long to damage target
 					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
 					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
 					self:clearTarget();
 
+					self:updateBattling()
 					if( self.Battling ) then
 						yrest(1000);
-					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-					   yrest(1000);
-					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-					   self:update();
+						keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+						yrest(1000);
+						keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+						yrest(1000)
+						self:updateXYZ();
 					end
 
 					break_fight = true;
 					break;
 				end
 
-				if settings.profile.options.PRIORITY_CASTING ~= true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
+				if settings.profile.options.PRIORITY_CASTING == true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
 					attack_skill_used = true
 				end
 
@@ -1012,6 +1131,10 @@ function CPlayer:checkPotions()
 
 	--=== If rogue is hidden then don't use potions as it breaks hide ===--
 	if self.Class1 == 3 and self:hasBuff(500675) then return false end
+
+	self:updateHP()
+	self:updateMP()
+	self:updateCasting()
 
 	if settings.profile.options.USE_PHIRIUS_POTION == true then
 		-- If we need to use a health potion
@@ -1097,7 +1220,9 @@ function CPlayer:checkPotions()
 		end
 	end
 
-	self:update()
+	self:updateHP()
+	self:updateMP()
+	self:updateCasting()
 
 	--== Normal Potions after checking for phirius ==--
 --=== Lisa to add in hot and one time heal potion usage. ===--
@@ -1275,17 +1400,16 @@ function CPlayer:checkPotions()
 end
 
 function CPlayer:fight()
-	self:update();
 	if( not self:haveTarget() ) then
 		return false;
 	end
+	self:updateMounted()
 	if self.Mounted then
 		self:dismount()
 	end
 
-	if ( settings.profile.options.PARTY == true ) and (settings.profile.options.PARTY_ICONS == true) then
+	if (settings.profile.options.PARTY_ICONS == true) and self.Name == getPartyLeaderName() then
 		sendMacro('SetRaidTarget("target", 1);')
-		if (settings.profile.options.PARTY_ICONS ~= true) then printf("Raid Icons not set in character profile.\n") end
 	end
 
 	if self.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
@@ -1307,37 +1431,34 @@ function CPlayer:fight()
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
 	local function timedAttack()
-		self:update();
-		-- Obsolete. Interferes with undercutting skills
-		--[[if( self.Casting ) then
-			-- Don't interupt casting
-			return;
-		end;]]
+		self:updateTargetPtr();
 
 		-- Prevents looting when looting is turned off
 		-- (target is dead, or about to be dead)
-		if( self.Target ~= 0 ) then
-			local target = self:getTarget();
-			if( (target.HP/target.MaxHP) <= 0.1 ) then
+		if self.TargetPtr == 0 then
+			return
+		else
+			local target = CPawn.new(self.TargetPtr);
+			target:updateHP()
+			if (target.HP/target.MaxHP) <= 0.1 then
 				return;
 			end
-		end;
 
-		Attack()
+			Attack()
+		end;
 	end
 
 	-- Prep for battle, if needed.
 	--self:checkSkills();
 
---	local target = self:getTarget();  / double
-	self.lastHitTime = os.time();
-	local lastTargetHP = target.HP;
+	self.fightStartTime = getGameTime();
 	local move_closer_counter = 0;	-- count move closer trys
 	self.Cast_to_target = 0;		-- reset counter cast at enemy target
 	self.ranged_pull = false;		-- flag for timed ranged pull for melees
 	local hf_start_dist = 0;		-- distance to mob where we start the fight
 
 	-- check if timed ranged pull for melee
+	self:updateBattling()
 	if(settings.profile.options.COMBAT_TYPE == "melee"  and
 	   settings.profile.options.COMBAT_RANGED_PULL == true and
 	   self.Battling ~= true ) then
@@ -1354,11 +1475,13 @@ function CPlayer:fight()
 		timedAttack();
 	end
 
-	local break_fight = false;	-- flag to avoid kill counts for breaked fights
+	self.failed_casts_in_a_row = 0
+	break_fight = false;	-- flag to avoid kill counts for breaked fights
 	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
 	while( self:haveTarget() ) do
-		self:update();
 		-- If we die, break
+		self:updateHP()
+		self:updateAlive()
 		if( self.HP < 1 or self.Alive == false ) then
 			if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 				unregisterTimer("timedAttack");
@@ -1374,32 +1497,33 @@ function CPlayer:fight()
 			break;
 		end
 
-		local target = self:getTarget();
-
-		if( target.HP ~= lastTargetHP ) then
-			self.lastHitTime = os.time();
-			lastTargetHP = target.HP;
-		end
+		local target = CPawn.new(self.TargetPtr);
 
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
-		if( os.difftime(os.time(), self.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
-			printf(language[83]);			-- Taking too long to damage target
-			self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
-			self.Last_ignore_target_time = os.time();		-- and the time we break the fight
-			self:clearTarget();
+		if getGameTime() - self.fightStartTime > settings.profile.options.MAX_FIGHT_TIME then
+			target:updateLastDamage()
+			self:updateLastHitTime()
+			if target.LastDamage == 0 or (getGameTime() - self.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME then
+				printf(language[83]);			-- Taking too long to damage target
+				self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
+				self.Last_ignore_target_time = os.time();		-- and the time we break the fight
+				self:clearTarget();
 
-			if( self.Battling ) then
-				yrest(1000);
-			   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-			   yrest(1000);
-			   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-			   self:update();
+				self:updateBattling()
+				if( self.Battling ) then
+					keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+					yrest(1000);
+					keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+					self:updateXYZ();
+				end
+
+				break_fight = true;
+				break;
 			end
-
-			break_fight = true;
-			break;
 		end
 
+		self:updateXYZ()
+		target:updateXYZ()
 		local dist = distance(self.X, self.Z, target.X, target.Z);
 		if( hf_start_dist == 0 ) then		-- remember distance we start the fight
 			hf_start_dist = dist;
@@ -1428,12 +1552,13 @@ function CPlayer:fight()
 		end
 
 		-- We're a bit TOO close...
+		self:updateCasting()
 		if( dist < 5.0 and not self.Casting ) then
 			printf(language[24]);
 			keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
 			yrest(200);
 			keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-			self:update();
+			self:updateXYZ();
 			dist = distance(self.X, self.Z, target.X, target.Z);
 		end
 
@@ -1450,19 +1575,21 @@ function CPlayer:fight()
 		end
 
 		-- check if aggro before attacking
+		target:updateLastDamage()
+		target:updateTargetPtr()
+		self:updateBattling()
 		if( self.Battling == true  and				-- we have aggro
-		    target.HP/target.MaxHP*100 > 90 and		-- target is alive and no attacking us
-	-- Fix: there is a special dog mob 'Tatus', he switch from red to green at about 90%
-	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
-	-- to prevent from skipping him while he is still attacking us, we do that special fix
-			target.Name ~= "Tatus"	and
+		    target.LastDamage == 0 and		-- we haven't started attacking it yet
 		    target.TargetPtr ~= self.Address and
-			target.TargetPtr ~= self.Pet.Address and
-			CPawn(target.TargetPtr).InParty ~= true ) then	-- but not from that mob
-			cprintf(cli.green, language[36], target.Name);
-			self:clearTarget();
-			break_fight = true;
-			break;
+			not target:targetIsFriend()) then	-- but not from that mob
+				target:updateName()
+				local enemy = player:findEnemy(true,nil,evalTargetDefault) -- find enemy
+				if enemy and enemy.Address ~= self.TargetPtr then -- It's not the one we targeting
+					cprintf(cli.green, language[36], target.Name); -- Aggro during first strike
+					self:clearTarget();
+					break_fight = true;
+					break;
+				end
 		end;
 
 		if( dist > suggestedRange and not self.Casting ) then
@@ -1488,73 +1615,32 @@ function CPlayer:fight()
 					success, reason = self:moveTo(target, true, true, suggestedRange);
 				end
 			else 	-- normal melee
-				success, reason = self:moveTo(target, true);
+				success, reason = self:moveTo(target, true, false, 50);
 				-- Start melee attacking
 				if( settings.profile.options.COMBAT_TYPE == "melee" ) then
 					timedAttack();
 				end
 			end
 
+			-- Lost target during moveTo
+			if not self:haveTarget() then
+				cprintf(cli.green, language[19]);	-- Target lost
+				self:clearTarget();
+				break_fight = true;
+				break;
+			end
+
 			if( not success ) then
 				self:unstick();
 			end
 
-		elseif suggestedRange >= dist and dist <= settings.profile.options.COMBAT_STOP_DISTANCE then
-
+		elseif suggestedRange >= dist and (settings.profile.options.COMBAT_STOP_DISTANCE == nil or dist <= settings.profile.options.COMBAT_STOP_DISTANCE) then
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 		end
 
-		if( settings.profile.options.QUICK_TURN ) then
-			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
-			local yangle = math.atan2(target.Y - self.Y, ((target.X - self.X)^2 + (target.Z - self.Z)^2)^.5 );
-			self:faceDirection(angle, yangle);
+		faceTarget()
 
-			camera:setRotation(angle);
-		elseif( settings.options.ENABLE_FIGHT_SLOW_TURN ) then
-			-- Make sure we're facing the enemy
-			local angle = math.atan2(target.Z - self.Z, target.X - self.X);
-			local yangle = math.atan2(target.Y - self.Y, ((target.X - self.X)^2 + (target.Z - self.Z)^2)^.5 );
-			self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
-			local angleDif = angleDifference(angle, self.Direction);
-			local correctingAngle = false;
-			local startTime = os.time();
-
-			while( angleDif > math.rad(15) ) do
-				if( self.HP < 1 or self.Alive == false ) then
-					self.Fighting = false;
-					return;
-				end;
-
-				if( os.difftime(os.time(), startTime) > 5 ) then
-					printf(language[26]);
-					break;
-				end;
-
-				correctingAngle = true;
-				if( angleDifference(angle, self.Direction + 0.01) < angleDif ) then
-					-- rotate left
-					keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-					keyboardHold( settings.hotkeys.ROTATE_LEFT.key );
-				else
-					-- rotate right
-					keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-					keyboardHold( settings.hotkeys.ROTATE_RIGHT.key );
-				end
-
-				yrest(100);
-				self:update();
-				target:update();
-				angle = math.atan2(target.Z - self.Z, target.X - self.X);
-				angleDif = angleDifference(angle, self.Direction);
-			end
-
-			if( correctingAngle ) then
-				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
-				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-			end
-		end
-
-		if( self:checkPotions() or self:checkSkills() ) then
+		if self:checkPotions() or self:checkSkills()  then
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
@@ -1562,19 +1648,12 @@ function CPlayer:fight()
 			self.ranged_pull = false
 		end
 
+		if break_fight then -- if triggered in checkskills
+			cprintf(cli.green, language[19]);	-- Target lost
+			break
+		end
 		yrest(100);
-		self:update();
-		local target = self:getTarget();
-
-
-		-- do we need that? Because the DO statement is allready a
-		-- while( self:haveTarget() statement / I will comment it out and see
-		-- what happens (d003232, 18.9.09)
---		if( not self:haveTarget() ) then
---			break;
---		end
 	end
-	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 
 	self:resetSkills();
 	self.Cast_to_target = 0;	-- reset cast to target counter
@@ -1583,8 +1662,8 @@ function CPlayer:fight()
 		unregisterTimer("timedAttack");
 	end
 
-
-	if( not break_fight) then
+	target:updateAlive()
+	if( not break_fight) and not target:isAlive() then
 		-- count kills per target name
 		local target_Name = target.Name;
 		if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
@@ -1624,13 +1703,14 @@ function CPlayer:fight()
 	end;]]
 	-- Monster is dead (0 HP) but still targeted.
 	-- Loot and clear target.
-	self:update();
 	if( not break_fight ) then
 		self:loot();
 	end
 
+	keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
+
 	-- Loot any other dead monsters nearby
-	self:update()
+	self:updateBattling()
 	if not self.Battling or not self:findEnemy(true,nil,evalTargetDefault) then
 		self:lootAll()
 	end
@@ -1640,6 +1720,7 @@ function CPlayer:fight()
 	end
 
 	self.Fighting = false;
+	self.LastSkill = {}
 
 	yrest(200);
 end
@@ -1658,6 +1739,7 @@ function CPlayer:loot()
 	end
 
 	if settings.profile.options.LOOT == true then repeat -- 'repeat' block to 'break' from 'if' statement
+		self:updateTargetPtr()
 		if( self.TargetPtr == 0 ) then
 			if( settings.profile.options.DEBUG_LOOT) then
 				cprintf(cli.yellow, "[DEBUG] don't loot reason: self.TargetPtr == 0\n");
@@ -1666,6 +1748,7 @@ function CPlayer:loot()
 		end
 
 		-- aggro and not loot in combat
+		self:updateBattling()
 		if( self.Battling  and
 			settings.profile.options.LOOT_IN_COMBAT ~= true ) and
 			self:findEnemy(true, nil, evalTargetDefault) then
@@ -1674,20 +1757,26 @@ function CPlayer:loot()
 			return
 		end
 
-		self:update();
-		local target = self:getTarget();
+		local target = CPawn.new(self.TargetPtr);
 
-		if( target == nil or target.Address == 0 ) then
+		if not target:exists() then
 			if( settings.profile.options.DEBUG_LOOT) then
 				cprintf(cli.yellow, "[DEBUG] don't loot reason: target == nil or target.Address == 0\n");
 			end;
 			break;
 		end
 
+		self:updateXYZ()
+		target:updateXYZ()
 		local dist = distance(self.X, self.Z, target.X, target.Z);
 		local hf_x = self.X
 		local hf_z = self.Z;
 		local lootdist = 100;
+
+		-- If already in looting range then stop
+		if dist < 20 then
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
+		end
 
 		-- Set to combat distance; update later if loot distance is set
 		if( settings.profile.options.COMBAT_TYPE == "ranged" ) then
@@ -1719,49 +1808,62 @@ function CPlayer:loot()
 				keyboardPress(settings.profile.hotkeys.ATTACK.key);
 			end]]
 			Attack()
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
+			yrest(200)
 
 		--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 		--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
 			local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
 			local startWait = getTime()
-			while target.Lootable == true and deltaTime(getTime(), startWait) < maxWaitTime do
+			target:updateLootable()
+			self:updateStance()
+			while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime do
+				self:updateActualSpeed()
+				if self.ActualSpeed == 0 then Attack() yrest(100) end
 				yrest(100)
-				target:update()
+				target:updateLootable()
+				self:updateStance()
 			end
 
 			-- Wait for character to finish standing
 			local starttime = os.clock()
-			self:update()
+			self:updateStance()
 			while self.Stance ~= 0 and 2 > (os.clock() - starttime) do
 				yrest(50)
-				self:update()
+				self:updateStance()
 			end
 		end
 
-		--yrest(1000);
-		self:update();
-		target:update();
+		target:updateLootable();
+		local lootStart = os.clock()
+		while target:exists() and (not target.Lootable) and os.clock() - lootStart < .2 do
+			yrest(20)
+			target:updateLootable()
+		end
+
 		if target.Lootable then
 			looten();
+		else
+			if( settings.profile.options.DEBUG_LOOT) then
+				cprintf(cli.yellow, "[DEBUG] don't loot reason: target not lootable.\n");
+			end;
 		end;
 
 		-- check for loot problems to give a noob mesassage
-		self:update();
-		local target = self:getTarget();
-		dist = distance(self.X, self.Z, target.X, target.Z);
-		if( dist > 50 and -- We would need to be further away to be able to move to the target
-			--self.X == hf_x  and	-- we didn't move, seems attack key is not defined
-			--self.Z == hf_z  and
-			( target ~= nil or target.Address ~= 0 ) )  then	-- death mob disapeared?
-			cprintf(cli.green, language[100]); -- We didn't move to the loot!?
+		self:updateTargetPtr()
+		target = CPawn.new(self.TargetPtr)
+		if target:exists() then
+			target:updateLootable()
+			if target.Lootable == true then	-- death mob disapeared?
+				cprintf(cli.green, language[100]); -- We didn't move to the loot!?
 
-			-- second loot try?
-			if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 and target.Lootable ) then
-				yrest(settings.profile.options.LOOT_AGAIN);
-				looten();	-- try it again
-			end
-
-		end;
+				-- second loot try?
+				if( type(settings.profile.options.LOOT_AGAIN) == "number" and settings.profile.options.LOOT_AGAIN > 0 ) then
+					yrest(settings.profile.options.LOOT_AGAIN);
+					looten();	-- try it again
+				end
+			end;
+		end
 
 		-- rnd pause from 2-6 sec after loot to look more human
 		if( settings.profile.options.LOOT_PAUSE_AFTER > 0 ) then
@@ -1792,6 +1894,7 @@ function CPlayer:loot()
 		local obj = nil;
 		local objectList = CObjectList();
 		objectList:update();
+		self:updateXYZ()
 
 		for i = 0,objectList:size() do
 			obj = objectList:getObject(i);
@@ -1819,10 +1922,9 @@ function CPlayer:loot()
 	if settings.profile.options.LOOT_SIGILS == true or (settings.profile.options.LOOT == true and settings.profile.options.LOOT_SIGILS == nil) then
 		-- Pick up all nearby sigils
 		self:clearTarget();
-		self:update();
 		local sigil = getNearestSigil();
-		--while( sigil ) do
 		if( sigil ) then
+			self:updateXYZ()
 			local dist = distance(self.X, self.Z, self.Y, sigil.X, sigil.Z, sigil.Y);
 			local angle = math.atan2(sigil.Z - self.Z, sigil.X - self.X);
 			local yangle = math.atan2(sigil.Y - self.Y, ((sigil.X - self.X)^2 + (sigil.Z - self.Z)^2)^.5 );
@@ -1834,7 +1936,6 @@ function CPlayer:loot()
 
 			self:moveTo( CWaypoint(nX, nZ, nY), true );
 			yrest(500);
-			self:update();
 			sigil = getNearestSigil();
 		end
 	end
@@ -1845,11 +1946,16 @@ local lootIgnoreListPos = 0
 
 function evalTargetLootable(address, target)
 
-	if not target then
-		target = CPawn(address);
+	if not target or not target.HP then
+		target = CPawn.new(address)
+	end
+	-- Check if still valid target
+	if not target:exists() then
+		return false
 	end
 
 	-- Check if lootable
+	target:updateLootable()
 	if not ( target.Lootable ) then
 		return false;
 	end
@@ -1862,6 +1968,7 @@ function evalTargetLootable(address, target)
 	end
 
 	-- Check height difference
+	target:updateXYZ()
 	if( math.abs(target.Y - player.Y) > 45 ) then
 		return false;
 	end
@@ -1921,6 +2028,7 @@ function evalTargetLootable(address, target)
 		end
 		return false;
 	end
+
 	return true
 end
 
@@ -1954,20 +2062,22 @@ function CPlayer:lootAll()
 			return
 		end
 
-		self:update()
+		self:updateBattling()
 		if( self.Battling  and
 			self:findEnemy(true,nil,evalTargetDefault)) then
 			break
 		end
 
-		local Lootable = self:findEnemy(false, nil, evalTargetLootable)
+		local Lootable = self:findNearestNameOrId("", nil, evalTargetLootable)
 
 		if Lootable == nil then
 			break
+		else
+			Lootable = CPawn(Lootable.Address)
 		end
 
 		self:target(Lootable)
-		self:update()
+		self:updateTargetPtr()
 		if self.TargetPtr ~= 0 then -- Target's still there.
 			self:loot()
 			if self:findEnemy(true, nil, evalTargetDefault) then
@@ -1975,7 +2085,7 @@ function CPlayer:lootAll()
 				return
 			end
 			yrest(50)
-			Lootable:update();
+			Lootable:updateLootable();
 			if Lootable.Lootable == true then
 				-- Failed to loot. Add to ignore list
 				lootIgnoreListPos = lootIgnoreListPos + 1
@@ -1989,10 +2099,17 @@ end
 -- Basic target evaluation.
 -- Returns true if a valid target, else false.
 function evalTargetDefault(address, target)
+	if not target then
+		target = CPawn.new(address);
+	end
+
+	--== Helper Functions ==--
+	--------------------------
+
 	local function debug_target(_place)
-		if( settings.profile.options.DEBUG_TARGET and
-			player.TargetPtr ~= player.LastTargetPtr ) then
-			cprintf(cli.yellow, "[DEBUG] "..player.TargetPtr.." ".._place.."\n");
+		if settings.profile.options.DEBUG_TARGET and
+		   player.TargetPtr ~= player.LastTargetPtr then
+			cprintf(cli.yellow, "[DEBUG] "..(target.Address or 0).." ".._place.."\n");
 			player.LastTargetPtr = player.TargetPtr;		-- remember target address to avoid msg spam
 		end
 	end
@@ -2004,120 +2121,117 @@ function evalTargetDefault(address, target)
 		end
 	end
 
-	if not target then
-		target = CPawn(address);
+	--== First do checks that target is valid and alive ==--
+	--------------------------------------------------------
+
+
+	-- Check if still valid target
+	if not target:exists() then
+		debug_target("target is no longer valid")
+		return false
 	end
 
 	-- Can't have self as target
 	if( address == player.Address ) then
+		debug_target("Can't have self as target")
 		return false;
 	end
 
 	-- Not attackable
+	target:updateAttackable()
 	if( not target.Attackable ) then
+		debug_target("target is not attackable")
 		return false;
 	end
 
 	-- Dead
+	target:updateHP()
 	if( target.HP < 1 ) then
+		debug_target("target HP is less than 1")
 		return false;
 	end
 
 	-- Also dead (and has loot)
+	target:updateLootable()
 	if( target.Lootable ) then
+		debug_target("target is lootable therefore dead")
 		return false;
 	end
 
+	target:updateAlive()
 	if( not target.Alive ) then
+		debug_target("target is not Alive")
 		return false;
 	end
+
+	--== Check aggro ==--
+	---------------------
+
+	target:updateTargetPtr()
+	target:updateType()
+	player:updateBattling()
+	if player.Battling then -- Battling flag is on
+		if target.TargetPtr == player.Address or -- We are being targeted
+		  target:targetIsFriend(true) then -- Or friend is being targeted
+			if target.Type ~= PT_PLAYER or settings.profile.options.PVP ~= false then --  Check PVP
+				return true
+			end
+		end
+	end
+
+	--== Non aggro checks ==--
+	--------------------------
+
+	-- don't target NPCs
+	if( target.Type == PT_NPC ) then      -- NPCs are type == 4
+		debug_target("thats a NPC, he should be friendly and not attackable")
+		return false;         -- he is not a valid target
+	end;
 
 	-- Check height difference
+	target:updateXYZ()
+	player:updateXYZ()
 	if( math.abs(target.Y - player.Y) > 45 ) then
+		debug_target("target height difference is too great")
 		return false;
 	end
 
 	-- check level of target against our leveldif settings
+	target:updateLevel()
 	if( ( target.Level - player.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
 	( player.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
-			debug_target("target lvl above/below profile settings without battling")
-			return false;			-- he is not a valid target
-		end;
-
-		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= player.Address ) then	-- but not from that mob
-			debug_target("target lvl above/below profile settings with battling from other mob")
-			return false;
-		end;
+		debug_target("target lvl above/below profile settings without battling")
+		return false;			-- he is not a valid target
 	end;
 
 	-- check if we just ignored that target / ignore it for 10 sec
 	if(address == player.Last_ignore_target_ptr  and
 	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
-			cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
-			   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
-			debug_target("ignore that target for 10 sec (e.g. after doing no damage")
-			return false;			-- he is not a valid target
-		end;
-
-		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= player.Address ) then	-- but not from that mob
-			debug_target("we have aggro from another mob")
-			return false;
-		end;
+		target:updateName()
+		cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
+		   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
+		debug_target("ignore that target for 10 sec (e.g. after doing no damage")
 	end
 
 	-- check distance to target against MAX_TARGET_DIST
 	if( distance(player.X, player.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
-			debug_target("target dist > MAX_TARGET_DIST")
-			return false;			-- he is not a valid target
-		end;
-
-		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= player.Address ) then	-- but not from that mob
-			debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-			return false;
-		end;
+		debug_target("target dist > MAX_TARGET_DIST to player")
+		return false;			-- he is not a valid target
 	end;
 
 	-- check if in assigned kill zone
 	if (not player.Returning) and #__WPL.KillZone > 0 and not PointInPoly(__WPL.KillZone, target.X, target.Z) then
-		if ( player.Battling == false ) then	-- if we don't have aggro then
-			debug_target("target outside KillZone")
-			return false;			-- he is not a valid target
-		end;
-
-		if( player.Battling == true  and		-- we have aggro
-		target.TargetPtr ~= player.Address ) then	-- but not from that mob
-			debug_target("target outside KillZone with battling from other mob")
-			return false;
-		end;
+		debug_target("target outside KillZone")
+		return false;			-- he is not a valid target
 	end
 
 	-- check if in one of the exclude zones
 	if (not player.Returning) and next(__WPL.ExcludeZones) then
-		local inazone = false
 		for zonename,zone in pairs(__WPL.ExcludeZones) do
 			if PointInPoly(zone, target.X, target.Z) then
-				inazone = true
-				break
-			end
-		end
-
-		if inazone then
-			if ( player.Battling == false ) then	-- if we don't have aggro then
 				debug_target("target inside an exclude zone")
 				return false;			-- he is not a valid target
-			end;
-
-			if( player.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= player.Address ) then	-- but not from that mob
-				debug_target("target inside an exclude zone with battling from other mob")
-				return false;
-			end;
+			end
 		end
 	end
 
@@ -2147,20 +2261,12 @@ function evalTargetDefault(address, target)
 		target.Z < (V.Z + settings.profile.options.MAX_TARGET_DIST) ) then
 
 		if( distance(V.X, V.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
-			if ( player.Battling == false ) then	-- if we don't have aggro then
-				debug_target("target dist > MAX_TARGET_DIST")
-				return false;			-- he is not a valid target
-			end;
-
-			if( player.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= player.Address ) then	-- but not from that mob
-				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-				return false;
-			end;
+			debug_target("target dist > MAX_TARGET_DIST to waypoint")
+			return false;			-- he is not a valid target
 		end;
 	else
 		-- must be too far away
-		debug_target("target dist > MAX_TARGET_DIST")
+		debug_target("target dist > MAX_TARGET_DIST to waypoint")
 		return false;
 	end
 
@@ -2168,101 +2274,58 @@ function evalTargetDefault(address, target)
 	-- PK protect
 	if settings.profile.options.PVP == false then
 		if( target.Type == PT_PLAYER ) then
+			debug_target("target is a player. PVP is off.")
 			return false;
 		end
 	elseif settings.profile.options.PVP ~= true then
 		if( target.Type == PT_PLAYER ) then      -- Player are type == 1
-			if ( player.Battling == false ) then   -- if we don't have aggro then
-				debug_target("PK player, but not fighting us")
-				return false;         -- he is not a valid target
-			end;
-
-			if( player.Battling == true  and         -- we have aggro
-				target.TargetPtr ~= player.Address ) then   -- but not from the PK player
-				debug_target("PK player, aggro, but he don't target us")
-				return false;
-			end;
+			debug_target("PK player, but not fighting us")
+			return false;         -- he is not a valid target
 		end;
 	end
 
 	-- Friends aren't enemies
-	if( player:isFriend(target) ) then
-		if ( player.Battling == false ) then   -- if we don't have aggro then
-			debug_target("target is in friends")
-			return false;		-- he is not a valid target
-		end;
-
-		if( player.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-			target.TargetPtr ~= player.Address ) then   -- but not from that target
-			debug_target("target is in friends, aggro, but not from that target")
-			return false;
-		end;
+	if( target:isFriend() ) then
+		debug_target("target is a friend")
+		return false;		-- he is not a valid target
 	end;
-
-	-- Pets aren't enemies
-	if( target.Address == player.Pet.Address ) then
-		return false;
-	end
 
 	-- Mob limitations defined?
 	if( #settings.profile.mobs > 0 ) then
 		if( player:isInMobs(target) == false ) then
-			if ( player.Battling == false ) then   -- if we don't have aggro then
-				debug_target("mob limitation is set, mob is not a valid target")
-				return false;		-- he is not a valid target
-			end;
-
-			if( player.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= player.Address ) then   -- but not from that target
-				debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
-				return false;
-			end;
-		end;
+			debug_target("mob limitation is set, mob is not a valid target")
+			return false;		-- he is not a valid target
+		end
 	end;
 
 	-- target is to strong for us
 	if (settings.profile.options.PARTY_INSTANCE ~= true ) then
 		if( target.MaxHP > player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
-			if ( player.Battling == false ) then	-- if we don't have aggro then
-	--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-				printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-				return false;		-- he is not a valid target
-			end;
-
-			if( player.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= player.Address ) then		-- but not from that target
-	--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-				printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-				return false;
-			end;
+--				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			printNotTargetReason("Target is to strong. More HP then player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
+			return false;		-- he is not a valid target
 		end;
 	end
 
-	-- don't target NPCs
-	if( target.Type == PT_NPC ) then      -- NPCs are type == 4
-		debug_target("thats a NPC, he should be friendly and not attackable")
-		return false;         -- he is not a valid target
-	end;
-
 	if( settings.profile.options.ANTI_KS ) then
-		if( target.TargetPtr ~= player.Address ) then
+		target:updateTargetPtr()
+		if target.TargetPtr ~= player.Address and not target:targetIsFriend() then
 			-- If the target's TargetPtr is 0,
 			-- that doesn't necessarily mean they don't
 			-- have a target (game bug, not a bug in the bot)
 			if( target.TargetPtr == 0 ) then
 				if( target.HP < target.MaxHP ) then
-					debug_target("anti kill steal: target not fighting us: target not targeting us")
+					debug_target("anti kill steal: target not fighting us: unknown target")
 					return false;
 				end
 			else
-				-- They definitely have a target.
-				-- If it is a friend, we can help.
-				-- Otherwise, leave it alone.
-
-				local targetOfTarget = CPawn(target.TargetPtr);
-
-				if( not player:isFriend(targetOfTarget) ) then
-					debug_target("anti kill steal: target not fighting us: target don't targeting a friend")
+				local targettarget = CPawn.new(target.TargetPtr)
+				targettarget:updateType()
+				if targettarget.Type == PT_PLAYER then
+					-- They definitely target another player.
+					-- If it is a friend, we can help.
+					-- Otherwise, leave it alone.
+					debug_target("anti kill steal: target not fighting us: target isn't targeting a friend")
 					return false;
 				end
 			end
@@ -2297,14 +2360,14 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		return true
 	end
 
-	self:update();
-	local lastpos = {X=self.X, Z=self.Z, Y=self.Y}
+	self:updateXYZ();
 
 	local angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 	local yangle = 0
 	if waypoint.Y ~= nil then
 		yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
 	end
+	self:updateDirection()
 	local angleDif = angleDifference(angle, self.Direction);
 	local startTime = os.time();
 	ignoreTargets = ignoreTargets or false;
@@ -2321,10 +2384,14 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	end;
 
 	-- Make sure we don't have a garbage (dead) target
+	self:updateTargetPtr()
 	if( self.TargetPtr ~= 0 ) then
-		local target = CPawn(self.TargetPtr);
-		if( target.HP <= 1 ) then
-			self:clearTarget();
+		local target = CPawn.new(self.TargetPtr)
+		if target:exists() then -- Target exists
+			target:updateHP()
+			if( target.HP <= 1 ) then
+				self:clearTarget();
+			end
 		end
 	end
 
@@ -2334,15 +2401,14 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	if(__WPL:getMode()   == "wander"  and
 	   __WPL:getRadius() == 0     )   then
 	   	self:restrnd(100, 1, 4);	-- wait 3 sec
-		if( self.Direction < 0 ) then
-			angle = (math.pi * 2) - math.abs(self.Direction);
-		else
-			angle = self.Direction;
-		end;
+
+		self:updateDirection()
+		angle = self.Direction
 
 		-- we will not move back to WP if wander and radius = 0
 		-- so one can move the character manual and use the bot only as fight support
 		-- there we set the WP to the actual player position
+		self:updateXYZ()
 		waypoint.Z = self.Z;
 		waypoint.X = self.X;
 
@@ -2352,7 +2418,6 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	if( settings.profile.options.QUICK_TURN == true ) then
 		self:faceDirection(angle, yangle);
 		camera:setRotation(angle);
-		self:update();
 		angleDif = angleDifference(angle, self.Direction);
 	else
 		self:faceDirection(self.Direction, yangle); -- change only 'Y' angle with 'faceDirection'.
@@ -2362,6 +2427,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	local rotateStartTime = os.time();
 	local turningDir = -1; -- 0 = left, 1 = right
 	while( angleDif > math.rad(65) ) do
+		self:updateHP()
+		self:updateAlive()
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
@@ -2392,7 +2459,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end
 
 		yrest(50);
-		self:update();
+		self:updateDirection();
 		angleDif = angleDifference(angle, self.Direction);
 	end
 
@@ -2400,11 +2467,9 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
 
 	-- look for a target before start movig
-	if( (not ignoreCycleTargets) and (not self.Battling) ) then
-		local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
-		if( newTarget ) then			-- find a new target
-			self:target(newTarget.Address);
-			local atkMask = memoryReadRepeat("int", getProc(), newTarget.Address + addresses.pawnAttackable_offset);
+	self:updateBattling()
+	if((not self.Fighting) and (not ignoreCycleTargets)) then
+		if self:target(self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget)) then	-- find a new target
 			cprintf(cli.turquoise, language[86]);	-- stopping waypoint::target acquired before moving
 			success = false;
 			failreason = WF_TARGET;
@@ -2416,6 +2481,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	local success, failreason = true, WF_NONE;
 	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
 	local lastDist = dist;
+	local lastpos = {X=self.X, Z=self.Z, Y=self.Y}
 	self.LastDistImprove = os.time();	-- global, because we reset it whil skill use
 
 	local turning = false
@@ -2424,18 +2490,25 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	local loopduration = 100 -- The duration we want the loop to take
 	local successdist = 10
 	repeat
+		player:checkAddress()
 		loopstart = os.clock()
 
+		dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
+		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
+
+		self:updateHP()
+		self:updateAlive()
 		if( self.HP < 1 or self.Alive == false ) then
 			return false, WF_NONE;
 		end;
 
 		-- stop moving if aggro, bot will stand and wait until to get the target from the client
 	 	-- only if not in the fight stuff coding (means self.Fighting == false )
+		self:updateBattling()
 	 	if( self.Battling and 				-- we have aggro
 	 	    self.Fighting == false  and		-- we are not coming from the fight routines (bec. as melee we should move in fight)
 			waypoint.Type ~= WPT_TRAVEL ) then	-- only stop if not waypoint type TRAVEL
-			if self:findEnemy(true, nil, evalTargetDefault) then
+			if self:target(self:findEnemy(true, nil, evalTargetDefault)) then
 				keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 				keyboardRelease( settings.hotkeys.ROTATE_LEFT.key );
 				keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
@@ -2446,10 +2519,8 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end;
 
 		-- look for a new target while moving
-		if((not ignoreCycleTargets) and (not self.Battling) and (not turning)) then
-			local newTarget = self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget);
-			if( newTarget ) then	-- find a new target
-				self:target(newTarget);
+		if((not ignoreCycleTargets) and (not self.Fighting) and (not turning)) then
+			if self:target(self:findEnemy(false, nil, evalTargetDefault, self.IgnoreTarget)) then
 				cprintf(cli.turquoise, language[28]);	-- stopping waypoint::target acquired
 				success = false;
 				failreason = WF_TARGET;
@@ -2461,11 +2532,20 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		if( dist < lastDist ) then
 			self.LastDistImprove = os.time();
 			lastDist = dist;
+			lastpos = {X=self.X, Z=self.Z, Y=self.Y}
 		elseif(  dist > lastDist + 40 ) then
-			-- Make sure we didn't pass it up
-			printf(language[29]);
-			success = false;
-			failreason = WF_DIST;
+			-- Check if pulled back before last waypoint
+			local lastwp = __WPL:getNextWaypoint(-1)
+			if (lastwp.X ~= 0 or lastwp.Z ~= 0 or lastwp.Y ~= nil) and distance(player, lastpos) > distance(lastwp, lastpos) then
+				print("Was pulled back. Reseting waypoint.")
+				success = false
+				failreason = WF_PULLBACK
+			else
+				-- Make sure we didn't pass it up
+				printf(language[29]);
+				success = false;
+				failreason = WF_DIST;
+			end
 			break;
 		end;
 
@@ -2477,21 +2557,20 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		end
 
 		-- while moving without target: check potions / friendly skills
+		self:updateMounted()
 		if not self.Mounted and ( self:checkPotions() or self:checkSkills(ONLY_FRIENDLY) ) then	-- only cast friendly spells to ourselfe
 			-- If we used a potion or a skill, reset our last dist improvement
 			-- to prevent unsticking
 			self.LastDistImprove = os.time();
 
 			-- Wait for casting to finish if still casting last skill
+			self:updateCasting()
 			while self.Casting do
 				yrest(50)
-				self:update()
+				self:updateCasting()
 			end
 
 		end
-
-		dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y);
-		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X);
 
 		-- Check if within range if range specified
 		if range and range > dist then
@@ -2510,18 +2589,18 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 			break
 		end
 
-		lastpos = {X=self.X, Z=self.Z, Y=self.Y}
-
 		if waypoint.Y ~= nil then
 			yangle = math.atan2(waypoint.Y - self.Y, ((waypoint.X - self.X)^2 + (waypoint.Z - self.Z)^2)^.5 );
 		end
+		self:updateDirection()
 		angleDif = angleDifference(angle, self.Direction);
+
+		yrest(1) -- This is to fix a bug that causes the bot to continue moving forward after it has been paused.
 
 		-- Continue to make sure we're facing the right direction
 		if( settings.profile.options.QUICK_TURN and angleDif > math.rad(1) ) then
 			self:faceDirection(angle, yangle);
 			camera:setRotation(angle);
-			self:update()
 			angleDif = angleDifference(angle, self.Direction);
 			keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		else
@@ -2556,12 +2635,11 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 			end
 		end
 
-
 		--keyboardHold( settings.hotkeys.MOVE_FORWARD.key );
 		local pausetime = loopduration - (os.clock() - loopstart) -- minus the time already elapsed.
 		if pausetime < 1 then pausetime = 1 end
 		yrest(pausetime);
-		self:update();
+		self:updateXYZ()
 		waypoint:update();
 
 	until false
@@ -2587,9 +2665,12 @@ end
 function CPlayer:waitForAggro()
 	local startTime = os.time();
 
+	self:updateBattling()
+	self:updateTargetPtr()
 	while( self.Battling and self.TargetPtr == 0 ) do
 		yrest(100);
-		self:update();
+		self:updateBattling()
+		self:updateTargetPtr()
 
 		if( os.difftime(os.time(), startTime) > 5 ) then
 			-- Wait no more than 5 seconds
@@ -2618,7 +2699,8 @@ function CPlayer:faceDirection(dir,diry)
 	self.Direction = math.atan2(Vec2, Vec1);
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
-	local tmpMountAddress = memoryReadRepeat("int", getProc(), self.Address + addresses.charPtrMounted_offset);
+	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.charPtrMounted_offset);
+	self:updateMounted()
 	if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
 		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirXUVec_offset, Vec1);
 		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirZUVec_offset, Vec2);
@@ -2690,24 +2772,24 @@ function CPlayer:unstick()
 
 -- after 8x unstick try to run away a little and then go to the nearest waypoint
 	if( self.Unstick_counter == 9 ) then
-	if unStick9 then
-  			unStick9()
-	else
-	 	-- turn and move back for 10 seconds
-		keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
-		yrest(1900);
-		keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
-		keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
-		yrest(10000);
-		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-		self:update();
-		if( self.Returning ) then
-			__RPL:setWaypointIndex(__RPL:getNearestWaypoint(self.X, self.Z));
+		if unStick9 then
+				unStick9()
 		else
-			__WPL:setWaypointIndex(__WPL:getNearestWaypoint(self.X, self.Z));
+			-- turn and move back for 10 seconds
+			keyboardHold(settings.hotkeys.ROTATE_RIGHT.key);
+			yrest(1900);
+			keyboardRelease( settings.hotkeys.ROTATE_RIGHT.key );
+			keyboardHold(settings.hotkeys.MOVE_FORWARD.key);
+			yrest(10000);
+			keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
+			self:updateXYZ();
+			if( self.Returning ) then
+				__RPL:setWaypointIndex(__RPL:getNearestWaypoint(self.X, self.Z));
+			else
+				__WPL:setWaypointIndex(__WPL:getNearestWaypoint(self.X, self.Z));
+			end;
+			return;
 		end;
-		return;
-	end;
 	end
 
  	-- Move back for x seconds
@@ -2748,198 +2830,12 @@ function CPlayer:unstick()
 end
 
 function CPlayer:haveTarget()
-
-	if( CPawn.haveTarget(self) ) then
-		local target = self:getTarget();
-			 local targettarget = CPawn(target.TargetPtr)
-		local function debug_target(_place)
-			if( settings.profile.options.DEBUG_TARGET and
-				self.TargetPtr ~= self.LastTargetPtr ) then
-				cprintf(cli.yellow, "[DEBUG] "..self.TargetPtr.." ".._place.."\n");
-				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
-			end
-		end
-
-		local function printNotTargetReason(_reason)
-			if( self.TargetPtr ~= self.LastTargetPtr ) then
-				cprintf(cli.yellow, "%s\n", _reason);
-				self.LastTargetPtr = self.TargetPtr;		-- remember target address to avoid msg spam
-			end
-		end
-
-
-
-
-		if( target == nil ) then
-			return false;
-		end;
-
-		-- check level of target against our leveldif settings
-		if( ( target.Level - self.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_ABOVE)  or
-		( self.Level - target.Level ) > tonumber(settings.profile.options.TARGET_LEVELDIF_BELOW)  ) then
-			if ( self.Battling == false ) then	-- if we don't have aggro then
-				debug_target("target lvl above/below profile settings without battling")
-				return false;			-- he is not a valid target
-			end;
-
-			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and  targettarget.InParty ~= true ) then	-- but not from that mob
-				debug_target("target lvl above/below profile settings with battling from other mob")
-				return false;
-			end;
-		end;
-
-		-- check if we just ignored that target / ignore it for 10 sec
-		if(self.TargetPtr == self.Last_ignore_target_ptr  and
-		   os.difftime(os.time(), self.Last_ignore_target_time)  < 10 )then
-			if ( self.Battling == false ) then	-- if we don't have aggro then
-				cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
-				   10-os.difftime(os.time(), self.Last_ignore_target_time ) );
-				debug_target("ignore that target for 10 sec (e.g. after doing no damage")
-				return false;			-- he is not a valid target
-			end;
-
-			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then	-- but not from that mob
-				debug_target("we have aggro from another mob")
-				return false;
-			end;
-		end
-
-		-- check distance to target against MAX_TARGET_DIST
-		if( distance(self.X, self.Z, target.X, target.Z) > settings.profile.options.MAX_TARGET_DIST ) then
-			if ( self.Battling == false ) then	-- if we don't have aggro then
-				debug_target("target dist > MAX_TARGET_DIST")
-				return false;			-- he is not a valid target
-			end;
-
-			if( self.Battling == true  and		-- we have aggro
-			target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then	-- but not from that mob
-				debug_target("target dist > MAX_TARGET_DIST with battling from other mob")
-				return false;
-			end;
-		end;
-
-
-		-- PK protect
-		if settings.profile.options.PVP ~= true then
-			if( target.Type == PT_PLAYER ) then      -- Player are type == 1
-				if ( self.Battling == false ) then   -- if we don't have aggro then
-					debug_target("PK player, but not fighting us")
-					return false;         -- he is not a valid target
-				end;
-
-				if( self.Battling == true  and         -- we have aggro
-					target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from the PK player
-					debug_target("PK player, aggro, but he don't target us")
-					return false;
-				end;
-			end;
-		end
-		-- Friends aren't enemies
-		if( self:isFriend(target) ) then
-			if ( self.Battling == false ) then   -- if we don't have aggro then
-				debug_target("target is in friends")
-				return false;		-- he is not a valid target
-			end;
-
-			if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from that target
-				debug_target("target is in friends, aggro, but not from that target")
-				return false;
-			end;
-		end;
-
-		-- Pets aren't enemies
-		if( target.Address == self.Pet.Address ) then
-			printf("Pet is not an enemy\n");
-			return false;
-		end
-
-		-- Mob limitations defined?
-		if( #settings.profile.mobs > 0 ) then
-			if( self:isInMobs(target) == false ) then
-				if ( self.Battling == false ) then   -- if we don't have aggro then
-					debug_target("mob limitation is set, mob is not a valid target")
-					return false;		-- he is not a valid target
-				end;
-
-				if( self.Battling == true  and         -- we have aggro, check if the 'friend' is targeting us
-					target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then   -- but not from that target
-					debug_target("mob limitation is set, mob is not a valid target, aggro, but not from that target")
-					return false;
-				end;
-			end;
-		end;
-
-		-- target is to strong for us
-	if  (settings.profile.options.PARTY_INSTANCE ~= true) then
-		if( target.MaxHP > self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR ) then
-			if ( self.Battling == false ) then	-- if we don't have aggro then
---				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR")
-				return false;		-- he is not a valid target
-			end;
-
-			if( self.Battling == true  and		-- we have aggro, check if the 'friend' is targeting us
-				target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then		-- but not from that target
---				debug_target("target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-				printNotTargetReason("Target is to strong. More HP then self.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR, aggro, but not from that target")
-				return false;
-			end;
-		end;
-	end
-
-		-- don't target NPCs
-		if( target.Type == PT_NPC ) then      -- NPCs are type == 4
-			debug_target("thats a NPC, he should be friendly and not attackable")
-			return false;         -- he is not a valid target
-		end;
-			local targettarget = CPawn(target.TargetPtr)
-		if( settings.profile.options.ANTI_KS ) then
--- why do we check the attackable flag only within the ANTI_KS?
--- I delete it because of the PK player bug (not attackable) / d003232 17.10.09
-			-- Not a valid enemy
---			if( not target.Attackable ) then
---				printf(language[30], target.Name);
---				debug_target("anti kill steal: target not attackable")
---				return false;
---			end
-
-
-			-- If they aren't targeting us, and they have less than full HP
-			-- then they must be fighting somebody else.
-			-- If it's a friend, then it is a valid target; help them.
-			if( target.TargetPtr ~= self.Address and targettarget.InParty ~= true ) then
-
-				-- If the target's TargetPtr is 0,
-				-- that doesn't necessarily mean they don't
-				-- have a target (game bug, not a bug in the bot)
-				if( target.TargetPtr == 0 ) then
-					if( target.HP < target.MaxHP ) then
-						debug_target("anti kill steal: target not fighting us: target not targeting us")
-						return false;
-					end
-				else
-					-- They definitely have a target.
-					-- If it is a friend, we can help.
-					-- Otherwise, leave it alone.
-
-					local targetOfTarget = CPawn(target.TargetPtr);
-
-					if( not self:isFriend(targetOfTarget) ) then
-						debug_target("anti kill steal: target not fighting us: target don't targeting a friend")
-						return false;
-					end
-				end
-			end
-
-			return true;
-		else
-			return true;
-		end
+	self:updateTargetPtr()
+	local target = CPawn.new(self.TargetPtr);
+	if target:exists() then
+		return evalTargetDefault(target.Address,target)
 	else
-		return false;
+		return false
 	end
 end
 
@@ -2952,41 +2848,18 @@ function CPlayer:clearTarget()
 	RoMScript("TargetFrame:Hide()");
 end
 
--- returns true if this CPawn is registered as a friend
-function CPlayer:isFriend(pawn)
-	if( not pawn ) then
-		error("CPlayer:isFriend() received nil\n", 2);
-	end;
-
-	-- Pets are friends
-	if( pawn.Address == self.PetPtr ) then
-		return true;
-	end
-
-	if( not settings ) then
-		return false;
-	end;
-
-	pawn:update();
-
-	for i,v in pairs(settings.profile.friends) do
-		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) or tonumber(v) == pawn.Id then
-			return true;
-		end
-	end
-
-	return false;
-end
-
-
 -- returns true if target is in mobs
 function CPlayer:isInMobs(pawn)
 	if( not pawn ) then
 		error("CPlayer:isInMobs() received nil\n", 2);
 	end;
 
+	if not pawn:exists() then
+		return false
+	end
+
+	pawn:updateName()
 	for i,v in pairs(settings.profile.mobs) do
-		mobs_defined = true;
 		if( string.find( string.lower(pawn.Name), string.lower(v), 1, true) ) or tonumber(v) == pawn.Id then
 			return true;
 		end
@@ -2999,6 +2872,7 @@ end
 function CPlayer:logoutCheck()
 -- timed logout check
 
+	self:updateBattling()
 	if(self.Battling == true) then
 		return;
 	end;
@@ -3057,76 +2931,63 @@ function CPlayer:logout(fc_shutdown, logout_close)
 end
 
 function CPlayer:check_aggro_before_cast(_jump, _skill_type)
--- break cast in last moment / works not for groups, because you get battling flag from your groupmembers  !!!
+-- break cast in last moment
 -- works also if target is not visible and we get aggro from another mob
 -- _jump = true       abort cast with jump hotkey
 
-	self:update();
-	local target = self:getTarget();
-	local targettarget = CPawn(target.TargetPtr)
+	local target = CPawn.new(self.TargetPtr)
 
+	-- don't break if no target or self targeting
+	if( not target:exists()) or
+	   self.TargetPtr == self.Address then
+		return false;
+	end
+
+	self:updateBattling();
 	if( self.Battling == false )  then		-- no aggro
 		return false;
 	end;
 
-		-- don't break friendly skills
-	if( _skill_type == STYPE_HEAL  or
-	    _skill_type == STYPE_BUFF  or
-	    _skill_type == STYPE_HOT ) then
+	-- don't break friendly skills
+	if( _skill_type ~= STYPE_DAMAGE and
+	    _skill_type ~= STYPE_DOT ) then
 		return false;
 	end
 
+	-- Don't break if we already started damaging target
+	target:updateLastDamage()
+	if target.LastDamage > 0 then
+		return false;
+	end
+
+	-- Don't break if target is targeting us
 	if target.TargetPtr == self.Address or
-	targettarget.InParty == true then
+	   target:targetIsFriend() then
 		return false;
 	end
 
-	local target = self:getTarget();
-	if( self.TargetPtr ~= 0 ) then  target:update(); end;
-
-	-- don't break if no target or self targeting
-	if( target.Name == "<UNKNOWN>"  or
-	    self.TargetPtr == self.Address) then
-		return false;
+	-- Don't break if cast is nearly finished as it will probably still cast.
+	self:updateCasting()
+	if self.Casting and
+	   self:getRemainingCastTime() <= getSkillUsePrior() then
+		return false
 	end
 
-
-	-- check if the target is attacking us, if not we can break and take the other mob
-
-	if( target.TargetPtr ~= self.Address and	-- check HP, because death targets also have not target
-	-- Fix: there is aspecial dog mob 'Tatus', he switch from red to green at about 90%
-	-- there seems to be a bug, so that sometimes Tatus don't have us into the target but still attacking us
-	-- to prevent from skipping him while he is still attacking us, we do that special fix
-		target.Name ~= "Tatus"	and
-		-- even he is attacking us
-		target.TargetPtr ~= self.PetPtr and
-	    target.HP/target.MaxHP*100 > 90	) then
-		-- target is alive and not attacking us
--- there is a bug in client. Sometimes target is death and so it is not targeting us anymore
--- and at the same time the target HP are above 0
--- so we say > 90% life is alive :-)
-
+	-- target is alive and not attacking us
+	if self.Cast_to_target == 0 then
 		cprintf(cli.green, language[36], target.Name);	-- Aggro during first strike/cast
-		self:clearTarget();
-
-		-- try fo find the aggressore a little faster by targeting it itselfe instead of waiting from the client
-		if( self:findTarget() ) then	-- we found a target
-			local target = self:getTarget();
-			if( target.TargetPtr == self.Address or target.TargetPtr == self.PetPtr ) then	-- it is the right aggressor
-				cprintf(cli.green, "%s is attacking us, we take that target.\n", target.Name);	-- attacking us
-			else
-				cprintf(cli.green, "%s is not attacking us, we clear that target.\n", target.Name);	-- not attacking us
-				self:clearTarget();
-			end
-		end
 	end
 
-	if self.Class1 == CLASS_WARDEN then -- has issues with pet as target, temp fix.
+	-- try fo find the aggressore a little faster by targeting it itself instead of waiting from the client
+	local target = self:findEnemy(true,nil,evalTargetDefault)
+	if target and target.Address ~= self.TargetPtr then	-- we found a new target
+		self:target(target)
+		cprintf(cli.green, "%s is attacking us, we take that target.\n", target.Name);	-- attacking us
+	else
 		return false
 	end
 
 	return true;
-
 end
 
 -- find a target with the ingame target key
@@ -3182,7 +3043,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 --
 -- to look not so bottish, please use the random time options!!!
 --
-	self:update();
+	self:updateBattling();
 	if( self.Battling == true) then return; end;		-- if aggro, go back
 
 	-- Stop if moving
@@ -3205,6 +3066,8 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	else _restaddrnd  = math.random( _restaddrnd ); end;
 
 	-- some classes dont have mana, in that cases Player.mana = 0
+	self:updateHP();
+	self:updateMP();
 	local hf_mana_rest = (self.MaxMana * settings.profile.options.MP_REST / 100);	-- rest if mana is lower then
 	local hf_hp_rest   = (self.MaxHP   * settings.profile.options.HP_REST / 100);	-- rest if HP is lower then
 
@@ -3232,8 +3095,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 
 	while ( true ) do
 
-		self:update();
-
+		self:updateBattling();
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();      -- get rid of mob to be able to target attackers
 			cprintf(cli.green, language[39] );   -- get aggro
@@ -3247,15 +3109,17 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		end;
 
 		-- check if HP/Mana full
+		self:updateHP();
+		self:updateMP();
 		if( self.Mana == self.MaxMana  and		-- some chars have MaxMana = 0
  	 	    self.HP   == self.MaxHP    and
  	 	    _resttype   == "full" ) then		-- Mana and HP are full
 			local restAddStart = os.time();		-- set additional rest timer
 			while ( true ) do	-- rnd addition
-				self:update();
 				if( os.difftime(os.time(), restAddStart ) > _restaddrnd ) then
 					break;
 				end;
+				self:updateBattling();
 				if( self.Battling ) then          -- we get aggro,
 					self:clearTarget();      -- get rid of mob to be able to target attackers
 					cprintf(cli.green, language[39] );   -- Stop resting because of aggro
@@ -3284,7 +3148,6 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 		RoMScript("SitOrStand()");
 		yrest(1500);					-- give time to standup
 	end;
-
 
 end
 
@@ -3329,7 +3192,7 @@ function CPlayer:sleep()
 			hf_key = " ";	-- clear last pressed key
 		end;
 
-		self:update();
+		self:updateBattling();
 		-- wake up if aggro, but we don't clear the sleeping flag
 		if( self.Battling ) then          -- we get aggro,
 			self:clearTarget();       -- get rid of mob to be able to target attackers
@@ -3348,7 +3211,7 @@ end
 
 function CPlayer:scan_for_NPC(_npcname)
 
-	local msg = "Function player:scan_for_NPC() is not anymore available. Use function player:target_NPC(_npcname) instead. That function will also work in background mode.";
+	local msg = "Function player:scan_for_NPC() is no longer available. Use function player:target_NPC(_npcname) instead. That function will also work in background mode.";
 	error(msg, 0);
 
 	if( foregroundWindow() ~= getWin() ) then
@@ -3397,7 +3260,7 @@ function CPlayer:scan_for_NPC(_npcname)
 
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
-				mousePawn = CPawn(memoryReadRepeat("intptr", getProc(),
+				mousePawn = CPawn(memoryReadRepeat("uintptr", getProc(),
 				addresses.staticbase_char, addresses.mousePtr_offset));
 
 				-- id 110504 Waffenhersteller Dimar
@@ -3537,13 +3400,13 @@ function CPlayer:openStore(_npcname, _option)
 end
 
 -- auto interact with a merchant
-function CPlayer:merchant(_npcname, _option)
+function CPlayer:merchant(_npcname, _option, _evalfunc)
 	if self:openStore(_npcname, _option) then
 		RoMScript("ClickRepairAllButton()");
 		yrest(1000);
 
 		inventory:update();
-		if ( inventory:autoSell() ) then
+		if ( inventory:autoSell(_evalfunc) ) then
 			inventory:update();
 		end
 		store:buyConsumable("hot", settings.profile.options.HEALING_POTION);
@@ -3609,86 +3472,6 @@ function CPlayer:target_NPC(_npcname)
 	end
 end
 
-
---[[function CPlayer:target_NPC(_npcname)
-
-	if( not _npcname ) then
-		cprintf(cli.yellow, language[133]);	-- Please give a NPC name
-		return
-	end
-
-	cprintf(cli.green, language[135], _npcname);	-- We try to find NPC
-
-	local found_npc = false;
-	local counter = 0;
-	local scanDirection = self.Direction;
-
-	while(true) do
-		counter = counter + 1;
-
-		-- turn character if first try wasn't successfull
-		if( counter == 2 ) then
-			scanDirection=scanDirection - math.pi/4
-		elseif( counter == 3 ) then
-			scanDirection=scanDirection + math.pi/2
-		elseif( counter > 3 and  counter < 9) then
-			scanDirection=scanDirection + math.pi/4
-		elseif( counter > 8 ) then
-			break;
-		end
-		camera:setRotation(scanDirection)
-
-		local target = self:getTarget();
-		local _precheck = (string.find(string.lower(target.Name), string.lower(_npcname), 1, true));
-
-		for i = 1, 6 do
-			if( not _precheck ) then
-				keyboardPress(settings.hotkeys.TARGET_FRIEND.key, settings.hotkeys.TARGET_FRIEND.modifier);
-			end
-
-			yrest(100);
-			player:update();
-
-			if(player.TargetPtr ~= 0) then
-				found_npc = true;				-- we found something
-				local target = self:getTarget();		-- read target informations
-				cprintf(cli.green, "%s, ", target.Name);	-- print name
-
-				if( string.find(string.lower(target.Name), string.lower(_npcname), 1, true ) ) then
-
-					cprintf(cli.green, language[136], _npcname);	-- we successfully target NPC
-					if( settings.profile.hotkeys.MACRO ) then
-						RoMScript("UseSkill(1,1);");				-- general attack key = open dialog window
-					else
-						keyboardPress(settings.profile.hotkeys.ATTACK.key, settings.profile.hotkeys.ATTACK.modifier);
-					end
-
-					-- repair all with macro script
-					-- we do that at all NPC's
-					-- we cant use ChoiceOption(1) by default because of transport NPC and so on
-					if( settings.profile.hotkeys.MACRO ) then
-						RoMScript("ClickRepairAllButton();");
-					end
-
-					return true;
-				end
-			end;
-
-			yrest(100);
-		end
-
-	end
-
-	cprintf(cli.green, language[137], _npcname);	-- we can't find NPC
-	if( not found_npc) then
-		cprintf(cli.yellow, language[138], 	-- We didn't found any NPC
-		  getKeyName(settings.hotkeys.TARGET_FRIEND.key) );
-	end
-
-	return false;
-
-end]]
-
 function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 	if type(_objtable) == "number" or type(_objtable) == "string" then
 		_objtable = {_objtable}
@@ -3704,12 +3487,13 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 		evalFunc = function (unused) return true; end;
 	end
 
+	self:updateXYZ()
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
 
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
-				if( obj.Address ~= ignore and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
+				if( obj.Address ~= ignore and obj.Address ~= player.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
 					if( evalFunc(obj.Address,obj) == true ) then
 						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then
@@ -3740,8 +3524,10 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 		return
 	end
 
-	yrest(200); -- Make sure we come to a stop before attempting to harvest.
-	local objFound = false;
+	-- Make sure we come to a stop before attempting to harvest.
+	self:waitTillStopMoving()
+
+ 	local objFound = false;
 
 	while(true) do
 		repeat
@@ -3774,7 +3560,8 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				--Wait minimum time
 				repeat
 					yrest(100)
-					self:update()
+					self:updateCasting()
+					self:updateBattling()
 					if self.Casting or self.Battling then break end
 				until deltaTime(getTime(),timeStart) >= minWaitTime
 
@@ -3785,16 +3572,18 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 
 				repeat
 					yrest(100);
-					self:update();
+					self:updateBattling();
 					while( self.Battling ) do
-						self:target(self:findEnemy(true, nil, evalTargetDefault, self.IgnoreTarget));
-						self:update();
-						if( self:haveTarget() ) then
+						if self:target(self:findEnemy(true, nil, evalTargetDefault)) then
 							self:fight();
 							interrupted = true
+						else
+							break
 						end
+						self:updateBattling();
 					end
-				until deltaTime(getTime(),timeStart) > _waittime and self.Casting == false
+					self:updateCasting()
+				until interrupted or (deltaTime(getTime(),timeStart) > _waittime and self.Casting == false)
 			end
 		until interrupted == false
 
@@ -3812,6 +3601,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 end
 
 function CPlayer:mount(_dismount)
+	self:updateMounted()
 	if( (not _dismount) and self.Mounted ) then
 		printf("Already mounted.\n");
 		return;
@@ -3822,6 +3612,7 @@ function CPlayer:mount(_dismount)
 		return;
 	end
 
+	self:updateSwimming()
 	if self.Swimming then
 		printf("Swimming. Can't mount.\n")
 		return
@@ -3848,19 +3639,20 @@ function CPlayer:mount(_dismount)
 
 	-- Make sure we are not battling before trying to mount
 	if not _dismount and not (self.Current_waypoint_type == WPT_TRAVEL) then
+		self:updateBattling();
 		while( self.Battling ) do
-			self:target(self:findEnemy(true, nil, nil, nil));
-			self:update();
-			if( self:haveTarget() ) then
+			if self:target(self:target(self:findEnemy(true, nil, evalTargetDefault))) then
 				self:fight();
 			else
 				break
 			end
+			self:updateBattling();
 		end
 	end
 
 	-- if _dismount and mountmethod is inventory then assume buff name equals item name and cancel buff if exists. Mainly needed for 15m and 2h mounts
 	if _dismount and mountMethod == "inventory" then
+		self:updateBuffs()
 		for index, buff in pairs(self.Buffs) do
 			if string.find(mount.Name,buff.Name,1, true) then
 				sendMacro("CancelPlayerBuff("..index..");")
@@ -3879,10 +3671,11 @@ function CPlayer:mount(_dismount)
 	yrest(500)
 	repeat
 		yrest(100);
-		self:update();
+		self:updateCasting();
 	until self.Casting == false
 
 	-- Just in case you mounted a different mount instead of dismounting
+	self:updateMounted()
 	if _dismount == true and self.Mounted then
 		-- second try dismount
 		yrest(1000)
@@ -3899,31 +3692,28 @@ function CPlayer:dismount()
 	self:mount(true)
 end
 
--- Waits till casting ends minus SKILL_USE_PRIOR.
 function CPlayer:waitTillCastingEnds()
-	self:update()
+	local prior = getSkillUsePrior();
+	self:updateCasting()
 	while(self.Casting) do
-		-- break cast with jump if aggro before casting finished
-		if( self:check_aggro_before_cast(JUMP_TRUE, self.LastSkillType)) then	--  with jump
-			printf(language[82]);	-- close print 'Casting ..."
-			return;
-		end;
-		-- Waiting for casting to finish...
-		yrest(50);
-		self:update();
+		yrest(10);
+		self:updateCasting();
 
-		-- leave before Casting flag is gone, so we can cast faster
-		local prior = getSkillUsePrior();
-
-		if( deltaTime(getTime(), self.LastSkillStartTime) > self.LastSkillCastTime - prior ) then
-			--				end of waiting
+		if self:getRemainingCastTime() <= prior/1000 then
 			break;
 		end
 	end
 end
 
 function CPlayer:aimAt(target)
-	if target.Address then target:update() end -- only update if a pawn
+	if target.Address then
+		if target.Level then
+			target:updateXYZ() -- only update if a pawn
+		else
+			target:update() -- if it's an object
+		end
+	end
+
 	camera:update()
 
 	-- camera distance to camera focus
@@ -3952,6 +3742,61 @@ function CPlayer:aimAt(target)
 	memoryWriteFloat(getProc(), camera.Address + addresses.camY_offset, ny);
 end
 
+function CPlayer:clickToCast()
+	-- Freeze mouse function
+	local function nopmouse()
+		-- x axis
+		local addressX1 = addresses.functionMousePatchAddr
+		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
+		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
+		memoryWriteString(getProc(), addressX1, string.rep(string.char(0x90),#addresses.functionMouseX1Bytes)); -- left of window
+		memoryWriteString(getProc(), addressX2, string.rep(string.char(0x90),#addresses.functionMouseX2Bytes)); -- right of window
+		memoryWriteString(getProc(), addressX3, string.rep(string.char(0x90),#addresses.functionMouseX3Bytes)); -- over window
+
+		-- y axis
+		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
+		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
+		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
+		memoryWriteString(getProc(), addressY1, string.rep(string.char(0x90),#addresses.functionMouseY1Bytes)); -- above window
+		memoryWriteString(getProc(), addressY2, string.rep(string.char(0x90),#addresses.functionMouseY2Bytes)); -- below window
+		memoryWriteString(getProc(), addressY3, string.rep(string.char(0x90),#addresses.functionMouseY3Bytes)); -- over window
+	end
+
+	-- Unfreeze mouse function
+	local function unnopmouse()
+		-- x axis
+		local addressX1 = addresses.functionMousePatchAddr
+		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
+		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
+		memoryWriteString(getProc(), addressX1, string.char(unpack(addresses.functionMouseX1Bytes)));
+		memoryWriteString(getProc(), addressX2, string.char(unpack(addresses.functionMouseX2Bytes)));
+		memoryWriteString(getProc(), addressX3, string.char(unpack(addresses.functionMouseX3Bytes)));
+
+		-- y axis
+		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
+		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
+		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
+		memoryWriteString(getProc(), addressY1, string.char(unpack(addresses.functionMouseY1Bytes)));
+		memoryWriteString(getProc(), addressY2, string.char(unpack(addresses.functionMouseY2Bytes)));
+		memoryWriteString(getProc(), addressY3, string.char(unpack(addresses.functionMouseY3Bytes)));
+	end
+
+	local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
+	local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
+	local clickX = math.ceil(ww/2)
+	local clickY = math.ceil(wh/2)
+	yrest(50)
+	nopmouse()
+	yrest(50)
+	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
+	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
+	yrest(50)
+	RoMScript("SpellTargetUnit()")
+	yrest(50)
+	-- unfreeze TargetPtr
+	unnopmouse()
+end
+
 function CPlayer:getCraftLevel(craft)
 	if string.lower(craft) == "blacksmithing" then craft = CRAFT_BLACKSMITHING
 	elseif string.lower(craft) == "carpentry" then craft = CRAFT_CARPENTRY
@@ -3972,4 +3817,16 @@ function CPlayer:getCraftLevel(craft)
 	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + addresses.playerCraftLevel_offset + craft*4)
 
 	return lvl
+end
+
+function CPlayer:waitTillStopMoving(maxtime)
+	self:updateActualSpeed()
+	if self.Moving then
+		maxtime = maxtime or 400
+		local starttime = getTime()
+		repeat
+			yrest(10)
+			self:updateActualSpeed()
+		until self.ActualSpeed == 0 or deltaTime(getTime(),starttime) > maxtime
+	end
 end

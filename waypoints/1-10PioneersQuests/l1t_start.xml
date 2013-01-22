@@ -1,0 +1,69 @@
+<waypoints type="RUN">
+	<!-- #  1 --><waypoint x="-4069" z="-8247">	</waypoint>
+	<!-- #  1 --><waypoint x="-4045" z="-8278">
+					player:target_NPC(110484); -- Laif Cindai
+					AcceptQuestByName(420660) -- Report In
+				</waypoint>
+	<!-- #  4 --><waypoint x="-3770" z="-8498">     </waypoint>
+	<!-- #  9 --><waypoint x="-3701" z="-8673">
+					player:target_NPC(110482); -- Leighton
+					CompleteQuestByName(420660) -- Report In
+					AcceptQuestByName(420661) -- Claiming Weapons
+				</waypoint>
+	<!-- # 10 --><waypoint x="-3793" z="-8539">
+					player:target_NPC(110658); -- Mallor
+					CompleteQuestByName(420661) -- Claiming Weapons
+					AcceptQuestByName(420662) -- Claiming Armor
+				</waypoint>
+	<!-- # 13 --><waypoint x="-3785" z="-8562">
+					player:target_NPC(110657); -- Shamp
+					CompleteQuestByName(420662) -- Claiming Armor
+					AcceptQuestByName(420663) -- Claim Your Potions
+				</waypoint>
+	<!-- # 16 --><waypoint x="-3778" z="-8640">
+					player:target_NPC(110489); -- Reideen
+					CompleteQuestByName(420663) -- Claim Your Potions
+					AcceptQuestByName(420665) -- Complete Preparations
+				</waypoint>
+	<!-- # 19 --><waypoint x="-3708" z="-8672">
+					player:target_NPC(110482); -- Leighton
+					CompleteQuestByName(420665) -- Complete Preparations
+					AcceptQuestByName(420712) -- Posting Quests
+					AcceptQuestByName(420666) -- Testing Your Skills
+				</waypoint>
+	<!-- # 25 --><waypoint x="-3696" z="-8528">
+					player:target_NPC(110583); -- Pioneers Colony Bulletin Board
+					CompleteQuestByName(420712) -- Posting Quests
+				</waypoint>
+	<!-- # 25 --><waypoint x="-3668" z="-8608">	</waypoint>
+	<!-- # 25 --><waypoint x="-3466" z="-8684">
+					inventory:update();
+					inventory:useItem(201704); yrest(2000); -- Open Weapon Gift Bag
+					inventory:useItem(201705); yrest(2000); -- Open Armor Gift Bag
+					inventory:useItem(201706); yrest(2000); -- Open Potion Gift Bag
+					inventory:useItem(203343); yrest(2000); -- Open Supply Kit (Roping quest reward)
+					inventory:useItem(221536); -- Open Metal Ring (Roping quest reward)
+					inventory:useItem(221537); yrest(2000); -- Open Metal Ring (Roping quest reward)
+					inventory:update();
+					inventory:useItem(210511); -- Arm- Fine Axe
+					inventory:useItem(210512); -- Arm- Excellent Small Dagger
+					inventory:useItem(210513); -- Arm- Fine Dagger
+					inventory:useItem(210514); -- Arm- Fine Stort Staff
+					inventory:useItem(210515); -- Arm- Fine Wand
+					inventory:useItem(210516); -- Arm- Fine Long Sword
+					yrest(2000);
+					inventory:useItem(209577); -- Mysterious Runic Scroll
+					yrest(1000)
+					inventory:useItem(221581); -- Wear- Superior Leather Armor (warrior scout)
+					inventory:useItem(221582); -- Wear- Superior Traveling Dress (cloth scout)
+					inventory:useItem(221583); -- Wear- Superior Coat (cloth rogue)
+					inventory:useItem(221584); -- Wear- Superior Robe (cloth mage)
+					inventory:useItem(221585); -- Wear- Superior Traveling Robe (cloth priest)
+					inventory:useItem(221586); -- Wear- Superior Chaincoat (chain knight)
+					yrest(2000);
+
+				</waypoint>
+	<!-- #  2 --><waypoint x="-3068" z="-8846">
+					loadPaths("1-10PioneersQuests/l1_fungus");
+				</waypoint>
+</waypoints>

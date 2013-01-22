@@ -80,10 +80,16 @@ function selectGame(character)
 		local process, playerAddress, nameAddress;
 	    -- open first window
 		process = openProcess(findProcessByWindow(windowList[i]));
+		local ver = getGameVersion(process)
+		if ver ~= 0 then
+			ver = " - " .. ver
+		else
+			ver = ""
+		end
 		-- read player address
 		showWarnings(false);
 		if addresses["staticbase_char"] and addresses["charPtr_offset"] and addresses["pawnName_offset"] then
-			playerAddress = memoryReadIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
+			playerAddress = memoryReadUIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
 			-- read player name
 			if( playerAddress ) then
 				nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
@@ -91,7 +97,7 @@ function selectGame(character)
 		end
 		-- store the player name, with window number
 		if nameAddress == nil then
-		    charToUse[i] = "(RoM window "..i..")";
+		    charToUse[i] = "(RoM window "..i..")" .. ver;
   		else
 			charToUse[i] = memoryReadString(process, nameAddress);
 		end
@@ -110,35 +116,34 @@ function selectGame(character)
 
 	windowChoice = 1;
 	-- wait until enter is released
-    while keyPressed(key.VK_RETURN) do
+    while keyPressedLocal(key.VK_RETURN) do
     	yrest(200);
     end
 
     notShown = true;
 	if (#windowList > 1) then  -- if theres more than 1 window, ask the player witch character to use
 		while not keyPressedLocal(key.VK_RETURN) do
-	    	if keyPressed(key.VK_UP) or keyPressed(key.VK_DOWN) or notShown then
+	    	if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) or notShown then
 	        	notShown = false;
-	    		if keyPressed(key.VK_DOWN) then
+	    		if keyPressedLocal(key.VK_DOWN) then
 	        		windowChoice = windowChoice + 1;
 	        		if windowChoice > #charToUse then
 	        	    	windowChoice = #charToUse;
 					end
 	    		end
-	    		if keyPressed(key.VK_UP) then
+	    		if keyPressedLocal(key.VK_UP) then
 	        		windowChoice = windowChoice - 1;
 	        		if windowChoice < 1 then
 	        	    	windowChoice = 1;
 					end
 	    		end
 
-				if keyPressed(key.VK_UP) or keyPressed(key.VK_DOWN) then
+				if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) then
 					print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 				end
 
 				-- start message
 	    		printf("Choose your character that you want to play on:\n");
-
 
 	    		for i = 1, #charToUse, 1 do
 	        		if i == windowChoice then
@@ -156,6 +161,7 @@ function selectGame(character)
 		end
 		yrest(200)
 	end
+
 	return windowList[windowChoice];
 end
 
@@ -309,41 +315,15 @@ function distance(x1, z1, y1, x2, z2, y2)
 	end
 end
 
--- Used in pause/exit callbacks. Just releases hotkeys.
+-- Used in pause/exit callbacks. Just releases movement keys.
 local function releaseKeys()
-	if( settings.hotkeys.MOVE_FORWARD) then
-		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key);
-	end
-
-	if( settings.hotkeys.MOVE_BACKWARD ) then
-		keyboardRelease(settings.hotkeys.MOVE_BACKWARD.key);
-	end
-
-	if( settings.hotkeys.ROTATE_LEFT ) then
-		keyboardRelease(settings.hotkeys.ROTATE_LEFT.key);
-	end
-
-	if( settings.hotkeys.ROTATE_RIGHT) then
-		keyboardRelease(settings.hotkeys.ROTATE_RIGHT.key);
-	end
-
-	if( settings.hotkeys.STRAFF_LEFT ) then
-		keyboardRelease(settings.hotkeys.STRAFF_LEFT.key);
-	end
-
-	if( settings.hotkeys.STRAFF_RIGHT ) then
-		keyboardRelease(settings.hotkeys.STRAFF_RIGHT.key);
+	if __PROC then
+		memoryWriteBytePtr(__PROC, addresses.staticbase_char ,addresses.moveKeysPressed_offset, 0 )
 	end
 end
 
 function pauseCallback()
 	local msg = sprintf(language[46], getKeyName(getStartKey()));	--  to continue, (CTRL+L) exit ...
-
-	-- If settings haven't been loaded...skip the cleanup.
-	if( not settings ) then
-		printf(msg);
-		return;
-	end;
 
 	releaseKeys();
 	printf(msg);
@@ -351,11 +331,6 @@ end
 atPause(pauseCallback);
 
 function exitCallback()
-	-- If settings haven't been loaded...skip the cleanup.
-	if( not settings ) then
-		return;
-	end;
-
 	releaseKeys();
 end
 atExit(exitCallback);
@@ -378,7 +353,7 @@ function errorCallback(script, line, message)
 		while( os.time() - starttime < 30 ) do
 			yrest(10);
 
-			if( keyPressed(key.VK_ENTER) or keyPressed(key.VK_ESCAPE) ) then
+			if( keyPressedLocal(key.VK_ENTER) or keyPressedLocal(key.VK_ESCAPE) ) then
 				return;
 			end
 		end
@@ -386,6 +361,8 @@ function errorCallback(script, line, message)
 		-- Terminate this copy of MicroMacro.
 		os.exit();
 	else
+		releaseKeys();
+
 		printf("Did not find any crashed game clients.\n");
 	end
 end
@@ -395,7 +372,7 @@ function resumeCallback()
 	printf("Resumed.\n");
 
 	-- Make sure our player exists before trying to update it
-	if( player ) then
+	if( player and #settings.profile.skills ~= 0) then
 		-- Make sure we aren't using potentially old data
 		player:update();
 	end
@@ -438,7 +415,61 @@ end
 local LAST_PLAYER_X = 0;
 local LAST_PLAYER_Z = 0;
 function timedSetWindowName(profile)
-	local displayname = string.sub(profile, 1, 4) .. "****";
+	-- Update our exp gain
+	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
+		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.pawnClass1_offset) or player.Class1;
+		player.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset) or player.Level
+		player.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoXP_offset) or player.XP
+		if player.XP == 0 or player.Level == 0 then return end
+
+		local newExp = player.XP or 0;
+		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (player.Level-1) * 4) or 1;
+
+		player.LastExpUpdateTime = os.time();					-- Reset timer
+
+		if( type(newExp) ~= "number" ) then newExp = 0; end;
+		if( type(maxExp) ~= "number" ) then maxExp = 1; end;
+
+		-- If we have not begun tracking exp, start by gathering
+		-- our current value, but do not count it as a gain
+		if( player.ExpInsertPos == 0 ) then
+			player.ExpInsertPos = 1;
+			player.LastExp = newExp;
+		else
+			local gain = 0;
+			local expGainSum = 0;
+			local valueCount = 0;
+
+			if( newExp > player.LastExp ) then
+				gain = newExp - player.LastExp;
+			elseif( newExp < player.LastExp ) then
+				-- We probably just leveled up. Just get our current, new value and use that.
+				gain = newExp;
+			end
+
+			player.LastExp = newExp;
+			player.ExpTable[player.ExpInsertPos] = gain;
+			player.ExpInsertPos = player.ExpInsertPos + 1;
+			if( player.ExpInsertPos > player.ExpTableMaxSize ) then
+				player.ExpInsertPos = 1;
+			end;
+
+			for i,v in pairs(player.ExpTable) do
+				valueCount = valueCount + 1;
+				expGainSum = expGainSum + v;
+			end
+
+			player.ExpPerMin = expGainSum / ( valueCount * player.ExpUpdateInterval / 60 );
+			player.TimeTillLevel = (maxExp - newExp) / player.ExpPerMin;
+			if( player.TimeTillLevel > 9999 ) then
+				player.TimeTillLevel = 9999;
+			end
+		end
+	end
+	local displayname = player.Name
+	if #displayname > 8 then
+		displayname = string.sub(displayname, 1, 7) .. "*";
+	end
 	if( (player.X ~= LAST_PLAYER_X) or (player.Z ~= LAST_PLAYER_Z) ) then
 		setWindowName(getHwnd(), sprintf(language[600],
 		BOT_VERSION, displayname, player.X, player.Z, player.ExpPerMin, player.TimeTillLevel));
@@ -461,6 +492,22 @@ function loadPaths( _wp_path, _rp_path)
 -- a default return path based on the waypoint path name and
 -- the settings.profile.options.RETURNPATH_SUFFIX
 
+	-- returns full path if it exists, searching both local and global folders
+	local function getFilename(_path)
+		-- First check local folder
+		if fileExists(getExecutionPath() .. "/waypoints/" .. _path) then
+			return getExecutionPath() .. "/waypoints/" .. _path
+		end
+
+		-- Then check global folder
+		if fileExists(getExecutionPath() .. "/../romglobal/waypoints/" .. _path) then
+			return getExecutionPath() .. "/../romglobal/waypoints/" .. _path
+		end
+
+		-- if neither exist return local as default
+		return getExecutionPath() .. "/waypoints/" .. _path
+	end
+
 	-- check if function is not called empty
 	if( not _wp_path ) and ( not _rp_path ) then
 		cprintf(cli.yellow, language[161]);	 -- have to specify either
@@ -471,7 +518,7 @@ function loadPaths( _wp_path, _rp_path)
 	-- check suffix and remember default return path name
 	local rp_default;
 	if(_wp_path ~= nil) then
-		local foundpos = string.find(_wp_path,".",1,true);	-- filetype defined?
+		local foundpos = string.find(_wp_path,".xml",1,true);	-- filetype defined?
 		if( foundpos ) then					-- filetype defined
 			rp_default = string.sub(_wp_path,1,foundpos-1) .. settings.profile.options.RETURNPATH_SUFFIX .. ".xml";
 		else							-- no filetype
@@ -479,10 +526,10 @@ function loadPaths( _wp_path, _rp_path)
 		end;
 	end;
 
-	if( _wp_path and not string.find(_wp_path,".", 1, true) and _wp_path ~= "wander" ) then
+	if( _wp_path and not string.find(_wp_path,".xml", 1, true) and _wp_path ~= "wander" ) then
 		_wp_path = _wp_path .. ".xml";
 	end;
-	if( _rp_path  and   not string.find(_rp_path,".", 1, true) ) then
+	if( _rp_path  and   not string.find(_rp_path,".xml", 1, true) ) then
 		_rp_path = _rp_path .. ".xml";
 	end;
 
@@ -492,14 +539,14 @@ function loadPaths( _wp_path, _rp_path)
 	local wpfilename
 	if( _wp_path and
 		string.lower(_wp_path) ~= "wander" ) then
-		local filename = getExecutionPath() .. "/waypoints/" .. _wp_path;
-		if( not fileExists(filename) ) then
+		local filename = getFilename(_wp_path)
+		if not fileExists(filename) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
-			error(msg, 0);
+			error(msg, 2);
 		end
 		__WPL = CWaypointList();
 		wpfilename = filename
-		cprintf(cli.green, language[0], _wp_path);	-- Loaded waypoint path
+		cprintf(cli.yellow, language[0], _wp_path);	-- Loaded waypoint path
 	end
 
 	-- set wander for WP
@@ -507,16 +554,17 @@ function loadPaths( _wp_path, _rp_path)
 		__WPL = CWaypointListWander();
 		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
 		__WPL:setMode("wander");
-		cprintf(cli.green, "We will wander arround in a radius of %d\n", settings.profile.options.WANDER_RADIUS);	-- Loaded waypoint path
+		cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS);	-- Loaded waypoint path
 	end
 
 	-- look for default return path with suffix '_return'
 	if( not _rp_path ) then
-		if( fileExists(getExecutionPath() .. "/waypoints/" .. rp_default) ) then
+		local filename = getFilename(rp_default)
+		if fileExists(filename) then
 			cprintf(cli.green, language[162], rp_default );	-- Return path found with default naming
 			_rp_path = rp_default;	-- set default
 		else
-			cprintf(cli.yellow, language[163], rp_default );	-- No return path with default naming
+			cprintf(cli.lightgray, language[163], rp_default );	-- No return path with default naming
 		end;
 	end
 
@@ -526,9 +574,9 @@ function loadPaths( _wp_path, _rp_path)
 		if( not __RPL ) then  		-- define object if not there
 			__RPL = CWaypointList();
 		end;
-		local filename = getExecutionPath() .. "/waypoints/" .. _rp_path;
-		if( not fileExists(filename) ) then
-			local msg = sprintf(language[143], filename ); -- We can't find your returnpath file
+		local filename = getFilename(_rp_path)
+		if not fileExists(filename) then
+			local msg = sprintf(language[143], _rp_path ); -- We can't find your returnpath file
 			error(msg, 0);
 		end;
 		rpfilename = filename
@@ -663,7 +711,10 @@ function RoMScript(script)
 
 			-- Execute it
 			if( settings.profile.hotkeys.MACRO ) then
-				keyboardPress(settings.profile.hotkeys.MACRO.key);
+--				keyboardPress(settings.profile.hotkeys.MACRO.key);
+				keyboardHold(settings.profile.hotkeys.MACRO.key);
+				rest(100)
+				keyboardRelease(settings.profile.hotkeys.MACRO.key);
 			end
 
 			local tryagain = false
@@ -681,7 +732,7 @@ function RoMScript(script)
 						if RoMScript("GameMenuFrame:IsVisible()") then
 							-- Clear the game menu and reset editbox focus
 							keyboardPress(settings.hotkeys.ESCAPE.key); yrest(300)
-							RoMScript("GetKeyboardFocus():ClearFocus()")
+							RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 						end
 					end
 
@@ -712,7 +763,7 @@ function RoMScript(script)
 		elseif( byte == 9 ) then -- Use TAB to seperate
 			-- Implicit casting
 			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);  end;
-			if( string.find(readsz, "^%d+$") ) then readsz = tonumber(readsz);  end;
+			if( string.find(readsz, "^[%-%+]?%d+$") ) then readsz = tonumber(readsz);  end;
 			if( readsz == "true" ) then readsz = true; end;
 			if( readsz == "false" ) then readsz = false; end;
 
@@ -726,12 +777,21 @@ function RoMScript(script)
 
 	local err = ret[1]
 	if err == false then
-		error("IGF:"..ret[2],0)
+		error("IGF:".."\\"..script.."\\ "..ret[2],0)
 	elseif err == true then
 		table.remove(ret,1)
 	end
 
 	return unpack(ret);
+end
+
+-- Executes code as apposed to returning a value. Can still return a value if assigned to variable 'a' in a table.
+function RoMCode(code)
+	if #code <  254-41 then
+		return RoMScript("} "..code.." if type(a)~=\"table\" then a={a} end z={")
+	else
+		return RoMScript("} "..code.." z={")
+	end
 end
 
 -- send message to the game
@@ -877,6 +937,8 @@ end
 
 -- open giftbag (at the moment level 1-10)
 function openGiftbags1To10(_player_level)
+	player:updateMounted()
+	local wasMounted = player.Mounted
 
 	if( not _player_level) then _player_level = player.Level; end
 	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level
@@ -885,26 +947,40 @@ function openGiftbags1To10(_player_level)
 --	yrest(2000);	-- time for cooldowns to phase-out
 	for i,v in pairs(database.giftbags)  do
 		if( v.level == _player_level) then
-			if( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
-			    v.armor == nil ) then						-- or is armor independent
-				local hf_return, hf_itemid, hf_name = inventory:useItem( v.itemid );	-- open bag or equipt item
-
-				if ( hf_return ) then
-					cprintf(cli.lightblue, language[171], hf_name );	-- Open/eqipt item:
+			if v.type == "is" then
+				local isitem = inventory:findItem( v.itemid, "bags" );	-- Find item shop item
+				if isitem then
+					isitem:moveTo("itemshop")
+					cprintf(cli.lightblue, language[159], isitem.Name );	-- Moving to Item Shop bag:
 				else
-					cprintf(cli.yellow, language[174], v.name );		-- item not found
+					cprintf(cli.yellow, language[174], GetIdName(v.itemid) );	-- item not found
 				end
-				yrest(2000);					-- wait for using that item
+			elseif( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
+			    v.armor == nil ) then						-- or is armor independent
+				local hf_item = inventory:findItem( v.itemid );	-- Find item shop item
 
-				if( v.type == "bag" ) then		-- after opening bag update inventory
-					yrest(4000);				-- some more time to open the bag
-					inventory:update();			-- update slots
-				end;
+				if ( hf_item ) then
+					cprintf(cli.lightblue, language[171], hf_item.Name );	-- Open/eqipt item:
+					hf_item:use()
+					yrest(2000);					-- wait for using that item
+
+					if( v.type == "bag" ) then		-- after opening bag update inventory
+						yrest(4000);				-- some more time to open the bag
+						inventory:update();			-- update slots
+					end;
+				else
+					cprintf(cli.yellow, language[174], GetIdName(v.itemid) );		-- item not found
+				end
+
 			end;
 		end;
 
 	end
 
+	player:updateMounted()
+	if wasMounted and not player.Mounted then
+		player:mount()
+	end
 end
 
 
@@ -922,6 +998,9 @@ function levelupSkill(_skillname, _times)
 	end
 
 	local skill_from_db = database.skills[_skillname];	-- read skill parameters from database
+	if skill_from_db == nil then
+		skill_from_db = FindSkillBookSkill(_skillname) -- if real name or id is used
+	end
 
 	-- check is skill has an aslevel in skills.xml
 	if ( skill_from_db.aslevel ~= nil and
@@ -974,7 +1053,8 @@ function levelupSkills1To10(_loadonly)
 								 [5] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
 		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" },
 								 [2] = { aslevel = 2, skillname="SCOUT_WIND_ARROWS" },
-								 [3] = { aslevel = 4, skillname="SCOUT_VAMPIRE_ARROWS" },},
+								 [3] = { aslevel = 4, skillname="SCOUT_VAMPIRE_ARROWS" },
+								 [4] = { aslevel = 6, skillname="490445" } }, -- passive Ranged Weapon Mastery
 		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" },
 								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" },
 								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" },
@@ -996,6 +1076,14 @@ function levelupSkills1To10(_loadonly)
 								 [2] = { aslevel = 1, skillname="DRUID_EARTH_ARROW" },
 								 [3] = { aslevel = 2, skillname="DRUID_BRIAR_ENTWINEMENT" },
 								 [4] = { aslevel = 6, skillname="DRUID_RESTORE_LIFE" } },
+		[CLASS_WARLOCK]		= {  [1] = { aslevel = 1, skillname="WARLOCK_PSYCHIC_ARROWS" },
+								 [2] = { aslevel = 4, skillname="WARLOCK_WARP_CHARGE" },
+								 [3] = { aslevel = 6, skillname="WARLOCK_PERCEPTION_EXTRACTION" },
+								 [4] = { aslevel = 8, skillname="497961" } }, -- passive Pure Soul
+		[CLASS_CHAMPION]	= {  [1] = { aslevel = 1, skillname="CHAMPION_ELECTROCUTION" },
+								 [2] = { aslevel = 1, skillname="CHAMPION_HEAVY_BASH" },
+								 [3] = { aslevel = 6, skillname="CHAMPION_ENERGY_INFLUX_STRIKE" },
+								 [4] = { aslevel = 8, skillname="498525" } }, -- passive Finishing Hammer
 		};
 
 
@@ -1029,10 +1117,12 @@ function levelupSkills1To10(_loadonly)
 			end
 			if( not hf_found ) then			-- skill not there, insert it
 				local tmp = database.skills[v.skillname];
-				tmp.hotkey = "MACRO";		-- use ROM API to use that skills
-				tmp.Level = 1;
-				table.insert(settings.profile.skills, tmp);
-				cprintf(cli.lightblue, "We learned skill \'%s\' and will use it\n", v.skillname );	-- Open/eqipt item:
+				if tmp then
+					tmp.hotkey = "MACRO";		-- use ROM API to use that skills
+					tmp.Level = 1;
+					table.insert(settings.profile.skills, tmp);
+					cprintf(cli.lightblue, "We learned skill \'%s\' and will use it\n", v.skillname );	-- Open/eqipt item:
+				end
 			end
 		end
 
@@ -1046,18 +1136,6 @@ function levelupSkills1To10(_loadonly)
 		table.sort(settings.profile.skills, skillSort);
 
 	end
-
-	-- special skill for SCOUT / not usable, just level it
-	if(_loadonly ~= "loadonly") then
-		if(player.Class1 == CLASS_SCOUT and
-		   player.Level  == 6 ) then
-			levelupSkill("SCOUT_RANGED_WEAPON_MASTERY", 6)
-		elseif(player.Class1 == CLASS_SCOUT and
-		   player.Level  > 6 ) then
-		   levelupSkill("SCOUT_RANGED_WEAPON_MASTERY")
-		end
-	end
-
 end
 
 -- change profile options and print values in MM protocol
@@ -1097,6 +1175,10 @@ function changeProfileSkill(_skill, _option, _value)
 
 	cprintf(cli.lightblue, language[185], _option, _skill, hf_old_value, _value );	-- We change the option
 
+	-- Resort skills if priority is changed
+	if _option == "priority" then
+		table.sort(settings.profile.skills, function(a,b) return a.priority > b.priority end)
+	end
 end
 
 function convertProfileName(_profilename)
@@ -1257,7 +1339,8 @@ function getSkillUsePrior()
 	local prior = 0;
 	if( settings.profile.options.SKILL_USE_PRIOR == "auto" ) then
 		-- assume ping - 20
-		prior = math.max(getPing() - 20, 25);
+		--prior = math.max(getPing() - 20, 25);
+		prior = getPing()
 	else
 		prior = settings.profile.options.SKILL_USE_PRIOR;
 	end
@@ -1310,7 +1393,7 @@ function waitForLoadingScreen(_maxWaitTime)
 			return false
 		end
 		rest(1000)
-		local newAddress = memoryReadRepeat("intptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0
 	-- wait until loading screen is gone
 	repeat
@@ -1356,7 +1439,7 @@ function GetPartyMemberName(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("intptr", getProc(), addresses.partyMemberList_address, {addresses.partyMemberList_offset1,addresses.partyMemberList_offset2} )
+	local listAddress = memoryReadRepeat("uintptr", getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset )
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists
@@ -1364,7 +1447,7 @@ function GetPartyMemberName(_number)
 		return nil
 	end
 	if memoryReadRepeat("byte", getProc(), memberAddress + 0x1C) == 31 then
-		memberAddress = memoryReadRepeat("int", getProc(), memberAddress + 8 )
+		memberAddress = memoryReadRepeat("uint", getProc(), memberAddress + 8 )
 		local name = memoryReadString(getProc(), memberAddress)
 			if( bot.ClientLanguage == "RU" ) then
 				name = utf82oem_russian(name);
@@ -1474,7 +1557,7 @@ function CallPartner(nameOrId)
 			if id == nameOrId or name == nameOrId then -- found
 				RoMScript("PartnerFrame_CallPartner(".. tab ..",".. i ..")")
 				yrest(500)
-				repeat player:update() yrest(1000) until not player.Casting
+				repeat player:updateCasting() yrest(1000) until not player.Casting
 				return
 			end
 		end
@@ -1495,7 +1578,7 @@ function Attack()
 		setupAttackKey()
 	end
 
-	local tmpTargetPtr = memoryReadRepeat("int", getProc(), player.Address + addresses.pawnTargetPtr_offset) or 0
+	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnTargetPtr_offset) or 0
 
 	if tmpTargetPtr == 0 and player.TargetPtr == 0 then
 		-- Nothing to attack
@@ -1570,7 +1653,7 @@ function bankItemBySlot(SlotNumber)
 			local MaxDurability = memoryReadByte( getProc(), Address + addresses.maxDurabilityOffset );
 			local RequiredLvl = memoryReadInt( getProc(), Address + addresses.requiredLevelOffset );
 			local ItemCount = memoryReadInt( getProc(), Address + addresses.itemCountOffset );
-			local nameAddress = memoryReadInt( getProc(), BaseItemAddress + addresses.nameOffset );
+			local nameAddress = memoryReadUInt( getProc(), BaseItemAddress + addresses.nameOffset );
 			if( nameAddress == nil or nameAddress == 0 ) then
 				Name = "<EMPTY>";
 			else
@@ -1635,7 +1718,7 @@ function AcceptQuestByName(_nameorid, _questgroup)
 			_questgroup = string.lower(_questgroup)
 			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
 		end
-		if _questgroup == "normal" then _questgroup = 1
+		if _questgroup == "normal" then _questgroup = 0
 		elseif _questgroup == "daily" then _questgroup = 2
 		elseif _questgroup == "public" then _questgroup = 3
 		else _questgroup = nil
@@ -1647,14 +1730,11 @@ function AcceptQuestByName(_nameorid, _questgroup)
 		local baseaddress = GetItemAddress(_nameorid)
 		if baseaddress then
 			_questgroup = memoryReadInt(getProc(), baseaddress + addresses.questGroup_offset)
-			if _questgroup ~= 2 and _questgroup ~= 3 then
-				_questgroup = 1 -- questgroup 1 comes up as 0 in memory
-			end
 		end
 	end
 
 	-- Check if we have target
-	player:update()
+	player:updateTargetPtr()
 	yrest(100)
 	if (player.TargetPtr == 0 or player.TargetPtr == nil) then
 		print("No target! Target NPC before using AcceptQuestByName")
@@ -1681,7 +1761,6 @@ function AcceptQuestByName(_nameorid, _questgroup)
 						if DEBUG then
 							printf("questOnBoard: %s \n",questOnBoard)
 						end
-
 			if ((questToAccept == "" or questToAccept == "all") or -- Accept all
 			  FindNormalisedString(questOnBoard,questToAccept)) and -- Or match name
 			  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
@@ -1746,7 +1825,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 			_questgroup = string.lower(_questgroup)
 			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
 		end
-		if _questgroup == "normal" then _questgroup = 1
+		if _questgroup == "normal" then _questgroup = 0
 		elseif _questgroup == "daily" then _questgroup = 2
 		elseif _questgroup == "public" then _questgroup = 3
 		else _questgroup = nil
@@ -1758,14 +1837,11 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 		local baseaddress = GetItemAddress(_nameorid)
 		if baseaddress then
 			_questgroup = memoryReadInt(getProc(), baseaddress + addresses.questGroup_offset)
-			if _questgroup ~= 2 and _questgroup ~= 3 then
-				_questgroup = 1 -- questgroup 1 comes up as 0 in memory
-			end
 		end
 	end
 
 	-- Check if we have target
-	player:update()
+	player:updateTargetPtr()
 	yrest(100)
 	if (player.TargetPtr == 0 or player.TargetPtr == nil) then
 		print("No target! Target NPC before using CompleteQuestByName")
@@ -1866,7 +1942,7 @@ function CancelQuest(nameorid)
 	while questId ~= nil do
 		if questId == nameorid or string.find(GetIdName(questId), nameorid, 1, true) then
 			-- match found, delete
-			RoMScript("} g_SelectedQuest = "..index.." a = {")
+			RoMCode("g_SelectedQuest = "..index)
 			RoMScript("ViewQuest_QuestBook( g_SelectedQuest )")
 			yrest(500)
 			RoMScript("DeleteQuest()")
@@ -1959,7 +2035,7 @@ function PointInPoly(vertices, testx, testz )
 		end
 	end
 
-	local nvert = table.getn(vertices)
+	local nvert = #vertices
 	local j = nvert
 	local c = false
 	for i = 1, nvert do
@@ -1986,11 +2062,49 @@ function GetSkillBookData(_tabs)
 
 	local function GetSkillInfo (address)
 		local tmp = {}
+		tmp.Address = address
 		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
 		tmp.Name = GetIdName(tmp.Id)
 		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
 		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
 		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
+		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
+		-- Get power and consumables
+		for count = 0, 1 do
+			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset)
+			if uses == 0 then
+				break
+			end
+			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+			if uses == SKILLUSES_MANA then
+				if tmp.Level > 49 then
+					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
+				elseif tmp.Level > 1 then
+					tmp.Mana = usesnum * (1 + (tmp.Level - 1)*0.1)
+				else
+					tmp.Mana = usesnum
+				end
+			elseif uses == SKILLUSES_RAGE then
+				tmp.Rage = usesnum
+			elseif uses == SKILLUSES_FOCUS then
+				tmp.Focus = usesnum
+			elseif uses == SKILLUSES_ENERGY then
+				tmp.Energy = usesnum
+			elseif uses == SKILLUSES_ITEM then
+				tmp.Consumable = "item"
+				tmp.ConsumableNumber = usesnum
+			elseif uses == SKILLUSES_PROJECTILE then
+				tmp.Consumable = "projectile"
+				tmp.ConsumableNumber = usesnum
+			elseif uses == SKILLUSES_ARROW then
+				tmp.Consumable = "arrow"
+				tmp.ConsumableNumber = usesnum
+			elseif uses == SKILLUSES_PSI then
+				tmp.Psi = usesnum
+			elseif uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
+			end
+		end
 
 		return tmp
 	end
@@ -1999,8 +2113,8 @@ function GetSkillBookData(_tabs)
 	local tabData = {}
 
 	for __, tab in pairs(_tabs) do
-		local tabBaseAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
-		local tabEndAddress = memoryReadRepeat("int", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
+		local tabBaseAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
+		local tabEndAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
 
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
@@ -2008,12 +2122,21 @@ function GetSkillBookData(_tabs)
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData.Name ~= nil and tmpData.Name ~= "" then
 					tabData[tmpData.Name] = {
+						Address = tmpData.Address,
 						Id = tmpData.Id,
 						TPToLevel = tmpData.TPToLevel,
 						Level = tmpData.Level,
 						aslevel = tmpData.aslevel,
+						Mana = tmpData.Mana,
+						Rage = tmpData.Rage,
+						Focus = tmpData.Focus,
+						Energy = tmpData.Energy,
+						Consumable = tmpData.Consumable,
+						ConsumableNumber = tmpData.ConsumableNumber,
+						Psi = tmpData.Psi,
 						skilltab = tab,
 						skillnum = num,
+						BaseItemAddress = tmpData.BaseItemAddress,
 					}
 				end
 			end
@@ -2040,3 +2163,122 @@ function ItemQueueCount()
 	return memoryReadInt(getProc(), addresses.itemQueueCount)
 end
 
+local originalkeyboardHold = keyboardHold
+local originalkeyboardRelease = keyboardRelease
+
+function keyboardHold(key)
+	local keybit, oppbit -- The bit for the key and the bit for the opposite key
+	if key == settings.hotkeys.MOVE_FORWARD.key then
+		keybit = 1
+		oppbit = 2
+	elseif key == settings.hotkeys.MOVE_BACKWARD.key then
+		keybit = 2
+		oppbit = 1
+	elseif key == settings.hotkeys.STRAFF_RIGHT.key then
+		keybit = 4
+		oppbit = 8
+	elseif key == settings.hotkeys.STRAFF_LEFT.key then
+		keybit = 8
+		oppbit = 4
+	elseif key == settings.hotkeys.ROTATE_RIGHT.key then
+		keybit = 16
+		oppbit = 32
+	elseif key == settings.hotkeys.ROTATE_LEFT.key then
+		keybit = 32
+		oppbit = 16
+	else
+		return originalkeyboardHold(key) -- Not a move key. Fall back to original function.
+	end
+
+	-- Get current move keys pressed
+	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+
+	-- Set 'key' pressed
+	if not bitAnd(keyspressed, keybit) then
+		keyspressed = keyspressed + keybit
+
+		-- Unset opposite key
+		if bitAnd(keyspressed, oppbit) then
+			keyspressed = keyspressed - oppbit
+		end
+
+		-- Write result to memory
+		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+	end
+end
+
+function keyboardRelease(key)
+	local keybit -- The bit for the key
+	if key == settings.hotkeys.MOVE_FORWARD.key then
+		keybit = 1
+	elseif key == settings.hotkeys.MOVE_BACKWARD.key then
+		keybit = 2
+	elseif key == settings.hotkeys.STRAFF_RIGHT.key then
+		keybit = 4
+	elseif key == settings.hotkeys.STRAFF_LEFT.key then
+		keybit = 8
+	elseif key == settings.hotkeys.ROTATE_RIGHT.key then
+		keybit = 16
+	elseif key == settings.hotkeys.ROTATE_LEFT.key then
+		keybit = 32
+	else
+		return originalkeyboardRelease(key) -- Not a move key. Fall back to original function.
+	end
+
+	-- Get current move keys pressed
+	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+
+	-- Set 'key' released
+	if bitAnd(keyspressed, keybit) then
+		keyspressed = keyspressed - keybit
+		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+	end
+end
+
+function getGameTime()
+	return memoryReadRepeat("uint",getProc(),addresses.gameTimeAddress)/1000
+end
+
+function getTEXT(text)
+	if not text or type(text) ~= "string" then return end
+	local resultTEXT = RoMScript("TEXT(\""..text.."\")")
+	for subTEXT in string.gmatch(resultTEXT,"%[(.-)%]") do
+		local translatedSubTEXT = RoMScript("TEXT(\""..subTEXT.."\")")
+		if translatedSubTEXT ~= subTEXT then
+			resultTEXT = string.gsub(resultTEXT, "%["..subTEXT.."%]", translatedSubTEXT)
+		end
+	end
+
+	return resultTEXT
+end
+
+function getGameVersion(proc)
+	-- Check 'proc'
+	if proc == nil then
+		proc = getProc()
+	end
+
+	-- Look for pattern in 64 bit memory area first
+	local foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x186000, 0xA000)
+
+	-- If it fails then look in 32 bit memory area
+	if foundAddress == nil or foundAddress == 0 then
+		foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x126000, 0xA000)
+	end
+
+	if foundAddress == nil or foundAddress == 0 then
+		return 0
+	end
+
+	-- Add the offset to the address
+	foundAddress = foundAddress + 0xC
+
+	-- Read the version numbers which are 4 shorts in reverse order
+	local ver = ""
+	for i = 6, 0, -2 do
+		ver = ver .. (memoryReadShort(proc, foundAddress + i) or 0)
+		if i ~= 0 then ver = ver .. "." end
+	end
+
+	return ver
+end

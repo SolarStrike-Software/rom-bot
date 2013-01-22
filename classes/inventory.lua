@@ -147,7 +147,13 @@ end;
 
 -- No longer uses cached information, it updates before checking
 function CInventory:itemTotalCount(itemNameOrId, range)
-	local first, last = getInventoryRange(range) -- get bag slot range
+	local first, last, location = getInventoryRange(range) -- get bag slot range
+
+	if location and location ~= "inventory" then
+		print("inventory:itemTotalCount() only supports ranges in the inventory, eg. \"bags\",\"bag1\",\"bag2\",etc.")
+		return
+	end
+
 	if first == nil then
 		-- Default values - 1-240 for items, 61-240 for empties.
 		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
@@ -313,7 +319,7 @@ function CInventory:deleteItemInSlot(slot)
 end
 
 
-function CInventory:autoSell()
+function CInventory:autoSell(evalfunc)
 
 	if( settings.profile.options.INV_AUTOSELL_ENABLE ~= true ) then
 		return false
@@ -332,162 +338,231 @@ function CInventory:autoSell()
 		 return false;
 	end
 
-	-- move color settings into table
-	local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-	local hf_quality_table = explode( hf_quality, "\n" );	-- move colors to table
+	if evalfunc == nil or type(evalfunc) ~= "function" then -- Set up default eval function
+		-- move color settings into table
+		local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
+		local hf_quality_table = explode( hf_quality, "\n" );	-- move colors to table
 
-	local hf_ignore_table;
-	-- move ignore list into table
-	if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
-		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-		hf_ignore_table = explode( hf_explode, "\n" );	-- move ignore list
-		for i,v in pairs(hf_ignore_table) do local m = string.match(v,"^'(.*)'$") if m then hf_ignore_table[i] = m end end -- remove quotes
-	end
-
-	local hf_stats_nosell;
-	-- move ignore stats list into table
-	if( settings.profile.options.INV_AUTOSELL_STATS_NOSELL ) then
-		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-		hf_stats_nosell = explode( hf_explode, "\n" );	-- move ignore list
-		for i,v in pairs(hf_stats_nosell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_nosell[i] = m end end -- remove quotes
-	end
-
-	local hf_stats_sell;
-	-- move stats list into table
-	if( settings.profile.options.INV_AUTOSELL_STATS_SELL ) then
-		local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-		hf_stats_sell = explode( hf_explode, "\n" );	-- move ignore list
-		for i,v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
-	end
-
-	local hf_type_sell;
-	-- move type list into table
-	if( settings.profile.options.INV_AUTOSELL_TYPES ) then
-		local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-		hf_type_sell = explode( hf_explode, "\n" );
-	end
-
-	local hf_type_nosell;
-	-- move type list into table
-	if( settings.profile.options.INV_AUTOSELL_TYPES_NOSELL ) then
-		local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-		hf_type_nosell = explode( hf_explode, "\n" );
-	end
-
-	--	ITEMCOLORS table is defined in item.lua
-	local function sellColor(_itemcolor)
-
-		for i,v in pairs(hf_quality_table) do
-
-			if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
-				return true
-			end
+		local hf_ignore_table;
+		-- move ignore list into table
+		if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
+			hf_ignore_table = explode( hf_explode, "\n" );	-- move ignore list
+			for i,v in pairs(hf_ignore_table) do local m = string.match(v,"^'(.*)'$") if m then hf_ignore_table[i] = m end end -- remove quotes
 		end
 
-		return false
+		local hf_stats_nosell;
+		-- move ignore stats list into table
+		if( settings.profile.options.INV_AUTOSELL_STATS_NOSELL ) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+			hf_stats_nosell = explode( hf_explode, "\n" );	-- move ignore list
+			for i,v in pairs(hf_stats_nosell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_nosell[i] = m end end -- remove quotes
+		end
 
-	end
+		local hf_stats_sell;
+		-- move stats list into table
+		if( settings.profile.options.INV_AUTOSELL_STATS_SELL ) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+			hf_stats_sell = explode( hf_explode, "\n" );	-- move ignore list
+			for i,v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
+		end
 
-	local function isInTypeSell(_slotitem)
+		local hf_type_sell;
+		-- move type list into table
+		if( settings.profile.options.INV_AUTOSELL_TYPES ) then
+			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+			hf_type_sell = explode( hf_explode, "\n" );
+		end
 
-		if ( not hf_type_sell  ) then
+		local hf_type_nosell;
+		-- move type list into table
+		if( settings.profile.options.INV_AUTOSELL_TYPES_NOSELL ) then
+			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
+			hf_type_nosell = explode( hf_explode, "\n" );
+		end
+
+		--	ITEMCOLORS table is defined in item.lua
+		local function sellColor(_itemcolor)
+
+			for i,v in pairs(hf_quality_table) do
+
+				if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
+					return true
+				end
+			end
+
+			return false
+
+		end
+
+		local function isInTypeSell(_slotitem)
+
+			if ( not hf_type_sell  ) then
+				return true
+			end
+
+			for i,v in pairs(hf_type_sell) do
+
+				if _slotitem:isType(v) then
+					return true
+				end
+			end
+
+			return false
+
+		end
+
+		local function isInTypeNosell(_slotitem)
+
+			if ( not hf_type_nosell  ) then
+				return false
+			end
+
+			for i,v in pairs(hf_type_nosell) do
+				if _slotitem:isType(v) then
+					return true
+				end
+			end
+
+			return false
+
+		end
+
+		-- check if itemname or itemid is in the ignorelist
+		local function isInIgnorelist(_item)
+
+			if ( not hf_ignore_table ) then
+				return false
+			end
+
+			for i,ignorelistitem in pairs(hf_ignore_table) do
+
+				if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
+					_item.ItemId == ignorelistitem ) then
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.ItemId, _item.Name, "=>", "'"..ignorelistitem.."'");
+					return true
+				end
+
+			end
+
+			return false
+
+		end
+
+		local function isInStatsNoSell(_item)
+
+			if ( not hf_stats_nosell ) then
+				return false
+			end
+
+			for i1,stat in pairs(_item.Stats) do
+				for i2,nosellstat in pairs(hf_stats_nosell) do
+
+					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+					  "Check nosellstat line:", i1, tooltipline, "=>", nosellstat);
+
+					if( string.find( string.lower(stat.Name), string.lower(nosellstat), 1, true)  ) then
+						debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+						  "Not to sell stat found:", stat.Name);
+						return true
+					end
+
+				end
+			end
+
+			return false
+
+		end
+
+		local function isInStatsSell(_item)
+
+			if ( not hf_stats_sell ) then
+				return false
+			end
+
+			for i,stat in pairs(_item.Stats) do
+				for i,sellstat in pairs(hf_stats_sell) do
+
+					if( string.find( string.lower(stat.Name), string.lower(sellstat), 1, true)  ) then
+						debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+						  "Allways sell stat found:", stat.Name);
+						return true
+					end
+
+				end
+			end
+
+			return false
+
+		end
+
+		function evalfunc(slotitem)
+
+			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+			  "Check item so sell:", slotitem.SlotNumber, slotitem.Id, slotitem.Name);
+
+			-- Check if can be sold
+			if slotitem.CannotBeSold then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Item can not be sold");
+				return false
+			end
+
+			-- check item quality color
+			if( sellColor(slotitem.Color) == false ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
+				return false
+			end
+
+			-- check if on type sell lists
+			if (isInTypeSell(slotitem) == false ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
+				return false
+			elseif (isInTypeNosell(slotitem) == true ) then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
+				return false
+			end
+
+			-- check itemname against ignore list
+			if( isInIgnorelist(slotitem) == true ) then
+				return false
+			end
+
+			-- check number of named stats
+			if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
+				return false
+			end
+
+			-- check max durability value
+			if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
+				slotitem.MaxDurability > 0 and
+				slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
+				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
+				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
+				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
+				return false
+			end
+
+			-- check if stats / text strings are on the ingnore list
+			if( isInStatsNoSell(slotitem) == true ) then
+
+				-- check if in sell always stats
+				if( isInStatsSell(slotitem) == true ) then
+					-- don't change the sell flag
+				else
+					return false
+				end
+
+			end
+
 			return true
 		end
-
-		for i,v in pairs(hf_type_sell) do
-
-			if _slotitem:isType(v) then
-				return true
-			end
-		end
-
-		return false
-
-	end
-
-	local function isInTypeNosell(_slotitem)
-
-		if ( not hf_type_nosell  ) then
-			return false
-		end
-
-		for i,v in pairs(hf_type_nosell) do
-			if _slotitem:isType(v) then
-				return true
-			end
-		end
-
-		return false
-
-	end
-
-	-- check if itemname or itemid is in the ignorelist
-	local function isInIgnorelist(_item)
-
-		if ( not hf_ignore_table ) then
-			return false
-		end
-
-		for i,ignorelistitem in pairs(hf_ignore_table) do
-
-			if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
-				_item.ItemId == ignorelistitem ) then
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.ItemId, _item.Name, "=>", ignorelistitem);
-				return true
-			end
-
-		end
-
-		return false
-
-	end
-
-	local function isInStatsNoSell(_item)
-
-		if ( not hf_stats_nosell ) then
-			return false
-		end
-
-		for i1,stat in pairs(_item.Stats) do
-			for i2,nosellstat in pairs(hf_stats_nosell) do
-
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Check nosellstat line:", i1, tooltipline, "=>", nosellstat);
-
-				if( string.find( string.lower(stat.Name), string.lower(nosellstat), 1, true)  ) then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Not to sell stat found:", stat.Name);
-					return true
-				end
-
-			end
-		end
-
-		return false
-
-	end
-
-	local function isInStatsSell(_item)
-
-		if ( not hf_stats_sell ) then
-			return false
-		end
-
-		for i,stat in pairs(_item) do
-			for i,sellstat in pairs(hf_stats_sell) do
-
-				if( string.find( string.lower(stat.Name), string.lower(sellstat), 1, true)  ) then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Allways sell stat found:", stat.Name);
-					return true
-				end
-
-			end
-		end
-
-		return false
-
 	end
 
 	local sellstartstring = "} local U=UseBagItem; if StoreFrame:IsVisible() then a={true};"
@@ -499,72 +574,8 @@ function CInventory:autoSell()
 		local slotitem = self.BagSlot[slotNumber];
 
 		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
-
-			repeat -- A loop we can break out of to speed things up
-
-				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Check item so sell:", slotNumber, slotitem.Id, slotitem.Name);
-
-				-- Check if can be sold
-				if slotitem.CannotBeSold then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Item can not be sold");
-					break
-				end
-
-				-- check item quality color
-				if( sellColor(slotitem.Color) == false ) then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
-					break
-				end
-
-				-- check if on type sell lists
-				if (isInTypeSell(slotitem) == false ) then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
-					break
-				elseif (isInTypeNosell(slotitem) == true ) then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
-					break
-				end
-
-				-- check itemname against ignore list
-				if( isInIgnorelist(slotitem) == true ) then
-					break
-				end
-
-				-- check number of named stats
-				if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
-					break
-				end
-
-				-- check max durability value
-				if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
-					slotitem.MaxDurability > 0 and
-					slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
-					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
-					  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
-					break
-				end
-
-				-- check if stats / text strings are on the ingnore list
-				if( isInStatsNoSell(slotitem) == true ) then
-
-					-- check if in sell always stats
-					if( isInStatsSell(slotitem) == true ) then
-						-- don't change the sell flag
-					else
-						break
-					end
-
-				end
-
-				-- We didn't break? Then sell the item
+			if evalfunc(slotitem) == true then
+				-- Passed eval function. Then sell the item
 				sellstring = sellstring .. "U("..slotitem.BagId..");" -- max length 7
 				if #sellstring >= (254 - 7 - #sellendstring) then -- Can't fit more
 					sellstring = sellstring .. sellendstring
@@ -573,11 +584,11 @@ function CInventory:autoSell()
 						hf_wesell = true;
 						sellstring = sellstartstring -- Reset for more
 					else
-						break
+						return hf_wesell
 					end
 				end
 
-			until true
+			end
 
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
 
@@ -678,6 +689,13 @@ function CInventory:getMount()
 	{first = 241103, last = 241104},
 	{first = 241316, last = 241318},
 	{first = 241620, last = 241622},
+	{first = 241632, last = 241634},
+	{first = 241772, last = 241774},
+	{first = 241777, last = 241779},
+	{first = 241786, last = 241788},
+	{first = 241791, last = 241793},
+	241805,
+	{first = 241997, last = 241999},
 
 
 	-- Temp mounts
@@ -792,7 +810,13 @@ function getInventoryRange(range)
 		return 21, 21, "equipment"
 
 	elseif rangeLower == "guildbank" or rangeLower == "guild" then
-		return 1, 100, "guildbank"
+		return 1, 1000, "guildbank"
+	elseif string.match(rangeLower, "guild") then
+		local page = string.match(rangeLower,"^guildbank(%d%d?)$") or string.match(rangeLower,"^guild(%d%d?)$")
+		page = tonumber(page)
+		if page and page > 0 and page <= 10 then
+			return (page-1)*100+1, page*100, "guildbank"
+		end
 	end
 end
 

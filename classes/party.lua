@@ -8,12 +8,28 @@ function Party(heal)
 	eventParty("start")
 	_timexx = os.time()
 	while(true) do
-		if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0 then
+		if not isInGame() or not player:exists() or not player:isAlive() then
+			if not isInGame() or not player:exists() then
+				printf("Not in game. Waiting till you reenter game... ")
+			else
+				printf("Player dead. Waiting for resurection... ")
+			end
 			repeat
-				printf("loading screen has appeared, waiting for it to end.\n")
 				yrest(1000)
-			until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
+				local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+				local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
+				local hp = memoryReadRepeat("int", getProc(), address + addresses.pawnHP_offset)
+			until isInGame() and id and id >= 1000 and 1004 >= id and hp > 1
+			yrest(3000)
+			print("Continuing.")
+			player:update()
 		end
+
+		local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		if address ~= player.Address then
+			player:update()
+		end
+
 		PartyTable()
 		yrest(200)
 		player:update()
@@ -45,8 +61,7 @@ function Party(heal)
 					end
 				end
 			elseif not heal then
-				player:target(player:findEnemy(nil, nil, evalTargetDefault, player.IgnoreTarget));
-				if player:haveTarget() then
+				if player:target(player:findEnemy(nil, nil, evalTargetDefault, player.IgnoreTarget)) then
 					player:fight();
 				end
 			end
@@ -54,7 +69,6 @@ function Party(heal)
 			if heal then
 				for i,v in ipairs(partymemberpawn) do
 					player:target(partymemberpawn[i])
-					player:update()
 					partymemberpawn[i]:update()
 					partymemberpawn[i]:updateBuffs()
 					local target = player:getTarget();
@@ -63,9 +77,10 @@ function Party(heal)
 					end
 				end
 			end
+
+			player:updateBattling()
 			if player.Battling then
-				player:target(player:findEnemy(true, nil, evalTargetDefault));
-				if player:haveTarget() then
+				if player:target(player:findEnemy(true, nil, evalTargetDefault)) then
 					if heal then
 						healfight()
 					else
@@ -74,6 +89,7 @@ function Party(heal)
 				end
 			end
 		end
+		player:updateBattling()
 		if (not player.Battling) then
 			if settings.profile.options.LOOT == true and
 				settings.profile.options.LOOT_ALL == true then
@@ -82,7 +98,6 @@ function Party(heal)
 					getNameFollow()   --includes mount/dismount code
 				else
 					player:target(Lootable)
-					player:update()
 					if player.TargetPtr ~= 0 then
 						player:lootAll()
 					end
@@ -97,9 +112,8 @@ function Party(heal)
 end
 
 function icontarget(address) -- looks for icon I on mobs
-	local pawn = CPawn(address);
+	local pawn = CPawn.new(address);
 	local icon = pawn:GetPartyIcon()
-	pawn:update()
 	if icon == 1 then
 		return true
 	end
@@ -120,7 +134,7 @@ function PartyTable()
 		if _firsttimes == nil then -- post party names when bot started
 			if GetPartyMemberName(i) ~= nil then
 				cprintf(cli.yellow,"Party member "..i.." has the name of ")
-				cprintf(cli.red, GetPartyMemberName(i).."\n")
+				cprintf(cli.lightred, GetPartyMemberName(i).."\n")
 				_firsttimes = true
 			end
 		end
@@ -128,7 +142,7 @@ function PartyTable()
 		if os.time() - _timexx >= 60  then --only post party names every 60 seconds
 			if GetPartyMemberName(i) ~= nil then
 				cprintf(cli.yellow,"Party member "..i.." has the name of ")
-				cprintf(cli.red, GetPartyMemberName(i).."\n")
+				cprintf(cli.lightred, GetPartyMemberName(i).."\n")
 			_timexx = os.time()
 			end
 		end
@@ -174,14 +188,13 @@ end
 
 function getNameFollow()
 	if stop then return end
-	if ( settings.profile.options.PARTY_FOLLOW_NAME ) then
+	local partynum = 1 -- default followed party
+	if ( settings.profile.options.PARTY_FOLLOW_NAME and settings.profile.options.PARTY_FOLLOW_NAME ~= "" ) then
 		for i = 1,5 do
-			if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then RoMScript("FollowUnit('party"..i.."');"); Mount() return  end
+			if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then partynum = i  end
 		end
-		RoMScript("FollowUnit('party1');");
-	else
-		RoMScript("FollowUnit('party1');");
 	end
+	RoMScript("FollowUnit('party"..partynum.."');");
 	Mount()
 end
 
@@ -193,7 +206,7 @@ function checkparty(_dist)
 	local _go = true
 	local partynum = RoMScript("GetNumPartyMembers()")
 	if partynum == #partymemberpawn then
-		player:update()
+		player:updateXYZ()
 		for i = 2,#partymemberpawn do
 			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnX_offset) or partymemberpawn[i].X
 			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z
@@ -369,15 +382,13 @@ end
 
 function healfight()
 	if not settings.profile.options.HEAL_FIGHT then return end
-	player:update();
 	if( not player:haveTarget() ) then
 		return false;
 	end
 	local mob = player:getTarget();
 	player.Fighting = true;
 	cprintf(cli.green, language[22], mob.Name);	-- engagin x in combat
-	player.lastHitTime = os.time();
-	local lastTargetHP = mob.HP;
+	player.FightStartTime = os.time();
 	local move_closer_counter = 0;	-- count move closer trys
 	player.Cast_to_target = 0;		-- reset counter cast at enemy target
 	player.ranged_pull = false;		-- flag for timed ranged pull for melees
@@ -385,7 +396,8 @@ function healfight()
 	local break_fight = false;	-- flag to avoid kill counts for breaked fights
 	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
 	while( mob.Alive or mob.HP > 1 ) do
-		player:update();
+		player:updateHP();
+		player:updateAlive();
 		-- If we die, break
 		if( player.HP < 1 or player.Alive == false ) then
 			player.Fighting = false;
@@ -396,14 +408,9 @@ function healfight()
 			break_fight = true;
 			break;
 		end
-		if( mob.HP ~= lastTargetHP ) then
-			player.lastHitTime = os.time();
-			lastTargetHP = mob.HP;
-		end
 		--=== heal party before attacking ===--
 		for i,v in ipairs(partymemberpawn) do
 			player:target(partymemberpawn[i])
-			player:update()
 			partymemberpawn[i]:update()
 			local party = player:getTarget();
 			if party.HP/party.MaxHP*100 > 10 then
@@ -411,21 +418,26 @@ function healfight()
 			end
 		end
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
-		if( os.difftime(os.time(), player.lastHitTime) > settings.profile.options.MAX_FIGHT_TIME ) then
-			printf(language[83]);			-- Taking too long to damage target
-			player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
-			player.Last_ignore_target_time = os.time();		-- and the time we break the fight
-			player:clearTarget();
+		if (os.time() - player.FightStartTime) > settings.profile.options.MAX_FIGHT_TIME then
+			mob:updateLastDamage()
+			player:updateLastHitTime()
+			if mob.LastDamage == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
+				printf(language[83]);			-- Taking too long to damage target
+				player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
+				player.Last_ignore_target_time = os.time();		-- and the time we break the fight
+				player:clearTarget();
 
-			if( player.Battling ) then
-				yrest(1000);
-			   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-			   yrest(1000);
-			   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-			   player:update();
+				player:updateBattling()
+				if( player.Battling ) then
+					yrest(1000);
+				   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+				   yrest(1000);
+				   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+				   player:updateXYZ();
+				end
+				break_fight = true;
+				break;
 			end
-			break_fight = true;
-			break;
 		end
 		local dist = distance(player.X, player.Z, mob.X, mob.Z);
 		if( hf_start_dist == 0 ) then		-- remember distance we start the fight

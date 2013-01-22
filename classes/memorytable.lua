@@ -1,16 +1,16 @@
 local function GetIdAddressLine(id)
 	local lineSize = 0x20;
 
-	local tablePointer = memoryReadIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
+	local tablePointer = memoryReadUIntPtr( getProc(), addresses.tablesBase, addresses.tablesBaseOffset )
 	local startAddressOffsets = {0,addresses.tableStartPtrOffset, addresses.tableDataStartPtrOffset}
 
-	local dataPointer = memoryReadIntPtr( getProc(), tablePointer , startAddressOffsets ) - lineSize
+	local dataPointer = memoryReadUIntPtr( getProc(), tablePointer , startAddressOffsets ) - lineSize
 	local IdTableHeader
 
 	--Reads into the table to get a 'IdTableHeader' address
 	for i=0,10 do
-		local offset0 = memoryReadInt( getProc(),  dataPointer - lineSize * i )
-		local offset8 = memoryReadInt( getProc(), (dataPointer - lineSize * i ) + 0x8)
+		local offset0 = memoryReadUInt( getProc(),  dataPointer - lineSize * i )
+		local offset8 = memoryReadUInt( getProc(), (dataPointer - lineSize * i ) + 0x8)
 		if offset0 == offset8 then
 			IdTableHeader = offset0
 			break
@@ -22,9 +22,9 @@ local function GetIdAddressLine(id)
 	end
 
 	--Get informations from the 'IdTableHeader'
-	local smallestIdAddress   = memoryReadInt( getProc(), IdTableHeader )
-	local middleIdAddress     = memoryReadInt( getProc(), IdTableHeader + 0x4 )
-	local largestIdAdress     = memoryReadInt( getProc(), IdTableHeader + 0x8 )
+	local smallestIdAddress   = memoryReadUInt( getProc(), IdTableHeader )
+	local middleIdAddress     = memoryReadUInt( getProc(), IdTableHeader + 0x4 )
+	local largestIdAdress     = memoryReadUInt( getProc(), IdTableHeader + 0x8 )
 
 	local smallestId    	  = memoryReadInt( getProc(), smallestIdAddress + addresses.idOffset )
 	local largestId     	  = memoryReadInt( getProc(), largestIdAdress + addresses.idOffset )
@@ -43,12 +43,12 @@ local function GetIdAddressLine(id)
 			loopTest = loopTest + 1
 
 			-- Get 0 and 8 offsets
-			local offset8 = memoryReadInt( getProc(), dataPointer + 8)
+			local offset8 = memoryReadUInt( getProc(), dataPointer + 8)
 			-- Read a valid value? Has it reached the end of the table?
 			if offset8 == nil or offset8 < 0x100000 then
 				return
 			end
-			local offset0 = memoryReadInt( getProc(), dataPointer )
+			local offset0 = memoryReadUInt( getProc(), dataPointer )
 
 			-- Get the id
 			local currentId = memoryReadInt( getProc(), dataPointer + addresses.idOffset )
@@ -102,11 +102,11 @@ function GetItemAddress(id)
 	if id then
 		local addressline = GetIdAddressLine(id)
 		if addressline then
-			local address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8)
+			local address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8)
 			if address == 0 then
 				-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
 				if RoMScript then RoMScript("GetCraftRequestItem("..id..", -1)") end
-				address = memoryReadIntPtr( getProc(), addressline + 0x10, 0x8);
+				address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8);
 			end
 			return address
 		else

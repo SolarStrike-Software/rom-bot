@@ -96,8 +96,8 @@ function CWaypointList:load(filename)
 		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 	end
 
-	if( self.onLoadEvent ) and not bot_starting_skip_waypoint_onload then
-		self.onLoadEvent();
+	if( self.onLoadEvent ) then
+		self.DoOnload = true
 	end
 end
 
@@ -376,4 +376,51 @@ end
 
 function CWaypointList:clearExcludeZones()
 	self.ExcludeZones = {}
+end
+
+-- After a pullback, use this function to find the waypoint you were pulled before.
+function CWaypointList:findPulledBeforeWaypoint()
+	local WPCount = #self.Waypoints
+
+	-- If 1 or 2 then it can't change.
+	if WPCount < 3 then
+		return self.CurentWaypoint
+	end
+
+	local DistLimit = 1000 -- Limits distance to look back from current waypoint.
+	local wptotest = self.CurrentWaypoint
+	local bestwaypointindex = self.CurrentWaypoint -- Best waypoint index so far
+	local bestdist -- Best distance to path so far
+	local disttotal = 0   -- Tally of distance so far
+
+	repeat
+		local towp = self.Waypoints[wptotest]
+		local fromwp = self.Waypoints[wptotest-1]
+		if fromwp == nil then fromwp = self.Waypoints[#self.Waypoints] end
+
+		-- First find segment point
+		local segpoint = getNearestSegmentPoint(player.X, player.Z, towp.X, towp.Z, fromwp.X, fromwp.Z)
+
+		-- if segpoint = towp or fromwp then it isn't between the wps
+		if not (segpoint.X == towp.X and segpoint.Z == towp.Z) and not (segpoint.X == fromwp.X and segpoint.Z == fromwp.Z) then
+			-- Get player distance to segment
+			local tmpdist = distance(player, segpoint)
+			-- See if it's a better match
+			if bestdist == nil or tmpdist < bestdist then -- Compare
+				bestdist = tmpdist
+				bestwaypointindex = wptotest
+			end
+		end
+
+		-- Check how far we have come from curentwaypoint
+		disttotal = disttotal + distance(towp, fromwp)
+		if disttotal > DistLimit then -- Exceeded limit. Return best score
+			return bestwaypointindex
+		end
+
+		wptotest = wptotest - 1
+		if wptotest < 1 then wptotest = #self.Waypoints end
+	until wptotest == self.CurrentWaypoint -- Gone through all points
+
+	return bestwaypointindex
 end
