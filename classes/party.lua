@@ -291,10 +291,11 @@ function partyCommands()
 	local _message , _name = checkEventParty()
 	if _message then
 		--=== check type of command ===--
-		local _npc, _quest, _command, _choice
+		local _npc, _quest, _command, _choice, _action
 		_quest = string.match(_message,"quest\"(.*)\"")
 		_npc = string.match(_message,"npc\"(.*)\"")
 		_command = string.match(_message,"com\"(.*)\"")
+		_action = string.match(_message,"code\"(.*)\"")
 		if _quest then _quest = string.lower(_quest) end
 		if _npc then _npc = string.lower(_npc) end
 		if _command then _command = string.lower(_command) end
@@ -368,6 +369,9 @@ function partyCommands()
 			else
 				sendPartyChat("please get GoThroughPortal to make that work")
 			end
+		elseif _action then
+			local docode = loadstring(_action);
+			if docode then docode() else sendPartyChat("Bad code, try again") end
 		end
 	end
 end
