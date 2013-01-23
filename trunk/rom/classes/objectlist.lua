@@ -12,7 +12,7 @@ function CObjectList:update()
 
 	for i = 0,size do
 		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
-		if( addr ) then
+		if( addr and addr > 0) then
 			self.Objects[i] = CObject(addr);
 		end
 	end
