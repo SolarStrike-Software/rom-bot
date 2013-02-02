@@ -810,7 +810,8 @@ function getInventoryRange(range)
 		return 21, 21, "equipment"
 
 	elseif rangeLower == "guildbank" or rangeLower == "guild" then
-		return 1, 1000, "guildbank"
+		guildbank:updatePageAddresses()
+		return 1, #guildbank.PageAddresses*100, "guildbank"
 	elseif string.match(rangeLower, "guild") then
 		local page = string.match(rangeLower,"^guildbank(%d%d?)$") or string.match(rangeLower,"^guild(%d%d?)$")
 		page = tonumber(page)

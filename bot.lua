@@ -679,10 +679,14 @@ function main()
 		-- reloading ammunition
 		if ( settings.profile.options.RELOAD_AMMUNITION ) then
 			local ammo = string.lower(settings.profile.options.RELOAD_AMMUNITION);
-			if ammo == "arrow" or ammo == "thrown" then
+			if  ammo == "thrown" and (player.Class1 == CLASS_ROGUE or (player.Class2 == CLASS_ROGUE and player.Level > 11 and player.Level2 > 11)) then
 				if inventory:getAmmunitionCount() == 0 then
 					inventory:reloadAmmunition(ammo);
 				end
+			elseif ammo == "arrow" and (player.Class2 == CLASS_SCOUT or player.Class1 == CLASS_SCOUT) then
+				if inventory:getAmmunitionCount() == 0 then
+					inventory:reloadAmmunition(ammo);
+				end	
 			else
 			    print("RELOAD_AMMUNITION can only be false, arrow or thrown!");
 			end

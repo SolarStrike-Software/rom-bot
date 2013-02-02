@@ -27,7 +27,7 @@ function CGuildbankItem:update()
 		-- Unable to update at this moment
 		return
 	end
-
+	guildbank:updatePageAddresses()
 	local page = math.floor((self.BagId-1)/100)+1
 	local pageslot = self.BagId - (page-1)*100
 	local baseAddress = guildbank.PageAddresses[page] + 0x10

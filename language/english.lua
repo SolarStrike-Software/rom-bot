@@ -176,7 +176,7 @@ language = {
 	[185] = "We changed the option \'%s\' for skill \'%s\' from \'%s\' to \'%s\'.\n",
 	[186] = "Loading profile %s.xml\n",
 	[187] = "Please enter the wander radius you want to use > ",
-
+	[188] = "Error in your profile: preCodeOnElite error: %s",
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 
 
