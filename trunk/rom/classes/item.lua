@@ -328,6 +328,7 @@ function CItem:moveTo(bag)
 	elseif location == "equipment" then
 		toLocation = equipment
 	elseif location == "guildbank" then
+		if #guildbank.BagSlot == 0 then guildbank:update() end
 		toLocation = guildbank
 	end
 
@@ -352,7 +353,6 @@ function CItem:moveTo(bag)
 	if self.MaxStack > 1 and self.ItemCount < self.MaxStack then
 		for slot = first, last do
 			local toItem = toLocation.BagSlot[slot]
-			toItem:update()
 			if toItem.Available and self.Id == toItem.Id and toItem.ItemCount < toItem.MaxStack then -- merge
 				if (location == "guildbank" or self.Location == "guildbank") and location ~= self.Location then
 					-- Guild bank need 2 step merge

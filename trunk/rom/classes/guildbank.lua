@@ -4,7 +4,7 @@ include("guildbankitem.lua");
 CGuildbank = class(
 	function (self)
 
-		self.PageListAddress = 0;
+		self.PageListAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticGuildBankBase,0xC4);
 		self.PageAddresses = {};
 		self.BagSlot = {};
 
@@ -19,7 +19,6 @@ CGuildbank = class(
 function CGuildbank:update()
 	local timeStart = getTime();
 
-	self.PageListAddress = memoryReadUIntPtr(getProc(), addresses.staticGuildBankBase,0xC4)
 	if self:updatePageAddresses() == false then
 		-- Unable to update at this moment
 		return

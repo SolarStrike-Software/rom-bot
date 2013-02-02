@@ -1424,10 +1424,21 @@ function CPlayer:fight()
 
 	local target = self:getTarget();
 	self.IgnoreTarget = target.Address;
+	
+	if target.MaxHP > (player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR) then
+		-- check if preCodeOnElite event is used in profile
+		if( type(settings.profile.events.preCodeOnElite) == "function" ) then
+			_arg1 = target
+			local status,err = pcall(settings.profile.events.preCodeOnElite);
+			if( status == false ) then
+				local msg = sprintf(language[188], err);
+				error(msg);
+			end
+		end	
+	end	
+	
 	self.Fighting = true;
-
 	cprintf(cli.green, language[22], target.Name);	-- engagin x in combat
-
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
 	local function timedAttack()
