@@ -140,6 +140,7 @@ addresses = {
 	pawnHarvesting_offset = 0x164,
 	pawnId_offset = 0x14,
 	pawnIsMyTarget_offset = 0xC,
+	pawnIsPet_offset = 0x280,
 	pawnLastDamage_offset = 0x2D0,
 	pawnLevel2_offset = 0x30C,
 	pawnLevel_offset = 0x304,

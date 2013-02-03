@@ -136,6 +136,7 @@ function main()
 	local forcedPath = nil;
 	local forcedRetPath = nil;
 	local forcedCharacter = nil;
+	local debug_override = false
 
 	for i = 2,#args do
 		args[i] = string.lower(args[i])
@@ -144,15 +145,9 @@ function main()
 		end
 
 		if( args[i] == "debug" ) then
+			debug_override = true
 			settings.options.DEBUGGING = true;
 			settings.options.DEBUGGING_MACRO = true;
-			--settings.profile.options.DEBUG_INV = true;
-			settings.profile.options.DEBUG_LOOT = true;
-			settings.profile.options.DEBUG_TARGET = true;
-			settings.profile.options.DEBUG_HARVEST = true;
-			settings.profile.options.DEBUG_WAYPOINT = true;
-			settings.profile.options.DEBUG_AUTOSELL = true;
-
 
 			-- adds the numbers to the prints while in debug mode,
 			-- normal language code is in settings.lua
@@ -298,6 +293,14 @@ function main()
 	end
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
+	if debug_override == true then -- Needs to be after loading profile.
+		--settings.profile.options.DEBUG_INV = true;
+		settings.profile.options.DEBUG_LOOT = true;
+		settings.profile.options.DEBUG_TARGET = true;
+		settings.profile.options.DEBUG_HARVEST = true;
+		settings.profile.options.DEBUG_WAYPOINT = true;
+		settings.profile.options.DEBUG_AUTOSELL = true;
+	end
 	player:update()
 	settingsPrintKeys();		-- print keyboard settings to MM and log
 	registerTimer("timedSetWindowName", secondsToTimer(1), timedSetWindowName, load_profile_name);
@@ -686,7 +689,7 @@ function main()
 			elseif ammo == "arrow" and (player.Class2 == CLASS_SCOUT or player.Class1 == CLASS_SCOUT) then
 				if inventory:getAmmunitionCount() == 0 then
 					inventory:reloadAmmunition(ammo);
-				end	
+				end
 			else
 			    print("RELOAD_AMMUNITION can only be false, arrow or thrown!");
 			end
@@ -969,7 +972,7 @@ function main()
 
 						-- check if onUnstickFailure event is used in profile
 						if( type(settings.profile.events.onUnstickFailure) == "function" ) and
-							player.Unstick_counter == settings.profile.options.MAX_UNSTICK_TRIALS + 1 then
+							player.Unstick_counter > settings.profile.options.MAX_UNSTICK_TRIALS then
 							pcall(settings.profile.events.onUnstickFailure);
 
 						elseif( settings.profile.options.LOGOUT_WHEN_STUCK ) then
@@ -1036,11 +1039,10 @@ function resurrect()
 	if( settings.profile.options.RES_AFTER_DEATH == true ) then
 		cprintf(cli.red, language[3]);			-- Died. Resurrecting player...
 
-		-- try mouseclick to reanimate
-		cprintf(cli.green, language[104]);  -- try to resurrect in 10 seconds
+		cprintf(cli.green, language[104]);  -- try to resurrect in 5 seconds
 		yrest(5000);
 
-		-- if still dead, try macro if one defined
+		-- Try to revive with macro
 		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
 			RoMScript("UseSelfRevive();");	-- first try self revive

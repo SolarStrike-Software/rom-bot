@@ -37,8 +37,8 @@
 		<option name="MAX_TARGET_DIST"    	value="225" />
 		<option name="PRIORITY_CASTING"		value="false" />		<!-- If you want to cast attack skills by 'priority' or 'sequencially' -->
 		<option name="COUNT_AGGRO_ONLY"		value="false" />		<!-- If you want to count only aggro mobs within range of aoe skills  -->
-		<option name="AUTO_ELITE_FACTOR"    value="7" />			<!-- (value * your max HP) to designate a mob as "elite" -->
-		
+		<option name="AUTO_ELITE_FACTOR"    value="5" />			<!-- (value * your max HP) to designate a mob as "elite" -->
+
 		<!-- Attack monsters 3 levels above or 10 below your level -->
 		<option name="TARGET_LEVELDIF_ABOVE" value="3" />
 		<option name="TARGET_LEVELDIF_BELOW" value="10" />
@@ -243,10 +243,10 @@
 	]]></onDeath>
 
 	<preCodeOnElite><![CDATA[
-		-- code to use before a boos or tough mob
+		-- code to use before a boss or tough mob
 		-- _arg1 is target pawn, _arg1.Name = target's name
 	]]></preCodeOnElite>
-	
+
 	<onLeaveCombat><![CDATA[
 		-- Additional Lua code to execute after killing an enemy
 	]]></onLeaveCombat>

@@ -249,11 +249,16 @@ function sendPartyChat(_msg)
 end
 
 function getPartyLeaderName()
-	local name = memoryReadString(getProc(), addresses.partyLeader_address)
-	if( bot.ClientLanguage == "RU" ) then
-		name = utf82oem_russian(name)
+	local name
+	if memoryReadByte(getProc(), addresses.partyLeader_address + 0x14) == 0x1F then
+		name = memoryReadStringPtr(getProc(), addresses.partyLeader_address,0)
 	else
-		name = utf8ToAscii_umlauts(name)
+		name = memoryReadString(getProc(), addresses.partyLeader_address)
+	end
+	if( bot.ClientLanguage == "RU" ) then
+		name = utf82oem_russian(name);
+	else
+		name = utf8ToAscii_umlauts(name);   -- only convert umlauts
 	end
 	return name
 end

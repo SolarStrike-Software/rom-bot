@@ -26,7 +26,7 @@ NTYPE_ORE = 2
 NTYPE_HERB = 3
 
 ATTACKABLE_MASK_PLAYER = 0x10000;
-ATTACKABLE_MASK_MONSTER = 0x80000;
+ATTACKABLE_MASK_MONSTER = 0x20000;
 
 AGGRESSIVE_MASK_MONSTER = 0x100000;
 
@@ -68,11 +68,9 @@ CPawn = class(
 		self.Type = PT_NONE;
 		self.Class1 = CLASS_NONE;
 		self.Class2 = CLASS_NONE;
-		self.Class3 = CLASS_NONE;
 		self.Guild = "<UNKNOWN>";
 		self.Level = 1;
 		self.Level2 = 1;
-		self.Level3 = 1;
 		self.HP = 1000;
 		self.LastDamage = 0;
 		self.MaxHP = 1000;
@@ -80,40 +78,6 @@ CPawn = class(
 		self.MaxMP = 1000;
 		self.MP2 = 1000;
 		self.MaxMP2 = 1000;
-		self.Race = RACE_HUMAN;
-		self.X = 0.0;
-		self.Y = 0.0;
-		self.Z = 0.0;
-		self.TargetPtr = 0;
-		self.PetPtr = 0;
-		self.Pet = nil;
-		self.Direction = 0.0;
-		self.Attackable = false;
-		self.Alive = true;
-		self.Mounted = false;
-		self.IgnoreTarget = 0;
-		self.Lootable = false;
-		self.Aggressive = false;
-
-		self.Buffs = {};
-
-		-- Experience tracking variables
-		self.LastExpUpdateTime = os.time();
-		self.LastExp = 0;				-- The amount of exp we had last check
-		self.ExpUpdateInterval = 10;	-- Time in seconds to update exp
-		self.ExpTable = { };			-- Holder for past exp values
-		self.ExpTableMaxSize = 10;		-- How many values to track
-		self.ExpInsertPos = 0;			-- Pointer to current position to overwrite (do not change)
-		self.ExpPerMin = 0;				-- Calculated exp per minute
-		self.TimeTillLevel = 0;			-- Time in minutes until the player will level up
-
-
-		-- Directed more at player, but may be changed later.
-		self.Harvesting = false; -- Whether or not we are currently harvesting
-		self.Battling = false; -- The actual "in combat" flag.
-		self.Fighting = false; -- Internal use, does not depend on the client's battle flag
-		self.Casting = false;
-		self.Stance = 0;
 		self.Mana = 0;
 		self.MaxMana = 0;
 		self.Rage = 0;
@@ -122,68 +86,26 @@ CPawn = class(
 		self.MaxEnergy = 0;
 		self.Focus = 0;
 		self.MaxFocus = 0;
-		self.Nature = 0;
-		self.Psi = 0;
-
-		self.PotionLastUseTime = 0;
-		self.PotionHpUsed = 0;			-- counts use of HP over time potions
-		self.PotionManaUsed = 0;		-- counts use of mana over time potions
-		self.PotionLastManaEmptyTime = 0;	-- timer for potion empty message
-		self.PotionLastHpEmptyTime = 0;	-- timer for potion empty message
-
-		self.PotionLastOnceUseTime = 0;
-		self.PotionHpOnceUsed = 0;			-- counts use of HP potions
-		self.PotionManaOnceUsed = 0;		-- counts use of mana potions
-		self.PotionLastManaOnceEmptyTime = 0;	-- timer for potion empty message
-		self.PotionLastHpOnceEmptyTime = 0;	-- timer for potion empty message
-
-		self.PhiriusLastUseTime = 0;
-		self.PhiriusHpUsed = 0;			-- counts use of HP phirius
-		self.PhiriusManaUsed = 0;		-- counts use of mana phirius
-		self.PhiriusLastManaEmptyTime = 0;	-- timer for phirius empfty message
-		self.PhiriusLastHpEmptyTime = 0;	-- timer for phirius empfty message
-
-		self.Returning = false;		-- Whether following the return path, or regular waypoints
-		self.BotStartTime = os.time(); -- Records when the bot was started.
-		self.BotStartTime_nr = 0;	-- Records when the bot was started, will not return at pause
-		self.InventoryLastUpdate = os.time(); -- time of the last full inventory updata
-		self.InventoryDoUpdate = false;	-- flag to 'force' inventory update
-		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
-		self.Success_waypoints = 0; -- count consecutively successfull reached waypoints
-		self.Cast_to_target = 0;	-- count casts to our enemy target
-		self.level_detect_levelup = 0;	-- remember player level to detect levelups
-		self.Sleeping = false;		-- sleep mode with fight back if attacked
-		self.Sleeping_time = 0;		-- counts the sleeping time
-		self.Fights = 0;			-- counts the fights
-		self.mobs = {};				-- counts the kills per target name
-		self.Death_counter = 0;		-- counts deaths / automatic reanimation
-		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
-		self.Last_ignore_target_ptr = 0;		-- last target to ignore address
-		self.LastTargetPtr = 0;		-- last invalid target
-		self.Last_ignore_target_time = 0;		-- last target to ignore time
-		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
-		self.fightStartTime = 0;				-- time fight started
-		self.ranged_pull = false;			-- ranged pull phase active
-		self.free_debug1 = 0;				-- free field for debug use
-		self.free_field1 = nil;				-- free field for user use
-		self.free_field2 = nil;				-- free field for user use
-		self.free_field3 = nil;				-- free field for user use
-		self.free_counter1 = 0;				-- free counter for user use
-		self.free_counter2 = 0;				-- free counter for user use
-		self.free_counter3 = 0;				-- free counter for user use
-		self.free_flag1 = false;			-- free flag for user use
-		self.free_flag2 = false;			-- free flag for user use
-		self.free_flag3 = false;			-- free flag for user use
-		self.SkillQueue = {};				-- Holds any queued skills, obviously
+		self.Race = RACE_HUMAN;
+		self.X = 0.0;
+		self.Y = 0.0;
+		self.Z = 0.0;
+		self.TargetPtr = 0;
+		self.Direction = 0.0;
+		self.Attackable = false;
+		self.Alive = true;
+		self.Mounted = false;
+		self.Lootable = false;
+		self.Aggressive = false;
+		self.Harvesting = false; -- Whether or not we are currently harvesting
+		self.Casting = false;
 		self.TargetIcon = true
 		self.InParty = false
 		self.Swimming = false
 		self.Speed = 50
-		self.ActualSpeed = 0
-		self.Moving = false
-		self.GlobalCooldown = 0
-		self.LastSkill = {}
-		self.failed_casts_in_a_row = 0
+		self.IsPet = nil
+
+		self.Buffs = {};
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end
@@ -344,6 +266,7 @@ function CPawn:update()
 
 	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
 	self.Swimming = (tmp == 3 or tmp == 4)
+	self:updateIsPet()
 
 	if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
 		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
@@ -764,6 +687,18 @@ function CPawn:updateSwimming()
 	self.Swimming = (tmp == 3 or tmp == 4)
 end
 
+function CPawn:updateIsPet()
+	if not self:hasAddress() then
+		self.IsPet = nil
+		return
+	end
+
+	if self.IsPet == nil then -- not updated yet
+		self.IsPet = memoryReadRepeat("uint",getProc(), self.Address + addresses.pawnIsPet_offset)
+		if self.IsPet == 0 then self.IsPet = false end
+	end
+end
+
 function CPawn:haveTarget()
 	-- Update TargetPtr
 	self:updateTargetPtr()
@@ -927,7 +862,8 @@ function CPawn:countMobs(inrange, onlyaggro, idorname)
 			pawn:updateAlive()
 			pawn:updateHP()
 			pawn:updateAttackable()
-			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
+			pawn:updateLevel()
+			if pawn.Alive and pawn.HP >=1 and pawn.Attackable and pawn.Level > 1 then
 				if onlyaggro == true then
 					pawn:updateTargetPtr()
 					if pawn.TargetPtr == player.Address then
@@ -997,8 +933,9 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro)
 			pawn:updateAlive()
 			pawn:updateHP()
 			pawn:updateAttackable()
+			pawn:updateLevel()
 			pawn:updateXYZ() -- For the rest of the function
-			if pawn.Alive and pawn.HP >=1 and pawn.Attackable then
+			if pawn.Alive and pawn.HP >=1 and pawn.Attackable and pawn.Level > 1 then
 				if onlyaggro == true then
 					pawn:updateTargetPtr()
 					if pawn.TargetPtr == player.Address then

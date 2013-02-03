@@ -81,7 +81,7 @@ settings_default = {
 			-- expert options
 			MAX_SKILLUSE_NODMG = 4,				-- maximum casts without damaging the target before break it
 			MAX_TARGET_DIST = 250,			-- maximum distance to select a target (helpfull to limit at small places)
-			AUTO_ELITE_FACTOR = 7,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
+			AUTO_ELITE_FACTOR = 5,			-- mobs with x * your HP value counts as 'Elite' and we will not target it
 			AUTO_TARGET = true,				-- bot will target mobs automaticly (set it to false if you want to use the bot only as fight support)
 --			SKILL_GLOBALCOOLDOWN = 1200,	-- Global Skill Use Cooldown (1000ms) we use a little more
 			SKILL_USE_PRIOR = "auto",			-- cast x ms before cooldown is finished
@@ -671,7 +671,7 @@ function settings.loadProfile(_name)
 			end;
 		end
 	end
-	
+
 	local loadOnLevelupEvent = function(node)
 		local luaCode = node:getValue();
 		if( luaCode == nil ) then return; end;
@@ -979,7 +979,7 @@ function settings.loadProfile(_name)
 		elseif( string.lower(name) == "onleavecombat" ) then
 			loadOnLeaveCombatEvent(v);
 		elseif( string.lower(name) == "precodeonelite" ) then
-			loadPreCodeOnElite(v);			
+			loadPreCodeOnElite(v);
 		elseif( string.lower(name) == "onlevelup" ) then
 			loadOnLevelupEvent(v);
 		elseif( string.lower(name) == "onskillcast" ) then

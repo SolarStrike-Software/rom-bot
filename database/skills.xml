@@ -2,10 +2,10 @@
 	<!-- Mage Skills -->
 	<skill name="MAGE_FIREBALL" id="490204" range="225" cooldown="6" priority="65" type="damage" target="enemy" />
 	<skill name="MAGE_LIGHTNING" id="490212" range="150" minrange="75" priority="100" cooldown="20" type="damage" target="enemy" />
-	<skill name="MAGE_INTENSIFICATION" id="490225" cooldown="120" type="buff" target="self" />
+	<skill name="MAGE_INTENSIFICATION" id="497976" range="225" cooldown="120" type="buff" buffname="620177" target="enemy" />
 	<skill name="MAGE_SILENCE" id="490296" range="150" cooldown="24" type="damage" target="enemy" />
 	<skill name="MAGE_FIRE_WARD" id="490248" type="buff" buffname="500366" target="self" />
-	<skill name="MAGE_ELEMENTAL_CATALYST" id="490238" cooldown="300" type="buff" target="self" />
+	<skill name="MAGE_ELEMENTAL_CATALYST" id="490238" buffname="500339" range="225" cooldown="300" type="buff" target="enemy" />
 	<skill name="MAGE_FLAME" id="491150" range="225" casttime="3" type="damage" target="enemy" />
 	<skill name="MAGE_ELECTROSTATIC_CHARGE" id="491156" cooldown="120" type="buff" buffname="501538" target="self" />
 	<skill name="MAGE_PLASMA_ARROW" id="491169" range="200" casttime="2" type="damage" target="enemy" />
@@ -89,7 +89,7 @@
 
 	<!-- Elite -->
 	<skill name="PRIEST_BATTLE_MONK_STANCE" id="491600" type="buff" buffname="501977" target="self" />
-	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" id="491362" type="damage" target="enemy" range="50" reqbuffname="501977" reqbufftarget="player" />
+	<skill name="PRIEST_EXPLOSION_OF_FIGHTING_SPIRIT" id="495294" type="damage" target="enemy" range="50" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_FIGHTING_SPIRIT_COMBINATION" id="491363" type="damage" target="enemy" range="50" casttime="2" cooldown="6" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_ASCENDING_DRAGON_STRIKE" id="491364" type="damage" target="enemy" range="50" reqbuffname="501977" reqbufftarget="player" />
 	<skill name="PRIEST_POWER_BUILD_UP" id="492635" cooldown="30" type="buff" buffname="502904" target="self" reqbuffname="501977" reqbufftarget="player" />
@@ -424,7 +424,7 @@
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" id="493344" minmanaper="15" casttime="4" type="summon" target="self" inbattle="false" />
 	<!-- TODO: Damage Transfer requires pet -->
 	<skill name="WARDEN_DAMAGE_TRANSFER" id="493399" cooldown="180" type="buff" target="self" />
-	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" type="buff" buffname="503946" target="self" />
+	<skill name="WARDEN_HEART_OF_THE_OAK" id="493346" cooldown="60" type="buff" buffname="503946" target="self" />
 	<skill name="WARDEN_FRANTIC_BRIAR" id="493391" cooldown="12" range="80" type="damage" target="enemy" aoecenter="player" />
 	<!-- TODO: Requires pet HP > 0.3 -->
 	<skill name="WARDEN_SOUL_ATTACK" id="493404" range="150" casttime="2" cooldown="6" />
@@ -447,6 +447,7 @@
 	<skill name="WARDEN_UNTAMABLE" id="494006" cooldown="4" range="50" type="damage" target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" id="494212" minmanaper="15" casttime="8" type="summon" target="self" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" id="494357" type="buff" target="self" cooldown="90" />
+	<skill name="WARDEN_SACRIFICE" id="494613" cooldown="180" type="heal" target="self" maxhpper="50"/>
 	<skill name="WARDEN_WIND_CHOP" id="494010" range="50" type="damage" target="enemy"/>
 
 
@@ -496,13 +497,19 @@
 	<skill name="CHAMPION_RUNE_DRAW" id="498564" range="150" cooldown="40" type="damage" target="enemy" />
 	<skill name="CHAMPION_RUNE_PULSE" id="498529" range="225" casttime="2" cooldown="6" type="damage" target="enemy" />
 	<skill name="CHAMPION_FEARLESS_BLOW" id="498531" range="200" cooldown="25" type="damage" target="enemy" />
+	<skill name="CHAMPION_SHIELD_FORM" id="498562" type="buff" target="self" buffname="621218" />
 	<skill name="CHAMPION_RUNE_GROWTH" id="498536" cooldown="15" type="buff" target="self" buffname="621209" />
 	<skill name="CHAMPION_KINETIC_BURN" id="498481" range="50" cooldown="60" type="damage" target="enemy" aoecenter="player" />
 
 	<!-- Elite -->
+	<skill name="CHAMPION_DETERMINATION_RUNE" id="498584" cooldown="30" type="buff" buffname="621246" target="self" />
+	<skill name="CHAMPION_EYE_FOR_AN_EYE" id="498585" cooldown="120" type="buff" buffname="621247" target="self" />
+	<skill name="CHAMPION_SHADOW_PULSE" id="498726" range="225" cooldown="6" type="damage" target="enemy" />
+	<skill name="CHAMPION_WAITING_GAME" id="498728" cooldown="60" type="buff" buffname="621471" target="self" />
+	<skill name="CHAMPION_DEATH_ARRIVES" id="498730" cooldown="300" type="buff" buffname="621485" target="self" />
 	<skill name="CHAMPION_SOUL_FORGE_MYSTERY" id="498652" type="buff" buffname="621339" target="self" />
-	<skill name="CHAMPION_DETERMINATION_RUNE" id="498584" cooldown="30" type="buff" target="self" buffname="621246" />
-	<skill name="CHAMPION_EYE_FOR_AN_EYE" id="498585" cooldown="120" type="buff" target="self" buffname="621247" />
+
+	<!-- Unknown skills or superseded names -->
 	<skill name="CHAMPION_ENERGY_INFLUX_STRIKES" id="498693" range="225" cooldown="3" type="damage" target="enemy" />
 
 

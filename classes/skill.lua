@@ -147,18 +147,14 @@ function CSkill:canUse(_only_friendly, target)
 
 	-- a local function to make it more easy to insert debuging lines
 	-- you have to insert the correspointing options into your profile
-	-- at the <onLoad> event to set the right values
-	-- 	settings.profile.options.DEBUG_SKILLUSE.ENABLE = true;
-	--	settings.profile.options.DEBUG_SKILLUSE.TIMEGAP = true;
+	-- or at the <onLoad> event set
+	-- 	settings.profile.options.DEBUG_SKILLUSE = true;
 
 	local function debug_skilluse(_reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 		-- return if debugging / detail  is disabled
-		if( not settings.profile.options.DEBUG_SKILLUSE.ENABLE ) then return; end
-		if( settings.profile.options.DEBUG_SKILLUSE[_reason] == false ) 	then  return; end;
---		if( _reason == "ONCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.ONCOOLDOWN ) 	then  return; end;
---		if( _reason == "NOCOOLDOWN"	and  not settings.profile.options.DEBUG_SKILLUSE.NOCOOLDOWN ) 	then  return; end;
---		if( _reason == "HPLOW" 		and  not settings.profile.options.DEBUG_SKILLUSE.HPLOW ) 		then  return; end;
+		if settings.profile.options.DEBUG_SKILLUSE ~= true then return; end
+		if not player.Fighting then return end
 
 		local function make_printable(_v)
 			if(_v == true) then
@@ -579,8 +575,7 @@ function CSkill:use()
 
 	-- debug time gap between casts
 	player:updateCasting()
-	if( settings.profile.options.DEBUG_SKILLUSE.ENABLE  and
-		settings.profile.options.DEBUG_SKILLUSE.TIMEGAP ) then
+	if settings.profile.options.DEBUG_SKILLUSE == true then
 		local hf_casting = "false";
 		if(player.Casting) then hf_casting = "true"; end;
 		local msg = sprintf("[DEBUG] gap between skilluse %d, pcasting=%s\n",

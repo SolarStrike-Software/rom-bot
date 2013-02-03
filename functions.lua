@@ -316,7 +316,7 @@ function distance(x1, z1, y1, x2, z2, y2)
 end
 
 -- Used in pause/exit callbacks. Just releases movement keys.
-local function releaseKeys()
+function releaseKeys()
 	if __PROC then
 		memoryWriteBytePtr(__PROC, addresses.staticbase_char ,addresses.moveKeysPressed_offset, 0 )
 	end
@@ -2024,6 +2024,9 @@ function PointInPoly(vertices, testx, testz )
 			vertices = vertices .. ".xml"
 		end
 		local filename = getExecutionPath() .. "/waypoints/" .. vertices
+		if not fileExists(filename) then
+			filename = getExecutionPath() .. "/../romglobal/waypoints/" .. vertices
+		end
 		local file, err = io.open(filename, "r");
 		if file then
 			file:close();
