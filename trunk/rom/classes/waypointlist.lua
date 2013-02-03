@@ -301,6 +301,9 @@ function CWaypointList:setKillZone(_zone)
 			_zone = _zone .. ".xml"
 		end
 		local filename = getExecutionPath() .. "/waypoints/" .. _zone
+		if not fileExists(filename) then
+			filename = getExecutionPath() .. "/../romglobal/waypoints/" .. _zone
+		end
 		local file, err = io.open(filename, "r");
 		if file then
 			file:close();
@@ -339,6 +342,9 @@ function CWaypointList:addExcludeZone(_zone,_zonename)
 			_zone = _zone .. ".xml"
 		end
 		local filename = getExecutionPath() .. "/waypoints/" .. _zone
+		if not fileExists(filename) then
+			filename = getExecutionPath() .. "/../romglobal/waypoints/" .. _zone
+		end
 		local file, err = io.open(filename, "r");
 		if file then
 			file:close();

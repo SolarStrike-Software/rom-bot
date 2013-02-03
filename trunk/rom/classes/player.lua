@@ -27,7 +27,94 @@ CRAFT_HERBALISM = 8
 local BreakFromFight = false
 local break_fight = false;	-- flag to avoid kill counts for breaked fights
 
-CPlayer = class(CPawn);
+CPlayer = class(CPawn,
+	function (self, ptr)
+		CPawn.constructor(self) -- call pawn constructor manually without 'ptr' arg.
+		self.Address = ptr;
+
+		-- Experience tracking variables
+		self.LastExpUpdateTime = os.time();
+		self.LastExp = 0;				-- The amount of exp we had last check
+		self.ExpUpdateInterval = 10;	-- Time in seconds to update exp
+		self.ExpTable = { };			-- Holder for past exp values
+		self.ExpTableMaxSize = 10;		-- How many values to track
+		self.ExpInsertPos = 0;			-- Pointer to current position to overwrite (do not change)
+		self.ExpPerMin = 0;				-- Calculated exp per minute
+		self.TimeTillLevel = 0;			-- Time in minutes until the player will level up
+
+
+		-- Directed more at player, but may be changed later.
+		self.Class3 = CLASS_NONE;
+		self.Level3 = 1;
+		self.Pet = nil;
+		self.PetPtr = 0;
+		self.IgnoreTarget = 0;
+		self.Battling = false; -- The actual "in combat" flag.
+		self.Fighting = false; -- Internal use, does not depend on the client's battle flag
+		self.Stance = 0;
+		self.Nature = 0;
+		self.Psi = 0;
+
+		self.PotionLastUseTime = 0;
+		self.PotionHpUsed = 0;			-- counts use of HP over time potions
+		self.PotionManaUsed = 0;		-- counts use of mana over time potions
+		self.PotionLastManaEmptyTime = 0;	-- timer for potion empty message
+		self.PotionLastHpEmptyTime = 0;	-- timer for potion empty message
+
+		self.PotionLastOnceUseTime = 0;
+		self.PotionHpOnceUsed = 0;			-- counts use of HP potions
+		self.PotionManaOnceUsed = 0;		-- counts use of mana potions
+		self.PotionLastManaOnceEmptyTime = 0;	-- timer for potion empty message
+		self.PotionLastHpOnceEmptyTime = 0;	-- timer for potion empty message
+
+		self.PhiriusLastUseTime = 0;
+		self.PhiriusHpUsed = 0;			-- counts use of HP phirius
+		self.PhiriusManaUsed = 0;		-- counts use of mana phirius
+		self.PhiriusLastManaEmptyTime = 0;	-- timer for phirius empfty message
+		self.PhiriusLastHpEmptyTime = 0;	-- timer for phirius empfty message
+
+		self.Returning = false;		-- Whether following the return path, or regular waypoints
+		self.BotStartTime = os.time(); -- Records when the bot was started.
+		self.BotStartTime_nr = 0;	-- Records when the bot was started, will not return at pause
+		self.InventoryLastUpdate = os.time(); -- time of the last full inventory updata
+		self.InventoryDoUpdate = false;	-- flag to 'force' inventory update
+		self.Unstick_counter = 0;	-- counts unstick tries, resets if waypoint reached
+		self.Success_waypoints = 0; -- count consecutively successfull reached waypoints
+		self.Cast_to_target = 0;	-- count casts to our enemy target
+		self.level_detect_levelup = 0;	-- remember player level to detect levelups
+		self.Sleeping = false;		-- sleep mode with fight back if attacked
+		self.Sleeping_time = 0;		-- counts the sleeping time
+		self.Fights = 0;			-- counts the fights
+		self.mobs = {};				-- counts the kills per target name
+		self.Death_counter = 0;		-- counts deaths / automatic reanimation
+		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
+		self.Last_ignore_target_ptr = 0;		-- last target to ignore address
+		self.LastTargetPtr = 0;		-- last invalid target
+		self.Last_ignore_target_time = 0;		-- last target to ignore time
+		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
+		self.fightStartTime = 0;				-- time fight started
+		self.ranged_pull = false;			-- ranged pull phase active
+		self.free_debug1 = 0;				-- free field for debug use
+		self.free_field1 = nil;				-- free field for user use
+		self.free_field2 = nil;				-- free field for user use
+		self.free_field3 = nil;				-- free field for user use
+		self.free_counter1 = 0;				-- free counter for user use
+		self.free_counter2 = 0;				-- free counter for user use
+		self.free_counter3 = 0;				-- free counter for user use
+		self.free_flag1 = false;			-- free flag for user use
+		self.free_flag2 = false;			-- free flag for user use
+		self.free_flag3 = false;			-- free flag for user use
+		self.SkillQueue = {};				-- Holds any queued skills, obviously
+		self.ActualSpeed = 0
+		self.Moving = false
+		self.GlobalCooldown = 0
+		self.LastSkill = {}
+		self.failed_casts_in_a_row = 0
+
+		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
+	end, false -- false = do not call pawn constructor
+);
+
 
 function CPlayer.new()
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
@@ -1049,6 +1136,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 
 				self:cast(skill);
 				used = true;
+			else
 				useQueue = false;
 			end
 
@@ -1412,6 +1500,22 @@ function CPlayer:fight()
 		sendMacro('SetRaidTarget("target", 1);')
 	end
 
+	local target = self:getTarget();
+	self.IgnoreTarget = target.Address;
+
+	if target.MaxHP > (player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR) then
+		-- check if preCodeOnElite event is used in profile
+		if( type(settings.profile.events.preCodeOnElite) == "function" ) then
+			releaseKeys();
+			_arg1 = target
+			local status,err = pcall(settings.profile.events.preCodeOnElite);
+			if( status == false ) then
+				local msg = sprintf(language[188], err);
+				error(msg);
+			end
+		end
+	end
+
 	if self.Class1 == CLASS_WARDEN then -- if warden let pet start fight.
 		petupdate()
 		if pet.Name == GetIdName(102297) or
@@ -1422,23 +1526,9 @@ function CPlayer:fight()
 		end
 	end
 
-	local target = self:getTarget();
-	self.IgnoreTarget = target.Address;
-	
-	if target.MaxHP > (player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR) then
-		-- check if preCodeOnElite event is used in profile
-		if( type(settings.profile.events.preCodeOnElite) == "function" ) then
-			_arg1 = target
-			local status,err = pcall(settings.profile.events.preCodeOnElite);
-			if( status == false ) then
-				local msg = sprintf(language[188], err);
-				error(msg);
-			end
-		end	
-	end	
-	
 	self.Fighting = true;
 	cprintf(cli.green, language[22], target.Name);	-- engagin x in combat
+
 	-- Keep tapping the attack button once every few seconds
 	-- just in case the first one didn't go through
 	local function timedAttack()
@@ -2293,6 +2383,13 @@ function evalTargetDefault(address, target)
 			debug_target("PK player, but not fighting us")
 			return false;         -- he is not a valid target
 		end;
+	end
+
+	-- Ignore pets
+	target:updateIsPet()
+	if target.IsPet then
+		debug_target("target is a pet")
+		return false
 	end
 
 	-- Friends aren't enemies

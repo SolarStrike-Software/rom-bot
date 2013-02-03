@@ -93,7 +93,7 @@ language = {
 	[101] = "Due to technical reasons, we can't use the character/profile name \'%s\' as a profile name. Please use profile name \'%s.xml\' instead or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'\nBot finished due to errors above.",
 	[102] = "We can't find your profile \'%s.xml\'. Please create a valid character profile within the folder \'rom\\profiles\' or start the bot with a forced profile: \'rom\\bot.lua profile:xyz\'. If you wish the bot to load a default profile when no valid character profile exists and a forced profile is not used, then create a default profile \'userdefault.xml\'.\nBot finished due to errors above.",
 	[103] = "If you want to use automatic resurrection then set option \'RES_AUTOMATIC_AFTER_DEATH = \"true\"\' within your profile.\n",
-	[104] = "We will try to resurrect in 10 seconds.\n",
+	[104] = "We will try to resurrect in 5 seconds.\n",
 	[105] = "Try to resurrect at the place of death ...\n",
 	[106] = "Try to resurrect at the spawnpoint ...\n",
 	[107] = "Try to use the ingame resurrect macro ...\n",

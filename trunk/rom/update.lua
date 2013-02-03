@@ -913,6 +913,19 @@ local updatePatterns =
 		adjustment = 0x70,
 	},
 
+	pawnIsPet_offset = {
+		pattern = string.char(
+			0xCC,
+			0x8B, 0x81, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x85, 0xC0,
+			0x74, 0x12,
+			0x8D, 0x9B, 0X00, 0X00, 0X00, 0X00),
+		mask = "xxx????xxxxxxxxxx",
+		offset = 3,
+		startloc = 0x860000,
+	},
+
+
 }
 
 
