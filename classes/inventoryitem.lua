@@ -76,8 +76,10 @@ function CInventoryItem:use()
 
 	-- If the item can't be used now we should be able to set a timer or something like that to recall this function and check again...
 	if not self.InUse then
-		if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
-		( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
+		local cd, success = self:getRemainingCooldown()
+		if success == true and cd ~= 0 then -- Item is on CoolDown we can't use it
+		--if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
+		--( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
 			canUse = false;
 			reason = "Cooldown";
 		end;

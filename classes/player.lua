@@ -88,9 +88,7 @@ CPlayer = class(CPawn,
 		self.mobs = {};				-- counts the kills per target name
 		self.Death_counter = 0;		-- counts deaths / automatic reanimation
 		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
-		self.Last_ignore_target_ptr = 0;		-- last target to ignore address
 		self.LastTargetPtr = 0;		-- last invalid target
-		self.Last_ignore_target_time = 0;		-- last target to ignore time
 		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
 		self.fightStartTime = 0;				-- time fight started
 		self.ranged_pull = false;			-- ranged pull phase active
@@ -110,6 +108,8 @@ CPlayer = class(CPawn,
 		self.GlobalCooldown = 0
 		self.LastSkill = {}
 		self.failed_casts_in_a_row = 0
+		self.MobIgnoreList = {}
+		self.LastPlaceMobIgnored = nil
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end, false -- false = do not call pawn constructor
@@ -1002,7 +1002,7 @@ function CPlayer:cast(skill)
 
 		-- Wait for casting or GCD to start
 		if waitTillCastingStarts() == false then -- failed to cast/aborted
-			return
+			return "failed to cast"
 		end
 
 		if( skill.Toggleable ) then
@@ -1063,91 +1063,76 @@ end
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills(_only_friendly, target)
+	local function takingTooLongToDamageTarget(target)
+		self:updateCasting()
+		if ( target ~= nil and target:exists() and _only_friendly ~= true ) then
+			target:updateLastDamage()
+		end
+
+		if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
+			self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
+			printf(language[83]);			-- Taking too long to damage target
+			self:addToMobIgnoreList(target.Address)
+			self:clearTarget();
+
+			self:updateBattling()
+			if( self.Battling ) then
+				yrest(1000);
+				keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+				yrest(1000);
+				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+				yrest(1000)
+				self:updateXYZ();
+			end
+
+			break_fight = true;
+			return true
+		end
+
+		return false
+	end
+
 	local used = false;
 	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
 
 	local target = target or CPawn.new(self.TargetPtr);
-	if ( target ~= nil and target:exists() and _only_friendly ~= true ) then
-		target:updateLastDamage()
-	end
 
-	local useQueue = true;
+	local useQueue = false; -- Whether to use the regular profile skills
 	if( #self.SkillQueue > 0 ) then
 		-- Queue is not empty. See if we can cast anything
 		local skill = self:getNextQueuedSkill();
-		if( skill.Blocking ) then
+		if not takingTooLongToDamageTarget(target) then
 			if( skill:canUse(false, target) ) then
-				self:updateCasting()
-				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
-					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
-					printf(language[83]);			-- Taking too long to damage target
-					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
-					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
-					self:clearTarget();
-
-					if( self.Battling ) then
-						yrest(1000);
-					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-					   yrest(1000);
-					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-					   self:updateXYZ();
-					end
-
-					break_fight = true;
-				end
-
 				if( skill.CastTime > 0 ) then
 					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
 					 -- Wait to stop only if not an instant cast spell
 					self:waitTillStopMoving()
 				end
 
-				self:cast(skill);
-				used = true;
-				self:popSkillQueue();
-			else
-				useQueue = false;
-			end
-		else
-			if( skill:canUse(false, target) ) then
-				self:updateCasting()
-				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
-					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
-					printf(language[83]);			-- Taking too long to damage target
-					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
-					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
-					self:clearTarget();
-
-					if( self.Battling ) then
-						yrest(1000);
-					   keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-					   yrest(1000);
-					   keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-					   self:updateXYZ();
+				if self:cast(skill) == "failed to cast" then
+					if EventMonitorCheck("cant_target", "1", true) then
+						EventMonitorStop("cant_target")
+						target:addToMobIgnoreList()
+						self:clearTarget();
 					end
-
-					break_fight = true;
+				else
+					used = true;
+					self:popSkillQueue();
 				end
-
-				if( skill.CastTime > 0 ) then
-					keyboardRelease( settings.hotkeys.MOVE_FORWARD.key );
-					self:waitTillStopMoving(); -- Wait to stop only if not an instant cast spell
-				end
-
-				self:cast(skill);
-				used = true;
 			else
-				useQueue = false;
+				if( skill.Blocking ) then
+					useQueue = true;
+				else
+					self:popSkillQueue();
+				end
 			end
-
-			self:popSkillQueue();
 		end
 	else
 		-- Queue is empty, continue like normal
-		useQueue = false;
+		useQueue = true;
 	end
 
-	if( not useQueue ) then
+	if useQueue or #self.SkillQueue == 0 then
 		local last_dist_to_wp
 		local attack_skill_used = false -- Used for priority casting
 		for i,v in pairs(settings.profile.skills) do
@@ -1175,35 +1160,24 @@ function CPlayer:checkSkills(_only_friendly, target)
 				-- Short time break target: after x casts without damaging
 				self:updateTargetPtr()
 				local target = CPawn.new(self.TargetPtr)
-				target:updateLastDamage()
-				self:updateCasting()
-				if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
-					self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
-					printf(language[83]);			-- Taking too long to damage target
-					self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
-					self.Last_ignore_target_time = os.time();		-- and the time we break the fight
-					self:clearTarget();
 
-					self:updateBattling()
-					if( self.Battling ) then
-						yrest(1000);
-						keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-						yrest(1000);
-						keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-						yrest(1000)
-						self:updateXYZ();
-					end
-
-					break_fight = true;
-					break;
+				if takingTooLongToDamageTarget(target) then
+					break
 				end
 
 				if settings.profile.options.PRIORITY_CASTING == true and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
 					attack_skill_used = true
 				end
 
-				self:cast(v);
-				used = true;
+				if self:cast(v) == "failed to cast" then
+					if EventMonitorCheck("cant_target", "1", true) then
+						EventMonitorStop("cant_target")
+						self:addToMobIgnoreList(target)
+						self:clearTarget();
+					end
+				else
+					used = true;
+				end
 			end
 		end
 	else
@@ -1576,6 +1550,9 @@ function CPlayer:fight()
 		timedAttack();
 	end
 
+	if COLLISION_MSG == nil then COLLISION_MSG = getTEXT("SYS_CASTSPELL_TARGET_COLLISION") end
+	EventMonitorStart("cant_target","WARNING_MESSAGE",COLLISION_MSG)
+
 	self.failed_casts_in_a_row = 0
 	break_fight = false;	-- flag to avoid kill counts for breaked fights
 	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
@@ -1606,8 +1583,7 @@ function CPlayer:fight()
 			self:updateLastHitTime()
 			if target.LastDamage == 0 or (getGameTime() - self.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME then
 				printf(language[83]);			-- Taking too long to damage target
-				self.Last_ignore_target_ptr = self.TargetPtr;	-- remember break target
-				self.Last_ignore_target_time = os.time();		-- and the time we break the fight
+				self:addToMobIgnoreList(target.Address)
 				self:clearTarget();
 
 				self:updateBattling()
@@ -1770,6 +1746,7 @@ function CPlayer:fight()
 		if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
 		if(self.mobs[target_Name] == nil) then  self.mobs[target_Name] = 0; end;
 		self.mobs[target_Name] = self.mobs[target_Name] + 1;
+		self:clearMobIgnoreList()
 
 		self.Fights = self.Fights + 1;		-- count our fights
 
@@ -2305,13 +2282,13 @@ function evalTargetDefault(address, target)
 		return false;			-- he is not a valid target
 	end;
 
-	-- check if we just ignored that target / ignore it for 10 sec
-	if(address == player.Last_ignore_target_ptr  and
-	   os.difftime(os.time(), player.Last_ignore_target_time)  < 10 )then
+	-- check if on the ignore list
+	if target:isOnMobIgnoreList() then
 		target:updateName()
-		cprintf(cli.green, language[87], target.Name, 	-- We ignore %s for %s seconds.
-		   10-os.difftime(os.time(), player.Last_ignore_target_time ) );
-		debug_target("ignore that target for 10 sec (e.g. after doing no damage")
+-- Remove the '0' when the language files have been updated.
+		cprintf(cli.green, language[87], target.Name, 0);
+		debug_target("ignore target (e.g. after doing no damage")
+		return false
 	end
 
 	-- check distance to target against MAX_TARGET_DIST
@@ -3936,5 +3913,23 @@ function CPlayer:waitTillStopMoving(maxtime)
 			yrest(10)
 			self:updateActualSpeed()
 		until self.ActualSpeed == 0 or deltaTime(getTime(),starttime) > maxtime
+	end
+end
+
+function CPlayer:addToMobIgnoreList(target)
+	if type(target) == "table" then
+		table.insert(self.MobIgnoreList,target.Address)
+	else
+		table.insert(self.MobIgnoreList,target)
+	end
+	self:updateXYZ()
+	self.LastPlaceMobIgnored = {X=self.X,Z=self.Z,Y=self.Y}
+end
+
+function CPlayer:clearMobIgnoreList()
+	self:updateXYZ()
+	-- Only clear list if you have traveled 50 from last ignore
+	if self.LastPlaceMobIgnored == nil or distance(self,self.LastPlaceMobIgnored) > 50 then
+		self.MobIgnoreList = {}
 	end
 end
