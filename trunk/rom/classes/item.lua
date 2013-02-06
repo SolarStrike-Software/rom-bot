@@ -518,3 +518,19 @@ function CItem:pickup()
 	RoMScript(pickupmethod.."("..self.BagId..")");
 end
 
+function CItem:getRemainingCooldown()
+	local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.realItemIdOffset );
+	if ( skillItemId ~= nil and skillItemId ~= 0 ) then
+		local skillItemAddress = GetItemAddress( skillItemId );
+		if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
+			local val = memoryReadRepeat("int", getProc(), skillItemAddress + 0xE0)
+			local plusoffset
+			if val == 1 then plusoffset = 0 elseif val == 3 then plusoffset = 0x80C else return 0, false end 
+			if memoryReadRepeat("int", getProc(), skillItemAddress + 0xE0) ~= 0 then
+				local offset = memoryReadRepeat("int", getProc(), skillItemAddress + addresses.skillRemainingCooldown_offset)
+				return (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + plusoffset + (offset+1)*4) or 0)/10, true
+			end
+		end
+	end
+	return 0, false
+end

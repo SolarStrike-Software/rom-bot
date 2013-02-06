@@ -26,7 +26,7 @@ NTYPE_ORE = 2
 NTYPE_HERB = 3
 
 ATTACKABLE_MASK_PLAYER = 0x10000;
-ATTACKABLE_MASK_MONSTER = 0x20000;
+ATTACKABLE_MASK_MONSTER = 0x80000;
 
 AGGRESSIVE_MASK_MONSTER = 0x100000;
 
@@ -1098,3 +1098,10 @@ function CPawn:getRemainingCastTime()
 	end
 end
 
+function CPawn:isOnMobIgnoreList()
+	for k, address in pairs(player.MobIgnoreList) do
+		if address == self.Address then return true end
+	end
+
+	return false
+end
