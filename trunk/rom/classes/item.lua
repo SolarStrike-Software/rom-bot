@@ -204,6 +204,14 @@ end
 
 function CItem:delete()
 	if self.Available and not self.Empty then
+		-- Special case for bank. Check if it's open
+		if self.Location == "bank" then
+			local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+			if BankClosed then
+				return
+			end
+		end
+
 		self:pickup()
 
 		if RoMScript("CursorHasItem()") then
@@ -291,6 +299,14 @@ function CItem:moveTo(bag)
 		return
 	end
 
+	-- Special case for bank. Check if it's open
+	if self.Location == "bank" then
+		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		if BankClosed then
+			return
+		end
+	end
+
 	-- Cursor should be clear before starting a move
 	if cursor:hasItem() then
 		cursor:clear()
@@ -317,6 +333,14 @@ function CItem:moveTo(bag)
 	-- Can't move bound items to guild bank
 	if location == "guildbank" and self.Bound then
 		return
+	end
+
+	-- Check if bank is open
+	if location == "bank" then
+		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		if BankClosed then
+			return
+		end
 	end
 
 	-- Get the tolocation class
@@ -353,6 +377,7 @@ function CItem:moveTo(bag)
 	if self.MaxStack > 1 and self.ItemCount < self.MaxStack then
 		for slot = first, last do
 			local toItem = toLocation.BagSlot[slot]
+			toItem:update()
 			if toItem.Available and self.Id == toItem.Id and toItem.ItemCount < toItem.MaxStack then -- merge
 				if (location == "guildbank" or self.Location == "guildbank") and location ~= self.Location then
 					-- Guild bank need 2 step merge
@@ -468,6 +493,14 @@ function CItem:pickup()
 		return
 	end
 
+	-- Special case for bank. Check if it's open
+	if self.Location == "bank" then
+		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		if BankClosed then
+			return
+		end
+	end
+
 	-- Wait till ready.
 	if self.InUse and cursor:hasItem() and cursor.ItemLocation == self.Location and cursor.ItemBagId == self.BagId then
 		-- Returning item. No waiting.
@@ -525,7 +558,7 @@ function CItem:getRemainingCooldown()
 		if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
 			local val = memoryReadRepeat("int", getProc(), skillItemAddress + 0xE0)
 			local plusoffset
-			if val == 1 then plusoffset = 0 elseif val == 3 then plusoffset = 0x80C else return 0, false end 
+			if val == 1 then plusoffset = 0 elseif val == 3 then plusoffset = 0x80C else return 0, false end
 			if memoryReadRepeat("int", getProc(), skillItemAddress + 0xE0) ~= 0 then
 				local offset = memoryReadRepeat("int", getProc(), skillItemAddress + addresses.skillRemainingCooldown_offset)
 				return (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + plusoffset + (offset+1)*4) or 0)/10, true

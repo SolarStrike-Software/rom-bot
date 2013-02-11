@@ -424,7 +424,8 @@ function CSkill:canUse(_only_friendly, target)
 
 
 	-- check if 'self' has buff
-	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target ~= STARGET_FRIENDLY then
+	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target ~= STARGET_FRIENDLY and
+	   not(player.LastSkill.Id == self.Id and deltaTime(getTime(),player.LastSkill.LastCastTime) < 1000 )then
 		local buffitem = player:getBuff(self.BuffName)
 		--=== check for -1 for buffs with no duration like rogue hide ===--
 		if buffitem and ((buffitem.TimeLeft > self.rebuffcut + prior/1000) or buffitem.TimeLeft == -1 ) then
@@ -665,16 +666,20 @@ function CSkill:use()
 					player:aimAt(player)
 				end
 			end
-			if skip then
-				RoMScript("SpellStopCasting()")
+		else -- No target
+			if self.Type ~= STYPE_DAMAGE and self.Type ~= STYPE_DOT then -- Friendly skill
+				player:aimAt(player)
 			else
-				player:clickToCast()
+				skip = true
 			end
-		else
+		end
+
+		if skip then
 			RoMScript("SpellStopCasting()")
+		else
+			player:clickToCast()
 		end
 	end
-
 end
 
 function CSkill:getRemainingCooldown()

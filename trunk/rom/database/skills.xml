@@ -168,6 +168,7 @@
 	<skill name="WARRIOR_THUNDER_SWORD" id="491332" range="150" cooldown="6" target="enemy" type="damage" />
 	<skill name="WARRIOR_ELECTRIC_ATTACK" id="492618" target="self" type="buff" buffname="502886" nobuffname="503163" nobufftarget="self"/>
 	<skill name="WARRIOR_LAVA_WEAPON" id="492913" target="self" type="buff" buffname="503163" nobuffname="502886" nobufftarget="self"/>
+	<Skill name="WARRIOR_LIGHTNING_BURN_WEAPON" id="499990" type="buff" buffname="622996" target="self" />
 	<skill name="WARRIOR_DEFENDERS_ROAR" id="491466" cooldown="180" target="self" type="buff" buffname="501872"/>
 	<skill name="WARRIOR_INTERRUPTING_STRIKE" id="491469" cooldown="10" type="damage" target="enemy" />
 	<skill name="WARRIOR_BLOODLUST" id="492332" cooldown="10" maxhpper="-20" target="self" type="buff" />
@@ -232,6 +233,7 @@
 	<skill name="ROGUE_COMBAT_MASTER" id="491525" type="buff" buffname="501921" target="self" toggleable="true" />
 	<skill name="ROGUE_SUBSTITUTE" id="492626" cooldown="60" type="buff" target="self" />
 	<skill name="ROGUE_TONGUE_POISON" id="492922" range="120" casttime="1" cooldown="30" type="damage" target="enemy" />
+	<skill name="ROGUE_ENCHANTED_THROW" id="491178" casttime="1" type="buff" buffname="501279" target="self" />
 	<skill name="ROGUE_POISON_TRAP" id="491340" cooldown="10" />
 	<skill name="ROGUE_BOOBY_TRAP" id="491341" cooldown="10" />
 	<skill name="ROGUE_PARALYSING_TRAP" id="491342" cooldown="20" />

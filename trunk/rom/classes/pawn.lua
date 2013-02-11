@@ -1099,8 +1099,17 @@ function CPawn:getRemainingCastTime()
 end
 
 function CPawn:isOnMobIgnoreList()
-	for k, address in pairs(player.MobIgnoreList) do
-		if address == self.Address then return true end
+	for k, v in pairs(player.MobIgnoreList) do
+		if v.Address == self.Address then
+			-- Check if we can clear it
+			if distance(player,player.LastPlaceMobIgnored) > 50 and
+			   os.clock()-v.Time > 10 then
+				table.remove(player.MobIgnoreList,k)
+				return false
+			else
+				return true
+			end
+		end
 	end
 
 	return false
