@@ -109,7 +109,6 @@ CPlayer = class(CPawn,
 		self.LastSkill = {}
 		self.failed_casts_in_a_row = 0
 		self.MobIgnoreList = {}
-		self.LastPlaceMobIgnored = nil
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end, false -- false = do not call pawn constructor
@@ -798,10 +797,10 @@ function CPlayer:cast(skill)
 
 			faceTarget()
 
-			-- leave before Casting flag is gone, so we can cast faster, but only if skill doesn't trigger global cooldown
-			if self.LastSkill.GlobalCooldown ~= true then
+			-- leave before Casting flag is gone, so we can cast faster, but only if skill doesn't trigger global cooldown and ClickToCast ~= true
+			if self.LastSkill.GlobalCooldown ~= true and skill.ClickToCast ~= true then
 				if self:getRemainingCastTime() <= prior/1000 then
-					-- end of waiting
+					-- end of waiting early
 					break;
 				end
 			end
@@ -1092,6 +1091,35 @@ function CPlayer:checkSkills(_only_friendly, target)
 		return false
 	end
 
+	local function checkSystemMessages(target)
+		if COLLISION_MSG == nil then COLLISION_MSG = getTEXT("SYS_CASTSPELL_TARGET_COLLISION") end
+		if FACETARGET_MSG == nil then FACETARGET_MSG = getTEXT("SYS_GAMEMSGEVENT_106") end
+
+		local lastTime = getLastWarning(COLLISION_MSG,2)
+		if lastTime and lastTime ~= checkskills_last_collision then
+			checkskills_last_collision = lastTime
+			self:updateBattling()
+			if not self.Battling then
+				player:addToMobIgnoreList(target)
+			else
+				keyboardHold(settings.hotkeys.MOVE_BACKWARD.key)
+				yrest(1000);
+				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+				self:updateXYZ();
+			end
+			self:clearTarget()
+		else
+			lastTime = getLastWarning(FACETARGET_MSG,2)
+			if lastTime and lastTime ~= checkskills_last_facetarget then
+				checkskills_last_facetarget = lastTime
+				keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+				yrest(1000);
+				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+				self:updateXYZ();
+			end
+		end
+	end
+
 	local used = false;
 	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
 
@@ -1110,11 +1138,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 				end
 
 				if self:cast(skill) == "failed to cast" then
-					if EventMonitorCheck("cant_target", "1", true) then
-						EventMonitorStop("cant_target")
-						target:addToMobIgnoreList()
-						self:clearTarget();
-					end
+					checkSystemMessages(target)
 				else
 					used = true;
 					self:popSkillQueue();
@@ -1170,11 +1194,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 				end
 
 				if self:cast(v) == "failed to cast" then
-					if EventMonitorCheck("cant_target", "1", true) then
-						EventMonitorStop("cant_target")
-						self:addToMobIgnoreList(target)
-						self:clearTarget();
-					end
+					checkSystemMessages(target)
 				else
 					used = true;
 				end
@@ -1550,9 +1570,6 @@ function CPlayer:fight()
 		timedAttack();
 	end
 
-	if COLLISION_MSG == nil then COLLISION_MSG = getTEXT("SYS_CASTSPELL_TARGET_COLLISION") end
-	EventMonitorStart("cant_target","WARNING_MESSAGE",COLLISION_MSG)
-
 	self.failed_casts_in_a_row = 0
 	break_fight = false;	-- flag to avoid kill counts for breaked fights
 	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
@@ -1746,7 +1763,6 @@ function CPlayer:fight()
 		if(target_Name == nil) then  target_Name = "<UNKNOWN>"; end;
 		if(self.mobs[target_Name] == nil) then  self.mobs[target_Name] = 0; end;
 		self.mobs[target_Name] = self.mobs[target_Name] + 1;
-		self:clearMobIgnoreList()
 
 		self.Fights = self.Fights + 1;		-- count our fights
 
@@ -2285,8 +2301,7 @@ function evalTargetDefault(address, target)
 	-- check if on the ignore list
 	if target:isOnMobIgnoreList() then
 		target:updateName()
--- Remove the '0' when the language files have been updated.
-		cprintf(cli.green, language[87], target.Name, 0);
+		cprintf(cli.green, language[87], target.Name);
 		debug_target("ignore target (e.g. after doing no damage")
 		return false
 	end
@@ -3918,9 +3933,9 @@ end
 
 function CPlayer:addToMobIgnoreList(target)
 	if type(target) == "table" then
-		table.insert(self.MobIgnoreList,target.Address)
+		table.insert(self.MobIgnoreList,{Address=target.Address,Time=os.clock()})
 	else
-		table.insert(self.MobIgnoreList,target)
+		table.insert(self.MobIgnoreList,{Address=target,Time=os.clock()})
 	end
 	self:updateXYZ()
 	self.LastPlaceMobIgnored = {X=self.X,Z=self.Z,Y=self.Y}

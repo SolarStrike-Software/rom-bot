@@ -67,7 +67,7 @@ language = {
 
 	[70] = "Pausieren nach %s Sekunden beendet.\n",
 	[71] = "Pausiere f\129r %s Sekunden.\n",
-	
+
 	[75] = "Fehler in Ihrem Profil: onLevelUp Fehler: %s",
 	[76] = "Fertigkeitsstufe im Sammeln nicht hoch genug.",
 	[77] = "Ung\129ltige Auswahl genutzt in 'player:getCraftLevel'",
@@ -80,7 +80,7 @@ language = {
 	[84] = "Zu viele Versuche, dem Ziele n\132her zu kommen. Wir brechen ab.\n",
 	[85] = "Fehler im Profile bei der Zeitpunktverarbeiten: onLeaveCombat error %s",
 	[86] = "nicht Weiterlaufen: noch ein Ziel gefunden\n",
-	[87] = "Wir ignorieren das Ziel %s f\129r %s Sekunden.\n",
+	[87] = "Wir ignorieren das Ziel %s.\n",
 	[88] = "Der Runes of Magic Prozess wurde erfolgreich geschlossen.\n",
 	[89] = "Der Bot geht um %s in den Schlafmodus. Dr\129cke %s um weiterzumachen.\n",
 	[90] = "Aufgewacht, nachdem %s gedr\129ckt wurde um %s.\n",
@@ -152,7 +152,7 @@ language = {
 	[156] = "Ung\129ltige Auswahl f\129r reqbufftarget=\'%s\' beim Skill %s in Ihrem Profil \'%s.xml\'. Nur \'player\' oder \'target\' ist m\148glich. Bitte korrigieren oder l\148schen Sie diese Option!\n",
 	[157] = "Ung\129ltige Auswahl f\129r nobufftarget=\'%s\' beim Skill %s in Ihrem Profil \'%s.xml\'. Nur \'player\' oder \'target\' ist m\148glich. Bitte korrigieren oder l\148schen Sie diese Option!\n",
 	[158] = "Es gibt keine Skill-ID 'id' f\129r Skill %s in der Skill Datenbank. Bitte tragen Sie eine g\129ltige ID oder Hotkey in Ihrem Profil ein.",
-	
+
 	[159] = "Bewege in die Item-Shop-Tasche: %s.\n",
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
 	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
@@ -181,7 +181,7 @@ language = {
 	[184] = "Unbekannter Profil Skill \'%s\'. Der Skill ist nicht in ihrem Profil definiert. Bitte pr\129fen Sie Ihre Einstellungen.\n",
 	[185] = "Wir die Option \'%s\' ge\132ndert f\129r den Skill \'%s\' von \'%s\' zu \'%s\'.\n",
 	[186] = "Lade Profil %s.xml\n",
-	
+
 	[200] = "Keine Fernkampf F\132higkeit im Profil angegeben. Option COMBAT_RANGED_PULL wurde ausgeschaltet.\n",
 
 	-- createpath.lua
@@ -209,8 +209,8 @@ language = {
 	[521] = "Code \'%s\' eingef\129gt.\n",
 	[522] = "  (%s)\tF\129gen Sie Zielobjekt Befehl ein.\n",
 	[523] = "F\129gen Sie \'player:target_object(\"%s\") Befehl ein.\n",
-	
-	
+
+
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d Minuten bis Stufe nach oben",
 
 	[900] = "Wir benutzen eine neue Macro Funktion um mit dem Spiel zu kommunizieren.\n",

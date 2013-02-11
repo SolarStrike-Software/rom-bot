@@ -10,17 +10,47 @@ _G.igf_events = igf_events -- expose to global scope
 -- Variables
 local Monitors = {} -- Where the details of the user specified monitors are saved.
 					-- eg. Monitors["Leaderchat"] = {Event = "CHAT_MSG_PARTY", Filter = {nil,nil,nil,"Leadername"}}
-local EventLog = {} -- log of all saved triggered events
+local EventLog = {} -- log of all saved triggered events for the monitors.
 					-- eg. EventLog["LeaderChat"] = (First = 1, Last = 4, Data = {Time=xxxx, Args = {"Attack!", link with persons name, unknown, "Leadername"} } }
 local Last = 0 -- Number of last event in event log.
 
+-- This addon also remebers the last of every message in the following events. I'm calling this feature "LastMessage".
+local LastMessageEvents = {
+	"ALERT_MESSAGE",
+	"WARNING_MESSAGE",
+}
+local LastMessageLog = {}
+
+local function IsLastMessageEvent(event)
+	for k,v in pairs(LastMessageEvents) do
+		if v == event then
+			return true
+		end
+	end
+
+	return false
+end
+
 function igf_events:OnLoad(this)
 	InGameFrame = this
+
+	for k,v in pairs(LastMessageEvents) do
+		-- Register LastMessageEvents
+		InGameFrame:RegisterEvent(v)
+		-- Create initial LastMessage log tables
+		LastMessageLog[v] = {}
+	end
+
 end
 
 function igf_events:OnEvent(this, event, arg1, arg2, arg3, arg4, arg5, arg6 )
 	local args = { arg1, arg2, arg3, arg4, arg5, arg6 }
 	local triggerTime = os.time()
+
+	-- Always remember LastMessageEvents
+	if IsLastMessageEvent(event) then
+		LastMessageLog[event][string.lower(arg1)] = GetTime()
+	end
 
 	-- for each monitor
 	for monitorName, monitorArgs in pairs(Monitors) do
@@ -106,6 +136,11 @@ function igf_events:StopMonitor(monitorName)
 
 	-- Delete 'monitorName' log entries.
 	EventLog[monitorName] = nil
+
+	-- We don't stop system messages
+	if IsLastMessageEvent(event) then
+		return
+	end
 
 	-- Check if any other monitor is using the event
 	for n, v in pairs(Monitors) do
@@ -203,4 +238,27 @@ function igf_events:GetLogEvent(monitorName, returnFilter, lastEntryOnly)
 	entryToSend.Args = toSend
 
 	return entryToSend.Time, moreFound, unpack(entryToSend.Args)
+end
+
+function igf_events:getLastEventMessage(event, text, age)
+	if not LastMessageLog[event] then
+		SendSystemChat("Bad LastMessage event used "..(event or "nil"))
+		return
+	end
+
+	if text then text = string.lower(text) end
+
+	if LastMessageLog[event][text] then
+		return LastMessageLog[event][text], text
+	else
+		for message, time in pairs(LastMessageLog[event]) do
+			if string.match(message,text,1,true) then
+				if age == nil or (GetTime()-time) <= age then
+					return time, message
+				else
+					return
+				end
+			end
+		end
+	end
 end

@@ -17,10 +17,7 @@ function CBankItem:update()
 	self.Address = addresses.staticBankbase + ( (self.BagId - 1) * 68 );
 
 	-- Check if available
-	local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
-	if BankClosed then
-		self.Available = false
-	elseif self.BagId > 40 then
+	if self.BagId > 40 then
 		self.Available = memoryReadUInt(getProc(), addresses.rentBankBase + math.floor((self.BagId - 41)/40) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true

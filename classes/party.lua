@@ -369,7 +369,7 @@ function partyCommands()
 				if GoThroughPortal(200) == true then
 					sendPartyChat("I should be through the portal now")
 				else
-					sendPartyChat("I didn't see a loadingscreen, please check I went through portal")
+					sendPartyChat("I didnt see a loadingscreen, please check I went through portal")
 				end
 			else
 				sendPartyChat("please get GoThroughPortal to make that work")
@@ -432,8 +432,7 @@ function healfight()
 			player:updateLastHitTime()
 			if mob.LastDamage == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
 				printf(language[83]);			-- Taking too long to damage target
-				player.Last_ignore_target_ptr = player.TargetPtr;	-- remember break target
-				player.Last_ignore_target_time = os.time();		-- and the time we break the fight
+				self:addToMobIgnoreList(target.Address)
 				player:clearTarget();
 
 				player:updateBattling()

@@ -2285,3 +2285,29 @@ function getGameVersion(proc)
 
 	return ver
 end
+
+function getLastWarning(message, age)
+	if type(message) ~= "string" then
+		print("Must specify message string when calling 'getLastWarning()'.")
+		return
+	end
+
+	if age then
+		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE','" .. message .. "'," .. age .. ")")
+	else
+		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE','" .. message .. "')")
+	end
+end
+
+function getLastAlert(message, age)
+	if type(message) ~= "string" then
+		print("Must specify message string when calling 'getLastAlert()'.")
+		return
+	end
+
+	if age then
+		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE','" .. message .. "',".. age .. ")")
+	else
+		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE','" .. message .. "')")
+	end
+end
