@@ -26,7 +26,8 @@ NTYPE_ORE = 2
 NTYPE_HERB = 3
 
 ATTACKABLE_MASK_PLAYER = 0x10000;
-ATTACKABLE_MASK_MONSTER = 0x80000;
+ATTACKABLE_MASK_MONSTER = 0x20000;
+ATTACKABLE_MASK_CLICKABLE = 0x1000;
 
 AGGRESSIVE_MASK_MONSTER = 0x100000;
 
@@ -247,7 +248,7 @@ function CPawn:update()
 
 	if( self.Type == PT_MONSTER ) then
 		--printf("%s attackable flag: 0x%X\n", self.Name, attackableFlag);
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) ) then
+		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
 			self.Attackable = true;
 		else
 			self.Attackable = false;
@@ -662,7 +663,7 @@ function CPawn:updateAttackable()
 	self:updateType()
 	if( self.Type == PT_MONSTER ) then
 		local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) ) then
+		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
 			self.Attackable = true;
 		else
 			self.Attackable = false;

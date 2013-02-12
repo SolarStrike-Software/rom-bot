@@ -404,6 +404,18 @@ function healfight()
 	local hf_start_dist = 0;		-- distance to mob where we start the fight
 	local break_fight = false;	-- flag to avoid kill counts for breaked fights
 	BreakFromFight = false -- For users to manually break from fight using player:breakFight()
+	if mob.MaxHP > (player.MaxHP * settings.profile.options.AUTO_ELITE_FACTOR) then
+		-- check if preCodeOnElite event is used in profile
+		if( type(settings.profile.events.preCodeOnElite) == "function" ) then
+			releaseKeys();
+			_arg1 = mob
+			local status,err = pcall(settings.profile.events.preCodeOnElite);
+			if( status == false ) then
+				local msg = sprintf(language[188], err);
+				error(msg);
+			end
+		end
+	end
 	while( mob.Alive or mob.HP > 1 ) do
 		player:updateHP();
 		player:updateAlive();
