@@ -2436,7 +2436,12 @@ function evalTargetDefault(address, target)
 end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
-
+	if settings.profile.options.PARTYLEADER_WAIT and GetPartyMemberName(1) then
+		if not checkparty(150) then 
+			releaseKeys()
+			repeat yrest(500) self:updateBattling() until checkparty(150) or self.Battling
+		end
+	end
 	local function passed_point(lastpos, point)
 		point.X = tonumber(point.X)
 		point.Z = tonumber(point.Z)
