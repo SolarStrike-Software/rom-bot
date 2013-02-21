@@ -181,12 +181,18 @@ function Mount(_dismount)
 end
 
 function getNameFollow()
+	local pcheck, whofollow
 	if stop then return end
 	local partynum = 1 -- default followed party
 	if ( settings.profile.options.PARTY_FOLLOW_NAME and settings.profile.options.PARTY_FOLLOW_NAME ~= "" ) then
 		for i = 1,5 do
 			if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then partynum = i  end
 		end
+	end
+	pcheck = GetPartyMemberAddress(partynum)
+	if pcheck then whofollow = CPawn(pcheck.Address) end
+	if whofollow and distance(whofollow.X,whofollow.Z,player.X,player.Z) > 150 then
+		player:moveTo(CWaypoint(whofollow.X,whofollow.Z),true,nil,50)
 	end
 	RoMScript("FollowUnit('party"..partynum.."');");
 	Mount()
@@ -199,6 +205,7 @@ function checkparty(_dist)
 	PartyTable()
 	local _go = true
 	local partynum = RoMScript("GetNumPartyMembers()")
+	if partynum == 0 then return true end -- no party members
 	if partynum == #partymemberpawn then
 		player:updateXYZ()
 		for i = 1,#partymemberpawn do
@@ -524,8 +531,8 @@ function PartyTable()
 	table.insert(partymemberpawn, CPawn(player.Address))
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
-		if( obj ~= nil ) then
-			local attackableFlag = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset)
+		if( obj ~= nil and obj.Type == PT_PLAYER and obj.Address ~= 0 and obj.Address ~= player.Address ) then
+			local attackableFlag = memoryReadRepeat("uint", getProc(), obj.Address + addresses.pawnAttackable_offset)
 			if attackableFlag and bitAnd(attackableFlag,0x80000000) then -- in party
 				if obj.Address ~= player.Address then
 					table.insert(partymemberpawn, CPawn(obj.Address))
