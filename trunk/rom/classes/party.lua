@@ -1,7 +1,43 @@
 include("pawn.lua");
 include("player.lua");
 
-local _timexx, _firsttimes, partyleader, leaderobj, leaderpawn, stop, healer
+local _timexx, _firsttimes, partyleader, leaderobj, leaderpawn, stop, healer, havewarden
+
+local function _heal()
+	for i,v in ipairs(partymemberpawn) do
+		player:target(partymemberpawn[i])
+		partymemberpawn[i]:updateHP()
+		partymemberpawn[i]:updateBuffs()
+		if partymemberpawn[i].HP/partymemberpawn[i].MaxHP*100 > 10 then
+			player:checkSkills(true)
+		end
+	end
+	-- warden pet healing
+	if havewarden then
+		for k,v in pairs(petmemberpawn) do
+			v:updateHP()
+			-- no repeat loop so just 1 heal and will heal again next time round, keeps players as priority.
+			if v.HP/v.MaxHP*100 > 10 and 70 > v.HP/v.MaxHP*100 then -- Alive and under 80% hp
+				player:target(v)
+				if player.Class1 == CLASS_PRIEST then
+					if 180 > distance(v.X,v.Z,player.X,player.Z) then
+						--player:cast("PRIEST_URGENT_HEAL")
+						SlashCommand("/script CastSpellByName(\""..GetIdName(491147).."\");");
+						cprintf(cli.yellow, "Skill Name: %s\t Pet Name: %s\n",GetIdName(491147),v.Name);
+						yrest(1000)
+					end
+				elseif player.Class1 == CLASS_DRUID then
+					if 230 > distance(v.X,v.Z,player.X,player.Z) then
+						--player:cast("DRUID_RECOVER")
+						SlashCommand("/script CastSpellByName(\""..GetIdName(493528).."\");");
+						cprintf(cli.yellow, "Skill Name: %s\t Pet Name: %s\n",GetIdName(493528),v.Name);
+						yrest(1000)
+					end
+				end
+			end
+		end
+	end
+end
 
 function Party(heal)
 	if heal then healer = true end
@@ -37,6 +73,7 @@ function Party(heal)
 		if not player.Mounted then
 			player:checkSkills(true);
 			player:checkPotions();
+			checkEggPets()
 
 			if playericon and playericon >= 4 then
 				--=== If character has icon 4,5,6 or 7 then ===--
@@ -67,15 +104,7 @@ function Party(heal)
 			end
 
 			if heal then
-				for i,v in ipairs(partymemberpawn) do
-					player:target(partymemberpawn[i])
-					partymemberpawn[i]:update()
-					partymemberpawn[i]:updateBuffs()
-					local target = player:getTarget();
-					if target.HP/target.MaxHP*100 > 10 then
-						player:checkSkills(true);
-					end
-				end
+				_heal()
 			end
 
 			player:updateBattling()
@@ -101,6 +130,7 @@ function Party(heal)
 					if player.TargetPtr ~= 0 then
 						player:lootAll()
 					end
+					if onLoot then onLoot() end
 				end
 			else
 				getNameFollow()
@@ -119,44 +149,6 @@ function icontarget(address) -- looks for icon I on mobs
 	end
 end
 
-function PartyTable()
-		if _timexx == nil then
-			_timexx = os.time()
-		end
-		partymemberpawn={}
-		local partymemberName={}
-		local partymemberObj={}
-
-		table.insert(partymemberName,1, player.Name)  -- need to insert player name.
-		table.insert(partymemberObj,1, player:findNearestNameOrId(player.Name))
-		table.insert(partymemberpawn,1, CPawn(player.Address))
-	for i = 1, 5 do
-		if _firsttimes == nil then -- post party names when bot started
-			if GetPartyMemberName(i) ~= nil then
-				cprintf(cli.yellow,"Party member "..i.." has the name of ")
-				cprintf(cli.lightred, GetPartyMemberName(i).."\n")
-				_firsttimes = true
-			end
-		end
-
-		if os.time() - _timexx >= 60  then --only post party names every 60 seconds
-			if GetPartyMemberName(i) ~= nil then
-				cprintf(cli.yellow,"Party member "..i.." has the name of ")
-				cprintf(cli.lightred, GetPartyMemberName(i).."\n")
-			_timexx = os.time()
-			end
-		end
-
-		if GetPartyMemberName(i) then
-			table.insert(partymemberName,i + 1, GetPartyMemberName(i))
-			table.insert(partymemberObj,i + 1, player:findNearestNameOrId(partymemberName[i + 1]))
-			if partymemberObj[i + 1] then
-				table.insert(partymemberpawn,i + 1, CPawn(partymemberObj[i + 1].Address))
-			end
-		end
-	end
-end
-
 function getPartyLeaderpawn()
 	partyleader = getPartyLeaderName()
 	leaderobj = player:findNearestNameOrId(partyleader)
@@ -169,18 +161,20 @@ function Mount(_dismount)
 	local mounted
 	getPartyLeaderpawn()
 	if partyleader and leaderobj then
-		local attackableFlag = memoryReadRepeat("int", getProc(), leaderobj.Address + addresses.pawnAttackable_offset) or 0;
-		mounted = bitAnd(attackableFlag, 0x10000000)
-		if not _dismount then
-			if not player.Mounted then
-				if mounted then
-					player:mount()
+		local attackableFlag = memoryReadRepeat("int", getProc(), leaderobj.Address + addresses.pawnAttackable_offset)
+		if attackableFlag then
+			mounted = bitAnd(attackableFlag, 0x10000000)
+			if not _dismount then
+				if not player.Mounted then
+					if mounted then
+						player:mount()
+					end
 				end
 			end
-		end
-		if not mounted then
-			if player.Mounted then
-				player:dismount()
+			if not mounted then
+				if player.Mounted then
+					player:dismount()
+				end
 			end
 		end
 	end
@@ -207,7 +201,7 @@ function checkparty(_dist)
 	local partynum = RoMScript("GetNumPartyMembers()")
 	if partynum == #partymemberpawn then
 		player:updateXYZ()
-		for i = 2,#partymemberpawn do
+		for i = 1,#partymemberpawn do
 			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnX_offset) or partymemberpawn[i].X
 			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z
 			if partyX ~= nil then
@@ -430,21 +424,15 @@ function healfight()
 			break;
 		end
 		--=== heal party before attacking ===--
-		for i,v in ipairs(partymemberpawn) do
-			player:target(partymemberpawn[i])
-			partymemberpawn[i]:update()
-			local party = player:getTarget();
-			if party.HP/party.MaxHP*100 > 10 then
-				player:checkSkills(true);
-			end
-		end
+		_heal()
+		
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if (os.time() - player.FightStartTime) > settings.profile.options.MAX_FIGHT_TIME then
 			mob:updateLastDamage()
 			player:updateLastHitTime()
 			if mob.LastDamage == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
 				printf(language[83]);			-- Taking too long to damage target
-				self:addToMobIgnoreList(target.Address)
+				player:addToMobIgnoreList(mob.Address)
 				player:clearTarget();
 
 				player:updateBattling()
@@ -521,4 +509,70 @@ function healfight()
 	end
 	player.Fighting = false;
 	yrest(200);
+end
+
+function PartyTable()
+
+	if _timexx == nil then
+		_timexx = os.time()
+	end
+	partymemberpawn = {}
+	petmemberpawn = {}
+	local obj = nil;
+	local objectList = CObjectList();
+	objectList:update();
+	table.insert(partymemberpawn, CPawn(player.Address))
+	for i = 0,objectList:size() do
+		obj = objectList:getObject(i);
+		if( obj ~= nil ) then
+			local attackableFlag = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset)
+			if attackableFlag and bitAnd(attackableFlag,0x80000000) then -- in party
+				if obj.Address ~= player.Address then
+					table.insert(partymemberpawn, CPawn(obj.Address))
+				end
+			end
+		end
+	end
+	
+	-- post party names when bot started
+	if _firsttimes == nil then 
+		if GetPartyMemberName(1) ~= nil then
+			cprintf(cli.yellow,"Party member 1 has the name of ")
+			cprintf(cli.lightred, GetPartyMemberName(1).."\n")
+			_firsttimes = true
+		end
+	end
+	
+	--only post party names every 60 seconds
+	if os.time() - _timexx >= 60  then 
+		if GetPartyMemberName(1) ~= nil then
+			cprintf(cli.yellow,"Party member 1 has the name of ")
+			cprintf(cli.lightred, GetPartyMemberName(1).."\n")
+		_timexx = os.time()
+		end
+	end	
+	
+	--warden pet stuff
+	for k,v in pairs(partymemberpawn) do
+		if v.Class1 == CLASS_WARDEN then
+			havewarden = true
+			local obj = nil;
+			local objectList = CObjectList();
+			objectList:update();
+			for i = 0,objectList:size() do
+				obj = objectList:getObject(i);
+				local IsPet = memoryReadRepeat("uint",getProc(), obj.Address + addresses.pawnIsPet_offset)
+				if IsPet == v.Address then
+					table.insert(petmemberpawn, CPawn(obj.Address))
+				end
+			end
+		end
+	end
+	
+	-- now change type of pet to player instead of monster so it will be healed.
+	for k,v in pairs(petmemberpawn) do
+		if v.Type == 2 then
+			v.Type = 1
+		end
+	end
 end

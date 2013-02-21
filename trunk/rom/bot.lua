@@ -602,6 +602,8 @@ function main()
 		end;
 		if( wp_to_load == "wander" ) then
 			cprintf(cli.lightgray,language[187])
+			keyboardBufferClear();
+			io.stdin:flush();
 			local radius = tonumber(io.stdin:read())
 			if type(radius) ~= "number" or 0 > radius then
 				cprintf(cli.lightgray,"Expecting number more than or equal to 0. Using default value.\n")
