@@ -590,8 +590,8 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
 		if( obj ~= nil ) then
-			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset) or 0;
-			if not bitAnd(inp,0x4000000) then -- Invisible/attackable?
+			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset)
+			if inp and not bitAnd(inp,0x4000000) then -- Invisible/attackable?
 				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z)
 					if dist < settings.profile.options.MAX_TARGET_DIST then

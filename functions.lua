@@ -2197,7 +2197,7 @@ function keyboardHold(key)
 	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
 
 	-- Set 'key' pressed
-	if not bitAnd(keyspressed, keybit) then
+	if keyspressed and not bitAnd(keyspressed, keybit) then
 		keyspressed = keyspressed + keybit
 
 		-- Unset opposite key
@@ -2232,7 +2232,7 @@ function keyboardRelease(key)
 	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
 
 	-- Set 'key' released
-	if bitAnd(keyspressed, keybit) then
+	if keyspressed and bitAnd(keyspressed, keybit) then
 		keyspressed = keyspressed - keybit
 		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
 	end

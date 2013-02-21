@@ -110,10 +110,10 @@ function GetItemAddress(id)
 			end
 			return address
 		else
-			printf("Id %d not found\n", id)
+		if settings.options.DEBUGGING == true then printf("Id %d not found\n", id) end
 		end
 	else
-		printf("Id is nil\n")
+		if settings.options.DEBUGGING == true then printf("Id is nil\n") end
 	end
 end
 

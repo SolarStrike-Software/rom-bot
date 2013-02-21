@@ -228,41 +228,41 @@ function CPawn:update()
 	self:updateXYZ()
 	self:updateDirection() -- Also updates DirectionY
 
-	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset) or 0;
+	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset)
+	if attackableFlag then
+		self.Mounted = bitAnd(attackableFlag, 0x10000000)
 
-	self.Mounted = bitAnd(attackableFlag, 0x10000000)
+		--=== Does icon appear when you click pawn ===--
+		if bitAnd(attackableFlag,0x10) then
+			self.TargetIcon = true
+		else
+			self.TargetIcon = false
+		end
 
-	--=== Does icon appear when you click pawn ===--
-	if bitAnd(attackableFlag,0x10) then
-		self.TargetIcon = true
-	else
-		self.TargetIcon = false
-	end
+		--=== InParty indicator ===--
+		if bitAnd(attackableFlag,0x80000000) then
+			self.InParty = true
+		else
+			self.InParty = false
+		end
 
-	--=== InParty indicator ===--
-	if bitAnd(attackableFlag,0x80000000) then
-		self.InParty = true
-	else
-		self.InParty = false
-	end
+		if( self.Type == PT_MONSTER ) then
+			--printf("%s attackable flag: 0x%X\n", self.Name, attackableFlag);
+			if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
+				self.Attackable = true;
+			else
+				self.Attackable = false;
+			end
 
-	if( self.Type == PT_MONSTER ) then
-		--printf("%s attackable flag: 0x%X\n", self.Name, attackableFlag);
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
-			self.Attackable = true;
+			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
+				self.Aggressive = true;
+			else
+				self.Aggressive = false;
+			end
 		else
 			self.Attackable = false;
 		end
-
-		if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
-			self.Aggressive = true;
-		else
-			self.Aggressive = false;
-		end
-	else
-		self.Attackable = false;
 	end
-
 	self.Speed = memoryReadRepeat("float", proc, self.Address + addresses.pawnSpeed_offset)
 
 	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
@@ -634,9 +634,10 @@ function CPawn:updateMounted()
 		return
 	end
 
-	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
-
-	self.Mounted = bitAnd(attackableFlag, 0x10000000)
+	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
+	if attackableFlag then
+		self.Mounted = bitAnd(attackableFlag, 0x10000000)
+	end
 end
 
 function CPawn:updateInParty()
@@ -645,10 +646,9 @@ function CPawn:updateInParty()
 		return
 	end
 
-	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
-
+	local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
 	--=== InParty indicator ===--
-	if bitAnd(attackableFlag,0x80000000) then
+	if attackableFlag and bitAnd(attackableFlag,0x80000000) then
 		self.InParty = true
 	else
 		self.InParty = false
@@ -662,17 +662,19 @@ function CPawn:updateAttackable()
 
 	self:updateType()
 	if( self.Type == PT_MONSTER ) then
-		local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset) or 0;
-		if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
-			self.Attackable = true;
-		else
-			self.Attackable = false;
-		end
+		local attackableFlag = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnAttackable_offset)
+		if attackableFlag then
+			if( bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER) and bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE) ) then
+				self.Attackable = true;
+			else
+				self.Attackable = false;
+			end
 
-		if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
-			self.Aggressive = true;
-		else
-			self.Aggressive = false;
+			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
+				self.Aggressive = true;
+			else
+				self.Aggressive = false;
+			end
 		end
 	else
 		self.Attackable = false;
