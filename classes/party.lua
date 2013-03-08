@@ -78,13 +78,16 @@ function Party(heal)
 			if playericon and playericon >= 4 then
 				--=== If character has icon 4,5,6 or 7 then ===--
 				--=== Kill leaders target ===--
-				local mob = getTarget(getPartyLeaderName())
-				if mob and mob.Type == PT_MONSTER then
-					player:target(mob.Address)
-					if heal then
-						healfight()
-					else
-						player:fight()
+				local leader = getPartyLeaderName()
+				if leader then
+					local mob = getTarget(leader)
+					if mob and mob.Type == PT_MONSTER then
+						player:target(mob.Address)
+						if heal then
+							healfight()
+						else
+							player:fight()
+						end
 					end
 				end
 			elseif settings.profile.options.ICON_FIGHT == true then
@@ -151,9 +154,11 @@ end
 
 function getPartyLeaderpawn()
 	partyleader = getPartyLeaderName()
-	leaderobj = player:findNearestNameOrId(partyleader)
-	if leaderobj then
-		leaderpawn = CPawn(leaderobj.Address)
+	if partyleader then
+		leaderobj = player:findNearestNameOrId(partyleader)
+		if leaderobj then
+			leaderpawn = CPawn(leaderobj.Address)
+		end
 	end
 end
 
@@ -181,6 +186,7 @@ function Mount(_dismount)
 end
 
 function getNameFollow()
+	player:updateXYZ()
 	local pcheck, whofollow
 	if stop then return end
 	local partynum = 1 -- default followed party
@@ -191,8 +197,12 @@ function getNameFollow()
 	end
 	pcheck = GetPartyMemberAddress(partynum)
 	if pcheck then whofollow = CPawn(pcheck.Address) end
-	if whofollow and distance(whofollow.X,whofollow.Z,player.X,player.Z) > 150 then
-		player:moveTo(CWaypoint(whofollow.X,whofollow.Z),true,nil,50)
+	if whofollow then
+		if distance(whofollow.X,whofollow.Z,player.X,player.Z) > 150 then
+			player:moveTo(CWaypoint(whofollow.X,whofollow.Z),true,nil,50)
+		end
+	else
+		partynum = 1
 	end
 	RoMScript("FollowUnit('party"..partynum.."');");
 	Mount()
@@ -265,6 +275,7 @@ function getPartyLeaderName()
 end
 
 function getTarget(name)
+	if name == nil then return end
 	local ll = player:findNearestNameOrId(name)
 	local leader
 	if ll then
@@ -341,7 +352,7 @@ function partyCommands()
 			if npc then
 				player:target_NPC(npc.Name)
 				if ChoiceOptionByName(_npc) then
-					sendMacro('StaticPopup_OnClick(StaticPopup1, 1);')
+					sendMacro('} if StaticPopup1:IsVisible() then StaticPopup_OnClick(StaticPopup1, 1) end a={')
 					waitForLoadingScreen(10)
 					sendPartyChat("ok choice option done")
 				else
@@ -432,7 +443,7 @@ function healfight()
 		end
 		--=== heal party before attacking ===--
 		_heal()
-		
+
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if (os.time() - player.FightStartTime) > settings.profile.options.MAX_FIGHT_TIME then
 			mob:updateLastDamage()
@@ -540,25 +551,25 @@ function PartyTable()
 			end
 		end
 	end
-	
+
 	-- post party names when bot started
-	if _firsttimes == nil then 
+	if _firsttimes == nil then
 		if GetPartyMemberName(1) ~= nil then
 			cprintf(cli.yellow,"Party member 1 has the name of ")
 			cprintf(cli.lightred, GetPartyMemberName(1).."\n")
 			_firsttimes = true
 		end
 	end
-	
+
 	--only post party names every 60 seconds
-	if os.time() - _timexx >= 60  then 
+	if os.time() - _timexx >= 60  then
 		if GetPartyMemberName(1) ~= nil then
 			cprintf(cli.yellow,"Party member 1 has the name of ")
 			cprintf(cli.lightred, GetPartyMemberName(1).."\n")
 		_timexx = os.time()
 		end
-	end	
-	
+	end
+
 	--warden pet stuff
 	for k,v in pairs(partymemberpawn) do
 		if v.Class1 == CLASS_WARDEN then
@@ -575,7 +586,7 @@ function PartyTable()
 			end
 		end
 	end
-	
+
 	-- now change type of pet to player instead of monster so it will be healed.
 	for k,v in pairs(petmemberpawn) do
 		if v.Type == 2 then

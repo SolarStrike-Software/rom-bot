@@ -1,5 +1,10 @@
 <potions>
 	<!-- Healing potions -->
+	<potion type="hot" id="208479" level="96" name="Sage Herb" />
+	<potion type="hot" id="208478" level="91" name="Miracle Flower" />
+	<potion type="hot" id="208477" level="86" name="Elven Herb" />
+	<potion type="hot" id="208476" level="81" name="Blessed Herb" />
+	<potion type="hot" id="208475" level="76" name="Mysterious Fruit" />
 	<potion type="hot" id="208474" level="71" name="Mysterious Herb" />
 	<potion type="hot" id="208473" level="66" name="Herbs of Hope" />
 	<potion type="hot" id="208213" level="61" name="Herbs of Omnipotence" />
@@ -27,6 +32,11 @@
 	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />
 
 	<!-- Mana potions -->
+	<potion type="mot" id="208486" level="96" name="Mysterious Sage Stone" />
+	<potion type="mot" id="208485" level="91" name="Rare Sage Stone" />
+	<potion type="mot" id="208484" level="86" name="Mysterious Elf Stone" />
+	<potion type="mot" id="208483" level="81" name="Rare Elf Stone" />
+	<potion type="mot" id="208482" level="76" name="Blessed Magic Stone" />
 	<potion type="mot" id="208481" level="71" name="Mysterious Magic Stone" />
 	<potion type="mot" id="208480" level="66" name="Rare Magic Stone" />
 	<potion type="mot" id="208214" level="61" name="Elemental Stone of Omnipotence" />
@@ -54,6 +64,10 @@
 	<potion type="mana" id="203160" level="1" potency="500" name="Pumpkin Soup of Happiness" />
 
 	<!-- Arrow quivers -->
+	<potion type="arrow_quiver" id="202150" name="Hero's Arrow Quiver" level="98" />
+	<potion type="arrow_quiver" id="202149" name="Athenian Arrow Quiver" level="91" />
+	<potion type="arrow_quiver" id="202148" name="Legendary Arrow Quiver" level="84" />
+	<potion type="arrow_quiver" id="202093" name="Sage's Arrow Quiver" level="77" />
 	<potion type="arrow_quiver" id="202092" name="Obsidian Arrow Quiver" level="70" />
 	<potion type="arrow_quiver" id="202085" name="Magic Pattern Arrow Quiver" level="63" />
 	<potion type="arrow_quiver" id="202084" name="Kerl's Mechanical Arrow" level="56" />
@@ -68,6 +82,10 @@
 	<potion type="arrow_quiver" id="202075" name="Wooden Arrow Quiver" level="1" />
 
 	<!-- Arrows -->
+	<potion type="arrow" id="212989" name="Hero's Arrow" level="98" />
+	<potion type="arrow" id="212988" name="Athenian Arrow" level="91" />
+	<potion type="arrow" id="212987" name="Legendary Arrow" level="84" />
+	<potion type="arrow" id="212986" name="Sage's Arrow" level="77" />
 	<potion type="arrow" id="212985" name="Obsidian Arrow" level="70" />
 	<potion type="arrow" id="210313" name="Magic Pattern Arrow" level="63" />
 	<potion type="arrow" id="212754" name="" level="60" /><!-- Itemset skill "Create Tendrils" arrows -->
@@ -83,6 +101,11 @@
 	<potion type="arrow" id="210304" name="Wooden Arrow" level="1" />
 
 	<!-- Thrown bags -->
+	<potion type="thrown_bag" id="202147" name="Hero's Blade Bag" level="98" />
+	<potion type="thrown_bag" id="202146" name="Legendary Throwing Axe Bag" level="91" />
+	<potion type="thrown_bag" id="202145" name="Sage's Throwning Knife Bag" level="84" />
+	<potion type="thrown_bag" id="202144" name="Obsidian Throwing Axe Bag" level="77" />
+	<potion type="thrown_bag" id="202143" name="Guard's Throwing Knife Bag" level="70" />
 	<potion type="thrown_bag" id="202142" name="Totem-hunting Axe Bag" level="63" />
 	<potion type="thrown_bag" id="202141" name="Iron Rose Bag" level="56" />
 	<potion type="thrown_bag" id="202140" name="Assassin's Blade Bag" level="49" />
@@ -95,6 +118,11 @@
 	<potion type="thrown_bag" id="202133" name="Stone Bag" level="1" />
 
 	<!-- Thrown -->
+	<potion type="thrown" id="212984" name="Hero's Blade" level="98" />
+	<potion type="thrown" id="212983" name="Legendary Throwing Axe" level="91" />
+	<potion type="thrown" id="212982" name="Sage's Throwning Knife" level="84" />
+	<potion type="thrown" id="212981" name="Obsidian Throwing Axe" level="77" />
+	<potion type="thrown" id="212980" name="Guard's Throwing Knife" level="70" />
 	<potion type="thrown" id="210303" name="Totem-hunting Axe" level="63" />
 	<potion type="thrown" id="210302" name="Iron Rose" level="56" />
 	<potion type="thrown" id="210301" name="Assassin's Blade" level="49" />

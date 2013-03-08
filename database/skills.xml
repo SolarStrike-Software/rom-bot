@@ -71,7 +71,7 @@
 	<skill name="PRIEST_URGENT_HEAL" id="491147" range="250" casttime="1" type="heal" target="friendly" />
 	<skill name="PRIEST_REGENERATE" id="490269" range="180" type="hot" buffname="500469" target="friendly" />
 	<skill name="PRIEST_HOLY_AURA" id="490300" cooldown="120" type="buff" target="self" inbattle="true" maxhpper="30" />
-	<skill name="PRIEST_MAGIC_BARRIER" id="491166" type="buff" buffname="500548" target="self" />
+	<skill name="PRIEST_MAGIC_BARRIER" id="491166" type="buff" buffname="500548,501877" target="self" />
 	<skill name="PRIEST_BLESSED_SPRING_WATER" id="490298" type="buff" buffname="500536" target="self" />
 	<skill name="PRIEST_SOUL_SOURCE" id="490288" cooldown="300" type="heal" target="self" priority="100" maxhpper="25" inbattle="true" />
 	<skill name="PRIEST_WAVE_ARMOR" id="490273" range="180" cooldown="20" type="buff" buffname="500478" target="friendly" />
