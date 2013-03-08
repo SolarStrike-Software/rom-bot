@@ -651,7 +651,13 @@ function CPlayer:target(pawnOrAddress)
 		return false
 	end
 
-	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+	local flags = memoryReadUInt(getProc(),address + addresses.pawnAttackable_offset)
+	if bitAnd(flags,0x10) then -- Has bloodbar
+		local guid = memoryReadUInt(getProc(), address + addresses.pawnGUID_offset)
+		RoMScript("OBB_ChangeTraget("..tostring(guid)..")")
+	else -- Doesn't have bloodbar
+		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
+	end
 	self.TargetPtr = address
 
 	return true
@@ -2437,7 +2443,7 @@ end
 
 function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 	if settings.profile.options.PARTYLEADER_WAIT and GetPartyMemberName(1) then
-		if not checkparty(150) then 
+		if not checkparty(150) then
 			releaseKeys()
 			repeat yrest(500) self:updateBattling() until checkparty(150) or self.Battling
 		end

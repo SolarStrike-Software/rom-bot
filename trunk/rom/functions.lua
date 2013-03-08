@@ -317,7 +317,7 @@ end
 
 -- Used in pause/exit callbacks. Just releases movement keys.
 function releaseKeys()
-	if __PROC then
+	if windowValid(__WIN) and __PROC then
 		memoryWriteBytePtr(__PROC, addresses.staticbase_char ,addresses.moveKeysPressed_offset, 0 )
 	end
 end
@@ -1002,6 +1002,13 @@ function levelupSkill(_skillname, _times)
 		skill_from_db = FindSkillBookSkill(_skillname) -- if real name or id is used
 	end
 
+	-- Check if skill found
+	if not skill_from_db then
+		cprintf(cli.yellow, "Invalid skill name %s.\n",
+		   (_skillname or "nil") );
+		return false;
+	end
+
 	-- check is skill has an aslevel in skills.xml
 	if ( skill_from_db.aslevel ~= nil and
 		 skill_from_db.aslevel > player.Level ) then
@@ -1069,7 +1076,7 @@ function levelupSkills1To10(_loadonly)
 								 [2] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" } },
 		[CLASS_WARDEN]		= {  [1] = { aslevel = 1, skillname="WARDEN_CHARGED_CHOP" },
 								 [2] = { aslevel = 1, skillname="WARDEN_ENERGY_ABSORB" },
-								 [3] = { aslevel = 2, skillname="WARDEN_THORNY_VINE" },
+								 [3] = { aslevel = 2, skillname="WARDEN_THORNY_VINES" },
 								 [4] = { aslevel = 4, skillname="WARDEN_BRIAR_SHIELD" },
 								 [5] = { aslevel = 8, skillname="WARDEN_POWER_OF_THE_WOOD_SPIRIT" } },
 		[CLASS_DRUID]		= {  [1] = { aslevel = 1, skillname="DRUID_RECOVER" },
@@ -1467,7 +1474,10 @@ function GetPartyMemberName(_number)
 end
 
 function GetPartyMemberAddress(_number)
-	return player:findNearestNameOrId(GetPartyMemberName(_number))
+	local name = GetPartyMemberName(_number)
+	if name then
+		return player:findNearestNameOrId(name)
+	end
 end
 
 function EventMonitorStart(monitorName, event, filter)
@@ -1953,6 +1963,30 @@ function CancelQuest(nameorid)
 			questId = RoMScript("GetQuestId("..index..")")
 		end
 	end
+end
+
+function AcceptPopup(popupName)
+   -- Get the correct popup frame
+   local popup
+   if popupName == nil then -- look for first visible popup
+      for i = 1,4 do
+         if RoMScript("StaticPopup"..i..":IsVisible()") then
+            popup = "StaticPopup"..i
+            break
+         end
+      end
+   else -- look for the named popup
+      popup = RoMScript("StaticPopup_Visible('"..popupName.."')")
+   end
+
+   -- Accept the popup
+   if popup then
+      print("Accepting popup "..RoMScript(popup..".which"))
+      RoMScript("StaticPopup_EnterPressed("..popup..");") yrest(1000)
+      RoMScript(popup..":Hide()")
+   else
+      print("Popup not found "..(popupName or ""))
+   end
 end
 
 -- normalises a string so it can be used in searches such as "string.find" and "string.match" without error.

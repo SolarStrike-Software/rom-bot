@@ -15,8 +15,8 @@
 	<!-- #  2 --><waypoint x="-3752" z="-8717">
 		player:target_NPC(110490); -- Port
 		CompleteQuestByName(420667) -- Lively Reward
-		AcceptQuestByName(424800) -- Embedding Runes
-		CompleteQuestByName(424800) -- Embedding Runes
+		AcceptQuestByName(420668) -- Embedding Runes
+		CompleteQuestByName(420668) -- Embedding Runes
 		AcceptQuestByName(420669) -- A Friend's Convern
 		inventory:update();
 		inventory:useItem(201709); -- Generous Gift
