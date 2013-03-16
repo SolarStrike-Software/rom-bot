@@ -40,10 +40,11 @@ local function _heal()
 end
 
 function Party(heal)
-	if heal then healer = true end
+	if heal then healer = true settings.options.TARGET_FRAME = false end
 	eventParty("start")
 	_timexx = os.time()
 	while(true) do
+		player:logoutCheck()
 		if not isInGame() or not player:exists() or not player:isAlive() then
 			if not isInGame() or not player:exists() then
 				printf("Not in game. Waiting till you reenter game... ")

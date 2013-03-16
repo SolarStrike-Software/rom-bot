@@ -652,12 +652,11 @@ function CPlayer:target(pawnOrAddress)
 	end
 
 	local flags = memoryReadUInt(getProc(),address + addresses.pawnAttackable_offset)
-	if bitAnd(flags,0x10) then -- Has bloodbar
+	if bitAnd(flags,0x10) and settings.options.TARGET_FRAME then -- Has bloodbar
 		local guid = memoryReadUInt(getProc(), address + addresses.pawnGUID_offset)
 		RoMScript("OBB_ChangeTraget("..tostring(guid)..")")
-	else -- Doesn't have bloodbar
-		memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 	end
+	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 	self.TargetPtr = address
 
 	return true

@@ -313,8 +313,8 @@ function CItem:moveTo(bag)
 	end
 
 	-- Check if itemshop item
-	if bag == "itemshop" and not self.ItemShopItem then
-		-- Item is not itemshop item. Cannot be put in itemshop bag
+	if (bag == "itemshop" or bag == "isbank") and not self.ItemShopItem then
+		-- Item is not itemshop item. Cannot be put in itemshop bag or is bank
 		return
 	end
 
