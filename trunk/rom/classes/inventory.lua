@@ -757,6 +757,8 @@ function getInventoryRange(range)
 		return 121, 160, "bank"
 	elseif rangeLower == "bank5" then
 		return 161, 200, "bank"
+	elseif rangeLower == "isbank" then
+		return 201, 300, "bank"
 	elseif rangeLower == "bank" or rangeLower == "banks" then
 		return 1, 200, "bank"
 

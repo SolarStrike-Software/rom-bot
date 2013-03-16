@@ -1293,12 +1293,12 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 	local function make_printable(_v)
 		if(_v == true) then
 			_v = "<true>";
-		end
-		if(_v == false) then
+		elseif(_v == false) then
 			_v = "<false>";
-		end
-		if( type(_v) == "table" ) then
+		elseif( type(_v) == "table" ) then
 			_v = "<table>";
+		elseif( type(_v) == "string" ) then
+			_v = convert_utf8_ascii(_v)
 		end
 --		if( type(_v) == "number" ) then
 --			_v = sprintf("%d", _v);

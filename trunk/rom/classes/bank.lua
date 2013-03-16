@@ -4,7 +4,7 @@ include("bankitem.lua");
 CBank = class(
 	function (self)
 
-		self.MaxSlots = 200;
+		self.MaxSlots = 300;
 
 		self.BagSlot = {};
 
@@ -40,7 +40,7 @@ function CBank:findItem( itemNameOrId, range)
 	end
 
 	if first == nil then
-		first , last = 1, 200 -- default, search all
+		first , last = 1, 300 -- default, search all
 	end
 
 	local smallestStack = nil
@@ -75,8 +75,13 @@ function CBank:itemTotalCount(itemNameOrId, range)
 	end
 
 	if first == nil then
+		-- Default values - 1-300 for items, 1-200 for empties.
 		first = 1
-		last = 200
+		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
+			last = 200
+		else
+			last = 300
+		end
 	end
 
 	local item

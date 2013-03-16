@@ -21,6 +21,7 @@ settings_default = {
 		DEBUGGING = false,
 		DEBUGGING_MACRO = false,
 		ROMDATA_PATH = nil,
+		TARGET_FRAME = true,
 	},
 	profile = {
 		options = {
