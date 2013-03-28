@@ -96,6 +96,7 @@
 	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" id="491323" type="buff" buffname="501778" target="self" />
 	<skill name="PRIEST_CURING_SHOT" id="492636" range="200" casttime="2" cooldown="12" type="heal" target="friendly"/>
 	<skill name="PRIEST_ICE_BLADE" id="492931" range="200" type="damage" />
+	<skill name="PRIEST_ICE_BLADES" id="490071" range="200" cooldown="3" type="damage" />
 	<skill name="PRIEST_SNAKE_CURSE" id="492403" range="180" casttime="1" type="dot" buffname="502663" />
 	<skill name="PRIEST_INFECTIOUS_WOUND" id="492402" range="200" cooldown="10" />
 	<skill name="PRIEST_PURGE" id="492360" range="200" cooldown="20" />
@@ -409,6 +410,7 @@
 
 	<!-- Warden skills -->
 	<skill name="WARDEN_CHARGED_CHOP" id="493395" range="50" cooldown="1" type="damage" target="enemy" globalcooldown="false" />
+	<skill name="SCOUT_CHARGED_CHOP" id="494336" range="180" cooldown="15" type="damage" target="enemy" />
 	<skill name="WARDEN_BRIAR_SHIELD" id="493642" type="buff" buffname="503958" target="self" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" id="493392" range="50" cooldown="1" type="damage" target="enemy" aoecenter="target" globalcooldown="false"/>
 	<skill name="WARDEN_ELVEN_AMULET" id="493402" cooldown="70" type="buff" target="self" hpper="50" inbattle="true" />
