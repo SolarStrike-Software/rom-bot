@@ -228,7 +228,7 @@ function CPawn:update()
 	self:updateXYZ()
 	self:updateDirection() -- Also updates DirectionY
 
-	local attackableFlag = memoryReadRepeat("int", proc, self.Address + addresses.pawnAttackable_offset)
+	local attackableFlag = memoryReadRepeat("uint", proc, self.Address + addresses.pawnAttackable_offset)
 	if attackableFlag then
 		self.Mounted = bitAnd(attackableFlag, 0x10000000)
 
@@ -842,8 +842,8 @@ end
 function CPawn:GetPartyIcon()
 	self:updateGUID()
 	local listStart = memoryReadRepeat("uintptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
-	for i = 0, 6 do
-		local guid = memoryReadShort(getProc(), listStart + i * 12)
+	for i = 0, 7 do
+		local guid = memoryReadInt(getProc(), listStart + i * 12)
 		if guid == self.GUID then
 			return i + 1
 		end
