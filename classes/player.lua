@@ -3270,7 +3270,7 @@ function CPlayer:restrnd(_probability, _restmin, _restmax)
 
 end
 
-function CPlayer:sleep()
+function CPlayer:sleep(duration)
 -- the bot will sleep but still fight back attackers
 
 	local sleep_start = os.time();		-- calculate the sleep time
@@ -3300,6 +3300,11 @@ function CPlayer:sleep()
 			end;
 
 			hf_key = " ";	-- clear last pressed key
+		end;
+
+		if duration and os.time()-sleep_start > duration then
+			self.Sleeping = false;	-- we are awake
+			break;
 		end;
 
 		self:updateBattling();

@@ -438,9 +438,9 @@ function CInventory:autoSell(evalfunc)
 			for i,ignorelistitem in pairs(hf_ignore_table) do
 
 				if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
-					_item.ItemId == ignorelistitem ) then
+					_item.Id == tonumber(ignorelistitem) ) then
 					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.ItemId, _item.Name, "=>", "'"..ignorelistitem.."'");
+					  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.Id, _item.Name, "=>", "'"..ignorelistitem.."'");
 					return true
 				end
 

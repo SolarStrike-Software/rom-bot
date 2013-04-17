@@ -479,6 +479,52 @@ function timedSetWindowName(profile)
 	end
 end
 
+-- returns full path if it exists, searching relative, local and global folders
+-- To be found, _file path should be relative to 'rom' or 'romglobal' or the current waypoint file.
+function findFile(_file)
+	-- Check relative to current wp files location.
+	if __WPL and __WPL.FileName then
+		-- we strip "waypoints/" since we search relative to current waypoint location.
+		local tmpFile = string.gsub(_file,"^/?waypoints/","")
+
+		local currentWPLPath = string.match(__WPL.FileName,"(.+/)") or ""
+
+		-- Simple nested folder
+		if fileExists(getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile) then
+			return getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile
+		end
+
+		-- Strip duplicate dirs
+		local tmpPath = string.match(tmpFile, "^(.*%/).*%....")
+		if tmpPath then
+			repeat
+				if string.match(currentWPLPath, tmpPath .. "$") then
+					-- Match found, strip dirs
+					currentWPLPath = string.match(currentWPLPath, "(.*)"..tmpPath.."$")
+					if fileExists(getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile) then
+						return getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile
+					end
+				end
+				-- Take off a dir and try again
+				tmpPath = string.match(tmpPath, "^(.-)[^%/]*%/$")
+			until tmpPath == ""
+		end
+	end
+
+	-- Then check local folder
+	if fileExists(getExecutionPath() .. "/" .. _file) then
+		return getExecutionPath() .. "/" .. _file
+	end
+
+	-- Then check global folder
+	if fileExists(getExecutionPath() .. "/../romglobal/" .. _file) then
+		return getExecutionPath() .. "/../romglobal/" .. _file
+	end
+
+	-- if neither exist return local as default
+	return getExecutionPath() .. "/" .. _file
+end
+
 function load_paths( _wp_path, _rp_path)
 
 	cprintf(cli.yellow, "Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
@@ -492,21 +538,6 @@ function loadPaths( _wp_path, _rp_path)
 -- a default return path based on the waypoint path name and
 -- the settings.profile.options.RETURNPATH_SUFFIX
 
-	-- returns full path if it exists, searching both local and global folders
-	local function getFilename(_path)
-		-- First check local folder
-		if fileExists(getExecutionPath() .. "/waypoints/" .. _path) then
-			return getExecutionPath() .. "/waypoints/" .. _path
-		end
-
-		-- Then check global folder
-		if fileExists(getExecutionPath() .. "/../romglobal/waypoints/" .. _path) then
-			return getExecutionPath() .. "/../romglobal/waypoints/" .. _path
-		end
-
-		-- if neither exist return local as default
-		return getExecutionPath() .. "/waypoints/" .. _path
-	end
 
 	-- check if function is not called empty
 	if( not _wp_path ) and ( not _rp_path ) then
@@ -539,7 +570,7 @@ function loadPaths( _wp_path, _rp_path)
 	local wpfilename
 	if( _wp_path and
 		string.lower(_wp_path) ~= "wander" ) then
-		local filename = getFilename(_wp_path)
+		local filename = findFile("waypoints/" .. _wp_path )
 		if not fileExists(filename) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
 			error(msg, 2);
@@ -559,7 +590,7 @@ function loadPaths( _wp_path, _rp_path)
 
 	-- look for default return path with suffix '_return'
 	if( not _rp_path ) then
-		local filename = getFilename(rp_default)
+		local filename = findFile("waypoints/" .. rp_default)
 		if fileExists(filename) then
 			cprintf(cli.green, language[162], rp_default );	-- Return path found with default naming
 			_rp_path = rp_default;	-- set default
@@ -574,7 +605,7 @@ function loadPaths( _wp_path, _rp_path)
 		if( not __RPL ) then  		-- define object if not there
 			__RPL = CWaypointList();
 		end;
-		local filename = getFilename(_rp_path)
+		local filename = findFile("waypoints/" .. _rp_path)
 		if not fileExists(filename) then
 			local msg = sprintf(language[143], _rp_path ); -- We can't find your returnpath file
 			error(msg, 0);
@@ -2280,8 +2311,13 @@ function getTEXT(text)
 	if not text or type(text) ~= "string" then return end
 	local resultTEXT = RoMScript("TEXT(\""..text.."\")")
 	for subTEXT in string.gmatch(resultTEXT,"%[(.-)%]") do
-		local translatedSubTEXT = RoMScript("TEXT(\""..subTEXT.."\")")
-		if translatedSubTEXT ~= subTEXT then
+		local translatedSubTEXT
+		if tonumber(subTEXT) then -- Must be id
+			translatedSubTEXT = GetIdName(tonumber(subTEXT))
+		else
+			translatedSubTEXT = RoMScript("TEXT(\""..subTEXT.."\")")
+		end
+		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subTEXT then
 			resultTEXT = string.gsub(resultTEXT, "%["..subTEXT.."%]", translatedSubTEXT)
 		end
 	end
