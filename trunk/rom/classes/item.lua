@@ -155,7 +155,9 @@ function CItem:update()
 		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
 
 		-- Get Stats (only named stats)
+		-- Get Runes (only named Runes)
 		self.Stats = {}
+		self.Runes = {}
 		if self.ObjType == 0 or self.ObjType == 1 or self.ObjType == 5 then -- Weapons, Armor and Equipment Enhancements
 			for i = 1, 6 do
 				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
@@ -165,6 +167,17 @@ function CItem:update()
 				tmpid = tmpid + 500000
 				local tmpname = GetIdName(tmpid)
 				self.Stats[i] = {Id = tmpid, Name = tmpname}
+			end
+		end
+		if self.ObjType == 0 or self.ObjType == 1 then
+			for i = 1, 4 do
+				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0xC + (0x2*(i-1)) );
+				if tmpid == 0 then -- No More runes
+					break
+				end
+				tmpid = tmpid + 500000
+				local tmpname = GetIdName(tmpid)
+				self.Runes[i] = {Id = tmpid, Name = tmpname}
 			end
 		end
 

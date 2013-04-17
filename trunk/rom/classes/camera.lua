@@ -1,6 +1,7 @@
 CCamera = class(
-	function(self, ptr)
-		self.Address = ptr;
+	function(self)
+		self.Address = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset) or 0
+
 		self.XUVec = 0.0;
 		self.YUVec = 0.0;
 		self.ZUVec = 0.0;
@@ -14,7 +15,7 @@ CCamera = class(
 		self.ZFocus = 0;
 
 		self.Distance = 0
-		if( self.Address ) then
+		if( self.Address ~= 0) then
 			self:update();
 		end
 	end

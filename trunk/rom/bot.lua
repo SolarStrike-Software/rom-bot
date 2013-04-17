@@ -60,20 +60,12 @@ if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
 
--- Allow include to check global folders too
+-- Allow include to check global and relative folders too
 if originalInclude == nil then
 	originalInclude = include
 end
 function include(file, forceInclude)
-	if file then
-		if fileExists(getExecutionPath().."/"..file) then
-			return originalInclude(file, forceInclude)
-		elseif (not string.find(string.lower(file),"romglobal",1,true)) and fileExists(getExecutionPath().."/../romglobal/"..file) then
-			return originalInclude("../romglobal/"..file, forceInclude)
-		end
-	end
-
-	return originalInclude(file, forceInclude)
+	return originalInclude(findFile(file), true)
 end
 
 printf("Installing userfunctions. ") -- Message to help tell when userfunctions are a problem
@@ -261,13 +253,11 @@ function main()
 		printf("[DEBUG] mousePawn id: %d\n", mousePawn.Id);
 	end
 
-	local cameraAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset);
-	if( cameraAddress == nil ) then cameraAddress = 0; end;
+	camera = CCamera();
 	if( settings.options.DEBUGGING ) then
-		printf("[DEBUG] camAddress: 0x%X\n", cameraAddress);
+		printf("[DEBUG] camAddress: 0x%X\n", camera.Address);
 	end
 
-	camera = CCamera(cameraAddress);
 	if( settings.options.DEBUGGING ) then
 		-- Camera debugging info
 		printf("[DEBUG] Cam X: %0.2f, Y: %0.2f, Z: %0.2f\n", camera.X, camera.Y, camera.Z);
