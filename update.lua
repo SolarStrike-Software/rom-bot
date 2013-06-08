@@ -1018,6 +1018,7 @@ function findOffsets()
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x5260);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x823C);
 	assumptionUpdate("itemQueueCount", addresses.high9sBase + 0x568);
+	assumptionUpdate("getTEXT", addresses.isInGame + 0xD0);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)

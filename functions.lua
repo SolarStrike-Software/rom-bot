@@ -1439,7 +1439,6 @@ function waitForLoadingScreen(_maxWaitTime)
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
 
 	rest(2000)
-	player:update()
 	return true
 end
 
@@ -1953,7 +1952,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 				end
 				RoMScript("CompleteQuest()") -- Completes the quest
 				yrest(100)
-			until (getQuestStatus(questOnBoard)~="complete")
+			until (getQuestStatus(_nameorid)~="complete")
 			printf("Quest completed: %s\n",questOnBoard)
 
 			-- break if name matched
@@ -2308,14 +2307,48 @@ function getGameTime()
 end
 
 function getTEXT(text)
+	local function memoryGetTEXT(str)
+		local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
+		local startloc = memoryReadInt(getProc(), addressPtrsBase + 0x268)
+		local endloc = memoryReadInt(getProc(), addressPtrsBase + 0x26C)
+		local quarter = math.floor((endloc-startloc) / 4)
+
+		local tmpStart = endloc
+		local tmpEnd = endloc
+		-- Find which quarter of memory holds string to speed up search
+		for count = 1,3 do
+			tmpStart = tmpStart - quarter
+			local found = findPatternInProcess(getProc(), string.char(0).."Sys", "xxx", tmpStart, tmpEnd);
+			local tmpText = memoryReadString(getProc(), found + 1)
+			if tmpText <= str then
+				startloc = tmpStart
+				break
+			else
+				endloc = tmpStart
+			end
+		end
+		local searchlen = endloc - startloc
+
+		local pattern = string.char(0x00) .. str .. string.char(0x00)
+		local mask = string.rep("x", #pattern)
+		local offset = #pattern
+		local found = findPatternInProcess(getProc(), pattern, mask, startloc, searchlen);
+
+		if found ~= 0 then
+			return memoryReadString(getProc(), found + offset)
+		else
+			return str
+		end
+	end
+
 	if not text or type(text) ~= "string" then return end
-	local resultTEXT = RoMScript("TEXT(\""..text.."\")")
+	local resultTEXT = memoryGetTEXT(text)
 	for subTEXT in string.gmatch(resultTEXT,"%[(.-)%]") do
 		local translatedSubTEXT
 		if tonumber(subTEXT) then -- Must be id
 			translatedSubTEXT = GetIdName(tonumber(subTEXT))
 		else
-			translatedSubTEXT = RoMScript("TEXT(\""..subTEXT.."\")")
+			translatedSubTEXT = memoryGetTEXT(subTEXT)
 		end
 		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subTEXT then
 			resultTEXT = string.gsub(resultTEXT, "%["..subTEXT.."%]", translatedSubTEXT)
@@ -2380,4 +2413,34 @@ function getLastAlert(message, age)
 	else
 		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE','" .. message .. "')")
 	end
+end
+
+function getCurrency(name)
+	name = string.lower(name) -- Make lower case
+	local noSname = string.match(name,"^(.-)s?$") -- Take off ending 's'
+
+	local group, index
+	if noSname == "shell" or name == string.lower(getTEXT("SYS_MONEY_TYPE_11")) then
+		group, index = 1,1
+	elseif noSname == "energy" or noSname == "eoj" or name == string.lower(getTEXT("SYS_MONEY_TYPE_12")) then
+		group, index = 1,2
+	elseif noSname == "dreamland" or noSname == "pioneer sigil" or noSname == "sigil" or name == string.lower(getTEXT("SYS_MONEY_TYPE_10")) then
+		group, index = 1,3
+	elseif noSname == "mem" or noSname == "mento" or noSname == "memento" or name == string.lower(getTEXT("SYS_MONEY_TYPE_9")) then
+		group, index = 2,1
+	elseif noSname == "proof" or noSname == "pom" or name == string.lower(getTEXT("SYS_MONEY_TYPE_13")) then
+		group, index = 2,2
+	elseif noSname == "honor" or name == string.lower(getTEXT("SYS_MONEY_TYPE_4")) then
+		group, index = 3,1
+	elseif noSname == "trial" or noSname == "bott" or name == string.lower(getTEXT("SYS_MONEY_TYPE_8")) then
+		group, index = 3,2
+	elseif noSname == "warrior" or noSname == "botw" or name == string.lower(getTEXT("SYS_MONEY_TYPE_14")) then
+		group, index = 3,3
+	else
+		print("Invalid currency type. Please use 'shell', 'eoj', 'sigil', 'mem', 'proof', 'honor', 'trial' or 'warrior'.")
+		return 0,0
+	end
+	local amount, limit = RoMScript("GetPlayerPointInfo("..group..","..index..",\"\")")
+
+	return amount, limit-amount
 end

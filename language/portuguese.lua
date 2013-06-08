@@ -81,7 +81,7 @@ language = {
 	[91] = "Acordou do sono porque recebemos aggro em %s.\n",
 	[92] = "Clique do rato %s em %d,%d em %dx%d (recalculado a partir de %d,%d by %dx%d)\n",
 	[93] = "Clique do rato %s em%d,%d em %dx%d.\n",
-	[94] = "The RoM window have to be in the foreground to be able to use the harvesting function. We can't harvest now!\n",
+
 	[95] = "Encontr\160mos %s e vamos colh\136-lo.\n",
 	[96] = "Come\135amos o combate com atrac\135\132o \160 dist\131ncia.\n",
 	[97] = "Atrac\135\132o \160 distancia terminada, o monstro est\160 \160 dest\131ncia de  m\170l\130e.\n",
@@ -130,7 +130,7 @@ language = {
 	[140] = "Por favor verifique as defini\135\148es no ficheiro settings.xml e no seu perfil profile!\n",
 	[141] = "Por favor verifique as defini\135\148es: Jogo -> System -> Hotkeys e no seu perfil profile!\n",
 	[142] = "N\132o encontr\160mos o seu ficheiro de caminho \'%s\'. Por favor crie um ficheiro v\160lido dentro da pasta \'waypoints\' ou indique o nome corecto.\nO bot terminou devido aos erros supracitados.",
-	[143] = "We can't find your return path file \'%s\'. Please create a valid return path file within the \'waypoints\' folder or enter the right filename.\nO bot terminou devido aos erros supracitados.",
+
 	[144] = "Ficheiros de caminho de %s:\n",
 	[145] = "Insira o n\163mero do caminho que deseja e pressione %s > ",
 	[146] = "Escolheu %s\n",
@@ -157,7 +157,7 @@ language = {
 	[172] = "Altera\135\132o da op\135\132o \'%s\' de \'%s\' para \'%s\'.\n",
 	[173] = "Op\135\13o de perfil desconhecida \'%s\'. N\132o podemos alterar esse valor. Por favor verifique as suas defini\135\148es.\n",
 	[174] = "O Item n\132o foi encontrado: %s\n",
-	[175] = "Snoop, the lazy Dog",
+
 	[176] = "Foi encontrado o feiti\135o \'a dist\131ncia %s\n",
 	[177] = "O combate foi interrompido.\n",
 	[178] = "Interrompemos a pilha por cause do aggro.\n",

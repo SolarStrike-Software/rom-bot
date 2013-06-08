@@ -79,7 +79,7 @@ language = {
 	[91] = "Wznowiono z powodu zebrania aggro o %s.\n",
 	[92] = "Klikni\169cie mysz\165 %s o %d,%d w %dx%d (przeliczony z %d,%d z %dx%d)\n",
 	[93] = "Klikni\169cie mysz\165 %s o %d,%d w %dx%d.\n",
-	[94] = "Okno RoMa musi by\134 na wierzchu aby m\162c korzysta\134 z wydobywania. Nie mo\190emy wydobywa\134 teraz!\n",
+
 	[95] = "Znale\171li\152my %s i zbierzemy to.\n",
 	[96] = "Rozpoczniemy walk\169 od przyci\165gni\169cia z dystansu.\n",
 	[97] = "Przyci\165gni\169cie z dystansu zako\241czone. Rozpoczynanie walki wr\169cz.\n",

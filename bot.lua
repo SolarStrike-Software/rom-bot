@@ -76,7 +76,7 @@ for i,v in pairs(addondir) do
 	if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
 
 	if( match ~= nil ) then
-		include("/userfunctions/" .. v);
+		include("userfunctions/" .. v);
 		logMessage("Bot userfunction \'" .. match .. "\' successfully loaded.");
 	end
 end

@@ -391,7 +391,6 @@ function CPlayer:harvest(_id, _second_try)
 					end
 
 					if( harvestThis == true ) then
-						local dist = distance(self.X, self.Z, obj.X, obj.Z);
 						if( closestHarvestable == nil ) then
 							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) < settings.profile.options.HARVEST_DISTANCE ) then
 								closestHarvestable = obj;
@@ -3610,7 +3609,6 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 			for __, _objnameorid in pairs(_objtable) do
 				if( obj.Address ~= ignore and obj.Address ~= player.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
 					if( evalFunc(obj.Address,obj) == true ) then
-						local dist = distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y);
 						if( closestObject == nil ) then
 							closestObject = obj;
 						else

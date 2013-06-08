@@ -84,6 +84,7 @@ language = {
 	[91] = "Awake from sleep because of aggro at %s.\n",
 	[92] = "Mouseclick %s at %d,%d in %dx%d (recalculated from %d,%d by %dx%d)\n",
 	[93] = "Mouseclick %s at %d,%d in %dx%d.\n",
+
 	[95] = "We found %s and will harvest it.\n",
 	[96] = "We begin the fight with ranged pulling.\n",
 	[97] = "Ranged pulling finished, mob in melee distance.\n",
