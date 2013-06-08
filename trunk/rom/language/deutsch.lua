@@ -87,7 +87,7 @@ language = {
 	[91] = "Schlafmodus um %s beendet. Wir haben Aggro.\n",
 	[92] = "Mausklick %s an Position %d,%d bei %dx%d (neu berechnet von %d,%d bei Aufl\148sung %dx%d).\n",
 	[93] = "Mausklick %s an Position %d,%d.\n",
-	[94] = "Das Spielfenster muss im Vordergrund sein, um Ressourcen abbauen zu k\148nnen. Abbau im Moment nicht m\148glich!\n",
+
 	[95] = "Wir haben %s gefunden und werden es abbauen.\n",
 	[96] = "Wir versuchen den Gegner mit einer Fernkampff\132higkeit an uns heranzuziehen.\n",
 	[97] = "Heranziehen des Gegners beendet. Der Gegner ist im Nahkampfbereich.\n",
@@ -225,7 +225,7 @@ language = {
 	[1000] = "Aktualisierung Inventar (Taschenplatz 1 bis %d)...\n",
 	[1001] = "Einkaufen",
 	[1002] = "N\132chste Inventar Aktualisierung in sp\132testens %d Sekunden.\n",
-	[1003] = "The ingamefunctions addon (igf) is not installed! You set options, that need igf. We will not sell items! Please install igf (copy the folder 'ingamefunctions' from 'rom/devtools' to your RoM installation '/interface/addons' ) or delete the autosell options INV_AUTOSELL_NOSELL_DURA and INV_AUTOSELL_STATS_NOSELL from your profile.\n",
+
 	[1004] = "Das Addon ingamefunctions ist nicht installiert! Wir k\148nnen keine Gegenst\132nde verkaufen! Bitte igf installieren (den Ordner 'ingamefunctions' aus 'rom/devtools' in die RoM Installation in '/interface/addons' kopieren) oder l\148schen Sie die Optionen INV_AUTOSELL_NOSELL_DURA und INV_AUTOSELL_STATS_NOSELL aus Ihrem Profil.\n",
 	[1005] = "AutoSell gescheitert: Deine Client Sprache wird nicht unterstutzt.",
 	[1006] = "Der 'ingamefunctions' Ordner im Spieleordner 'interface/addons', ist veraltet. Die aktuelle Version ist %d, Sie haben %d. Um zu updaten, rechtsklicken Sie den 'interface/addons/ingamefunctions' Ordner und w\132hlen Sie 'SVN Update' oder kopieren Sie den 'ingamefunctions' Ordner von 'rom/devtools' in den Spieleordner 'interface/addons'. Danach das Spiel neustarten.\n",

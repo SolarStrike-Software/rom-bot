@@ -197,7 +197,9 @@ function ToggleUI_TITLE()
 	--Read command macro
 	local icnum,name,body=GetMacroInfo(commandMacro)
 	if string.find(body,"^/") then -- Should be slash command
-		ExecuteMacroLine(body)
+		for line in string.gmatch(body, "/[^/]*") do
+			ExecuteMacroLine(line)
+		end
 		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , "")
 	elseif body == "SendMore" then
 		-- command macro to get the rest of the data from 'ResultOutput'

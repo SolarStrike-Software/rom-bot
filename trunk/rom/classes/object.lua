@@ -26,7 +26,7 @@ function CObject:update()
 	self.Id = memoryReadUInt(proc, self.Address + addresses.pawnId_offset) or 0;
 	self.Type = memoryReadInt(proc, self.Address + addresses.pawnType_offset) or -1;
 
-if( 1 > self.Id or self.Id > 999999 or self.Type == -1 ) then -- invalid object
+	if( 1 > self.Id or self.Id > 999999 or self.Type == -1 ) then -- invalid object
 		self.Id = 0
 		self.Type = -1
 		self.Name = ""
