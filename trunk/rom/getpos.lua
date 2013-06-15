@@ -29,13 +29,13 @@ function main()
 		playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 		playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
 		playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
-		if not isInGame() or playerId < 1000 or playerId > 1004 or playerHP < 1 then
+		if not isInGame() or playerId < PLAYERID_MIN or playerId > PLAYERID_MAX or playerHP < 1 then
 			repeat
 				yrest(1000)
 				playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
 				playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
 				playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
-			until isInGame() and playerId >= 1000 and playerId <= 1004 and playerHP > 1
+			until isInGame() and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX and playerHP > 1
 		end
 		playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
 		playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
