@@ -194,6 +194,8 @@ SKILLUSES_ITEM = 9
 SKILLUSES_PROJECTILE = 13
 SKILLUSES_ARROW = 14
 SKILLUSES_PSI = 15
+PLAYERID_MIN = 1000
+PLAYERID_MAX = 1004
 
 function checkKeySettings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..

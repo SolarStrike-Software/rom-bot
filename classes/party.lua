@@ -56,7 +56,7 @@ function Party(heal)
 				local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 				local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
 				local hp = memoryReadRepeat("int", getProc(), address + addresses.pawnHP_offset)
-			until isInGame() and id and id >= 1000 and 1004 >= id and hp > 1
+			until isInGame() and id and id >= PLAYERID_MIN and PLAYERID_MAX >= id and hp > 1
 			yrest(3000)
 			print("Continuing.")
 			player:update()

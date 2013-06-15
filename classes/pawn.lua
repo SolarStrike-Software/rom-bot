@@ -292,8 +292,8 @@ function CPawn:updateId()
 	if self.Id == -1 then -- First time. Get it.
 		self.Id = tmp
 		if self.Id > 999999 then self.Id = 0 end
-	elseif self.Id >= 1000 and self.Id <= 1004 then -- player ids can change
-		if tmp >= 1000 and tmp <= 1004 then
+	elseif self.Id >= PLAYERID_MIN and self.Id <= PLAYERID_MAX then -- player ids can change
+		if tmp >= PLAYERID_MIN and tmp <= PLAYERID_MAX then
 			self.Id = tmp
 		end
 	else -- see if it changed
