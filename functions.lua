@@ -1439,6 +1439,7 @@ function waitForLoadingScreen(_maxWaitTime)
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
 
 	rest(2000)
+	player:update()
 	return true
 end
 

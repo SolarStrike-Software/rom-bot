@@ -127,8 +127,24 @@ function CPlayer:update()
 	local addressChanged = false
 
 	-- Ensure that our address hasn't changed. If it has, fix it.
+
+	-- Read the address
 	local tmpAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
-	if( tmpAddress ~= self.Address and tmpAddress ~= 0 and tmpAddress ~= nil) then
+
+	-- Bad read, return
+	if tmpAddress == 0 then
+		return
+	end
+
+	-- Check that it's a valid address by checking the id
+	local tmpId = memoryReadRepeat("uint", getProc(), tmpAddress + addresses.pawnId_offset) or 0
+	if not tmpId or tmpId < PLAYERID_MIN or tmpId > PLAYERID_MAX then
+		-- invalid address
+		return
+	end
+
+	-- Else address good. If changed, update.
+	if( tmpAddress ~= self.Address) then
 		self.Address = tmpAddress;
 		cprintf(cli.green, language[40], self.Address);
 		addressChanged = true
@@ -245,14 +261,12 @@ function CPlayer:update()
 end
 
 function CPlayer:exists()
-	local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
-	if address then
-		local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
-		if id and id >= 1000 and 1004 >= id then
-			return true
-		else
-			return false
-		end
+	local id = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnId_offset)
+	if id and id >= PLAYERID_MIN and PLAYERID_MAX >= id then
+		self.Id = id
+		return true
+	else
+		return false
 	end
 end
 
