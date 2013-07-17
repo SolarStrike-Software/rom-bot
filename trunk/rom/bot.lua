@@ -1,5 +1,11 @@
 BOT_VERSION = 3.29;
 
+local handle = io.popen("SubWCRev \""..getExecutionPath().."\"")
+local result = handle:read("*a")
+handle:close()
+BOT_REVISION = string.match(result,"Updated to revision (%d*)") or "<UNKNOWN>"
+
+--[[
 BOT_REVISION = "<UNKNOWN>"
 
 -- Check version 1.7 style svn folder.
@@ -27,6 +33,7 @@ if BOT_REVISION == "<UNKNOWN>" then
 		end
 	end
 end
+]]
 
 include("addresses.lua");
 include("database.lua");
@@ -653,6 +660,9 @@ function main()
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
+		if isClientCrashed() then
+			error("Client crash detected in main bot loop.")
+		end
 		while __WPL.DoOnload do
 			__WPL.DoOnload = false
 			__WPL.onLoadEvent()

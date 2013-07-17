@@ -261,13 +261,13 @@
 
 
 	<!-- Knight skills -->
-	<skill name="KNIGHT_HOLY_STRIKE" id="490496" range="50" type="damage" target="enemy" nobuffcount="3" nobufftarget="target" nobuffname="500137"/>
-	<skill name="KNIGHT_PUNISHMENT" id="490164" range="50" cooldown="8" type="damage" target="enemy" reqbuffcount="3" reqbufftarget="target" reqbuffname="500137" />
+	<skill name="KNIGHT_HOLY_STRIKE" id="490496" range="50" type="damage" target="enemy"/>
+	<skill name="KNIGHT_PUNISHMENT" id="490164" range="50" cooldown="8" type="damage" target="enemy" reqbuffcount="3" reqbufftarget="target" reqbuffname="500169" />
 	<skill name="KNIGHT_DISARMAMENT" id="490159" range="50" type="damage" target="enemy" />
 	<skill name="KNIGHT_SHIELD_OF_ATONEMENT" id="490155" range="90" cooldown="30" type="damage" target="enemy" />
 	<skill name="KNIGHT_ENHANCED_ARMOR" id="490152" type="buff" buffname="500141,501823" target="self" />
 	<skill name="KNIGHT_HOLY_SHIELD" id="490495" cooldown="300" type="buff" buffname="501772" target="self" />
-	<skill name="KNIGHT_HOLY_SEAL" id="491368" type="buff" buffname="501772" target="self" />
+	<skill name="KNIGHT_HOLY_SEAL" id="490149" type="damage" range="50" cooldown="10" target="enemy" />
 	<skill name="KNIGHT_MANA_RETURN" id="491446" range="100" cooldown="8" type="damage" target="enemy" reqbuffname="501773" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_WHIRLWIND_SHIELD" id="491281" range="75" cooldown="6" type="damage" target="enemy" aoecenter="player"/>
 	<skill name="KNIGHT_SHACKLES_OF_LIGHT" id="490180" range="50" cooldown="60" type="damage" target="enemy" />
@@ -276,7 +276,7 @@
 	<skill name="KNIGHT_THREATEN" id="490187" range="50" cooldown="8" type="damage" target="enemy" reqbuffname="501773" reqbufftarget="target" reqbuffcount="3" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" id="490160" cooldown="60" type="buff" target="self" inbattle="true" />
 	<skill name="KNIGHT_SHIELD_OF_TRUTH" id="490188" cooldown="60" type="buff" target="self" inbattle="true" />
-	<skill name="KNIGHT_SHOCK" id="490158" cooldown="30" range="150" type="damage" target="enemy" reqbuffname="500137" reqbufftarget="target" reqbuffcount="1" />
+	<skill name="KNIGHT_SHOCK" id="490158" cooldown="30" range="150" type="damage" target="enemy" reqbuffname="500169" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_HATRED_STRIKE" id="490177" cooldown="120" />
 	<skill name="KNIGHT_SHIELD_OF_DISCIPLINE" id="490169" cooldown="60" type="buff" target="self" inbattle="true" />
 	<skill name="KNIGHT_HALL_OF_DEAD_HEROES" id="490194" range="120" cooldown="1800" maxhpper="30" type="buff" buffname="500265" target="self" />

@@ -4,8 +4,8 @@ include("addresses.lua");
 include("functions.lua");
 include("classes/memorytable.lua");
 
-setStartKey(0);
-setStopKey(0);
+setStartKey(key.VK_DELETE);
+setStopKey(key.VK_END);
 
 function pauseCallback()
 	printf("\nPaused.\n");
@@ -13,7 +13,8 @@ end
 atPause(pauseCallback);
 
 function exitCallback()
-	printf("\n");
+
+	printf("exitcakkback\n");
 end
 atExit(exitCallback);
 

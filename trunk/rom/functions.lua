@@ -336,34 +336,15 @@ end
 atExit(exitCallback);
 
 function errorCallback(script, line, message)
-	local crashwin = findWindow("Crash Report", "#32770");
-
-	if( crashwin ~= 0 and crashwin ~= nil ) then
-		-- Looks like the paired game client crashed. Kill it off and exit.
-		local pid = findProcessByWindow(crashwin);
-		os.execute("TASKKILL /PID " .. pid .. " /F");
-
+	local crashed, pid = isClientCrashed()
+	if crashed then
+		printf("Attached game client has crashed. Killing client (PID %d)\n", pid);
 		warning(script .. ":" .. line .. ": " .. message);
-
-		printf("Found a crashed game client and killed it. (PID %d)\n", pid);
-		printf("This instance of MicroMacro will automatically terminate in 30 seconds.\n");
-		printf("Press ENTER to end the script and prevent termination.\n");
-
-		local starttime = os.time();
-		while( os.time() - starttime < 30 ) do
-			yrest(10);
-
-			if( keyPressedLocal(key.VK_ENTER) or keyPressedLocal(key.VK_ESCAPE) ) then
-				return;
-			end
-		end
-
-		-- Terminate this copy of MicroMacro.
-		os.exit();
+		os.execute("TASKKILL /PID " .. pid .. " /F");
 	else
 		releaseKeys();
 
-		printf("Did not find any crashed game clients.\n");
+		printf("The game client did not crash.\n");
 	end
 end
 atError(errorCallback);
@@ -463,6 +444,8 @@ function timedSetWindowName(profile)
 			player.TimeTillLevel = (maxExp - newExp) / player.ExpPerMin;
 			if( player.TimeTillLevel > 9999 ) then
 				player.TimeTillLevel = 9999;
+			elseif( player.TimeTillLevel < 0 ) then
+				player.TimeTillLevel = 0
 			end
 		end
 	end
@@ -2397,9 +2380,9 @@ function getLastWarning(message, age)
 	end
 
 	if age then
-		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE','" .. message .. "'," .. age .. ")")
+		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE',[[" .. message .. "]]," .. age .. ")")
 	else
-		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE','" .. message .. "')")
+		return RoMScript("igf_events:getLastEventMessage('WARNING_MESSAGE',[[" .. message .. "]])")
 	end
 end
 
@@ -2410,9 +2393,9 @@ function getLastAlert(message, age)
 	end
 
 	if age then
-		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE','" .. message .. "',".. age .. ")")
+		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE',[[" .. message .. "]],".. age .. ")")
 	else
-		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE','" .. message .. "')")
+		return RoMScript("igf_events:getLastEventMessage('ALERT_MESSAGE',[[" .. message .. "]])")
 	end
 end
 
@@ -2444,4 +2427,24 @@ function getCurrency(name)
 	local amount, limit = RoMScript("GetPlayerPointInfo("..group..","..index..",\"\")")
 
 	return amount, limit-amount
+end
+
+function isClientCrashed()
+	local crashwins = findWindowList("Crash Report", "#32770");
+
+	if( #crashwins == 0 ) then
+		return false
+	end
+
+	local crashparent
+	for i = 1, #crashwins, 1 do
+		crashparent = getWindowParent(crashwins[i])
+		if crashparent and crashparent == getWin() then
+			-- Looks like the paired game client crashed.
+			local pid = findProcessByWindow(crashwins[i]);
+			return true, pid
+		end
+	end
+
+	return false
 end

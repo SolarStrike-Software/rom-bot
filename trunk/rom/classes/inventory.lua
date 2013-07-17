@@ -696,6 +696,9 @@ function CInventory:getMount()
 	{first = 241791, last = 241793},
 	241805,
 	{first = 241997, last = 241999},
+	{first = 242149, last = 242157},
+	242161,
+	{first = 242447, last = 242449},
 
 
 	-- Temp mounts

@@ -249,14 +249,14 @@ function igf_events:getLastEventMessage(event, text, age)
 	if text then text = string.lower(text) end
 
 	if LastMessageLog[event][text] then
-		return LastMessageLog[event][text], text
+		if age == nil or (GetTime()-LastMessageLog[event][text]) <= age then
+			return LastMessageLog[event][text], text
+		end
 	else
 		for message, time in pairs(LastMessageLog[event]) do
 			if string.match(message,text,1,true) then
 				if age == nil or (GetTime()-time) <= age then
 					return time, message
-				else
-					return
 				end
 			end
 		end
