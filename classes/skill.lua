@@ -56,7 +56,7 @@ CSkill = class(
 		self.AutoUse = true; -- Can be used automatically by the bot
 
 		self.TargetMaxHpPer = 100;	-- Must have less than this % HP to use
-		self.TargetMaxHp = 9999999;	-- Must have less than this HP to use
+		self.TargetMaxHp = math.huge;	-- Must have less than this HP to use
 		self.MaxHpPer = 100;	-- Must have less than this % HP to use
 		self.MaxManaPer = 100;	-- Must have less than this % Mana to use
 		self.MinManaPer = 0;	-- Must have more then this % Mana to use

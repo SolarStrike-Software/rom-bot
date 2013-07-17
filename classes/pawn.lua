@@ -816,6 +816,14 @@ function parseBuffName(buffname)
 		return name, count
 	end
 
+	-- Then try and find ' 3' type count in name
+	local tmpCount = string.match(buffname,"%s(%d+)$")
+	if tmpCount then
+		count = tonumber(tmpCount)
+		name = string.match(buffname,"(.*)%s%d+$")
+		return name, count
+	end
+
 	-- Next try and find roman numeral number
 	tmpCount = string.match(buffname,"%s([IVX]+)$")
 	if tmpCount then
