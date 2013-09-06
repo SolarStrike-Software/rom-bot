@@ -504,7 +504,7 @@ function CSkill:canUse(_only_friendly, target)
 	end
 
 	-- warden pet heal
-	if self.Id == 493398 then
+	if self.Name == "WARDEN_ELVEN_PRAYER" then
 		petupdate()
 		if pet.Name == "<UNKNOWN>" or ( pet.HP / pet.MaxHP * 100) > 70 then
 			return false

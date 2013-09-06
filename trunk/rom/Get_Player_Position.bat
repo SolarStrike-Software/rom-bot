@@ -1,3 +1,2 @@
 @echo off
-FOR /F "tokens=1 delims=" %%A in ('cd') do SET folder=%%A
-START ../../micromacro.exe "%folder%/getpos.lua"
+START ../../micromacro.exe "%~dp0/getpos.lua"

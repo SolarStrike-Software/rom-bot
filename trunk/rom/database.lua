@@ -49,11 +49,6 @@ function database.load()
 		clicktocast = v:getAttribute("clicktocast")
 		globalcooldown = v:getAttribute("globalcooldown")
 
-
-		if( cooldown == 0 ) then
-			cooldown = 1;
-		end
-
 		-- Automatically assign priority (if not given) based on type
 		if( not priority ) then
 			if( type == "damage" ) then
