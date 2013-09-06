@@ -1,9 +1,9 @@
 local fairy_db = {
 [CLASS_WARRIOR]	= {PetId = 102104, PetSummon = 493267, Buff = 503455}, -- Fire Fairy - Accuracy Halo
 [CLASS_SCOUT]	= {PetId = 102105, PetSummon = 493268, Buff = 503736}, -- Water Fairy - Frost Halo
-[CLASS_ROGUE]	= {PetId = 102106, PetSummon = 493268, Buff = 503459}, -- Shadow Fairy - Wraith Halo
+[CLASS_ROGUE]	= {PetId = 102106, PetSummon = 493269, Buff = 503459}, -- Shadow Fairy - Wraith Halo
 [CLASS_MAGE]	= {PetId = 102107, PetSummon = 493270, Buff = 503461}, -- Wind Fairy - WindRider Halo
-[CLASS_KNIGHT]	= {PetId = 102108, PetSummon = 493268, Buff = 503507}, -- Light Fairy - Devotion Halo
+[CLASS_KNIGHT]	= {PetId = 102108, PetSummon = 493271, Buff = 503507}, -- Light Fairy - Devotion Halo
 }
 
 function setpettable()
