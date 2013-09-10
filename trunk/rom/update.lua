@@ -925,6 +925,17 @@ local updatePatterns =
 		startloc = 0x860000,
 	},
 
+	getTEXT = {
+		pattern = string.char(
+			0xE8, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x8B, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x83, 0xC4, 0xFF,
+			0xE9, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xCC),
+		mask = "x????xx????xx?x????x",
+		offset = 7,
+		startloc = 0x600000,
+	},
 
 }
 
@@ -1018,7 +1029,6 @@ function findOffsets()
 	assumptionUpdate("staticInventory", addresses.charClassInfoBase + 0x5260);
 	assumptionUpdate("staticBankbase", addresses.charClassInfoBase + 0x823C);
 	assumptionUpdate("itemQueueCount", addresses.high9sBase + 0x568);
-	assumptionUpdate("getTEXT", addresses.isInGame + 0xD0);
 
 	printf("\n");
 	local function readBytesUpdate(name, address, number)

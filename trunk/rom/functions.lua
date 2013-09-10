@@ -2297,6 +2297,11 @@ function getTEXT(text)
 		local endloc = memoryReadInt(getProc(), addressPtrsBase + 0x26C)
 		local quarter = math.floor((endloc-startloc) / 4)
 
+		-- Pattern does work with first string so check that first
+		if str == "AC_ITEMTYPENAME_0" then
+			return memoryReadString(getProc(), startloc + 18)
+		end
+
 		local tmpStart = endloc
 		local tmpEnd = endloc
 		-- Find which quarter of memory holds string to speed up search
@@ -2317,7 +2322,6 @@ function getTEXT(text)
 		local mask = string.rep("x", #pattern)
 		local offset = #pattern
 		local found = findPatternInProcess(getProc(), pattern, mask, startloc, searchlen);
-
 		if found ~= 0 then
 			return memoryReadString(getProc(), found + offset)
 		else
