@@ -366,8 +366,10 @@ function CPawn:updateAlive()
 		return
 	end
 
-	local tmp = memoryReadRepeat("byte", getProc(), self.Address + addresses.charAlive_offset);
-	self.Alive = not(tmp == 9 or tmp == 8);
+	local alive = memoryReadRepeat("int", getProc(), self.Address + addresses.charAlive_offset);
+	local fading = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnFading_offset);
+
+	self.Alive = (alive < 8) and (fading == 0);
 end
 
 function CPawn:updateHP()

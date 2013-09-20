@@ -52,6 +52,7 @@ CSkill = class(
 		self.NoBuffCount = 0;
 		self.NoBuffTarget = "player";
 		self.NoBuffName = ""; -- Name of the buff/debuff
+		self.AddWeaponRange = false;
 
 		self.AutoUse = true; -- Can be used automatically by the bot
 
@@ -127,6 +128,7 @@ CSkill = class(
 			self.AOERange = copyfrom.AOERange
 			self.ClickToCast = copyfrom.ClickToCast
 			self.GlobalCooldown = copyfrom.GlobalCooldown
+			self.AddWeaponRange = copyfrom.AddWeaponRange
 		end
 	end
 );
@@ -358,10 +360,17 @@ function CSkill:canUse(_only_friendly, target)
 		return false;
 	end
 
+	local realRange
+	if self.AddWeaponRange == true then
+		realRange = self.Range + equipment.BagSlot[10].Range
+	else
+		realRange = self.Range
+	end
+
 	-- Out of range
-	if( player:distanceToTarget() > self.Range  and
+	if( player:distanceToTarget() > realRange  and
 	    self.Target ~= STARGET_SELF  ) then		-- range check only if no selftarget skill
-	    debug_skilluse("OUTOFRANGE", player:distanceToTarget(), self.Range );
+	    debug_skilluse("OUTOFRANGE", player:distanceToTarget(), realRange );
 		return false;
 	end
 
@@ -520,13 +529,13 @@ function CSkill:canUse(_only_friendly, target)
 
 	-- Enough mobs near AOE center?
 	if self.AOECenter and self.MobCount and self.MobCount > 1 then
-		if self.AOECenter == SAOE_PLAYER and self.Range and self.Range > 0 then
-			if player:countMobs(self.Range, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
+		if self.AOECenter == SAOE_PLAYER and realRange and realRange > 0 then
+			if player:countMobs(realRange, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
 				debug_skilluse("MOBCOUNTLOWNEARPLAYER");
 				return false
 			end
 		elseif self.AOECenter == SAOE_TARGET and self.AOERange and self.AOERange > 0 then
-			if target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
+			if target:findBestClickPoint(self.AOERange, realRange, settings.profile.options.COUNT_AGGRO_ONLY) < self.MobCount then
 				debug_skilluse("MOBCOUNTLOWNEARTARGET");
 				return false
 			end
@@ -647,6 +656,13 @@ function CSkill:use()
 		end
 	end
 
+	local realRange
+	if self.AddWeaponRange == true then
+		realRange = self.Range + equipment.BagSlot[10].Range
+	else
+		realRange = self.Range
+	end
+
 	if self.ClickToCast == true then
 		local skip = false
 		if target and target:exists() then
@@ -654,8 +670,12 @@ function CSkill:use()
 			target:updateType()
 			if self.Type == STYPE_DAMAGE or self.Type == STYPE_DOT then
 				if target.Type == PT_MONSTER then
-					local mobcount, x, z = target:findBestClickPoint(self.AOERange, self.Range, settings.profile.options.COUNT_AGGRO_ONLY)
+					local mobcount, x, z = target:findBestClickPoint(self.AOERange, realRange, settings.profile.options.COUNT_AGGRO_ONLY)
+					if distance(player.X, player.Z, x, z) > self.Range then
+						player:moveInRange(CWaypoint(x,z), self.Range, true)
+					end
 					player:aimAt({X=x, Z=z, Y=target.Y})
+					player.LastSkill.AimedAt = {X=x, Z=z, Y=target.Y}
 				else
 					skip = true -- target is not mob. Can't use attack skill.
 				end

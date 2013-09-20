@@ -57,6 +57,7 @@ CItem = class(
 		self.ItemShopItem = false
 		self.CanBeSold = false
 		self.LastMovedTime = 0
+		self.Range = 0 -- Mainly used for bow and crossbow skill range calculations
 	end
 );
 
@@ -93,6 +94,7 @@ function CItem:update()
 		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset );
 		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 4);
 		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 8);
+		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.itemRange)
 
 		self.CoolDownTime = 0
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
@@ -117,7 +119,7 @@ function CItem:update()
 				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
 			end
 			self.Name = "Card - "; -- We should add a string so we can localize this
-		elseif ( self.Id >= 550000 and self.Id <=552000 ) then
+		elseif ( self.Id >= 550000 and self.Id <=553000 ) then
 			-- We need to get info from item...
 			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idRecipeItemOffset )
 			itemInfoAddress = GetItemAddress(  tmp );
@@ -201,6 +203,7 @@ function CItem:update()
 		self.InUse = false;
 		self.RequiredLvl = 0;
 		self.Stats = {};
+		self.Range = 0;
 	else
 		-- if id is not 0 and hasn't changed we only update these values
 		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );

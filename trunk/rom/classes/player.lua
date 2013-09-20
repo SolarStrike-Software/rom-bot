@@ -789,6 +789,26 @@ local function faceTarget()
 	end
 end
 
+local function mobsInRangeOfLastClickToCast()
+	local obj = nil;
+	local objectList = CObjectList();
+	objectList:update();
+	for i = 0,objectList:size() do
+		obj = objectList:getObject(i);
+		if obj.Type == PT_MONSTER then
+			local dist = distance(player.LastSkill.AimedAt, obj)
+			if dist < player.LastSkill.AOERange then -- in range
+				local pawn = CPawn.new(obj.Address);
+				pawn:updateAlive()
+				if pawn.Alive then
+					-- Mob alive in range.
+					return true
+				end
+			end
+		end
+	end
+end
+
 function CPlayer:cast(skill)
 	local last_globalcooldown
 	-- Waits till casting or GCD ends minus SKILL_USE_PRIOR. Assumes if both then GDC follows casting
@@ -802,11 +822,21 @@ function CPlayer:cast(skill)
 				return;
 			end;
 
-			-- break if target is dead
+			-- break if target is dead or mobs moved out of range ot AOE.
 			if( self.LastSkill.Type == STYPE_DAMAGE or
-				self.LastSkill.Type == STYPE_DOT ) and
-				not self:haveTarget() then
-				return;
+				self.LastSkill.Type == STYPE_DOT ) then
+				-- Check if there are still mobs alive within range
+				if self.LastSkill and self.LastSkill.ClickToCast then
+					if not mobsInRangeOfLastClickToCast() then
+						-- if no mobs in range of clicktocast then break cast so it can cast the next skill
+						keyboardPress(settings.hotkeys.MOVE_BACKWARD.key)
+						if not self:haveTarget() then
+							return
+						end
+					end
+				elseif not self:haveTarget() then
+					return
+				end
 			end
 
 			-- Waiting for casting to finish...
@@ -1833,6 +1863,20 @@ function CPlayer:fight()
 
 	self.Fighting = false;
 	self.LastSkill = {}
+
+	-- If still casting clicktocast skill and mobs still in range then keep casting
+	self:updateCasting()
+	while player.Casting and self.LastSkill.ClickToCast and
+		(self.LastSkill.Type == STYPE_DAMAGE or	self.LastSkill.Type == STYPE_DOT ) and
+		mobsInRangeOfLastClickToCast() do
+			yrest(100)
+			self.updateCasting()
+	end
+
+	self:updateCasting()
+	if self.Casting then
+		keyboardPress(settings.hotkeys.MOVE_BACKWARD.key)
+	end
 
 	yrest(200);
 end

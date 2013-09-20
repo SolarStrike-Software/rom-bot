@@ -233,6 +233,7 @@ function main()
 	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
 		tonumber(addresses.staticbase_char), tonumber(playerAddress)));
 
+	equipment = CEquipment()
 	player = CPlayer.new();
 
 	if( settings.options.DEBUGGING ) then
@@ -319,7 +320,6 @@ function main()
 
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 
-	equipment = CEquipment()
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
 	bank = CBank()
 	guildbank = CGuildbank()

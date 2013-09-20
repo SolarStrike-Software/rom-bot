@@ -178,7 +178,10 @@ language = {
 	[186] = "Loading profile %s.xml\n",
 	[187] = "Please enter the wander radius you want to use > ",
 	[188] = "Error in your profile: preCodeOnElite error: %s",
+	[189] = "Warning! Skill %s minrange value %d is more than the skill range %d.\n",
+
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
+
 
 
 	-- createpath.lua

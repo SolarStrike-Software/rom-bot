@@ -779,7 +779,7 @@ function settings.loadProfile(_name)
 
 			-- Over-ride attributes
 			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
-			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget, mobcount
+			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget, mobcount, minrange
 			priority = v:getAttribute("priority");
 			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")));
 			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")));
@@ -798,6 +798,7 @@ function settings.loadProfile(_name)
 			nobuffname = v:getAttribute("nobuffname");
 			autouse = v:getAttribute("autouse");
 			mobcount = v:getAttribute("mobcount");
+			minrange = v:getAttribute("minrange");
 
 			-- check if 'wrong' options are set
 			if( v:getAttribute("mana")      or
@@ -805,7 +806,6 @@ function settings.loadProfile(_name)
 			    v:getAttribute("energy")    or
 			    v:getAttribute("focus")      or
 			    v:getAttribute("range")     or
-			    v:getAttribute("minrange")  or
 			    v:getAttribute("type")      or
 			    v:getAttribute("target")    or
 			    v:getAttribute("casttime") ) then
@@ -882,6 +882,11 @@ function settings.loadProfile(_name)
 				error(msg, 0);
 			end
 
+			if minrange and minrange > tmp.Range then
+				local msg = sprintf(language[189], name, minrange, tmp.Range)
+				cprintf(cli.yellow, msg)
+			end
+
 			if( toggleable ) then tmp.Toggleable = toggleable; end;
 			if( priority ) then tmp.priority = priority; end
 			if( targetmaxhpper ) then tmp.TargetMaxHpPer = targetmaxhpper; end;
@@ -901,6 +906,7 @@ function settings.loadProfile(_name)
 			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
 			if( autouse ~= nil ) then tmp.AutoUse = (autouse == true) ; end;
 			if( mobcount ) then tmp.MobCount = mobcount; end;
+			if( minrange ) then tmp.MinRange = minrange; end;
 
 			table.insert(settings.profile.skillsData[classNum], tmp);
 
@@ -1174,8 +1180,16 @@ function settings.loadSkillSet(class)
 
 	-- Check if the player has any ranged damage skills
 	local rangedSkills = false;
+	local realRange
+	equipment.BagSlot[10]:update() -- Update bow range.
 	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > 100  and
+		if v.AddWeaponRange == true then
+			realRange = v.Range + equipment.BagSlot[10].Range
+		else
+			realRange = v.Range
+		end
+
+		if( realRange > 100  and
 			( v.Type == STYPE_DAMAGE or
 			  v.Type == STYPE_DOT ) and
 			  v.Available) then
@@ -1218,11 +1232,17 @@ function settings.loadSkillSet(class)
 	-- check if range attack range and combat distance fit together
 	local best_range = 0;
 	for i,v in pairs(settings.profile.skills) do
-		if( v.Range > best_range and
+		if v.AddWeaponRange == true then
+			realRange = v.Range + equipment.BagSlot[10].Range
+		else
+			realRange = v.Range
+		end
+
+		if( realRange > best_range and
 			( v.Type == STYPE_DAMAGE or
 			  v.Type == STYPE_DOT ) and
 			  v.Available) then
-			best_range = v.Range;
+			best_range = realRange;
 		end
 	end
 
