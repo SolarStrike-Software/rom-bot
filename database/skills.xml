@@ -44,6 +44,7 @@
 	<!-- Mage/Priest -->
 	<skill name="MAGE_ESSENCE_OF_MAGIC"					id="491587" range="200" type="buff"			casttime="0"	cooldown="0"	target="friendly"	buffname="501962" />
 	<skill name="MAGE_PURIFY"							id="491588" range="200" type="buff"			casttime="0"	cooldown="10"	target="friendly" />
+	<skill name="MAGE_RISING_TIDE"						id="490256" range="217" type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="MAGE_MAGIC_DRAIN"						id="493265" range="180" type="damage"		casttime="0"	cooldown="60"	target="enemy" />
 	<!-- Mage/Rogue -->
 	<skill name="MAGE_CURSED_FANGS"						id="491578" range="200" type="dot"			casttime="0"	cooldown="0"	target="enemy"		buffname="501960" />
@@ -214,7 +215,7 @@
 	<skill name="WARRIOR_ELECTRICAL_RAGE" 				id="491474" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" 		nobuffname="501881" nobufftarget="self" nobuffcount="3" />
 	<skill name="WARRIOR_LIGHTNINGS_TOUCH" 				id="491477" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
 	<skill name="WARRIOR_SENSE_OF_DANGER" 				id="491331" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		maxhpper="30" />
-	<skill name="WARRIOR_THUNDER_SWORD" 				id="491332" range="150" type="damage"		casttime="0"	cooldown="6"	target="enemy" />
+	<skill name="WARRIOR_THUNDER_SWORD" 				id="491332" range="150" type="damage"		casttime="2"	cooldown="6"	target="enemy"		globalcooldown="true" />
 	<skill name="WARRIOR_ELECTRIC_ATTACK" 				id="492618" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="502886" nobuffname="503163" nobufftarget="self" />
 	<skill name="WARRIOR_LAVA_WEAPON" 					id="492913" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="503163" nobuffname="502886" nobufftarget="self" />
 	<skill name="WARRIOR_LIGHTNING_BURN_WEAPON" 		id="499990" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="622996" />
@@ -368,16 +369,17 @@
 	<skill name="KNIGHT_CHARGE" 						id="490184" range="120"	type="damage"		casttime="0"	cooldown="30"	target="enemy" />
 	<skill name="KNIGHT_THREATEN" 						id="490187" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		reqbuffname="501773" reqbufftarget="target" reqbuffcount="3" />
 	<skill name="KNIGHT_SHIELD_OF_VALOR" 				id="490160" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		inbattle="true" />
-	<skill name="KNIGHT_TRUTH_SHIELD_BASH" 				id="490186" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		inbattle="true" />
+	<skill name="KNIGHT_TRUTH_SHIELD_BASH" 				id="490186" range="90"	type="damage"		casttime="0"	cooldown="60"	target="enemy" />
 	<skill name="KNIGHT_SHOCK" 							id="490158" range="150"	type="damage"		casttime="0"	cooldown="30" 	target="enemy"		reqbuffname="500169" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_HOLY_STRENGTH" 					id="491321" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="500768" inbattle="true" />
 	<skill name="KNIGHT_HALL_OF_DEAD_HEROES" 			id="490194" range="120"	type="buff"			casttime="0"	cooldown="180"	target="self"		maxhpper="30" buffname="500265" />
 
 	<!-- Knight Elites by Subclass -->
 	<!-- Knight/Mage -->
-	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN" 				id="491606" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		buffname="502051" />
- 	<skill name="KNIGHT_LIGHTNING_ARMOR" 				id="491624" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502096" />
+	<skill name="KNIGHT_HOLY_LIGHT_DOMAIN"				id="491606" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		aoecenter="player" nobuffname="500290" nobufftarget="player" />
 	<skill name="KNIGHT_MANA_SHIELD" 					id="491350" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
+	<skill name="KNIGHT_LIGHT_ENERGY_WEAPON"			id="490034" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502105" />
+	<skill name="KNIGHT_WAR_PRAYER"						id="490078" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy"		buffname="502103" />
 	<!-- Knight/Priest -->
 	<skill name="KNIGHT_HOLY_LIGHTS_FURY" 				id="491631" range="100"	type="dot"			casttime="0"	cooldown="0"	target="enemy"		buffname="502074" />
 	<skill name="KNIGHT_HOLY_SMITE" 					id="491634" range="50"	type="damage"		casttime="0"	cooldown="8" 	target="enemy"		reqbuffname="502074" reqbufftarget="target" />
@@ -392,7 +394,7 @@
 	<skill name="KNIGHT_ARROW_OF_VENGEANCE" 			id="491616" range="200" type="damage"		casttime="0"	cooldown="120"	target="enemy" />
 	<skill name="KNIGHT_HOLY_CHAINS" 					id="491613" range="150" type="damage"		casttime="0"	cooldown="0"	target="enemy"		priority="100" minrange="60" />
 	<skill name="KNIGHT_HEAVENLY_ARROW" 				id="491354" range="200" type="damage"		casttime="0"	cooldown="120"	target="enemy"		inbattle="false" />
-	<skill name="KNIGHT_SACRED_RESISTANCE" 				id="492939" range="180" type="damage"		casttime="0"	cooldown="2" 	target="enemy" />
+	<skill name="KNIGHT_SACRED_RESISTANCE" 				id="492939" range="0"	type="damage"		casttime="0"	cooldown="2" 	target="enemy"		addweaponrange="true" />
 	<!-- Knight/Warrior -->
 	<skill name="KNIGHT_QUICK_REFLEXES" 				id="492014" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<skill name="KNIGHT_FEARLESS" 						id="492640" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
@@ -407,36 +409,37 @@
 	<skill name="KNIGHT_MANA_RETURN"					id="491446"	range="100"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		reqbuffname="501773" reqbufftarget="target" reqbuffcount="1" />
 	<skill name="KNIGHT_SHIELD_OF_TRUTH"				id="490188" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		inbattle="true" />
 	<skill name="KNIGHT_HATRED_STRIKE"					id="490177"													cooldown="120" />
+ 	<skill name="KNIGHT_LIGHTNING_ARMOR" 				id="491624" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502096" />
 
 
 	<!-- Scout skills -->
 	<!-- General -->
-	<skill name="SCOUT_SHOT" 							id="490423" range="180"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
-	<skill name="SCOUT_VAMPIRE_ARROWS" 					id="491292" range="180"	type="dot"			casttime="0"	cooldown="10" 	target="enemy" />
+	<skill name="SCOUT_SHOT" 							id="490423" range="0"	type="damage"		casttime="0"	cooldown="4"	target="enemy"		addweaponrange="true" />
+	<skill name="SCOUT_VAMPIRE_ARROWS" 					id="491292" range="0"	type="dot"			casttime="0"	cooldown="10" 	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_JOINT_BLOW" 						id="490420" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		buffname="500848" />
 	<skill name="SCOUT_BLOOD_ARROW" 					id="490434" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="500871" />
 	<skill name="SCOUT_THROAT_ATTACK" 					id="490428" range="50"	type="damage"		casttime="0"	cooldown="12"	target="enemy" />
 	<skill name="SCOUT_WRIST_ATTACK" 					id="490451" range="50"	type="damage"		casttime="0"	cooldown="30"	target="enemy" />
 	<!-- Primary -->
 	<skill name="SCOUT_ARROW_OF_ESSENCE" 				id="490494" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self" />
-	<skill name="SCOUT_AUTOSHOT" 						id="492589" range="180"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		toggleable="true" globalcooldown="false" />
+	<skill name="SCOUT_AUTOSHOT" 						id="492589" range="0"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		addweaponrange="true" toggleable="true" globalcooldown="false" />
 	<skill name="SCOUT_WIND_ARROWS" 					id="491128" range="225"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
 	<skill name="SCOUT_FROST_ARROW" 					id="491163" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501530" />
 	<skill name="SCOUT_MANA_DRAIN_SHOT" 				id="491160" range="180"	type="buff"			casttime="0"	cooldown="90"	target="enemy" />
 	<skill name="SCOUT_LASSO" 							id="490454" range="150"	type="buff"			casttime="1"	cooldown="0"	target="enemy"		buffname="500924" />
-	<skill name="SCOUT_PIERCING_ARROW" 					id="490400" range="220"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
-	<skill name="SCOUT_SNIPE" 							id="490450" range="240"	type="damage"		casttime="3"	cooldown="15"	target="enemy" />
+	<skill name="SCOUT_PIERCING_ARROW" 					id="490400" range="40"	type="damage"		casttime="0"	cooldown="4"	target="enemy"		addweaponrange="true" />
+	<skill name="SCOUT_SNIPE" 							id="490450" range="60"	type="damage"		casttime="3"	cooldown="15"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_DETECTION" 						id="490463" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500933" />
-	<skill name="SCOUT_COMBO_SHOT" 						id="490424" range="180"	type="damage"		casttime="1"	cooldown="8"	target="enemy" />
+	<skill name="SCOUT_COMBO_SHOT" 						id="490424" range="0"	type="damage"		casttime="1"	cooldown="8"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_NECK_STRIKE" 					id="490438" range="50"	type="buff"			casttime="0"	cooldown="30"	target="enemy" />
-	<skill name="SCOUT_REFLECTED_SHOT" 					id="490457" range="180"	type="damage"		casttime="0"	cooldown="10" 	target="enemy" />
+	<skill name="SCOUT_REFLECTED_SHOT" 					id="490457" range="0"	type="damage"		casttime="0"	cooldown="10" 	target="enemy"		addweaponrange="true" aoecenter="target" aoerange="65" />
 	<skill name="SCOUT_CONCENTRATION" 					id="490460" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self"		inbattle="true" />
 	<skill name="SCOUT_TARGET_AREA" 					id="490464" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500934" />
 
 	<!-- Scout Elites by Subclass -->
 	<!-- Scout/Druid -->
 	<skill name="SCOUT_CURSE_BREAKER" 					id="490040" range="0"	type="buff"			casttime="0"	cooldown="10"	target="self" />
-	<skill name="SCOUT_SNAKE_POISON_ARROW" 				id="494041" range="180"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
+	<skill name="SCOUT_SNAKE_POISON_ARROW" 				id="494041" range="0"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_UNBINDING_MAGIC" 				id="490042" range="0"	type="buff"			casttime="0"	cooldown="10"	target="self" />
 	<skill name="SCOUT_ELVEN_EYE" 						id="494327" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" />
 	<skill name="SCOUT_FOCUS" 							id="494529" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504908" />
@@ -452,25 +455,25 @@
 	<skill name="SCOUT_GONE_WITH_THE_WIND" 				id="491510"	range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		maxhpper="20" /> <!-- Drop aggro -->
 	<skill name="SCOUT_CURSED_ARROW" 					id="492623" range="180"	type="dot"			casttime="2"	cooldown="10"	target="enemy" />
 	<!-- Scout/Priest -->
-	<skill name="SCOUT_PURIFYING_SHOT" 					id="491507" range="230"	type="buff"			casttime="0"	cooldown="10"	target="friendly" />
+	<skill name="SCOUT_PURIFYING_SHOT" 					id="491504" range="50"	type="buff"			casttime="0"	cooldown="10"	target="friendly"	addweaponrange="true" />
 	<skill name="SCOUT_MANA_ARROWS" 					id="491513" range="0"	type="buff"			casttime="0"	cooldown="30"	target="self" />
 	<skill name="SCOUT_SPIRITUAL_LEADER" 				id="491335"	range="0"	type="buff"			casttime="0"	cooldown="300"	target="self" />
 	<!-- Scout/Rogue -->
-	<skill name="SCOUT_WEAK_SPOT" 						id="491493" range="250" type="damage"		casttime="0"	cooldown="15"	target="enemy" />
+	<skill name="SCOUT_WEAK_SPOT" 						id="491493" range="50" type="damage"		casttime="0"	cooldown="15"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_BLINDING_POWDER" 				id="491336" range="100"	type="buff"			casttime="0"	cooldown="60"	target="enemy"		buffname="501820"/>
-	<skill name="SCOUT_SAPPING_ARROW" 					id="491496" range="250"	type="buff"			casttime="0"	cooldown="20"	target="enemy" />
+	<skill name="SCOUT_SAPPING_ARROW" 					id="491496" range="50"	type="buff"			casttime="0"	cooldown="20"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_DEADLY_POISON_BITE" 				id="492621" range="160"	type="damage"		casttime="1"	cooldown="10"	target="enemy" />
 	<!-- Scout/Warden -->
-	<skill name="SCOUT_THORN_ARROW" 					id="494037" range="200"	type="damage"		casttime="0"	cooldown="6"	target="enemy"		reqbuffname="503958" reqbufftarget="player" />
+	<skill name="SCOUT_THORN_ARROW" 					id="494037" range="0"	type="damage"		casttime="0"	cooldown="6"	target="enemy"		addweaponrange="true" reqbuffname="503958" reqbufftarget="player" />
 	<skill name="SCOUT_ENTLING_OFFERING" 				id="494038"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504547" />
-	<skill name="SCOUT_HIDDEN_PERIL" 					id="494039" range="180"	type="damage"		casttime="0"	cooldown="10"	target="enemy" />
+	<skill name="SCOUT_HIDDEN_PERIL" 					id="494039" range="0"	type="damage"		casttime="0"	cooldown="10"	target="enemy"		addweaponrange="true" />
 	<skill name="SCOUT_HIDE_SCENT" 						id="494379"	range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		maxhpper="20" buffname="504906" /> <!-- Drop aggro -->
 	<skill name="SCOUT_GRYPHON_BASH" 					id="494629" range="120"	type="damage"		casttime="0"	cooldown="10"	target="enemy"		aoecenter="target" aoerange="80" />
-	<skill name="SCOUT_SHOOT" 							id="494070" range="180"	type="damage"		casttime="0"	cooldown="1"	target="enemy" />
+	<skill name="SCOUT_SHOOT" 							id="494070" range="0"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		addweaponrange="true" />
 	<!-- Scout/Warrior -->
 	<skill name="SCOUT_BATTLE_INSTINCT" 				id="491337"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501821" />
 	<skill name="SCOUT_MENTAL_FOCUS" 					id="491491"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501892" />
-	<skill name="SCOUT_TARGET_LOCK" 					id="492620"	range="180"	type="buff"			casttime="0"	cooldown="60"	target="enemy"		buffname="502920" />
+	<skill name="SCOUT_TARGET_LOCK" 					id="492620"	range="0"	type="buff"			casttime="0"	cooldown="60"	target="enemy"		addweaponrange="true" buffname="502920" />
 
 	<!-- Itemset skills -->
 	<skill name="SCOUT_ARCHERS_GLORY" 					id="495477" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506451" />
@@ -590,7 +593,7 @@
 	<skill name="WARDEN_TOGETHER"			 			id="494361" range="50"	type="damage"		casttime="0"	cooldown="120"	target="enemy" />
 	<skill name="WARDEN_ENEMY SIGIL"		 			id="494361" range="50"	type="buff"			casttime="0"	cooldown="0"	target="enemy" />
 	<!-- Warden/Scout -->
-	<skill name="WARDEN_ANTI-MAGIC_ARROW" 				id="494004" range="230"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
+	<skill name="WARDEN_ANTI-MAGIC_ARROW" 				id="494004" range="50"	type="damage"		casttime="0"	cooldown="6"	target="enemy"		addweaponrange="true" />
 	<skill name="WARDEN_UNTAMABLE" 						id="494006"	range="50"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" 		id="494212" range="0"	type="summon"		casttime="8"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" 					id="494357" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self" />

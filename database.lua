@@ -48,6 +48,7 @@ function database.load()
 		aoerange = v:getAttribute("aoerange") or ""
 		clicktocast = v:getAttribute("clicktocast")
 		globalcooldown = v:getAttribute("globalcooldown")
+		addweaponrange = v:getAttribute("addweaponrange")
 
 		-- Automatically assign priority (if not given) based on type
 		if( not priority ) then
@@ -98,6 +99,10 @@ function database.load()
 			end
 		end
 
+		if addweaponrange ~= true then
+			addweaponrange = nil
+		end
+
 
 		if( target == "enemy" ) then target = STARGET_ENEMY; end;
 		if( target == "self" ) then target = STARGET_SELF; end;
@@ -141,6 +146,7 @@ function database.load()
 		if(aoerange ~= "") then tmp.AOERange = aoerange; end;
 		if(clicktocast ~= "") then tmp.ClickToCast = clicktocast; end;
 		if(globalcooldown ~= nil) then tmp.GlobalCooldown = globalcooldown; end;
+		if(addweaponrange ~= nil) then tmp.AddWeaponRange = addweaponrange; end;
 
 		database.skills[name] = tmp;
 	end
