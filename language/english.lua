@@ -193,7 +193,7 @@ language = {
 	[505] = "  (%s)\tSave waypoints and quit\n",
 	[506] = "  (%s)\tSave waypoints and restart\n",
 	[507] = "Enter the number of the option you want to choose > ",
-	[508] = "Recorded [#%3d] %s, Continue to next. Press %s to save and quit\n",
+	[508] = "Recorded [#%3d] %s, Press %s to save and quit\n",
 	[509] = "  (%s)\tInsert merchant (repair and buy) command\n",
 	[510] = "  (%s)\tInsert \'mouseclickL()\' command\n",
 	[511] = "%d: Waypoint added.\n",
@@ -209,7 +209,8 @@ language = {
 	[521] = "Code \'%s\' inserted.\n",
 	[522] = "  (%s)\tInsert target object command.\n",
 	[523] = "Insert \'player:target_object(\"%s\") command.\n",
-
+	[524] = "File save failed. Please verify the name and try again.\n",
+	[525] = "File name already exists! Overwrite? [Y/N] > ",
 
 	[600] = "RoM Bot %s [%s] (%d,%d) - %d exp/min, %d minutes till level up",
 

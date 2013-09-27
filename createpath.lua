@@ -28,9 +28,9 @@ p_wp_gtype = "";	-- global type for whole file: e.g. TRAVEL
 p_wp_type = "";		-- type for normal waypoints
 p_hp_type = "";		-- type for harvest waypoints
 p_harvest_command = "player:harvest();";
-p_merchant_command = "player:merchant(\"%s\");";
-p_targetNPC_command = "player:target_NPC(\"%s\");";
-p_targetObj_command = "player:target_Object(\"%s\");";
+p_merchant_command = "player:merchant%s";
+p_targetNPC_command = "player:target_NPC%s";
+p_targetObj_command = "player:target_Object%s";
 p_choiceOption_command = "sendMacro(\"ChoiceOption(%d);\");";
 p_mouseClickL_command = "player:mouseclickL(%d, %d, %d, %d);";
 -- ********************************************************************
@@ -99,14 +99,28 @@ settings.loadProfile(load_profile_name);
 
 
 function saveWaypoints(list)
-	keyboardBufferClear();
-	io.stdin:flush();
-	cprintf(cli.green, language[500]);	-- What do you want to name your path
-	filename = getExecutionPath() .. "/waypoints/" .. io.stdin:read() .. ".xml";
-
-	file, err = io.open(filename, "w");
-	if( not file ) then
-		error(err, 0);
+    while (not file) do
+		keyboardBufferClear();
+		io.stdin:flush();
+		cprintf(cli.green, language[500]);	-- What do you want to name your path
+		tempname = io.stdin:read()
+		if tempname ~= "" and tempname ~= nil then
+			filename = getExecutionPath() .. "/waypoints/" .. tempname  .. ".xml";
+		else
+			filename = getExecutionPath() .. "/waypoints/__unnamed.xml";
+		end
+		filechk, err = io.open(filename, "r");
+		if (filechk) then
+			cprintf(cli.yellow, language[525]); -- Filename already exists! Overwrite? [Y/N]
+			overwrite = io.stdin:read()
+			filechk:close();
+		end
+		if (not filechk) or string.lower(overwrite) == "y" then
+			file, err = io.open(filename, "w");
+			if( not file ) then
+				cprintf(cli.green, language[524]); -- File save failed. Please verify the name and try again.
+			end
+		end
 	end
 
 	local openformat = "\t<!-- #%3d --><waypoint x=\"%d\" z=\"%d\" y=\"%d\"%s>%s";
@@ -213,6 +227,12 @@ end
 
 function main()
 
+	local playerAddress
+	local playerId
+	local playerHP
+	local playerX = 0
+	local playerZ = 0
+	local playerY = 0
 	local running = true;
 	while(running) do
 
@@ -330,13 +350,13 @@ function main()
 				elseif( hf_key == "MER" ) then -- merchant command
 					tmp.wp_type = "MER";
 					local target = player:getTarget();	-- get target name
-					tmp.npc_name = target.Name;
+					tmp.npc_name = "("..target.Id.."); -- "..target.Name;
 					hf_type = "target/merchant NPC "..tmp.npc_name;
 					addMessage(sprintf(language[513], #wpList+1, tmp.npc_name));
 				elseif( hf_key == "NPC" ) then -- target npc
 					tmp.wp_type = "NPC";
 					local target = player:getTarget();	-- get target name
-					tmp.npc_name = target.Name;
+					tmp.npc_name = "("..target.Id.."); -- "..target.Name;
 					hf_type = "target/dialog NPC "..tmp.npc_name;
 					addMessage(sprintf(language[514], #wpList+1, tmp.npc_name));
 				elseif(	hf_key == "CO") then			-- choose npc option
@@ -373,14 +393,20 @@ function main()
 				elseif( hf_key == "OBJ" ) then 	-- target object
 					tmp.wp_type = "OBJ";
 					local mouseObj = CObject(memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
-					tmp.obj_name = mouseObj.Name
+					tmp.obj_name = "("..mouseObj.Id.."); -- "..mouseObj.Name
 					hf_type = sprintf("target object %s", tmp.obj_name );
 					addMessage(sprintf(language[523],tmp.obj_name)); -- target object
 				end
 
 
-				printf(language[508],	-- Continue to next. Press %s to save and quit
-					#wpList+1, hf_type, getKeyName(saveKey));
+				if hf_type == "WP" or hf_type == "HP" then
+					local coords = sprintf(", (%d, %d, %d)", tmp.X, tmp.Z, tmp.Y)
+					printf(language[508],	-- (X, Z, Y), Press %s to save and quit
+						#wpList+1, (hf_type..coords), getKeyName(saveKey));
+				else
+					printf(language[508],	-- Press %s to save and quit
+						#wpList+1, hf_type, getKeyName(saveKey));
+				end
 
 				table.insert(wpList, tmp);
 
@@ -394,6 +420,32 @@ function main()
 
 				hf_key = nil;	-- clear last pressed key
 			end;
+
+			playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+			playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
+			playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
+			if not isInGame() or playerId < PLAYERID_MIN or playerId > PLAYERID_MAX or playerHP < 1 then
+				repeat
+					yrest(1000)
+					playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+					playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
+					playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
+				until isInGame() and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX and playerHP > 1
+			end
+			playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
+			playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
+			playerZ = memoryReadFloat(getProc(), playerAddress + addresses.pawnZ_offset) or playerZ
+			mousePawnAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) or 0
+			if( mousePawnAddress ~= 0) then
+				mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.pawnId_offset) or 0
+				mousePawnName = GetIdName(mousePawnId) or "<UNKNOWN>"
+				mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnX_offset) or mousePawnX
+				mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnY_offset) or mousePawnY
+				mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnZ_offset) or mousePawnZ
+				setWindowName(getHwnd(), sprintf("\rObject found id %d %s distance %d\t\t\t", mousePawnId, mousePawnName, distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY)));
+			else
+				setWindowName(getHwnd(), sprintf("\rPlayer Position X:%d Z:%d Y:%d\t\t\t",playerX, playerZ, playerY));
+			end
 
 			yrest(10);
 		end -- End of: while(true)

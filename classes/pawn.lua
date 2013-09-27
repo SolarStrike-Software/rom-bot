@@ -366,10 +366,17 @@ function CPawn:updateAlive()
 		return
 	end
 
+	-- Check Alive flag
 	local alive = memoryReadRepeat("int", getProc(), self.Address + addresses.charAlive_offset);
-	local fading = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnFading_offset);
+	self.Alive = (alive < 8)
 
-	self.Alive = (alive < 8) and (fading == 0);
+	-- If 'alive' then also check if fading (only for mobs).
+	if self.Alive then
+		self:updateType()
+		if self.Type == PT_MONSTER then
+			self.Alive = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnFading_offset) == 0;
+		end
+	end
 end
 
 function CPawn:updateHP()

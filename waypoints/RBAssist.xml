@@ -38,7 +38,7 @@
 				printf("Player dead. Waiting for resurection... ")
 			end
 			repeat
-				yrest(1000)
+				rest(1000)
 				local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 				local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
 				local hp = memoryReadRepeat("int", getProc(), address + addresses.pawnHP_offset)

@@ -1,64 +1,95 @@
 <giftbags>
-	<!-- Giftbags Lvl 1 - 10 -->
+	<!-- Giftbags Lvl 1 - 25 -->
 	<!-- field 'name' is only as info, we read the name later from the client -->
-	<giftbag itemid="201843" type="bag" armor=""        level="1" name="Magischer Geschenkbeutel" />
-	<giftbag itemid="221668" type=""    armor=""        level="1" name="Magischer Ring (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="201844" type="bag" armor=""        level="2" name="Abenteurer-Geschenkbeutel" />
-	<giftbag itemid="221669" type=""    armor="cloth"   level="2" name="Stoffg\129rtel (Geschenk des Pionierdorfs" />
-	<giftbag itemid="221670" type=""    armor="leather" level="2" name="Lederr\129stung (Geschenk des Pionierdorfs" />
-	<giftbag itemid="221671" type=""    armor="chain"   level="2" name="Ketteng\129rtel (Geschenk des Pionierdorfs" />
+	<giftbag itemid="201843" type="bag" armor=""        level="1" name="Magic Package" />
+	<giftbag itemid="221668" type=""    armor="any"     level="1" name="Magic Ring" />
+
+	<giftbag itemid="201844" type="bag" armor=""        level="2" name="Adventurer's Package" /> 	-- Humans, Elves
+	<giftbag itemid="241254" type="bag" armor=""        level="2" name="Exploration Package" /> 	-- Dwarves
+	<giftbag itemid="221669" type=""    armor="cloth"   level="2" name="Cloth Belt" />
+	<giftbag itemid="221670" type=""    armor="leather" level="2" name="Leather Belt" />
+	<giftbag itemid="221671" type=""    armor="chain"   level="2" name="Chain Belt" />
 	<giftbag itemid="203571" type="is"  armor=""        level="2" name="Brown Horse (1 Day)" />
-	<giftbag itemid="201845" type="bag" armor=""        level="3" name="Pionier-Geschenkbeutel" />
-	<giftbag itemid="221672" type=""    armor=""        level="3" name="Ohrringe (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="201846" type="bag" armor=""        level="4" name="Siedlungs-Geschenkbeutel" />
-	<giftbag itemid="221673" type=""    armor=""        level="4" name="Umhang (Geschenk des Pionierdorfs" />
-	<giftbag itemid="201847" type="bag" armor=""        level="5" name="Minen-Geschenkbeutel" />
-	<giftbag itemid="221674" type=""    armor="cloth"   level="5" name="Stoff\129berhose (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="221675" type=""    armor="leather" level="5" name="Leder\129berhose (Geschenk des Pionierdorfs)" />
-	<giftbag itemid="221676" type=""    armor="chain"   level="5" name="Kettenr\129stungs\129berhose (Geschenk des Pionierdorfs)" />
+
+	<giftbag itemid="201845" type="bag" armor=""        level="3" name="Pioneers Package" />		-- Humans
+	<giftbag itemid="205931" type="bag" armor=""        level="3" name="Academy Package" />			-- Elves
+	<giftbag itemid="241255" type="bag" armor=""        level="3" name="Camp Package" />			-- Dwarves
+	<giftbag itemid="221672" type=""    armor="any"     level="3" name="Pioneers Earring" />
+
+	<giftbag itemid="201846" type="bag" armor=""        level="4" name="Colony Package" />			-- Humans
+	<giftbag itemid="205932" type="bag" armor=""        level="4" name="Certification Package" />	-- Elves
+	<giftbag itemid="241256" type="bag" armor=""        level="4" name="Blessed Package" />			-- Dwarves
+	<giftbag itemid="221673" type=""    armor="any"     level="4" name="Colony Cloak" />
+
+	<giftbag itemid="201847" type="bag" armor=""        level="5" name="Mine Package" />			-- Humans
+	<giftbag itemid="205933" type="bag" armor=""        level="5" name="Master Package" />			-- Elves
+	<giftbag itemid="241257" type="bag" armor=""        level="5" name="Mine Package" />			-- Dwarves
+	<giftbag itemid="221674" type=""    armor="cloth"   level="5" name="Cloth Leggings" />
+	<giftbag itemid="221675" type=""    armor="leather" level="5" name="Leather Leggings" />
+	<giftbag itemid="221676" type=""    armor="chain"   level="5" name="Chainmail Leggings" />
 	<giftbag itemid="202902" type="is"  armor=""        level="5" name="Marking Ink" />
 	<giftbag itemid="202903" type="is"  armor=""        level="5" name="Transport Rune" />
-	<giftbag itemid="201848" type="bag" armor=""        level="6" name="Logar-Geschenkbeutel" />
-	<giftbag itemid="221677" type=""    armor=""        level="6" name="Ohrringe (Geschenk aus Logar)" />
-	<giftbag itemid="201849" type="bag" armor=""        level="7" name="Toter-Baum-Geschenkbeutel" />
-	<giftbag itemid="221678" type=""    armor="cloth"   level="7" name="Stoffschuhe (Geschenk aus Logar)" />
-	<giftbag itemid="221679" type=""    armor="leather" level="7" name="Lederstiefel (Geschenk aus Logar)" />
-	<giftbag itemid="221680" type=""    armor="chain"   level="7" name="Kettenstiefel (Geschenk aus Logar)" />
-	<giftbag itemid="201850" type="bag" armor=""        level="8" name="Zerlumpter Geschenkbeutel" />
-	<giftbag itemid="221681" type=""    armor="cloth"   level="8" name="Robe (Geschenk aus Logar)" />
-	<giftbag itemid="221682" type=""    armor="leather" level="8" name="Lederr\129stung (Geschenk aus Logar)" />
-	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Kettenr\129stung (Geschenk aus Logar)" />
-	<giftbag itemid="201851" type="bag" armor=""        level="9" name="Mondquellen-Geschenkbeutel" />
-	<giftbag itemid="221684" type=""    armor=""        level="9" name="Mondquellen-Halskette (Geschenk aus Logar)" />
-	<giftbag itemid="201852" type="bag" armor=""        level="10" name="Heulender Geschenkbeutel" />
-	<giftbag itemid="221685" type=""    armor="cloth"   level="10" name="Stoffhandschuhe (Geschenk aus Logar" />
-	<giftbag itemid="221686" type=""    armor="leather" level="10" name="Lederhandschuhe (Geschenk aus Logar" />
-	<giftbag itemid="221687" type=""    armor="chain"   level="10" name="Kettenhandschuhe (Geschenk aus Logar" />
+
+	<giftbag itemid="201848" type="bag" armor=""        level="6" name="Logar Package" />			-- Humans
+	<giftbag itemid="205934" type="bag" armor=""        level="6" name="Journey Package" />			-- Elves
+	<giftbag itemid="241258" type="bag" armor=""        level="6" name="Friendship Package" />		-- Dwarves
+	<giftbag itemid="224918" type=""    armor="any"     level="6" name="Journey Earring" />
+	<giftbag itemid="221677" type=""    armor="any"     level="6" name="Logar Earring" />
+
+	<giftbag itemid="201849" type="bag" armor=""        level="7" name="Dead Tree Package" />		-- Humans
+	<giftbag itemid="205935" type="bag" armor=""        level="7" name="Grove Package" />			-- Elves
+	<giftbag itemid="241259" type="bag" armor=""        level="7" name="Brains and Brawn Package" />-- Dwarves
+	<giftbag itemid="221678" type=""    armor="cloth"   level="7" name="Cloth Boots" />
+	<giftbag itemid="221679" type=""    armor="leather" level="7" name="Leather Boots" />
+	<giftbag itemid="221680" type=""    armor="chain"   level="7" name="Chain Boots" />
+
+	<giftbag itemid="201850" type="bag" armor=""        level="8" name="Crushed Package" />			-- Humans
+	<giftbag itemid="205936" type="bag" armor=""        level="8" name="Cave Package" />			-- Elves
+	<giftbag itemid="241260" type="bag" armor=""        level="8" name="Dreamland Package" />		-- Dwarves
+	<giftbag itemid="221681" type=""    armor="cloth"   level="8" name="Robe" />
+	<giftbag itemid="221682" type=""    armor="leather" level="8" name="Leather Armor" />
+	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Chain Armor" />
+
+	<giftbag itemid="201851" type="bag" armor=""        level="9" name="Moonspring Package" />		-- Humans
+	<giftbag itemid="205937" type="bag" armor=""        level="9" name="Trial Package" />			-- Elves
+	<giftbag itemid="241261" type="bag" armor=""        level="9" name="Southern City Package" />	-- Dwarves
+	<giftbag itemid="202152" type="xp"	armor=""        level="9" name="Fruit of Extra Experience" />
+	<giftbag itemid="221684" type=""    armor="any"     level="9" name="Moonspring Necklace" />
+	<giftbag itemid="224919" type=""    armor="any"     level="9" name="Trial Necklace" />
+
+	<giftbag itemid="201852" type="bag" armor=""        level="10" name="Howling Package" />		-- Humans
+	<giftbag itemid="205938" type="bag" armor=""        level="10" name="Expedition Package" />		-- Elves
+	<giftbag itemid="241262" type="bag" armor=""        level="10" name="Warrior Package" />		-- Dwarves
+	<giftbag itemid="221685" type=""    armor="cloth"   level="10" name="Cloth Gloves" />
+	<giftbag itemid="221686" type=""    armor="leather" level="10" name="Leather Gloves" />
+	<giftbag itemid="221687" type=""    armor="chain"   level="10" name="Chain Gloves" />
 	<giftbag itemid="202902" type="is"  armor=""        level="10" name="Marking Ink" />
 	<giftbag itemid="202903" type="is"  armor=""        level="10" name="Transport Rune" />
 	<giftbag itemid="202435" type="is"  armor=""        level="10" name="Home-sweet Home" />
 
-	<!-- Elf Giftbags Lvl 3 - 9 -->
-	<giftbag itemid="205931" type="bag" armor=""        level="3" name="Academy Package" />
-	<giftbag itemid="224916" type=""    armor=""        level="3" name="Academy Earring" />
-	<giftbag itemid="205932" type="bag" armor=""        level="4" name="Certification Package" />
-	<giftbag itemid="224917" type=""    armor=""        level="4" name="Certification Cape" />
-	<giftbag itemid="205933" type="bag" armor=""        level="5" name="Master Package" />
-	<giftbag itemid="221674" type=""    armor="cloth"   level="5" name="Cloth Leggings" />
-	<giftbag itemid="221675" type=""    armor="leather" level="5" name="Leather Leggings" />
-	<giftbag itemid="221676" type=""    armor="chain"   level="5" name="Chainmail Leggings" />
-	<giftbag itemid="205934" type="bag" armor=""        level="6" name="Journey Package" />
-	<giftbag itemid="224918" type=""    armor=""        level="6" name="Journey Earring" />
-	<giftbag itemid="205935" type="bag" armor=""        level="7" name="Grove Package" />
-	<giftbag itemid="221678" type=""    armor="cloth"   level="7" name="Cloth Boots" />
-	<giftbag itemid="221679" type=""    armor="leather" level="7" name="Leather Boots" />
-	<giftbag itemid="221680" type=""    armor="chain"   level="7" name="Chain Boots" />
-	<giftbag itemid="205936" type="bag" armor=""        level="8" name="Cave Package" />
-	<giftbag itemid="221681" type=""    armor="cloth"   level="8" name="Robe" />
-	<giftbag itemid="221682" type=""    armor="leather" level="8" name="Leather Armor" />
-	<giftbag itemid="221683" type=""    armor="chain"   level="8" name="Chain Armor" />
-	<giftbag itemid="205937" type="bag" armor=""        level="9" name="Trial Package" />
-	<giftbag itemid="224919" type=""    armor=""        level="9" name="Trial Necklace" />
+	<giftbag itemid="201853" type="bag" armor=""        level="11" name="Peerston's Package" />
+	<giftbag itemid="201854" type="bag" armor=""        level="12" name="Maidge's Package" />
+	<giftbag itemid="201855" type="bag" armor=""        level="13" name="Dorian's Package" />
+	<giftbag itemid="201856" type="bag" armor=""        level="14" name="Twilight Package" />
 
-	<giftbag itemid="202152" type=""    armor=""        level="9" name="Frucht der zus\132tzlichen Erfahrung" />
+	<giftbag itemid="201857" type="bag" armor=""        level="15" name="Tagena Package" />
+	<giftbag itemid="202902" type="is"  armor=""        level="15" name="Marking Ink" />
+	<giftbag itemid="202903" type="is"  armor=""        level="15" name="Transport Rune" />
+	<giftbag itemid="203574" type="is"  armor=""        level="15" name="High Quality Experience Potion" />
+	<giftbag itemid="202506" type="is"  armor=""        level="15" name="Golden Repair Hammer" />
+
+	<giftbag itemid="201858" type="bag" armor=""        level="16" name="Wells' Package" />
+	<giftbag itemid="201859" type="bag" armor=""        level="17" name="Mike's Package" />
+	<giftbag itemid="201860" type="bag" armor=""        level="18" name="Vega's Package" />
+	<giftbag itemid="201861" type="bag" armor=""        level="19" name="Tagiton's Package" />
+
+	<giftbag itemid="201862" type="bag" armor=""        level="20" name="Anlia's Package" />
+	<giftbag itemid="203572" type="is"  armor=""        level="20" name="White Horse (1 Day)" />
+	<giftbag itemid="203574" type="is"  armor=""        level="20" name="High Quality Experience Potion" />
+	<giftbag itemid="202902" type="is"  armor=""        level="20" name="Marking Ink" />
+	<giftbag itemid="202903" type="is"  armor=""        level="20" name="Transport Rune" />
+	<giftbag itemid="202506" type="is"  armor=""        level="20" name="Golden Repair Hammer" />
+
+	<giftbag itemid="201883" type="bag" armor=""        level="25" name="Aslan Package" />
+
 </giftbags>
