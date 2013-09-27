@@ -949,48 +949,57 @@ function asciiToUtf8_umlauts(_str)
 end
 
 
--- open giftbag (at the moment level 1-10)
+-- open gift bag (at the moment level 1-19)
 function openGiftbags1To10(_player_level)
 	player:updateMounted()
 	local wasMounted = player.Mounted
 
 	if( not _player_level) then _player_level = player.Level; end
-	cprintf(cli.lightblue, language[170], _player_level );	-- Open and equipt giftbag for level
+	if _player_level > 19 then return; end
 
-	-- open giftbag and equipt content
---	yrest(2000);	-- time for cooldowns to phase-out
-	for i,v in pairs(database.giftbags)  do
-		if( v.level == _player_level) then
-			if v.type == "is" then
-				local isitem = inventory:findItem( v.itemid, "bags" );	-- Find item shop item
-				if isitem then
-					isitem:moveTo("itemshop")
-					cprintf(cli.lightblue, language[159], isitem.Name );	-- Moving to Item Shop bag:
-				else
-					cprintf(cli.yellow, language[174], GetIdName(v.itemid) );	-- item not found
+	-- Find first available bag.
+	local foundbag = 0
+	for l = 1, 19 do
+		for i,v in pairs(database.giftbags) do
+			if v.level == l and v.type == "bag" then
+				-- Find bag in backpack
+				local gb_item = inventory:findItem( v.itemid, "bags" );
+				if gb_item then
+					foundbag = l
+					break
 				end
-			elseif( v.armor == armorMap[player.Class1]  or		-- only if items have the right armor
-			    v.armor == nil ) then						-- or is armor independent
-				local hf_item = inventory:findItem( v.itemid );	-- Find item shop item
-
-				if ( hf_item ) then
-					cprintf(cli.lightblue, language[171], hf_item.Name );	-- Open/eqipt item:
-					hf_item:use()
-					yrest(2000);					-- wait for using that item
-
-					if( v.type == "bag" ) then		-- after opening bag update inventory
-						yrest(4000);				-- some more time to open the bag
-						inventory:update();			-- update slots
-					end;
-				else
-					cprintf(cli.yellow, language[174], GetIdName(v.itemid) );		-- item not found
-				end
-
-			end;
-		end;
-
+			end
+		end
+		if foundbag > 0 then break end
 	end
 
+	-- Start opening bags and using items
+	if foundbag > 0 then
+		for currentlevel = foundbag, _player_level do
+			for i,v in pairs(database.giftbags) do
+				if( v.level == currentlevel) then
+					-- Find item in backpack
+					local gb_item = inventory:findItem( v.itemid, "bags" );
+					if ( not gb_item ) then
+						cprintf(cli.yellow, language[174], GetIdName(v.itemid) ); -- item not found
+					elseif (v.type == "bag") then
+						cprintf(cli.lightblue, language[170], currentlevel ); -- Open and equip gift bag for level
+						gb_item:use()
+						repeat yrest(1000) until ItemQueueCount() == 0 -- wait for items to go in packpack
+						yrest(500)
+						inventory:update();
+					elseif (v.type == "is") then
+						cprintf(cli.lightblue, language[159], gb_item.Name ); -- Moving to Item Shop bag:
+						gb_item:moveTo("itemshop")
+					elseif (v.armor == armorMap[player.Class1]) or -- Only equip items that meet class requirements.
+						(v.armor == "any") then
+						cprintf(cli.lightblue, language[171], gb_item.Name ); -- Open/equip item:
+						gb_item:use()
+					end
+				end
+			end
+		end
+	end
 	player:updateMounted()
 	if wasMounted and not player.Mounted then
 		player:mount()
@@ -1070,33 +1079,35 @@ function levelupSkills1To10(_loadonly)
 		[CLASS_WARRIOR]		= {  [1] = { aslevel = 1, skillname="WARRIOR_SLASH" },
 								 [2] = { aslevel = 2, skillname="WARRIOR_OPEN_FLANK" },
 								 [3] = { aslevel = 2, skillname="WARRIOR_PROBING_ATTACK" },
-								 [4] = { aslevel = 4, skillname="WARRIOR_ENRAGED" },
-								 [5] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
+								 [4] = { aslevel = 6, skillname="WARRIOR_THUNDER" } },
 		[CLASS_SCOUT]		= {  [1] = { aslevel = 1, skillname="SCOUT_SHOT" },
 								 [2] = { aslevel = 2, skillname="SCOUT_WIND_ARROWS" },
 								 [3] = { aslevel = 4, skillname="SCOUT_VAMPIRE_ARROWS" },
 								 [4] = { aslevel = 6, skillname="490445" } }, -- passive Ranged Weapon Mastery
 		[CLASS_ROGUE]		= {  [1] = { aslevel = 1, skillname="ROGUE_SHADOWSTAB" },
 								 [2] = { aslevel = 2, skillname="ROGUE_LOW_BLOW" },
-								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" },
-								 [4] = { aslevel = 8, skillname="ROGUE_BLIND_STAB" } },
-		[CLASS_MAGE]		= {  [1] = { aslevel = 1, skillname="MAGE_FLAME" } },
+								 [3] = { aslevel = 6, skillname="ROGUE_WOUND_ATTACK" } },
+		[CLASS_MAGE]		= {  [1] = { aslevel = 1, skillname="MAGE_FLAME" },
+								 [2] = { aslevel = 4, skillname="MAGE_FIREBALL" },
+								 [3] = { aslevel = 8, skillname="MAGE_LIGHTNING" } },
 		[CLASS_PRIEST]		= {  [1] = { aslevel = 1, skillname="PRIEST_RISING_TIDE" },
 								 [2] = { aslevel = 1, skillname="PRIEST_URGENT_HEAL" },
 --								 [3] = { aslevel = 2, skillname="PRIEST_WAVE_ARMOR" },	-- needs to much mana
 								 [3] = { aslevel = 4, skillname="PRIEST_REGENERATE" } ,
 								 [4] = { aslevel = 8, skillname="PRIEST_HOLY_AURA" } },
-		[CLASS_KNIGHT]		= {  [1] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
-								 [2] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" } },
+		[CLASS_KNIGHT]		= {  [1] = { aslevel = 1, skillname="KNIGHT_HOLY_STRIKE" },
+								 [2] = { aslevel = 1, skillname="KNIGHT_PUNISHMENT" },
+								 [3] = { aslevel = 2, skillname="KNIGHT_HOLY_POWER_EXPLOSION" } },
+								 [4] = { aslevel = 2, skillname="KNIGHT_HOLY_SEAL" },
 		[CLASS_WARDEN]		= {  [1] = { aslevel = 1, skillname="WARDEN_CHARGED_CHOP" },
 								 [2] = { aslevel = 1, skillname="WARDEN_ENERGY_ABSORB" },
 								 [3] = { aslevel = 2, skillname="WARDEN_THORNY_VINES" },
-								 [4] = { aslevel = 4, skillname="WARDEN_BRIAR_SHIELD" },
-								 [5] = { aslevel = 8, skillname="WARDEN_POWER_OF_THE_WOOD_SPIRIT" } },
+								 [4] = { aslevel = 4, skillname="WARDEN_BRIAR_SHIELD" } },
 		[CLASS_DRUID]		= {  [1] = { aslevel = 1, skillname="DRUID_RECOVER" },
 								 [2] = { aslevel = 1, skillname="DRUID_EARTH_ARROW" },
 								 [3] = { aslevel = 2, skillname="DRUID_BRIAR_ENTWINEMENT" },
-								 [4] = { aslevel = 6, skillname="DRUID_RESTORE_LIFE" } },
+								 [4] = { aslevel = 6, skillname="DRUID_RESTORE_LIFE" },
+								 [5] = { aslevel = 8, skillname="DRUID_SAVAGE_BLESSING" } },
 		[CLASS_WARLOCK]		= {  [1] = { aslevel = 1, skillname="WARLOCK_PSYCHIC_ARROWS" },
 								 [2] = { aslevel = 4, skillname="WARLOCK_WARP_CHARGE" },
 								 [3] = { aslevel = 6, skillname="WARLOCK_PERCEPTION_EXTRACTION" },
@@ -1408,6 +1419,14 @@ function waitForLoadingScreen(_maxWaitTime)
 	local startTime = os.time()
 	-- wait for player address to change
 	repeat
+		if isClientCrashed() then
+			if onClientCrash then
+				onClientCrash()
+			else
+				error("Client crash detected in waitForLoadingScreen().")
+			end
+		end
+
 		if (_maxWaitTime ~= nil and os.difftime(os.time(),startTime) > _maxWaitTime ) then
 			-- Loading screen didn't appear, we return false so waypoint file can try and take alternate action to recover
 			cprintf(cli.yellow,"The loading screen didn't appear...\n")

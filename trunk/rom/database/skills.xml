@@ -551,7 +551,7 @@
 	<!-- Warden skills -->
 	<!-- General -->
 	<skill name="WARDEN_CHARGED_CHOP" 					id="493395" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		globalcooldown="false" />
-	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
+	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="1"	cooldown="15"	target="enemy" />
 	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false"/>
 	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		hpper="50" inbattle="true" />
@@ -566,7 +566,7 @@
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" 			id="493344" range="0"	type="summon"		casttime="4"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_DAMAGE_TRANSFER" 				id="493399" range="0"	type="buff"			casttime="0"	cooldown="180"  target="self" />
 	<skill name="WARDEN_HEART_OF_THE_OAK" 				id="493346" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		buffname="503946" />
-	<skill name="WARDEN_FRANTIC_BRIAR" 					id="493391" range="0"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		aoecenter="player" aoerange="60"/>
+	<skill name="WARDEN_FRANTIC_BRIAR" 					id="493391" range="80"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		aoecenter="player" />
 	<skill name="WARDEN_SUMMON_OAK_WALKER" 				id="493343" range="0"	type="summon"		casttime="4"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_PROTECTION_OF_NATURE" 			id="493348" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503581" />
 	<skill name="WARDEN_BANISH" 						id="493397" range="150"	type="buff"			casttime="1"	cooldown="60"	target="target"		hpper="15" />

@@ -657,12 +657,24 @@ function main()
 		end
 	end
 
+	-- Remember login details
+	CurrentLoginAcc = RoMScript("LogID")
+	CurrentLoginChar = RoMScript("CHARACTER_SELECT.selectedIndex")
+	CurrentLoginServer = RoMScript ("GetCurrentRealm()")
+
+	local function checkClientCrash()
+		if isClientCrashed() then
+			if onClientCrash then
+				onClientCrash()
+			else
+				error("Client crash detected.")
+			end
+		end
+	end
+	registerTimer("ClientDetection", secondsToTimer(2), checkClientCrash);
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
-		if isClientCrashed() then
-			error("Client crash detected in main bot loop.")
-		end
 		while __WPL.DoOnload do
 			__WPL.DoOnload = false
 			__WPL.onLoadEvent()

@@ -902,6 +902,12 @@ function CPlayer:cast(skill)
 		self:updateCasting();
 		if( skill.CastTime > 0 ) then
 			while( not self.Casting ) do -- wait for casting to start
+				-- Check if mob is dead during wait
+				local target = CPawn.new(self.TargetPtr);
+				if not target:isAlive() then
+					return false
+				end
+
 				-- break cast with jump if aggro before casting finished
 				if self:check_aggro_before_cast(JUMP_TRUE, skill.Type) then	-- with jump
 					printf(language[82]);	-- close print 'Casting ..." / aborted
@@ -920,6 +926,12 @@ function CPlayer:cast(skill)
 			end;
 		elseif skill.Cooldown > 0 then
 			while skill:getRemainingCooldown() == 0 do
+				-- Check if mob is dead during wait
+				local target = CPawn.new(self.TargetPtr);
+				if not target:isAlive() then
+					return false
+				end
+
 				if not skill.Toggleable then
 					if(skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil ) then
 						SlashCommand("/script CastSpellByName(\""..GetIdName(skill.Id).."\");");
@@ -944,6 +956,12 @@ function CPlayer:cast(skill)
 		elseif skill.GlobalCooldown ~= false then -- Wait for global cooldown to start
 			self:updateGlobalCooldown()
 			while self.GlobalCooldown == 0 do -- wait for casting to start
+				-- Check if mob is dead during wait
+				local target = CPawn.new(self.TargetPtr);
+				if not target:isAlive() then
+					return false
+				end
+
 				if RestWhileCheckingForWaypoint(50) == false then break end -- break to head to new wp
 				self:updateGlobalCooldown();
 				if( deltaTime(getTime(), startTime) > 1000 ) then -- Assume failed to caste after .7 sec
@@ -1999,12 +2017,12 @@ function CPlayer:loot()
 
 		if target.Lootable then
 			looten();
+			yrest(200) -- Wait a bit so it doesn't loot twice.
 		else
 			if( settings.profile.options.DEBUG_LOOT) then
 				cprintf(cli.yellow, "[DEBUG] don't loot reason: target not lootable.\n");
 			end;
 		end;
-
 		-- check for loot problems to give a noob mesassage
 		self:updateTargetPtr()
 		target = CPawn.new(self.TargetPtr)
