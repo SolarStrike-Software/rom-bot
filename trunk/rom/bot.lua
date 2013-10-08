@@ -665,6 +665,7 @@ function main()
 	local function checkClientCrash()
 		if isClientCrashed() then
 			if onClientCrash then
+				print("Client crash detected. Running onClientCrash().")
 				onClientCrash()
 			else
 				error("Client crash detected.")
