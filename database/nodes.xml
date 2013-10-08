@@ -12,6 +12,7 @@
 <node name="Olivine" id="560076" type="ORE" level="63" />
 <node name="Purple Agate Crystal" id="560080" type="ORE" level="69" />
 <node name="Olegan Stone" id="560085" type="ORE" level="75" />
+<node name="Silver Star Stone" id="560089" type="ORE" level="81" />
 
 <!--node name="Zinc Ore" id="560054" type="ORE" level="" />
 <node name="Silver Ore" id="560011" type="ORE" level="" />
@@ -39,6 +40,7 @@
 <node name="Frost Crystal" id="560060" type="ORE" level="51" />
 <node name="Mica" id="560061" type="ORE" level="61" />
 <node name="Rein Crystal" id="560088" type="ORE" level="71" />
+<node name="Ironaxe Stone" id="560101" type="ORE" level="81" />
 
 <node name="Ash Wood" id="560018" type="WOOD" level="1" />
 <node name="Willow Wood" id="560019" type="WOOD" level="8" />
@@ -53,6 +55,7 @@
 <node name="Fastan Banyan" id="560077" type="WOOD" level="63" />
 <node name="Janost Cypress Wood" id="560081" type="WOOD" level="69" />
 <node name="Todo Ginkgo Tree" id="560084" type="WOOD" level="75" />
+<node name="Nadal Wisteria Wood" id="560093" type="WOOD" level="81" />
 
 <!--node name="Holly Wood" id="560028" type="WOOD" level="" />
 <node name="Pine Wood" id="560028" type="WOOD" level="" />
@@ -79,6 +82,7 @@
 <node name="Fairywood" id="560067" type="WOOD" level="51" />
 <node name="Aeontree Wood" id="560068" type="WOOD" level="61" />
 <node name="Stone Pine" id="560087" type="WOOD" level="71" />
+<node name="Blood Palm Wood" id="560103" type="WOOD" level="81" />
 
 <node name="Mountain Demon Grass" id="560035" type="HERB" level="1" />
 <node name="Beetroot" id="560036" type="HERB" level="8" />
@@ -93,6 +97,7 @@
 <node name="Verbena" id="560078" type="HERB" level="63" />
 <node name="Nocturnal Lantern Grass" id="560082" type="HERB" level="69" />
 <node name="Thunderhoof Grass" id="560083" type="HERB" level="75" />
+<node name="Isyeh Grass" id="560097" type="HERB" level="81" />
 
 <!--node name="Pure Bitterleaf Extract" id="560045" type="HERB" level="" />
 <node name="Dusk Orchid" id="560045" type="HERB" level="" />
@@ -114,4 +119,5 @@
 <node name="Mirror Sedge" id="560074" type="HERB" level="51" />
 <node name="Goblin Grass" id="560075" type="HERB" level="61" />
 <node name="Dovetail Flower" id="560086" type="HERB" level="71" />
+<node name="Dragonsprout Grass" id="5600105" type="HERB" level="81" />
 </nodes>

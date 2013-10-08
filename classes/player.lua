@@ -905,6 +905,7 @@ function CPlayer:cast(skill)
 				-- Check if mob is dead during wait
 				local target = CPawn.new(self.TargetPtr);
 				if not target:isAlive() then
+					printf(language[82]);	-- close print 'Casting ..." / aborted
 					return false
 				end
 
@@ -929,6 +930,7 @@ function CPlayer:cast(skill)
 				-- Check if mob is dead during wait
 				local target = CPawn.new(self.TargetPtr);
 				if not target:isAlive() then
+					printf(language[82]);	-- close print 'Casting ..." / aborted
 					return false
 				end
 
@@ -959,6 +961,7 @@ function CPlayer:cast(skill)
 				-- Check if mob is dead during wait
 				local target = CPawn.new(self.TargetPtr);
 				if not target:isAlive() then
+					printf(language[82]);	-- close print 'Casting ..." / aborted
 					return false
 				end
 
@@ -3848,6 +3851,16 @@ function CPlayer:mount(_dismount)
 				return
 			end
 		end
+	end
+
+	-- Stop moving before trying to mount
+	player:updateActualSpeed()
+	if not _dismount and player.Moving then
+		releaseKeys()
+		repeat
+			yrest(50)
+			player:updateActualSpeed()
+		until not player.Moving
 	end
 
 	-- mount/dismount
