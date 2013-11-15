@@ -116,15 +116,7 @@ settings_default = {
 			DEBUG_HARVEST = false, 			-- debug harvesting issues
 			DEBUG_WAYPOINT = false, 		-- debug waypoint issues
 			DEBUG_AUTOSELL = false, 		-- debug autosell issues
-
-			-- debug skill use issues
-			DEBUG_SKILLUSE = {
-				ENABLE 		= false,
-				TIMEGAP		= true,		-- show the time gap between cast starts
-				ONCOOLDOWN	= true,		-- show the time in ms that we are before the cooldown
-				NOCOOLDOWN	= true,		-- show the time in ms that we are over the cooldown
-				HPLOW		= true
-				},
+			DEBUG_SKILLUSE = false,			-- debug skill use issues
 
 			-- expert inventar
 			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
@@ -1121,12 +1113,12 @@ function settings.loadProfile(_name)
 
 	-- check if igf addon is active
 	local igf_version = RoMScript("IGF_INSTALLED")
-	local current_version = 7 -- Change this value to match the value in "ingamefunctions.lua".
+	local current_version = 8 -- Change this value to match the value in "ingamefunctions.lua".
 	if igf_version then
 		bot.IgfAddon = true;
 		bot.IgfVersion = igf_version
 		-- Check version
-		if igf_version ~= current_version then
+		if igf_version < current_version then
 			error(string.format(language[1006], current_version, igf_version), 0)
 		end
 	else

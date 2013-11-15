@@ -175,7 +175,7 @@
 		<skill name="MAGE_LIGHTNING"         	hotkey="MACRO" priority="80" />
 		<skill name="MAGE_FLAME"                hotkey="MACRO" priority="70" />
 		<skill name="MAGE_ENERGY_INFLUX" 	  	hotkey="MACRO" priority="30" inbattle="true" />
-		<skill name="MAGE_ELEMENTAL_CATALYST"   hotkey="MACRO" priority="30" inbattle="true" />
+		<skill name="MAGE_ELEMENTAL_CATALYSIS"   hotkey="MACRO" priority="30" inbattle="true" />
 		<skill name="MAGE_ENERGY_WELL" 		  	hotkey="MACRO" priority="30" inbattle="true" />
 	</skills_mage>
 

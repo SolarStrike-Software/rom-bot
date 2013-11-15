@@ -62,6 +62,7 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 		-- Assume they want to buy 1
 		quantity = 1
 	end
+	if quantity <= 0 then return end
 
 	self:update()
 

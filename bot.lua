@@ -291,6 +291,10 @@ function main()
 	end
 	setWindowName(getHwnd(), sprintf("RoM Bot %s [%s]", BOT_VERSION, displayname));
 	settings.loadProfile(load_profile_name);
+	if RoMScript("GC_GetMouseMoveEnable()") == false then
+		cprintf(cli.yellow, language[190],"Click to Move") -- The bot requires 'Click to Move'
+		RoMScript("GC_SetMouseMoveEnable(true)")
+	end
 	if debug_override == true then -- Needs to be after loading profile.
 		--settings.profile.options.DEBUG_INV = true;
 		settings.profile.options.DEBUG_LOOT = true;
