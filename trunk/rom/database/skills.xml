@@ -7,7 +7,7 @@
 	<skill name="MAGE_SILENCE"							id="490296" range="150" type="damage"		casttime="0"	cooldown="24"	target="enemy" />
 	<skill name="MAGE_FIRE_WARD"						id="490248" range=""	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500366" />
 	<!-- Primary -->
-	<skill name="MAGE_ELEMENTAL_CATALYST"				id="490238" range="225" type="buff"			casttime="0"	cooldown="300"	target="enemy"		buffname="500339" />
+	<skill name="MAGE_ELEMENTAL_CATALYSIS"				id="490238" range="225" type="buff"			casttime="0"	cooldown="300"	target="enemy"		buffname="500339" />
 	<skill name="MAGE_FLAME"							id="491150" range="225" type="damage"		casttime="3"	cooldown="0"	target="enemy" />
 	<skill name="MAGE_ELECTROSTATIC_CHARGE"				id="491156" range=""	type="buff"			casttime="0"	cooldown="120"  target="self"		buffname="501538" />
 	<skill name="MAGE_PLASMA_ARROW"						id="491169" range="200" type="damage"		casttime="2"	cooldown="0"	target="enemy" />
@@ -86,6 +86,7 @@
 
 	<!-- Mage Outdated Skills -->
 	<skill name="MAGE_GALAXY" 							id="490252" range="150" type="damage"		casttime="5"	cooldown="0"	target="enemy" />
+	<skill name="MAGE_ELEMENTAL_CATALYST"				id="490238" range="225" type="buff"			casttime="0"	cooldown="300"	target="enemy"		buffname="500339" />
 
 
 	<!-- Priest Skills -->
@@ -325,6 +326,7 @@
 	<skill name="ROGUE_EMOTIONAL_OBSTRUCTION"			id="494545" range="150"	type="damage"		casttime="0"	cooldown="90"	target="enemy"		buffname="504249" />
 	<skill name="ROGUE_WOUND_PATCH" 					id="494921" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="505685" />
 	<skill name="ROGUE_PHANTOM_BLADE"					id="494922" range="50"	type="damage"		casttime="0"	cooldown="120"	target="enemy" />
+	<skill name="ROGUE_REVIVAL"							id="499542" range="0"	type="buff"			casttime="0"	cooldown="8"	target="self" />
 	<!-- Rogue/Warlock -->
 	<skill name="ROGUE_DARK_SOUL_BARRIER" 				id="498799" range="150"	type="buff"			casttime="0"	cooldown="120"	target="friendly"	clicktocast="true" />
 	<skill name="ROGUE_ENERGY_CONSERVATION"				id="498801" range="0"	type="buff"			casttime="0"	cooldown="30"	target="self"		maxhpper="50"/>

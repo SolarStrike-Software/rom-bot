@@ -99,7 +99,16 @@ function selectGame(character)
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
   		else
-			charToUse[i] = memoryReadString(process, nameAddress);
+			local tmp = memoryReadString(process, nameAddress);
+			if database then
+				if( bot.ClientLanguage == "RU" ) then
+					charToUse[i] = utf82oem_russian(tmp);
+				else
+					charToUse[i] = utf8ToAscii_umlauts(tmp);	-- only convert umlauts
+				end
+			else
+				charToUse[i] = tmp
+			end
 		end
 		showWarnings(true);
 		closeProcess(process);
@@ -153,11 +162,11 @@ function selectGame(character)
 					end
 				end
 				printf("\n");
-				yrest(200);
 	    	end
 	    	if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
 	        	error("User quit");
 			end
+			yrest(200)
 		end
 		yrest(200)
 	end
@@ -1345,19 +1354,24 @@ function debugMsg(_debug, _reason, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6 )
 
 end
 
-function getQuestStatus(_questnameorid)
+function getQuestStatus(_questnameorid,_questgroup)
 	-- Used when you need to make 3 way decision, get quest, complete quest or gather quest items.
 	if (bot.IgfAddon == false) then
 		error(language[1004], 0)	-- Ingamefunctions addon (igf) is not installed
 	end
-
 	if type(tonumber(_questnameorid)) == "number" then
-		return RoMScript("igf_questStatus(".._questnameorid..")")
 	elseif type(_questnameorid) == "string" then
-		return RoMScript("igf_questStatus(\""..NormaliseString(_questnameorid).."\")")
+		_questnameorid = "\""..NormaliseString(_questnameorid).."\""
+	else
+		error("Invalid argument used with getQuestStatus(): Expected type 'number' or 'string'")
+	end
+	if _questgroup then
+		_questgroup = ", \"" .. _questgroup.."\""
+	else
+		_questgroup = ""
 	end
 
-	error("Invalid argument used with getQuestStatus(): Expected type 'number' or 'string'")
+	return RoMScript("igf_questStatus(".._questnameorid.._questgroup..")")
 end
 
 -- Read the ping variable from the client
@@ -1754,6 +1768,12 @@ function AcceptQuestByName(_nameorid, _questgroup)
 					printf("questToAccept: %s\n",questToAccept)
 				end
 
+	-- Check if already accepted
+	if questToAccept ~= "all" and getQuestStatus(questToAccept, _questgroup) ~= "not accepted" then
+		printf("Quest already accepted: %s\n", questToAccept)
+		return
+	end
+
 	-- Check for valid _questgroup
 	if _questgroup ~= nil then
 		if type(_questgroup) == "string" then
@@ -1784,8 +1804,14 @@ function AcceptQuestByName(_nameorid, _questgroup)
 	end
 
 	-- Target NPC again to get updated questlist
-	Attack()
-	yrest(500)
+	local starttime = os.clock()
+	repeat
+		Attack()
+		yrest(500)
+	until RoMScript("SpeakFrame:IsVisible()") or os.clock() - starttime > 5000
+	if not RoMScript("SpeakFrame:IsVisible()") then
+		error("NPC dialog failed to open!")
+	end
 
 	local questOnBoard
 	local availableQuests = RoMScript("GetNumQuest(1)") -- Get number of available quests
@@ -1812,7 +1838,7 @@ function AcceptQuestByName(_nameorid, _questgroup)
 					yrest(100)
 					RoMScript("AcceptQuest()") -- Accepts the quest
 					yrest(100)
-				until (getQuestStatus(questOnBoard)=="incomplete" or getQuestStatus(questOnBoard)=="complete") -- Try again if accepting didn't work
+				until (getQuestStatus(questOnBoard, qgroup)=="incomplete" or getQuestStatus(questOnBoard, qgroup)=="complete") -- Try again if accepting didn't work
 				printf("Quest accepted: %s\n",questOnBoard)
 
 				-- break if name matched
@@ -1861,6 +1887,12 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 		_rewardnumberorname = nil
 	end
 
+	-- Check if not complete
+	if questToComplete ~= "all" and getQuestStatus(questToComplete, _questgroup) ~= "complete" then
+		printf("Quest not ready to be completed: %s\n",questToComplete)
+		return
+	end
+
 	-- Check for valid _questgroup
 	if _questgroup ~= nil then
 		if type(_questgroup) == "string" then
@@ -1891,8 +1923,14 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 	end
 
 	-- Target NPC again to get updated questlist
-	Attack()
-	yrest(500)
+	local starttime = os.clock()
+	repeat
+		Attack()
+		yrest(500)
+	until RoMScript("SpeakFrame:IsVisible()") or os.clock() - starttime > 5000
+	if not RoMScript("SpeakFrame:IsVisible()") then
+		error("NPC dialog failed to open!")
+	end
 
 	local questOnBoard = ""
 	local availableQuests = RoMScript("GetNumQuest(3)")
@@ -1954,7 +1992,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 				end
 				RoMScript("CompleteQuest()") -- Completes the quest
 				yrest(100)
-			until (getQuestStatus(_nameorid)~="complete")
+			until (getQuestStatus(_nameorid,qgroup)~="complete")
 			printf("Quest completed: %s\n",questOnBoard)
 
 			-- break if name matched
@@ -2308,7 +2346,7 @@ function getGameTime()
 	return memoryReadRepeat("uint",getProc(),addresses.gameTimeAddress)/1000
 end
 
-function getTEXT(text)
+function getTEXT(keystring)
 	local function memoryGetTEXT(str)
 		local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
 		local startloc = memoryReadInt(getProc(), addressPtrsBase + 0x268)
@@ -2347,21 +2385,140 @@ function getTEXT(text)
 		end
 	end
 
-	if not text or type(text) ~= "string" then return end
-	local resultTEXT = memoryGetTEXT(text)
-	for subTEXT in string.gmatch(resultTEXT,"%[(.-)%]") do
+	if not keystring or type(keystring) ~= "string" then return end
+	local resultTEXT = memoryGetTEXT(keystring)
+	for subKeyString in string.gmatch(resultTEXT,"%[([^%$]-)%]") do
 		local translatedSubTEXT
-		if tonumber(subTEXT) then -- Must be id
-			translatedSubTEXT = GetIdName(tonumber(subTEXT))
+		if tonumber(subKeyString) then -- Must be id
+			translatedSubTEXT = GetIdName(tonumber(subKeyString))
 		else
-			translatedSubTEXT = memoryGetTEXT(subTEXT)
+			translatedSubTEXT = memoryGetTEXT(subKeyString)
 		end
-		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subTEXT then
-			resultTEXT = string.gsub(resultTEXT, "%["..subTEXT.."%]", translatedSubTEXT)
+		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString and not string.find(translatedSubTEXT,"%%") then
+			resultTEXT = string.gsub(resultTEXT, "%["..subKeyString.."%]", translatedSubTEXT)
 		end
 	end
 
 	return resultTEXT
+end
+
+function getKeyStrings(text, returnfirst)
+	-- Heavily filtered to make the speed usable but should find most texts. If not found, use language converter tool.
+	-- Excludes key strings beginning with "Sys". They are for ids so you can use GetIdName instead.
+	local proc = getProc()
+	local addressPtrsBase = memoryReadInt(proc, addresses.getTEXT)
+	local startloc = memoryReadInt(proc, addressPtrsBase + 0x268)
+	local endloc = memoryReadInt(proc, addressPtrsBase + 0x26C)
+	local results = {}
+
+	-- Returns the key string of the text found at address 'address'. 'address' points to the 0 before the text.
+	local function getkeystr(address)
+		repeat
+			address = address -1
+		until memoryReadByte(proc, address) == 0
+		if address < startloc then
+			address = startloc
+		else
+			address = address + 1
+		end
+		return memoryReadString(proc, address)
+	end
+
+	-- Returns nil if no results and prints them if there are results. Only applies to result tables.
+	local function getResults()
+		if #results == 0 then
+			return
+		else
+			-- Prints results for user convenience.
+			for k,v in pairs(results) do
+				print("\t"..v)
+			end
+			return results
+		end
+	end
+
+	--== First search for an exact match with findPatternInProcess because it's so fast.
+
+	local rangestart = startloc
+	local found, tmpkey
+	repeat
+		found = findPatternInProcess(proc, string.char(0)..text..string.char(0), string.rep("x",#text+2), rangestart, endloc-rangestart);
+		if found ~= 0 then
+			tmpkey = getkeystr(found)
+			if returnfirst == true then
+				return tmpkey -- Return the first found result
+			else
+				table.insert(results, tmpkey) -- Add to results table
+			end
+			rangestart = found + #text+1 -- continue from here to find more matches
+			if rangestart >= endloc - 1 then break end
+		end
+	until found == 0
+
+	-- If results found, return them.
+	if #results > 0 then
+		return getResults()
+	end
+
+	--== Now search for text with substrings that match.
+
+	-- Get address ranges to skip "Sys" key strings
+	local addressrange = {
+				-- Range before "Sys"
+		[1]={	start = startloc,
+				finish = findPatternInProcess(proc, string.char(0).."Sys1", string.rep("x",5), startloc, endloc)+1},
+				-- Range after "Sys"
+		[2]={	start = findPatternInProcess(proc, string.char(0).."SYST", string.rep("x",5), startloc, endloc)+1,
+				finish = endloc},
+		}
+
+	local tmpkey, tmptext, tmpstrpat = "","",""
+	local translatedSubTEXT, finish
+	for k,v in pairs(addressrange) do
+		address = v.start
+		finish = v.finish
+		repeat repeat -- Second 'repeat' is break loop
+			-- Get key string and text
+			tmpkey = memoryReadString(proc, address) -- key string
+			address = address + #tmpkey + 1
+			tmptext = memoryReadString(proc, address) -- text
+			address = address + #tmptext + 1
+
+			-- only search key strings with valid substrings.
+			if not string.find(tmptext,"%[^%$]-%]") then break end
+
+			-- Skip text with %s or %d because they wont match anyway.
+			if string.find(tmptext,"%%[sd]") then break end
+
+			-- Create find pattern
+			tmpstrpat = string.gsub(tmptext,"[%(%)%-%+%*%?]","%%%1") -- prefix special characters with '%'
+			tmpstrpat = string.gsub(tmpstrpat,"%[.-%]",".*") -- change substrings to '.*'
+
+			if string.find(tmpstrpat,"%w") and string.find(text, tmpstrpat) then -- See if text matches without sub strings
+				-- Replace substrings with correct texts
+				for subKeyString in string.gmatch(tmptext,"%[([^%$].-)%]") do
+					if tonumber(subKeyString) then -- Must be id
+						translatedSubTEXT = GetIdName(tonumber(subKeyString))
+					else
+						translatedSubTEXT = getTEXT(subKeyString)
+					end
+					if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString and not string.find(translatedSubTEXT,"%%") then
+						tmptext = string.gsub(tmptext, "%["..subKeyString.."%]", translatedSubTEXT, 1)
+					end
+				end
+				-- Do final comparison
+				if tmptext == text then
+					if returnfirst == true then
+						return tmpkey -- Return the first found result
+					else
+						table.insert(results, tmpkey) -- Add to results table
+					end
+				end
+			end
+		until true until address >= finish-1
+	end
+
+	return getResults()
 end
 
 function getGameVersion(proc)

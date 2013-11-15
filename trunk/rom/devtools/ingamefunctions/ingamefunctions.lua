@@ -1,4 +1,4 @@
-IGF_INSTALLED = 7;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 8;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
@@ -118,16 +118,28 @@ function igf_printBagInfo(_maxslots)
 end
 
 -- questname = name of quest
-function igf_questStatus(_questnameorid)
+function igf_questStatus(_questnameorid, _questgroup)
 	if type(tonumber(_questnameorid)) == "number" then
 		_questnameorid = tonumber(_questnameorid)
 	else
 		_questnameorid = string.lower(_questnameorid)
 	end
+	-- Check for valid _questgroup
+	if _questgroup ~= nil then
+		if type(_questgroup) == "string" then
+			_questgroup = string.lower(_questgroup)
+			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
+		end
+		if _questgroup == "normal" then _questgroup = 0
+		elseif _questgroup == "daily" then _questgroup = 2
+		elseif _questgroup == "public" then _questgroup = 3
+		else _questgroup = nil
+		end
+	end
+
 	--local lowername=string.lower(_questname)
 	local c = 1
-	local getname = GetQuestRequest(c,-2)
-	local getid = GetQuestId(c)
+	local _, _, getname, _, _, _, _, _, getid, getcompleted, getquestgroup = GetQuestInfo(c)
 	while getname ~= nil do
 		local matched
 		if type(_questnameorid) == "number" then
@@ -138,19 +150,19 @@ function igf_questStatus(_questnameorid)
 			else -- Use plain search
 				matched = string.find(string.lower(getname), _questnameorid, 1, true)
 			end
+			if matched and _questgroup then
+				matched = (_questgroup == getquestgroup)
+			end
 		end
 		if matched then -- Quest exists
-			for i = 1, GetQuestRequest(c,-1) do -- for each goal
-				__,getstatus = GetQuestRequest(c,i)
-				if getstatus == 0 then -- check if not complete
-					return "incomplete"
-				end
+			if getcompleted == true then
+				return "complete"
+			else
+				return "incomplete"
 			end
-			return "complete"
-        end
+		end
 		c = c + 1
-		getname = GetQuestRequest(c,-2)
-		getid = GetQuestId(c)
+		_, _, getname, _, _, _, _, _, getid, getcompleted, getquestgroup = GetQuestInfo(c)
 	end
 	return "not accepted"
 end
