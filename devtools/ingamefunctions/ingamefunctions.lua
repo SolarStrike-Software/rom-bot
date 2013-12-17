@@ -1,4 +1,4 @@
-IGF_INSTALLED = 8;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 9;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
@@ -130,9 +130,9 @@ function igf_questStatus(_questnameorid, _questgroup)
 			_questgroup = string.lower(_questgroup)
 			_questgroup = string.gsub(_questgroup,"s$","") -- remove 's' at end if user used plural
 		end
-		if _questgroup == "normal" then _questgroup = 0
-		elseif _questgroup == "daily" then _questgroup = 2
-		elseif _questgroup == "public" then _questgroup = 3
+		if _questgroup == "normal" or _questgroup == 0 then _questgroup = 0
+		elseif _questgroup == "daily" or _questgroup == 2 then _questgroup = 2
+		elseif _questgroup == "public" or _questgroup == 3 then _questgroup = 3
 		else _questgroup = nil
 		end
 	end

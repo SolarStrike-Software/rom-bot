@@ -321,7 +321,9 @@ local function saveWaypoints(list)
 			if v.rewards then
 				tmptext = tmptext .. "\n\t\t\t-- Rewards: "
 				for k,v in ipairs (v.rewards) do
-					tmptext = tmptext .. sprintf("(%d) %s ", k, v)
+					local rewardId = getKeyStrings(v,true)
+					if rewardId then rewardId = (rewardId:match("%d%d%d%d%d%d") or 0) end
+					tmptext = tmptext .. sprintf("[%d] %s (%s), ", k, v, rewardId)
 				end
 			end
 			if( tag_open ) then

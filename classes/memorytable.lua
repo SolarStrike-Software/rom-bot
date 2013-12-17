@@ -99,36 +99,64 @@ local function GetIdAddressLine(id)
 end
 
 function GetItemAddress(id)
-	if id then
-		local addressline = GetIdAddressLine(id)
-		if addressline then
-			local address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8)
-			if address == 0 then
-				-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
-				if RoMScript then RoMScript("GetCraftRequestItem("..id..", -1)") end
-				address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8);
-			end
-			return address
-		else
-		if settings.options.DEBUGGING == true then printf("Id %d not found\n", id) end
-		end
-	else
+	if not id then
 		if settings.options.DEBUGGING == true then printf("Id is nil\n") end
+		return
 	end
+
+	local addressline = GetIdAddressLine(id)
+	if not addressline then
+		if settings.options.DEBUGGING == true then printf("Id %d not found\n", id) end
+		return
+	end
+
+	local address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8)
+	if address == 0 then
+		-- Item data not substanciated yet. Do "GetCraftRequestItem", then the address will exist.
+		if RoMScript then RoMScript("GetCraftRequestItem("..id..", -1)") end
+		address = memoryReadUIntPtr( getProc(), addressline + 0x10, 0x8);
+	end
+
+	return address
 end
 
 -- Returns the name for a given id
-function GetIdName(itemId)
-	if itemId ~= nil and itemId > 0 then
-		local itemAddress = GetItemAddress(itemId)
-		if itemAddress ~= nil and itemAddress > 0 then
-			local name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
-			if name == nil then
-				-- Item data not totally substanciated yet. Do "GetCraftRequestItem", then the address will exist.
-				if RoMScript then RoMScript("GetCraftRequestItem("..itemId..", -1)") end
-				name = memoryReadStringPtr(getProc(), itemAddress + addresses.nameOffset, 0)
-			end
-			return name
-		end
+function GetIdName(itemId, plural)
+	-- Check itemId
+	if itemId == nil or itemId == 0 then
+		return
 	end
+
+	-- Check plural
+	local pluralOffset
+	if plural == true then pluralOffset = 4 else pluralOffset = 0 end
+
+	-- Get and check item address
+	local itemAddress = GetItemAddress(itemId)
+	if itemAddress == nil or itemAddress == 0 then
+		return
+	end
+
+	-- If card or recipe, update itemId, itemAddress and prefix name
+	local name = ""
+	if itemId >= 770000 and itemId <= 772000 then
+		itemId = memoryReadInt( getProc(), itemAddress + addresses.idCardNPCOffset );
+		if itemId == 0 then return end
+		itemAddress = GetItemAddress( itemId );
+		name = getTEXT("SYS_CARD_TITLE")	-- "Card - "
+	elseif itemId >= 550000 and itemId <= 553000 then
+		itemId = memoryReadInt( getProc(), itemAddress + addresses.idRecipeItemOffset );
+		if itemId == 0 then return end
+		itemAddress = GetItemAddress( itemId );
+		name = getTEXT("SYS_RECIPE_TITLE")	-- "Recipe - "
+	end
+
+	-- Get name/plural address
+	local nameaddress = memoryReadInt(getProc(), itemAddress + addresses.nameOffset + pluralOffset)
+	if nameaddress == 0 and RoMScript then
+		RoMScript("GetCraftRequestItem("..itemId..", -1)")
+		nameaddress = memoryReadInt(getProc(), itemAddress + addresses.nameOffset + pluralOffset)
+	end
+
+	return name .. memoryReadString(getProc(), nameaddress)
 end
