@@ -118,7 +118,7 @@ function CItem:update()
 			else
 				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
 			end
-			self.Name = "Card - "; -- We should add a string so we can localize this
+			self.Name = getTEXT("SYS_CARD_TITLE"); -- 'Card - '
 		elseif ( self.Id >= 550000 and self.Id <=553000 ) then
 			-- We need to get info from item...
 			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idRecipeItemOffset )
@@ -128,7 +128,7 @@ function CItem:update()
 			else
 				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
 			end
-			self.Name = "Recipe - "; -- We should add a string so we can localize this
+			self.Name = getTEXT("SYS_RECIPE_TITLE"); -- 'Recipe - '
 		else
 			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
 		end;

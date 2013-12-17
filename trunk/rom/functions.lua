@@ -100,7 +100,7 @@ function selectGame(character)
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
   		else
 			local tmp = memoryReadString(process, nameAddress);
-			if database then
+			if database and next(database.utf8_ascii) then -- If database is available then the convert function is available.
 				if( bot.ClientLanguage == "RU" ) then
 					charToUse[i] = utf82oem_russian(tmp);
 				else
@@ -653,7 +653,7 @@ function SlashCommand(script)
 	end
 
 	-- add slash if needed
-	if string.match(script,"^.") ~= "/" then
+	if string.sub(script,1,1) ~= "/" then
 		script = "/" .. script
 	end
 
@@ -1366,7 +1366,11 @@ function getQuestStatus(_questnameorid,_questgroup)
 		error("Invalid argument used with getQuestStatus(): Expected type 'number' or 'string'")
 	end
 	if _questgroup then
-		_questgroup = ", \"" .. _questgroup.."\""
+		if type(tonumber(_questgroup)) == "number" then
+			_questgroup = ", " .. _questgroup
+		else
+			_questgroup = ", \"" .. _questgroup.."\""
+		end
 	else
 		_questgroup = ""
 	end
@@ -1872,7 +1876,6 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 	else
 		questToComplete = _nameorid
 	end
-
 	if type(questToComplete) ~= "string" then
 		error("Invalid name or id used in CompleteQuestByName")
 	end
@@ -1992,7 +1995,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 				end
 				RoMScript("CompleteQuest()") -- Completes the quest
 				yrest(100)
-			until (getQuestStatus(_nameorid,qgroup)~="complete")
+			until (getQuestStatus(questOnBoard,qgroup)~="complete")
 			printf("Quest completed: %s\n",questOnBoard)
 
 			-- break if name matched
@@ -2346,14 +2349,22 @@ function getGameTime()
 	return memoryReadRepeat("uint",getProc(),addresses.gameTimeAddress)/1000
 end
 
+local getTEXTCache = {}
 function getTEXT(keystring)
+	if not keystring or type(keystring) ~= "string" then return end
+
+	-- Return cached value if it exists
+	if getTEXTCache[keystring] then
+		return getTEXTCache[keystring]
+	end
+
 	local function memoryGetTEXT(str)
 		local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
 		local startloc = memoryReadInt(getProc(), addressPtrsBase + 0x268)
 		local endloc = memoryReadInt(getProc(), addressPtrsBase + 0x26C)
 		local quarter = math.floor((endloc-startloc) / 4)
 
-		-- Pattern does work with first string so check that first
+		-- Pattern doesn't work with first string so check that first
 		if str == "AC_ITEMTYPENAME_0" then
 			return memoryReadString(getProc(), startloc + 18)
 		end
@@ -2372,8 +2383,8 @@ function getTEXT(keystring)
 				endloc = tmpStart
 			end
 		end
-		local searchlen = endloc - startloc
 
+		local searchlen = endloc - startloc
 		local pattern = string.char(0x00) .. str .. string.char(0x00)
 		local mask = string.rep("x", #pattern)
 		local offset = #pattern
@@ -2385,18 +2396,32 @@ function getTEXT(keystring)
 		end
 	end
 
-	if not keystring or type(keystring) ~= "string" then return end
 	local resultTEXT = memoryGetTEXT(keystring)
-	for subKeyString in string.gmatch(resultTEXT,"%[([^%$]-)%]") do
+
+	-- Replace known sub key strings
+	for subKeyString in string.gmatch(resultTEXT,"%[(.-)%]") do
 		local translatedSubTEXT
-		if tonumber(subKeyString) then -- Must be id
+		if subKeyString:sub(1,1) == "$" then -- variable. See if it's player.
+			if subKeyString == "$PLAYERNAME" or subKeyString == "$playername" then
+				translatedSubTEXT = player.Name
+			end
+		elseif tonumber(subKeyString) then -- Must be id
 			translatedSubTEXT = GetIdName(tonumber(subKeyString))
-		else
-			translatedSubTEXT = memoryGetTEXT(subKeyString)
+		elseif subKeyString:find("|",1,true) then -- Id with a text override
+			translatedSubTEXT = subKeyString:match(".*|(.*)")
+		elseif subKeyString:sub(1,3) == "<S>" then -- Must be id plural
+			translatedSubTEXT = GetIdName(tonumber(subKeyString:sub(4,9)),true)
+ 		elseif not string.find(subKeyString,"%%") then
+			translatedSubTEXT = getTEXT(subKeyString)
 		end
-		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString and not string.find(translatedSubTEXT,"%%") then
+		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString then
 			resultTEXT = string.gsub(resultTEXT, "%["..subKeyString.."%]", translatedSubTEXT)
 		end
+	end
+
+	-- Remember result
+	if resultTEXT ~= keystring then
+		getTEXTCache[keystring] = resultTEXT
 	end
 
 	return resultTEXT
