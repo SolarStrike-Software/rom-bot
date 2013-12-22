@@ -179,7 +179,7 @@ language = {
 	[513] = "Sprzedawca %s jest Twoim nowym sprzedawc\165!\n",
 	[514] = "Wskazanie rozpocz\169cia dialogu z NPC (BN).\n",
 	[515] = "\'mouseclickL()\' polecenie wstawione (%d,%d).\n",
-	[516] = "\'Choice Option(%d)\' polecenie wstawione.\n",
+	[516] = "\'ChoiceOptionByName(%s)\' polecenie wstawione.\n",
 	[517] = "  (%s)\tWstaw polecenie \'ChoiceOption()\'.\n",
 	[518] = "  (%s)\tusun \152cie\190k\169 i uruchom ponownie\n",
 

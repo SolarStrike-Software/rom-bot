@@ -186,7 +186,7 @@ language = {
 	[513] = "O vendedor %s e o seu novo dealer!\n",
 	[514] = "O di\160logo com o NPC %s ser\160 iniciado.\n",
 	[515] = "Inserido o comando \'mouseclickL()\' (%d,%d).\n",
-	[516] = "Inserido o comando \'Choice Option(%d)\'.\n",
+	[516] = "Inserido o comando \'ChoiceOptionByName(%s)\'.\n",
 	[517] = "  (%s)\tInserir o comando \'ChoiceOption()\'.\n",
 	[518] = "  (%s)\tApagar os pontos e recome\135ar\n",
 
