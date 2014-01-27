@@ -305,11 +305,13 @@
 	<skill name="ROGUE_POWER_OF_THE_LION" 				id="492924" range="0"	type="heal"			casttime="0"	cooldown="60"	target="self"		reqbuffname="501946" reqbufftarget="player" />
 	<skill name="ROGUE_SEARING_LIGHT" 					id="493025" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		nobuffname="500715" nobufftarget="player" buffname="503268" />
 	<!-- Rogue/Mage -->
-	<skill name="ROGUE_ENLIVENED_BLADE" 				id="491180" range="0"	type="damage"		casttime="0"	cooldown="12"	target="enemy" />
-	<skill name="ROGUE_DAY_OF_RAIN" 					id="491183" range="0"	type="damage"		casttime="0"	cooldown="25"	target="enemy" />
+	<skill name="ROGUE_ENLIVENED_BLADE" 				id="491180" range="200"	type="damage"		casttime="1"	cooldown="12"	target="enemy" 		clicktocast="true" globalcooldown="true"/>
+	<skill name="ROGUE_DAY_OF_RAIN" 					id="491183" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy"		aoecenter="player" />
 	<skill name="ROGUE_CREATE_OPPORTUNITY" 				id="493024" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="503446" />
 	<skill name="ROGUE_INSTANT_SHADOW" 					id="497206" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502597" /> <!-- Requires a Successful Dodge -->
 	<skill name="ROGUE_ILLUSION_BLADE_DANCE"			id="491189" range="0"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		buffname="502577" aoecenter="player" />
+	<skill name="ROGUE_PREMEDITATION_MAGE" 				id="491182" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		buffname="500961" inbattle="true" />
+	<skill name="ROGUE_ENCHANTED_THROW"					id="491178" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501279" inbattle="true" />
 	<!-- Rogue/Priest -->
 	<skill name="ROGUE_QUICKNESS_AURA" 					id="491536" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501932" />
 	<skill name="ROGUE_FEARLESS" 						id="491540" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
@@ -345,7 +347,6 @@
 	<skill name="ROGUE_UNKNOWN_CHOICE" 					id="495715" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506868,506877,506880"  />
 
 	<!-- Rogue Outdated Skills -->
-	<skill name="ROGUE_ENCHANTED_THROW" 				id="491178"				type="buff"			casttime="1"					target="self"		buffname="501279"  />
 	<skill name="ROGUE_POISON_TRAP" 					id="491340" 												cooldown="10" />
 	<skill name="ROGUE_BOOBY_TRAP" 						id="491341" 												cooldown="10" />
 	<skill name="ROGUE_PARALYSING_TRAP" 				id="491342" 												cooldown="20" />

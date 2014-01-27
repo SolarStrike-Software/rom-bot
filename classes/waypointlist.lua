@@ -14,6 +14,7 @@ CWaypointList = class(
 		self.Mode = "waypoints";
 		self.KillZone = {};
 		self.ExcludeZones = {}
+		self.ResumePoint = nil
 
 		self.Type = 0; -- UNSET
 		self.ForcedType = 0; 	-- Wp type to overwrite current type, can be used by users in WP coding
@@ -158,6 +159,7 @@ function CWaypointList:advance()
 			self.CurrentWaypoint = #self.Waypoints;
 		end
 	end
+	self:updateResume()
 end
 
 function CWaypointList:backward()
@@ -173,6 +175,7 @@ function CWaypointList:backward()
 			self.CurrentWaypoint = 1;
 		end
 	end
+	self:updateResume()
 end
 
 function CWaypointList:getNextWaypoint(_num)
@@ -214,34 +217,35 @@ end
 
 -- Sets the "direction" (forward/backward) to travel
 function CWaypointList:setDirection(wpt)
-   -- Ignore invalid types
-   if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
-      return;
-   end;
+	-- Ignore invalid types
+	if( wpt ~= WPT_FORWARD and wpt ~= WPT_BACKWARD ) then
+		return;
+	end;
 
-   if( wpt ~= self.Direction ) then
-      self.Direction = wpt
-      if( wpt == WPT_BACKWARD ) then
-         self.CurrentWaypoint = self.CurrentWaypoint - 2;
-         if( self.CurrentWaypoint < 1 ) then
-            self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint;
-         end
-      else
-         self.CurrentWaypoint = self.CurrentWaypoint + 2;
-         if( self.CurrentWaypoint > #self.Waypoints ) then
-            self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints;
-         end
-      end;
-   end
+	if( wpt ~= self.Direction ) then
+		self.Direction = wpt
+		if( wpt == WPT_BACKWARD ) then
+			self.CurrentWaypoint = self.CurrentWaypoint - 2;
+			if( self.CurrentWaypoint < 1 ) then
+				self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint;
+			end
+		else
+			self.CurrentWaypoint = self.CurrentWaypoint + 2;
+			if( self.CurrentWaypoint > #self.Waypoints ) then
+				self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints;
+			end
+		end;
+	end
+	self:updateResume()
 end
 
 -- Reverse your current direction
 function CWaypointList:reverse()
-   if( self.Direction == WPT_FORWARD ) then
-      self:setDirection(WPT_BACKWARD);
-   else
-      self:setDirection(WPT_FORWARD);
-   end;
+	if( self.Direction == WPT_FORWARD ) then
+		self:setDirection(WPT_BACKWARD);
+	else
+		self:setDirection(WPT_FORWARD);
+	end;
 end
 
 -- Sets the next waypoint to move to to whatever
@@ -254,13 +258,24 @@ function CWaypointList:setWaypointIndex(index)
 	if( index > #self.Waypoints ) then index = #self.Waypoints; end;
 	self.LastWaypoint = self.CurrentWaypoint
 	self.CurrentWaypoint = index;
+	self:updateResume()
 end
 
 -- Returns an index to the waypoint closest to the given point.
-function CWaypointList:getNearestWaypoint(_x, _z, _y)
-	local closest = 1;
+function CWaypointList:getNearestWaypoint(_x, _z, _y, _start, _end)
+	if type(_start) == "string" then
+		_start = self:findWaypointTag(_start)
+	end
+	if type(_end) == "string" then
+		_end = self:findWaypointTag(_end)
+	end
+	if _start and _start < 1 then _start = 1 end
+	if _end and _end > #self.Waypoints then _end = #self.Waypoints end
 
-	for i,v in pairs(self.Waypoints) do
+	local closest = _start or 1;
+
+	for i = (_start or 1), (_end or #self.Waypoints) do
+		local v= self.Waypoints[i]
 		local oldClosestWp = self.Waypoints[closest];
 		if( distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y) ) then
 			closest = i;
@@ -430,3 +445,12 @@ function CWaypointList:findPulledBeforeWaypoint()
 
 	return bestwaypointindex
 end
+
+function CWaypointList:updateResume()
+	local file=io.open(getExecutionPath() .. "/logs/resumes/"..player.Name..".txt","w")
+	if file then
+		file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint)
+		file:close()
+	end
+end
+

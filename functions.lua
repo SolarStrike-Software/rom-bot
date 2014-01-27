@@ -100,7 +100,9 @@ function selectGame(character)
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
   		else
 			local tmp = memoryReadString(process, nameAddress);
-			if database and next(database.utf8_ascii) then -- If database is available then the convert function is available.
+			if tmp == nil then
+				charToUse[i] = "(RoM window "..i..")" .. ver;
+			elseif database and next(database.utf8_ascii) then -- If database is available then the convert function is available.
 				if( bot.ClientLanguage == "RU" ) then
 					charToUse[i] = utf82oem_russian(tmp);
 				else
@@ -549,7 +551,7 @@ function loadPaths( _wp_path, _rp_path)
 		end;
 	end;
 
-	if( _wp_path and not string.find(_wp_path,".xml", 1, true) and _wp_path ~= "wander" ) then
+	if( _wp_path and not string.find(_wp_path,".xml", 1, true) and _wp_path ~= "wander" and _wp_path ~= "resume" ) then
 		_wp_path = _wp_path .. ".xml";
 	end;
 	if( _rp_path  and   not string.find(_rp_path,".xml", 1, true) ) then
@@ -561,7 +563,8 @@ function loadPaths( _wp_path, _rp_path)
 	-- check if _wp_path exists
 	local wpfilename
 	if( _wp_path and
-		string.lower(_wp_path) ~= "wander" ) then
+		string.lower(_wp_path) ~= "wander" and
+		string.lower(_wp_path) ~= "resume" ) then
 		local filename = findFile("waypoints/" .. _wp_path )
 		if not fileExists(filename) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
@@ -578,6 +581,20 @@ function loadPaths( _wp_path, _rp_path)
 		__WPL:setRadius(settings.profile.options.WANDER_RADIUS);
 		__WPL:setMode("wander");
 		cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS);	-- Loaded waypoint path
+	end
+
+	if( string.lower(_wp_path) == "resume" ) then
+		local resumelogname = getExecutionPath() .. "/logs/resumes/"..player.Name..".txt"
+		if not fileExists(resumelogname) then
+			local msg = sprintf(language[142], resumelogname ); -- We can't find your waypoint file
+			error(msg, 2);
+		end
+		local filename, resume_num = dofile(resumelogname)
+
+		wpfilename = findFile("waypoints/"..filename)
+		__WPL = CWaypointList();
+		__WPL.ResumePoint = resume_num
+		cprintf(cli.yellow, language[0], wpfilename);	-- Loaded waypoint path
 	end
 
 	-- look for default return path with suffix '_return'
@@ -618,8 +635,9 @@ function loadPaths( _wp_path, _rp_path)
 	-- waypoint path is defined ... load it
 	if wpfilename then
 		__WPL:load(wpfilename);
-
-		if(__WPL.CurrentWaypoint ~= 1 ) then --and #__WPL.Waypoints > 0
+		if __WPL.ResumePoint and __WPL.Waypoints[__WPL.ResumePoint] then
+			__WPL.CurrentWaypoint = __WPL.ResumePoint
+		elseif(__WPL.CurrentWaypoint ~= 1 ) then --and #__WPL.Waypoints > 0
 			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
 			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);
 		end;
