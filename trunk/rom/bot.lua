@@ -342,7 +342,7 @@ function main()
 
 	local function list_waypoint_files()
 
-		local hf_counter = 0;
+		local hf_counter = 1;
 		local pathlist = { }
 
 		local function read_subdirectory(_folder)
@@ -418,8 +418,10 @@ function main()
 		-- copy table dir to table pathlist
 		-- select only xml files
 		pathlist[0] = { };
+		pathlist[1] = { };
 		if current_folder == "" then
 			pathlist[0].filename = "wander";
+			pathlist[1].filename = "resume";
 		else
 			pathlist[0].folder = ".."
 		end
@@ -566,14 +568,16 @@ function main()
 	if( forcedPath ) then			-- waypointfile or 'wander'
 		local filename = getExecutionPath() .. "/waypoints/" .. string.gsub(forcedPath,".xml","") .. ".xml";
 		local globalfilename = getExecutionPath() .. "/../romglobal/waypoints/" .. string.gsub(forcedPath,".xml","") .. ".xml";
-		if fileExists(filename) or ( string.lower(forcedPath) == "wander" ) then
+		local resumelogname = getExecutionPath() .. "/logs/resumes/"..player.Name..".txt"
+
+		if fileExists(filename) or ( string.lower(forcedPath) == "wander" ) or
+				( string.lower(forcedPath) == "resume" and fileExists(resumelogname) ) then
 			wp_to_load = forcedPath;
 		elseif fileExists(globalfilename) then
 			wp_to_load = "../../romglobal/waypoints/"..forcedPath;
 		else
 			cprintf(cli.yellow,language[153], filename ); -- We can't find your waypoint file
 		end;
-
 	else
 		if( settings.profile.options.WAYPOINTS and __WPL == nil ) then
 			wp_to_load = settings.profile.options.WAYPOINTS;
@@ -645,7 +649,11 @@ function main()
 			player.Returning = false;	-- use normale waypoint path
 		end;
 	else
-		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
+		if __WPL.ResumePoint then
+			__WPL:setWaypointIndex(__WPL.ResumePoint)
+		else
+			__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) );
+		end
 	end;
 
 	-- Update inventory

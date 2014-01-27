@@ -377,7 +377,7 @@ function CPlayer:popSkillQueue()
 	table.remove(self.SkillQueue, 1);
 end
 
-function CPlayer:harvest(_id, _second_try)
+function CPlayer:harvest(_id)
 	local function findNearestHarvestable(_id, ignore)
 		self:updateXYZ()
 		ignore = ignore or 0;
@@ -551,7 +551,7 @@ function CPlayer:harvest(_id, _second_try)
 		self:updateBattling();
 		local interrupted = false
 		while( self.Battling ) do
-			if self:target(self:findEnemy(true,nil,evalTargetDefault0)) then
+			if self:target(self:findEnemy(true,nil,evalTargetDefault)) then
 				interrupted = true
 				self:fight();
 			else
@@ -1845,6 +1845,20 @@ function CPlayer:fight()
 		cprintf(cli.green, language[177]); 	-- Fight aborted
 	end
 
+	-- If still casting clicktocast skill and mobs still in range then keep casting
+	self:updateCasting()
+	while player.Casting and self.LastSkill.ClickToCast and
+		(self.LastSkill.Type == STYPE_DAMAGE or	self.LastSkill.Type == STYPE_DOT ) and
+		mobsInRangeOfLastClickToCast() do
+			yrest(100)
+			self:updateCasting()
+	end
+
+	self:updateCasting()
+	if self.Casting then
+		keyboardPress(settings.hotkeys.MOVE_BACKWARD.key)
+	end
+
 
 	-- check if onLeaveCombat event is used in profile
 	if( type(settings.profile.events.onLeaveCombat) == "function" ) then
@@ -1884,20 +1898,6 @@ function CPlayer:fight()
 
 	self.Fighting = false;
 	self.LastSkill = {}
-
-	-- If still casting clicktocast skill and mobs still in range then keep casting
-	self:updateCasting()
-	while player.Casting and self.LastSkill.ClickToCast and
-		(self.LastSkill.Type == STYPE_DAMAGE or	self.LastSkill.Type == STYPE_DOT ) and
-		mobsInRangeOfLastClickToCast() do
-			yrest(100)
-			self.updateCasting()
-	end
-
-	self:updateCasting()
-	if self.Casting then
-		keyboardPress(settings.hotkeys.MOVE_BACKWARD.key)
-	end
 
 	yrest(200);
 end
