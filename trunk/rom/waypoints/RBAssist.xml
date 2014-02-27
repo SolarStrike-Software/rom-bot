@@ -94,11 +94,11 @@
 			if player.Battling or aggrotarget then
 				-- Attack back only if not moving
 				player:updateActualSpeed()
-				if not player.Moving then
+				if player.Moving or keyPressedLocal(key.VK_W) or keyPressedLocal(key.VK_UP) or keyPressedLocal(1) or keyPressedLocal(2) then
+					player:updateTargetPtr()
+				else
 					player:target(aggrotarget)
 					player:fight()
-				else
-					player:updateTargetPtr()
 				end
 
 			-- if I attack a mob

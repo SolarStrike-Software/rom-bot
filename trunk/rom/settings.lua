@@ -41,7 +41,7 @@ settings_default = {
 			LOOT = true,
 			LOOT_ALL = false,
 			LOOT_IGNORE_LIST_SIZE = 10,
-			LOOT_TIME = 2000,
+			LOOT_TIME = 1500,
 			LOOT_AGAIN = 2000,				-- second loot try if rooted after x ms
 			LOOT_IN_COMBAT = true,
 			LOOT_DISTANCE = nil,
@@ -1113,7 +1113,7 @@ function settings.loadProfile(_name)
 
 	-- check if igf addon is active
 	local igf_version = RoMScript("IGF_INSTALLED")
-	local current_version = 9 -- Change this value to match the value in "ingamefunctions.lua".
+	local current_version = 10 -- Change this value to match the value in "ingamefunctions.lua".
 	if igf_version then
 		bot.IgfAddon = true;
 		bot.IgfVersion = igf_version

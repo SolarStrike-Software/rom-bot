@@ -222,7 +222,7 @@ end
 
 function CEggPet:Summon()
 	self:update()
-	while self.EggId > 0 and player.Level > self.Level-5 and self.Summoned == false and player.Alive and player.HP > 0 do
+	if self.EggId > 0 and player.Level > self.Level-5 and self.Summoned == false and player.Alive and player.HP > 0 then
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200)
 		RoMScript("SummonPet("..self.EggSlot..")")
 		repeat
@@ -231,13 +231,6 @@ function CEggPet:Summon()
 			player:updateBattling()
 			player:updateCasting()
 		until self.Summoned or player.Battling or player.Casting == false
-		yrest(500)
-		if player.Battling then
-			if player:target(player:findEnemy(true, nil, evalTargetDefault)) then
-				player:fight()
-			end
-		end
-		self:update()
 	end
 end
 

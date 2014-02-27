@@ -17,6 +17,7 @@ function database.load()
 		local range, minrange, casttime, cooldown, type, target, autouse;
 		local toggleable, minmanaper, inbattle, priority, level, aslevel, skilltab, skillnum;
 		local buffname, reqbuffcount, reqbufftarget, reqbuffname, nobuffcount, nobufftarget, nobuffname;
+		local enemydodge, enemycritical, playerblock, playerdodge
 
 		name = v:getAttribute("name");
 		id = v:getAttribute("id");
@@ -35,6 +36,10 @@ function database.load()
 		targetmaxhp = v:getAttribute("targetmaxhp");
 		inbattle = v:getAttribute("inbattle");
 		priority = v:getAttribute("priority");
+		enemydodge = v:getAttribute("enemydodge")
+		enemycritical = v:getAttribute("enemycritical")
+		playerblock = v:getAttribute("playerblock")
+		playerdodge = v:getAttribute("playerdodge")
 
 		buffname = tostring(v:getAttribute("buffname") or "");
 		reqbuffcount = tonumber(v:getAttribute("reqbuffcount") or 0);
@@ -147,6 +152,11 @@ function database.load()
 		if(clicktocast ~= "") then tmp.ClickToCast = clicktocast; end;
 		if(globalcooldown ~= nil) then tmp.GlobalCooldown = globalcooldown; end;
 		if(addweaponrange ~= nil) then tmp.AddWeaponRange = addweaponrange; end;
+
+		if(enemydodge) then tmp.EnemyDodge = true; end;
+		if(enemycritical) then tmp.EnemyCritical = true; end;
+		if(playerdodge) then tmp.PlayerDodge = true; end;
+		if(playerblock) then tmp.PlayerBlock = true; end;
 
 		database.skills[name] = tmp;
 	end

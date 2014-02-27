@@ -155,7 +155,7 @@
 	<skills_scout>
 		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_SHOT"          		hotkey="MACRO" priority="90" />
-		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" maxhpper="60" inbattle="true"/>
+		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true"/>
 		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="85" />
 		<skill name="SCOUT_AUTOSHOT"      		hotkey="MACRO" priority="80" />
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />

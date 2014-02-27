@@ -73,7 +73,7 @@ CPawn = class(
 		self.Level = 1;
 		self.Level2 = 1;
 		self.HP = 1000;
-		self.LastDamage = 0;
+		self.LastHP = 0;
 		self.MaxHP = 1000;
 		self.MP = 1000;
 		self.MaxMP = 1000;
@@ -206,7 +206,7 @@ function CPawn:update()
 	self:updateHP() -- Also updates MaxHP
 	self:updateClass()
 	self:updateMP() -- Also updates MP2, MaxMP, MaxMP2, Rage, Focus, Energy
-	self:updateLastDamage()
+	self:updateLastHP()
 
 	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
 
@@ -263,7 +263,7 @@ function CPawn:update()
 			self.Attackable = false;
 		end
 	end
-	self.Speed = memoryReadRepeat("float", proc, self.Address + addresses.pawnSpeed_offset)
+	self:updateSpeed()
 
 	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
 	self.Swimming = (tmp == 3 or tmp == 4)
@@ -368,7 +368,7 @@ function CPawn:updateAlive()
 
 	-- Check Alive flag
 	local alive = memoryReadRepeat("int", getProc(), self.Address + addresses.charAlive_offset);
-	self.Alive = (alive < 8)
+	self.Alive = not bitAnd(alive, 8)
 
 	-- If 'alive' then also check if fading (only for mobs).
 	if self.Alive then
@@ -390,15 +390,19 @@ function CPawn:updateHP()
 	self.MaxHP = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnMaxHP_offset) or self.MaxHP;
 end
 
-function CPawn:updateLastDamage()
+function CPawn:updateLastHP()
 	if not self:hasAddress() then
-		self.LastDamage = 0
+		self.LastHP = 0
 		return
 	end
 
-	local tmpLastDamage = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnLastDamage_offset)
-	if tmpLastDamage then
-		self.LastDamage = tmpLastDamage/1000
+	local tmpLastHP = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnLastHP_offset)
+	if tmpLastHP then
+		self.LastHP = tmpLastHP
+		if player and self.LastHP ~= player.PawnLastHP then
+			player.PawnLastHP = self.LastHP
+			player.LastHitTime = getGameTime()
+		end
 	end
 end
 
@@ -507,37 +511,6 @@ function CPawn:updateBuffs()
 			table.insert(self.Buffs,tmp)
 		end
 	end
-	--[[target = target or "player"; -- By default, assume player.
-	self.Buffs = {}; -- Flush old buffs/debuffs
-	self.Debuffs = {};
-
-	local buffs = {RoMScript("} for i=1,16 do w,x,y,z=UnitBuff('" .. target ..
-	"', i) table.insert(a,w) table.insert(a,y) end z={")};
-
-	local debuffs = {RoMScript("} for i=1,16 do w,x,y,z=UnitDebuff('" .. target
-	.. "', i) table.insert(a,w) table.insert(a,y) end z={")};
-
-	if( buffs ) then
-		for i = 1,#buffs,2 do
-			local buffname = buffs[i];
-			local count = buffs[i+1] or 0;
-			if( count == 0 ) then count = 1; end;
-
-			self.Buffs[buffname] = count;
-		end
-	end
-
-	if( debuffs ) then
-		for i = 1,#debuffs,2 do
-			local buffname = debuffs[i] or "<UNKNOWN>";
-			local count = debuffs[i+1] or 0;
-			if( count == 0 ) then count = 1; end;
-
-			self.Debuffs[buffname] = count;
-		end
-	end
-
-	self.LastBuffUpdateTime = getTime();]]
 end
 
 function CPawn:updateLootable()
@@ -709,6 +682,10 @@ function CPawn:updateIsPet()
 		self.IsPet = memoryReadRepeat("uint",getProc(), self.Address + addresses.pawnIsPet_offset)
 		if self.IsPet == 0 then self.IsPet = false end
 	end
+end
+
+function CPawn:updateSpeed()
+	self.Speed = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnSpeed_offset)
 end
 
 function CPawn:haveTarget()
@@ -1133,4 +1110,16 @@ function CPawn:isOnMobIgnoreList()
 	end
 
 	return false
+end
+
+function CPawn:getLastDamage()
+	return RoMScript("igf_events:getLastEnemyDamage()")
+end
+
+function CPawn:getLastCriticalTime()
+	return RoMScript("igf_events:getLastEnemyCriticalTime()")
+end
+
+function CPawn:getLastDodgeTime()
+	return RoMScript("igf_events:getLastEnemyDodgeTime()")
 end

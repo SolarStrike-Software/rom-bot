@@ -781,7 +781,7 @@ function RoMScript(script)
 					tryagain = true
 					break
 				end;
-				rest(1);
+				yrest(5);
 			end
 		until tryagain == false
 
@@ -1966,7 +1966,6 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 				if DEBUG then
 					printf("questOnBoard / Index: %s \t %d\n",questOnBoard,i)
 				end
-
 		if ((questToComplete == "" or questToComplete == "all") or -- Complete all
 		  FindNormalisedString(questOnBoard,questToComplete)) and -- Or match name
 		  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
@@ -2013,6 +2012,9 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 				end
 				RoMScript("CompleteQuest()") -- Completes the quest
 				yrest(100)
+				if _rewardnumberorname then
+					yrest(900) -- Give extra time for quests with rewards
+				end
 			until (getQuestStatus(questOnBoard,qgroup)~="complete")
 			printf("Quest completed: %s\n",questOnBoard)
 
@@ -2621,32 +2623,43 @@ function getLastAlert(message, age)
 	end
 end
 
+local currencyMax = {}
 function getCurrency(name)
 	name = string.lower(name) -- Make lower case
 	local noSname = string.match(name,"^(.-)s?$") -- Take off ending 's'
 
-	local group, index
+	local group, index, memoffset
 	if noSname == "shell" or name == string.lower(getTEXT("SYS_MONEY_TYPE_11")) then
-		group, index = 1,1
+		group, index, memoffset = 1,1,3
 	elseif noSname == "energy" or noSname == "eoj" or name == string.lower(getTEXT("SYS_MONEY_TYPE_12")) then
-		group, index = 1,2
+		group, index, memoffset = 1,2,4
 	elseif noSname == "dreamland" or noSname == "pioneer sigil" or noSname == "sigil" or name == string.lower(getTEXT("SYS_MONEY_TYPE_10")) then
-		group, index = 1,3
+		group, index, memoffset = 1,3,5
 	elseif noSname == "mem" or noSname == "mento" or noSname == "memento" or name == string.lower(getTEXT("SYS_MONEY_TYPE_9")) then
-		group, index = 2,1
+		group, index, memoffset = 2,1,1
 	elseif noSname == "proof" or noSname == "pom" or name == string.lower(getTEXT("SYS_MONEY_TYPE_13")) then
-		group, index = 2,2
+		group, index, memoffset = 2,2,2
 	elseif noSname == "honor" or name == string.lower(getTEXT("SYS_MONEY_TYPE_4")) then
-		group, index = 3,1
+		group, index, memoffset = 3,1
 	elseif noSname == "trial" or noSname == "bott" or name == string.lower(getTEXT("SYS_MONEY_TYPE_8")) then
-		group, index = 3,2
+		group, index, memoffset = 3,2,0
 	elseif noSname == "warrior" or noSname == "botw" or name == string.lower(getTEXT("SYS_MONEY_TYPE_14")) then
-		group, index = 3,3
+		group, index, memoffset = 3,3
 	else
 		print("Invalid currency type. Please use 'shell', 'eoj', 'sigil', 'mem', 'proof', 'honor', 'trial' or 'warrior'.")
 		return 0,0
 	end
-	local amount, limit = RoMScript("GetPlayerPointInfo("..group..","..index..",\"\")")
+
+	local amount, limit
+	if not memoffset or not currencyMax[memoffset] then
+		amount, limit = RoMScript("GetPlayerPointInfo("..group..","..index..",\"\")")
+		if memoffset then
+			currencyMax[memoffset] = limit
+		end
+	else
+		amount = memoryReadRepeat("uint", getProc(), addresses.charClassInfoBase + addresses.currencyBase_offset + memoffset*4)
+		limit = currencyMax[memoffset]
+	end
 
 	return amount, limit-amount
 end

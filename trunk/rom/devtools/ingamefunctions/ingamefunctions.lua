@@ -1,4 +1,4 @@
-IGF_INSTALLED = 9;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 10;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
