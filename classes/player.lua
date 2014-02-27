@@ -26,6 +26,8 @@ CRAFT_HERBALISM = 8
 
 local BreakFromFight = false
 local break_fight = false;	-- flag to avoid kill counts for breaked fights
+local lootIgnoreList = {}
+local lootIgnoreListPos = 0
 
 CPlayer = class(CPawn,
 	function (self, ptr)
@@ -90,7 +92,7 @@ CPlayer = class(CPawn,
 		self.Current_waypoint_type = WPT_NORMAL;	-- remember current waypoint type global
 		self.LastTargetPtr = 0;		-- last invalid target
 		self.LastDistImprove = os.time();	-- unstick timer (dist improvement timer)
-		self.fightStartTime = 0;				-- time fight started
+		self.FightStartTime = 0;				-- time fight started
 		self.ranged_pull = false;			-- ranged pull phase active
 		self.free_debug1 = 0;				-- free field for debug use
 		self.free_field1 = nil;				-- free field for user use
@@ -109,6 +111,7 @@ CPlayer = class(CPawn,
 		self.LastSkill = {}
 		self.failed_casts_in_a_row = 0
 		self.MobIgnoreList = {}
+		self.LastHitTime = 0
 
 		if( self.Address ~= 0 and self.Address ~= nil ) then self:update(); end
 	end, false -- false = do not call pawn constructor
@@ -164,6 +167,9 @@ function CPlayer:update()
 			RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 		end
 		addressChanged = false
+		if self.TargetPtr ~= 0 then
+			self:clearTarget()
+		end
 	end
 
 	-- If have 2nd class, look for 3rd class
@@ -206,58 +212,7 @@ function CPlayer:update()
 		end
 	end
 	self:updatePsi()
-	self:updateLastHitTime()
 	self:updateGlobalCooldown()
-
-	--[[ Update our exp gain
-	if( os.difftime(os.time(), self.LastExpUpdateTime) > self.ExpUpdateInterval ) then
-		--local newExp = RoMScript("GetPlayerExp()") or 0;	-- Get newest value
-		--local maxExp = RoMScript("GetPlayerMaxExp()") or 1; -- 1 by default to prevent division by zero
-
-		local newExp = self.XP or 0;
-		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (self.Level-1) * 4) or 1;
-
-		self.LastExpUpdateTime = os.time();					-- Reset timer
-
-		if( type(newExp) ~= "number" ) then newExp = 0; end;
-		if( type(maxExp) ~= "number" ) then maxExp = 1; end;
-
-		-- If we have not begun tracking exp, start by gathering
-		-- our current value, but do not count it as a gain
-		if( self.ExpInsertPos == 0 ) then
-			self.ExpInsertPos = 1;
-			self.LastExp = newExp;
-		else
-			local gain = 0;
-			local expGainSum = 0;
-			local valueCount = 0;
-
-			if( newExp > self.LastExp ) then
-				gain = newExp - self.LastExp;
-			elseif( newExp < self.LastExp ) then
-				-- We probably just leveled up. Just get our current, new value and use that.
-				gain = newExp;
-			end
-
-			self.LastExp = newExp;
-			self.ExpTable[self.ExpInsertPos] = gain;
-			self.ExpInsertPos = self.ExpInsertPos + 1;
-			if( self.ExpInsertPos > self.ExpTableMaxSize ) then
-				self.ExpInsertPos = 1;
-			end;
-
-			for i,v in pairs(self.ExpTable) do
-				valueCount = valueCount + 1;
-				expGainSum = expGainSum + v;
-			end
-
-			self.ExpPerMin = expGainSum / ( valueCount * self.ExpUpdateInterval / 60 );
-			self.TimeTillLevel = (maxExp - newExp) / self.ExpPerMin;
-			if( self.TimeTillLevel > 9999 ) then
-				self.TimeTillLevel = 9999;
-			end
-		end
-	end]]
 end
 
 function CPlayer:exists()
@@ -315,13 +270,6 @@ end
 
 function CPlayer:updatePsi()
 	self.Psi = memoryReadRepeat("uint",getProc(), addresses.psi)
-end
-
-function CPlayer:updateLastHitTime()
-	self.LastHitTime = memoryReadRepeat("int", getProc(), addresses.charLastHitTime)/1000
-	if self.LastHitTime < self.fightStartTime then
-		self.LastHitTime = self.fightStartTime
-	end
 end
 
 function CPlayer:updateGlobalCooldown()
@@ -571,10 +519,10 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	if aggroOnly then
 		if self:haveTarget() then
 			local target = CPawn.new(self.TargetPtr)
-			target:updateLastDamage()
+			target:updateLastHP()
 			if target.TargetPtr == self.Address or
 			target:targetIsFriend() or
-			target.LastDamage > 0 then
+			target.LastHP > 0 then
 				return target
 			end
 		end
@@ -925,11 +873,15 @@ function CPlayer:cast(skill)
 					return false
 				end
 			end;
+			skill.LastCastTime = getTime()
+			local left,casttime = self:getRemainingCastTime()
+			skill.LastCastTime.low = skill.LastCastTime.low + casttime*1000 * bot.GetTimeFrequency;
 		elseif skill.Cooldown > 0 then
+			local startTime = getTime()
 			while skill:getRemainingCooldown() == 0 do
 				-- Check if mob is dead during wait
 				local target = CPawn.new(self.TargetPtr);
-				if not target:isAlive() then
+				if not target:isAlive() and deltaTime(getTime(),startTime) > 500 then
 					printf(language[82]);	-- close print 'Casting ..." / aborted
 					return false
 				end
@@ -950,17 +902,18 @@ function CPlayer:cast(skill)
 					return false
 				end
 			end;
+			skill.LastCastTime = getTime()
 			local remaining = skill:getRemainingCooldown()
 			if remaining > 0 then
-				skill.LastCastTime = getTime()
 				skill.LastCastTime.low = skill.LastCastTime.low +remaining*1000 * bot.GetTimeFrequency
 			end
 		elseif skill.GlobalCooldown ~= false then -- Wait for global cooldown to start
 			self:updateGlobalCooldown()
+			local startTime = getTime()
 			while self.GlobalCooldown == 0 do -- wait for casting to start
 				-- Check if mob is dead during wait
 				local target = CPawn.new(self.TargetPtr);
-				if not target:isAlive() then
+				if not target:isAlive() and deltaTime(getTime(),startTime) > 500 then
 					printf(language[82]);	-- close print 'Casting ..." / aborted
 					return false
 				end
@@ -975,10 +928,8 @@ function CPlayer:cast(skill)
 					return false
 				end
 			end;
+			skill.LastCastTime = getTime()
 		end
-		skill.LastCastTime = getTime()
-		local left,casttime = self:getRemainingCastTime()
-		skill.LastCastTime.low = skill.LastCastTime.low + casttime*1000 * bot.GetTimeFrequency;
 		if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
 			self.failed_casts_in_a_row = 0
 		end
@@ -1134,12 +1085,12 @@ function CPlayer:checkSkills(_only_friendly, target)
 	local function takingTooLongToDamageTarget(target)
 		self:updateCasting()
 		if ( target ~= nil and target:exists() and _only_friendly ~= true ) then
-			target:updateLastDamage()
+			target:updateLastHP()
 		end
 
-		if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastDamage == 0 or
+		if( self.Cast_to_target >= settings.profile.options.MAX_SKILLUSE_NODMG  and	(target.LastHP == 0 or
 			self.failed_casts_in_a_row >= settings.profile.options.MAX_SKILLUSE_NODMG) and not self.Casting) then
-			printf(language[83]);			-- Taking too long to damage target
+			printf(1 ..language[83]);			-- Taking too long to damage target
 			self:addToMobIgnoreList(target.Address)
 			self:clearTarget();
 
@@ -1615,7 +1566,7 @@ function CPlayer:fight()
 	-- Prep for battle, if needed.
 	--self:checkSkills();
 
-	self.fightStartTime = getGameTime();
+	self.FightStartTime = getGameTime();
 	local move_closer_counter = 0;	-- count move closer trys
 	self.Cast_to_target = 0;		-- reset counter cast at enemy target
 	self.ranged_pull = false;		-- flag for timed ranged pull for melees
@@ -1664,11 +1615,10 @@ function CPlayer:fight()
 		local target = CPawn.new(self.TargetPtr);
 
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
-		if getGameTime() - self.fightStartTime > settings.profile.options.MAX_FIGHT_TIME then
-			target:updateLastDamage()
-			self:updateLastHitTime()
-			if target.LastDamage == 0 or (getGameTime() - self.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME then
-				printf(language[83]);			-- Taking too long to damage target
+		if getGameTime() - self.FightStartTime > settings.profile.options.MAX_FIGHT_TIME then
+			target:updateLastHP()
+			if target.LastHP == 0 or (getGameTime() - target:getLastDamage()) > settings.profile.options.MAX_FIGHT_TIME then
+				printf(2 ..language[83]);			-- Taking too long to damage target
 				self:addToMobIgnoreList(target.Address)
 				self:clearTarget();
 
@@ -1738,11 +1688,11 @@ function CPlayer:fight()
 		end
 
 		-- check if aggro before attacking
-		target:updateLastDamage()
+		target:updateLastHP()
 		target:updateTargetPtr()
 		self:updateBattling()
 		if( self.Battling == true  and				-- we have aggro
-		    target.LastDamage == 0 and		-- we haven't started attacking it yet
+		    target.LastHP == 0 and		-- we haven't started attacking it yet
 		    target.TargetPtr ~= self.Address and
 			not target:targetIsFriend()) then	-- but not from that mob
 				target:updateName()
@@ -1984,19 +1934,34 @@ function CPlayer:loot()
 				   hf_attack_key , dist);	-- looting target.
 				keyboardPress(settings.profile.hotkeys.ATTACK.key);
 			end]]
+			local jumped = false
+			if settings.profile.options.LOOT_JUMPING and dist < 17 then
+				yrest(100)
+				keyboardPress(settings.hotkeys.JUMP.key) yrest(100)
+				jumped = true
+			end
 			Attack()
+			if settings.profile.options.LOOT_JUMPING and not jumped and dist < 50 then
+				keyboardPress(settings.hotkeys.JUMP.key) yrest(100)
+				jumped = true
+			end
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 			yrest(200)
 
 		--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
 		--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
-			local maxWaitTime = settings.profile.options.LOOT_TIME + dist*15 -- dist*15 = rough calculation of how long it takes to walk there
+			self:updateSpeed()
+			local maxWaitTime = dist*1000/self.Speed -- rough calculation of how long it takes to walk there
 			local startWait = getTime()
 			target:updateLootable()
 			self:updateStance()
-			while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime do
+			while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime + settings.profile.options.LOOT_TIME do
 				self:updateActualSpeed()
-				if self.ActualSpeed == 0 then Attack() yrest(100) end
+				if not jumped and self.ActualSpeed == 0 then Attack() yrest(100) end
+				if settings.profile.options.LOOT_JUMPING and not jumped and maxWaitTime - deltaTime(getTime(),startWait) < 1000 then
+					keyboardPress(settings.hotkeys.JUMP.key)
+					jumped = true
+				end
 				yrest(100)
 				target:updateLootable()
 				self:updateStance()
@@ -2039,6 +2004,10 @@ function CPlayer:loot()
 					yrest(settings.profile.options.LOOT_AGAIN);
 					looten();	-- try it again
 				end
+				-- Add to ignore list
+				lootIgnoreListPos = lootIgnoreListPos + 1
+				if lootIgnoreListPos > settings.profile.options.LOOT_IGNORE_LIST_SIZE then lootIgnoreListPos = 1 end
+				lootIgnoreList[lootIgnoreListPos] = target.Address
 			end;
 		end
 
@@ -2117,9 +2086,6 @@ function CPlayer:loot()
 		end
 	end
 end
-
-local lootIgnoreList = {}
-local lootIgnoreListPos = 0
 
 function evalTargetLootable(address, target)
 
@@ -2847,7 +2813,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 end
 
 function CPlayer:moveInRange(target, range, ignoreCycleTargets)
-	self:moveTo(target, ignoreCycleTargets, nil, range)
+	return self:moveTo(target, ignoreCycleTargets, nil, range)
 end
 
 function CPlayer:waitForAggro()
@@ -3143,8 +3109,8 @@ function CPlayer:check_aggro_before_cast(_jump, _skill_type)
 	end
 
 	-- Don't break if we already started damaging target
-	target:updateLastDamage()
-	if target.LastDamage > 0 then
+	target:updateLastHP()
+	if target.LastHP > 0 then
 		return false;
 	end
 
@@ -3869,8 +3835,8 @@ function CPlayer:mount(_dismount)
 	else
 		mount:use()
 	end
-
 	yrest(500)
+
 	repeat
 		yrest(100);
 		self:updateCasting();
@@ -4049,4 +4015,16 @@ function CPlayer:clearMobIgnoreList()
 	if self.LastPlaceMobIgnored == nil or distance(self,self.LastPlaceMobIgnored) > 50 then
 		self.MobIgnoreList = {}
 	end
+end
+
+function CPlayer:getLastDamage()
+	return RoMScript("igf_events:getLastPlayerDamage()")
+end
+
+function CPlayer:getLastBlockTime()
+	return RoMScript("igf_events:getLastPlayerBlockTime()")
+end
+
+function CPlayer:getLastDodgeTime()
+	return RoMScript("igf_events:getLastPlayerDodgeTime()")
 end

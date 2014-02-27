@@ -181,7 +181,7 @@
 	<skill name="WARRIOR_OPEN_FLANK" 					id="491136" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		reqbuffname="501502" reqbufftarget="target" buffname="501503" />
 	<skill name="WARRIOR_TACTICAL_ATTACK" 				id="491142" range="50"	type="damage"		casttime="0"	cooldown="5"	target="enemy" />
 	<skill name="WARRIOR_THUNDER" 						id="491139" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		reqbuffname="501503" reqbufftarget="target" />
-	<skill name="WARRIOR_FEINT" 						id="490089" range="50"	type="damage"		casttime="0"	cooldown="2"	target="enemy" />
+	<skill name="WARRIOR_FEINT" 						id="490089" range="50"	type="damage"		casttime="0"	cooldown="2"	target="enemy"		enemydodge="true"/>
 	<skill name="WARRIOR_SURPRISE_ATTACK" 				id="490129" range="150"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		minrange="60" />
 	<skill name="WARRIOR_TAUNT" 						id="490130" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy" />
 	<skill name="WARRIOR_MOON_CLEAVE" 					id="490121" range="60"	type="damage"		casttime="0"	cooldown="30"	target="enemy"		aoecenter="player" />
@@ -308,7 +308,7 @@
 	<skill name="ROGUE_ENLIVENED_BLADE" 				id="491180" range="200"	type="damage"		casttime="1"	cooldown="12"	target="enemy" 		clicktocast="true" globalcooldown="true"/>
 	<skill name="ROGUE_DAY_OF_RAIN" 					id="491183" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy"		aoecenter="player" />
 	<skill name="ROGUE_CREATE_OPPORTUNITY" 				id="493024" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="503446" />
-	<skill name="ROGUE_INSTANT_SHADOW" 					id="497206" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502597" /> <!-- Requires a Successful Dodge -->
+	<skill name="ROGUE_INSTANT_SHADOW" 					id="497206" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502597" playerdodge="true" />
 	<skill name="ROGUE_ILLUSION_BLADE_DANCE"			id="491189" range="0"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		buffname="502577" aoecenter="player" />
 	<skill name="ROGUE_PREMEDITATION_MAGE" 				id="491182" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		buffname="500961" inbattle="true" />
 	<skill name="ROGUE_ENCHANTED_THROW"					id="491178" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501279" inbattle="true" />
@@ -389,7 +389,7 @@
 	<skill name="KNIGHT_HOLY_PROTECTION" 				id="491637" range="150" type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502108" />
 	<skill name="KNIGHT_FREE_WILL" 						id="491351" range="200"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<!-- Knight/Rogue -->
-	<skill name="KNIGHT_SMASH" 							id="491617" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
+	<skill name="KNIGHT_SMASH" 							id="491617" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		enemycritical="true"/>
 	<skill name="KNIGHT_CRAZY_BLADES" 					id="491355" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501796" />
 	<skill name="KNIGHT_DANCE_OF_TWO_BLADES" 			id="492642" range="50"	type="damage"		casttime="0"	cooldown="10" 	target="enemy"		aoecenter="player" />
 	<skill name="KNIGHT_LEOPARD_INSTINCT" 				id="495402" range="0"	type="buff"			casttime="0"	cooldown="120" 	target="self" />
@@ -505,7 +505,7 @@
 	<skill name="DRUID_BINDING_SILENCE" 				id="493541" range="180"	type="damage"		casttime="0"	cooldown="30"	target="enemy" />
 	<skill name="DRUID_CURING_SEED" 					id="493547" range="150"	type="buff"			casttime="0"	cooldown="30"	target="friendly"	buffname="503816" />
 	<skill name="DRUID_CONCENTRATION_PRAYER" 			id="493530" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503799" />
-	<skill name="DRUID_ROCK_PROTECTION" 				id="493544" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		hpper="10" buffname="503813" />
+	<skill name="DRUID_ROCK_PROTECTION" 				id="493544" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		maxhpper="10" buffname="503813" />
 	<skill name="DRUID_SPIRIT_GUIDANCE" 				id="493536" range="180"	type="buff"			casttime="1"	cooldown="30"	target="enemy"		nature="1" buffname="503805" />
 	<skill name="DRUID_BODY_VITALIZATION" 				id="493532" range="200"	type="buff"			casttime="0"	cooldown="120"	target="friendly" />
 	<skill name="DRUID_MOTHER_EARTHS_FOUNTAIN" 			id="493529" range="200"	type="heal"			casttime="0"	cooldown="4"	target="self" />
@@ -557,7 +557,7 @@
 	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="1"	cooldown="15"	target="enemy" />
 	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false"/>
-	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		hpper="50" inbattle="true" />
+	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		maxhpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" 					id="493406" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		inbattle="true" />
 	<!-- Primary -->
 	<skill name="WARDEN_ENERGY_ABSORB" 					id="493644" range="80"	type="buff"			casttime="0"	cooldown="300"	target="enemy" />
@@ -572,7 +572,7 @@
 	<skill name="WARDEN_FRANTIC_BRIAR" 					id="493391" range="80"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		aoecenter="player" />
 	<skill name="WARDEN_SUMMON_OAK_WALKER" 				id="493343" range="0"	type="summon"		casttime="4"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_PROTECTION_OF_NATURE" 			id="493348" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503581" />
-	<skill name="WARDEN_BANISH" 						id="493397" range="150"	type="buff"			casttime="1"	cooldown="60"	target="target"		hpper="15" />
+	<skill name="WARDEN_BANISH" 						id="493397" range="150"	type="buff"			casttime="1"	cooldown="60"	target="target"		maxhpper="15" />
 	<skill name="WARDEN_MAGIC_INTERFERENCE" 			id="493386" range="50"	type="buff"			casttime="0"	cooldown="60"	target="target" />
 	<skill name="WARDEN_POWER_OF_THE_OAK" 				id="493347" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		buffname="503580" />
 	<skill name="WARDEN_EXPLOSION_OF_POWER" 			id="493403" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self" />
@@ -700,9 +700,9 @@
 
 	<!-- Elites by Subclass -->
 	<!-- Champion/Mage -->
-	<skill name="CHAMPION_BACKLASH_ARMOR"				id="498656" range="0"	type="buff"			casttime="0"	cooldown="15"	target="self" />
+	<skill name="CHAMPION_BACKLASH_ARMOR"				id="498656" range="0"	type="buff"			casttime="0"	cooldown="15"	target="self"		playerblock="true" />
 	<skill name="CHAMPION_SUPPRESSION_OFFENSIVE"		id="498658" range="150"	type="damage"		casttime="0"	cooldown="120"	target="enemy"		buffname="621348" />
-	<skill name="CHAMPION_ENDLESS_RAGE"					id="498659" range="0"	type="buff"			casttime="0"	cooldown="15"	target="self" /> 	<!-- Requires successful dodge -->
+	<skill name="CHAMPION_ENDLESS_RAGE"					id="498659" range="0"	type="buff"			casttime="0"	cooldown="15"	target="self"		playerdodge="true" />
 	<skill name="CHAMPION_KEY_RESCUE"					id="498682" range="150"	type="buff"			casttime="0"	cooldown="60"	target="friendly"	buffname="621353" />
 	<skill name="CHAMPION_BLOODY_EXPERIENCE"			id="498683" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		buffname="621355" />
 	<skill name="CHAMPION_HIGH_ENERGY_BARRIER"			id="498687" range="200"	type="buff"			casttime="0"	cooldown="15"	target="friendly"	buffname="621416" />

@@ -134,7 +134,7 @@ language = {
 	[142] = "We can't find your waypoint file \'%s\'. Please create a valid waypoint file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
 	[143] = "We can't find your return path file \'%s\'. Please create a valid return path file within the \'waypoints\' folder or enter the right filename.\nBot finished due to errors above.",
 	[144] = "Waypoint files from %s:\n",
-	[145] = "Enter the number of the path you want to use and press %s > ",
+	[145] = "Enter the number of the path you want to use and press %s ('q' to quit)> ",
 	[146] = "You chose %s\n",
 	[147] = "Wrong selection. Please check and choose again!\n",
 	[148] = "We will go to sleep after fight finished / as soon as possible.\n",
@@ -180,6 +180,7 @@ language = {
 	[188] = "Error in your profile: preCodeOnElite error: %s",
 	[189] = "Warning! Skill %s minrange value %d is more than the skill range %d.\n",
 	[190] = "The bot requires the option \'%s\' to be enabled, so it will be enabled now.\n",
+	[191] = "The RoMBot currently only supports running waypoint files located on the same drive as MicroMacro.\n",
 
 	[200] = "No ranged skills specified in profile; Turning COMBAT_RANGED_PULL off.\n",
 

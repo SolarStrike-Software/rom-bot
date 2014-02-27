@@ -342,7 +342,7 @@ function main()
 
 	local function list_waypoint_files()
 
-		local hf_counter = 1;
+		local hf_counter = 0;
 		local pathlist = { }
 
 		local function read_subdirectory(_folder)
@@ -418,10 +418,10 @@ function main()
 		-- copy table dir to table pathlist
 		-- select only xml files
 		pathlist[0] = { };
-		pathlist[1] = { };
 		if current_folder == "" then
 			pathlist[0].filename = "wander";
-			pathlist[1].filename = "resume";
+			pathlist[1] = { filename = "resume" };
+			hf_counter = 1
 		else
 			pathlist[0].folder = ".."
 		end
@@ -527,7 +527,11 @@ function main()
 		keyboardBufferClear();
 		io.stdin:flush();
 		cprintf(cli.green, language[145], getKeyName(_G.key.VK_ENTER) );	-- Enter the number of the path
-		local hf_choose_path_nr = tonumber(io.stdin:read() );
+		local hf_choose_path_nr = io.stdin:read()
+		if hf_choose_path_nr == "q" then
+			error("Quiting.",0)
+		end
+		hf_choose_path_nr = tonumber(hf_choose_path_nr)
 		if( hf_choose_path_nr and
 			hf_choose_path_nr >= 0 and
 			hf_choose_path_nr <= #pathlist ) then
@@ -550,12 +554,42 @@ function main()
 					current_folder = current_folder .. "/" .. pathlist[hf_choose_path_nr].folder
 				end
 			end
-
 			return wp_to_load;
 		else
-			cprintf(cli.yellow, language[147]);	-- Wrong selection
-			yrest(3000);
-			return false;
+			local filename = fixSlashes(getOpenFileName(getExecutionPath().."/waypoints/"))
+			if filename == "" then
+				cprintf(cli.yellow, language[147]);	-- Wrong selection
+				yrest(3000);
+				return false;
+			else
+				-- Convert to relative path
+				local wpfolder = {}
+				for folder in string.gmatch(getExecutionPath().."/waypoints/","([^/]+)") do
+					table.insert(wpfolder,folder)
+				end
+				local fnfolder = {}
+				for folder in string.gmatch(filename,"([^/]+)") do
+					table.insert(fnfolder,folder)
+				end
+				if fnfolder[1] ~= wpfolder[1] then
+					cprintf(cli.yellow, language[191]);	-- The RoMBot currently only supports running waypoint files located on the same drive as MicroMacro.
+					yrest(3000);
+					return false
+				end
+				local fileNameStart = ""
+				local fileNameEnd = table.copy(fnfolder)
+				local changefound = false
+				for k,v in pairs(wpfolder) do
+					if fnfolder[k] == v and changefound == false then
+						table.remove(fileNameEnd,1)
+					else
+						changefound = true
+						fileNameStart = fileNameStart .. "../"
+					end
+				end
+
+				return fileNameStart .. table.concat(fileNameEnd,"/")
+			end
 		end
 
 	end
@@ -881,6 +915,7 @@ function main()
 							assert( actionchunk,  sprintf(language[150], WPLorRPL.CurrentWaypoint) );
 							actionchunk();
 						end
+						__WPL:updateResume()
 
 					end
 
@@ -956,6 +991,7 @@ function main()
 						actionchunk();
 					end
 				end
+				__WPL:updateResume()
 			else
 				if( not reason == WF_TARGET ) then
 					cprintf(cli.red, language[8]);		-- Waypoint movement failed

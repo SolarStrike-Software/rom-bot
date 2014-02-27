@@ -447,9 +447,9 @@ function healfight()
 
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if (os.time() - player.FightStartTime) > settings.profile.options.MAX_FIGHT_TIME then
-			mob:updateLastDamage()
+			mob:updateLastHP()
 			player:updateLastHitTime()
-			if mob.LastDamage == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
+			if mob.LastHP == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
 				printf(language[83]);			-- Taking too long to damage target
 				player:addToMobIgnoreList(mob.Address)
 				player:clearTarget();

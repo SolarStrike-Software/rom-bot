@@ -40,10 +40,34 @@ function igf_events:OnLoad(this)
 		-- Create initial LastMessage log tables
 		LastMessageLog[v] = {}
 	end
+	InGameFrame:RegisterEvent("COMBATMETER_DAMAGE")
 
 end
 
+local _lastTargetTime, _lastTargetDamage, _lastTargetTarget, _lastTargetSkill, _lastTargetType
+local _lastPlayerTime, _lastPlayerDamage, _lastPlayerSource, _lastPlayerSkill, _lastPlayerType
+local _lastEnemyCritical, _lastPlayerDodge, _lastEnemyDodge, _lastPlayerBlock
 function igf_events:OnEvent(this, event, arg1, arg2, arg3, arg4, arg5, arg6 )
+	if event == "COMBATMETER_DAMAGE" then
+		if _source == UnitName("player") and _target ~= UnitName("player") then
+			_lastTargetTime = GetTime()
+			_lastTargetDamage, _lastTargetTarget, _lastTargetSkill, _lastTargetType = _damage, _target, _skill, _type
+			if _type == "CRITIAL" then
+				_lastEnemyCritical = _lastTargetTime
+			elseif _type == "DODGE" then
+				_lastEnemyDodge = _lastTargetTime
+			end
+		elseif _source ~= UnitName("player") and _target == UnitName("player") then
+			_lastPlayerTime = GetTime()
+			_lastPlayerDamage, _lastPlayerSource, _lastPlayerSkill, _lastPlayerType = _damage, _source, _skill, _type
+			if _type == "DODGE" then
+				_lastPlayerDodge = _lastPlayerTime
+			elseif _type == "BLOCK" then
+				_lastPlayerBlock = _lastPlayerTime
+			end
+		end
+	end
+
 	local args = { arg1, arg2, arg3, arg4, arg5, arg6 }
 	local triggerTime = os.time()
 
@@ -261,4 +285,28 @@ function igf_events:getLastEventMessage(event, text, age)
 			end
 		end
 	end
+end
+
+function igf_events:getLastEnemyDamage()
+	return _lastTargetTime, _lastTargetDamage, _lastTargetTarget, _lastTargetSkill, _lastTargetType
+end
+
+function igf_events:getLastPlayerDamage()
+	return _lastPlayerTime, _lastPlayerDamage, _lastPlayerSource, _lastPlayerSkill, _lastPlayerType
+end
+
+function igf_events:getLastPlayerBlockTime()
+	return _lastPlayerBlock
+end
+
+function igf_events:getLastPlayerDodgeTime()
+	return _lastPlayerDodge
+end
+
+function igf_events:getLastEnemyCriticalTime()
+	return _lastEnemyCritical
+end
+
+function igf_events:getLastEnemyDodgeTime()
+	return _lastEnemyDodge
 end

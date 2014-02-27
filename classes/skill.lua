@@ -53,6 +53,11 @@ CSkill = class(
 		self.NoBuffTarget = "player";
 		self.NoBuffName = ""; -- Name of the buff/debuff
 		self.AddWeaponRange = false;
+		
+		self.PlayerBlock = nil;
+		self.PlayerDodge = nil;
+		self.EnemyCritical = nil;
+		self.EnemyDodge = nil;
 
 		self.AutoUse = true; -- Can be used automatically by the bot
 
@@ -129,6 +134,10 @@ CSkill = class(
 			self.ClickToCast = copyfrom.ClickToCast
 			self.GlobalCooldown = copyfrom.GlobalCooldown
 			self.AddWeaponRange = copyfrom.AddWeaponRange
+			self.PlayerBlock = copyfrom.PlayerBlock;
+			self.PlayerDodge = copyfrom.PlayerDodge;
+			self.EnemyCritical = copyfrom.EnemyCritical;
+			self.EnemyDodge = copyfrom.EnemyDodge;
 		end
 	end
 );
@@ -504,12 +513,40 @@ function CSkill:canUse(_only_friendly, target)
 		end
 	end
 
-	-- CHeck if enough Natures Power
+	-- Check if enough Natures Power
 	player:updateNature()
 	if self.Nature > player.Nature and
 		not player:hasBuff(503817) then -- No need NP if has buff "Unity with Mother Earth"
 		debug_skilluse("NEEDMORENATURE");
 		return false
+	end
+	
+	-- Requires player dodge
+	if self.PlayerDodge then
+		if getGameTime()- (player:getLastDodgeTime() or 0) > 3 then
+			return false
+		end
+	end
+		
+	-- Requires player block
+	if self.PlayerBlock then
+		if getGameTime()- (player:getLastBlockTime() or 0) > 3 then
+			return false
+		end
+	end
+		
+	-- Requires target dodge
+	if self.EnemyDodge then
+		if getGameTime()- (target:getLastDodgeTime() or 0) > 3 then
+			return false
+		end
+	end
+
+	-- Requires target critical
+	if self.EnemyCritical then
+		if getGameTime()- (target:getLastCriticalTime() or 0) > 3 then
+			return false
+		end
 	end
 
 	-- warden pet heal

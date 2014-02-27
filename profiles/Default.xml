@@ -59,6 +59,9 @@
 		<option name="LOOT_PAUSE_AFTER"   	value="0" />			<!-- probability in % for a short rest -->
 		<option name="LOOT_SIGILS"			value="" />				<!-- Loot sigils or not. If ommitted, will depend on "LOOT" value -->
 		<option name="SIGILS_IGNORE_LIST"	value="" />				<!-- List of any sigils you wish to ignore, in language of client -->
+		<option name="LOOT_JUMPING"			value="false" />		<!-- Jumps while looting to avoid crouching -->
+		<option name="LOOT_AGAIN"			value="2000" />			<!-- Second chance try if first loot failed. -->
+		<option name="LOOT_TIME"			value="1500" />			<!-- Amount of time allowed for looting. -->
 
 		<!-- Auto selling options when used with player:merchant -->
 		<option name="INV_AUTOSELL_ENABLE"	value="false" />		<!-- true | false -->
@@ -161,7 +164,7 @@
 	<skills_scout>
 		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_SHOT"          		hotkey="MACRO" priority="90" />
-		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" maxhpper="60" inbattle="true"/>
+		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true"/>
 		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="85" />
 		<skill name="SCOUT_AUTOSHOT"      		hotkey="MACRO" priority="80" />
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />

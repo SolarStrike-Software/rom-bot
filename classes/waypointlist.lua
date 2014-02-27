@@ -159,7 +159,6 @@ function CWaypointList:advance()
 			self.CurrentWaypoint = #self.Waypoints;
 		end
 	end
-	self:updateResume()
 end
 
 function CWaypointList:backward()
@@ -175,7 +174,6 @@ function CWaypointList:backward()
 			self.CurrentWaypoint = 1;
 		end
 	end
-	self:updateResume()
 end
 
 function CWaypointList:getNextWaypoint(_num)
@@ -236,7 +234,6 @@ function CWaypointList:setDirection(wpt)
 			end
 		end;
 	end
-	self:updateResume()
 end
 
 -- Reverse your current direction
@@ -258,7 +255,6 @@ function CWaypointList:setWaypointIndex(index)
 	if( index > #self.Waypoints ) then index = #self.Waypoints; end;
 	self.LastWaypoint = self.CurrentWaypoint
 	self.CurrentWaypoint = index;
-	self:updateResume()
 end
 
 -- Returns an index to the waypoint closest to the given point.
@@ -447,10 +443,12 @@ function CWaypointList:findPulledBeforeWaypoint()
 end
 
 function CWaypointList:updateResume()
-	local file=io.open(getExecutionPath() .. "/logs/resumes/"..player.Name..".txt","w")
-	if file then
-		file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint)
-		file:close()
+	if self.Mode ~= "wander" then
+		local file=io.open(getExecutionPath() .. "/logs/resumes/"..player.Name..".txt","w")
+		if file then
+			file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint)
+			file:close()
+		end
 	end
 end
 
