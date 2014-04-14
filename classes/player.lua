@@ -930,6 +930,7 @@ function CPlayer:cast(skill)
 			end;
 			skill.LastCastTime = getTime()
 		end
+		player.LastSkill.LastCastTime = table.copy(skill.LastCastTime)
 		if skill.Type == STYPE_DAMAGE or skill.Type == STYPE_DOT then
 			self.failed_casts_in_a_row = 0
 		end
@@ -1082,6 +1083,7 @@ end
 -- Check if you can use any skills, and use them
 -- if they are needed.
 function CPlayer:checkSkills(_only_friendly, target)
+
 	local function takingTooLongToDamageTarget(target)
 		self:updateCasting()
 		if ( target ~= nil and target:exists() and _only_friendly ~= true ) then
@@ -1132,10 +1134,18 @@ function CPlayer:checkSkills(_only_friendly, target)
 			lastTime = getLastWarning(FACETARGET_MSG,2)
 			if lastTime and lastTime ~= checkskills_last_facetarget then
 				checkskills_last_facetarget = lastTime
-				keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
-				yrest(1000);
-				keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
-				self:updateXYZ();
+				target:updateXYZ()
+				player:updateXYZ()
+				local angle = math.atan2(target.Z - player.Z, target.X - player.X);
+				local angleDif = angleDifference(angle, player.Direction);
+				if angleDif > math.rad(90) then -- Behind you. Turn around.
+					faceTarget()
+				else -- Already in front of you. Take some steps back.
+					keyboardHold( settings.hotkeys.MOVE_BACKWARD.key);
+					yrest(1000);
+					keyboardRelease( settings.hotkeys.MOVE_BACKWARD.key);
+					self:updateXYZ();
+				end
 			end
 		end
 	end
@@ -1935,33 +1945,43 @@ function CPlayer:loot()
 				keyboardPress(settings.profile.hotkeys.ATTACK.key);
 			end]]
 			local jumped = false
-			if settings.profile.options.LOOT_JUMPING and dist < 17 then
+			if settings.profile.options.LOOT_JUMPING then
+				faceTarget()
 				yrest(100)
-				keyboardPress(settings.hotkeys.JUMP.key) yrest(100)
-				jumped = true
-			end
-			Attack()
-			if settings.profile.options.LOOT_JUMPING and not jumped and dist < 50 then
-				keyboardPress(settings.hotkeys.JUMP.key) yrest(100)
-				jumped = true
-			end
-			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
-			yrest(200)
-
-		--	yrest(settings.profile.options.LOOT_TIME + dist*15); -- dist*15 = rough calculation of how long it takes to walk there
-		--	inventory:updateSlotsByTime(settings.profile.options.LOOT_TIME + dist*15);
-			self:updateSpeed()
-			local maxWaitTime = dist*1000/self.Speed -- rough calculation of how long it takes to walk there
-			local startWait = getTime()
-			target:updateLootable()
-			self:updateStance()
-			while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime + settings.profile.options.LOOT_TIME do
-				self:updateActualSpeed()
-				if not jumped and self.ActualSpeed == 0 then Attack() yrest(100) end
-				if settings.profile.options.LOOT_JUMPING and not jumped and maxWaitTime - deltaTime(getTime(),startWait) < 1000 then
-					keyboardPress(settings.hotkeys.JUMP.key)
+				if dist < 50 then
+					if dist >17 then
+						keyboardHold(settings.hotkeys.MOVE_FORWARD.key) yrest(100)
+					end
+					keyboardPress(settings.hotkeys.JUMP.key) yrest(100)
 					jumped = true
 				end
+			end
+			Attack()
+			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
+			yrest(200)
+			self:updateSpeed()
+			local maxWaitTime = dist*1000/self.Speed -- more accurate calculation of how long it takes to walk there
+			local startWait = getTime()
+
+			-- Move to loot
+			if dist >= 50 then
+				target:updateLootable()
+				self:updateStance()
+				while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime do
+					self:updateActualSpeed()
+					if self.ActualSpeed == 0 then Attack() yrest(100) end
+					if settings.profile.options.LOOT_JUMPING and not jumped and maxWaitTime - deltaTime(getTime(),startWait) < 1000 then
+						keyboardPress(settings.hotkeys.JUMP.key)
+						jumped = true
+					end
+					yrest(100)
+					target:updateLootable()
+					self:updateStance()
+				end
+			end
+
+			-- Wait LOOT_TIME
+			while target.Lootable == true and self.Stance == 0 and deltaTime(getTime(), startWait) < maxWaitTime + settings.profile.options.LOOT_TIME do
 				yrest(100)
 				target:updateLootable()
 				self:updateStance()

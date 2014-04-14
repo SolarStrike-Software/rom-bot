@@ -548,7 +548,7 @@
 	<skill name="DRUID_CROSS_OF_THORNS_ATTACK"			id="494018"	range="90"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="DRUID_HEART_PIERCING" 					id="494216"	range="90"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" />
-	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="enemy"		buffname="506051" />
+	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="self"		buffname="506051" />
 	<skill name="DRUID_NOURISH" 						id="494930"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" 	buffname="505704" />
 
 	<!-- Warden skills -->

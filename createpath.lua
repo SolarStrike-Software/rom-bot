@@ -396,7 +396,7 @@ local function getInput(single, prompt)
 			local ks = keyboardState()
 			local stillpressed
 			for k,v in pairs(ks) do
-				if v then stillpressed = true end
+				if v and k~=255 then stillpressed = true end
 			end
 			yrest(50)
 		until not stillpressed
