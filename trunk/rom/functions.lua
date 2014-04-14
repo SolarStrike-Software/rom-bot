@@ -769,10 +769,10 @@ function RoMScript(script)
 						printf("0x%X\n", addresses.editBoxHasFocus_address)
 					end
 					if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-						keyboardPress(settings.hotkeys.ESCAPE.key); yrest(500)
+						keyboardPress(settings.hotkeys.ESCAPE.key); rest(500)
 						if RoMScript("GameMenuFrame:IsVisible()") then
 							-- Clear the game menu and reset editbox focus
-							keyboardPress(settings.hotkeys.ESCAPE.key); yrest(300)
+							keyboardPress(settings.hotkeys.ESCAPE.key); rest(300)
 							RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 						end
 					end
@@ -781,7 +781,7 @@ function RoMScript(script)
 					tryagain = true
 					break
 				end;
-				yrest(5);
+				rest(5);
 			end
 		until tryagain == false
 
@@ -2231,7 +2231,7 @@ function GetSkillBookData(_tabs)
 				tmp.ConsumableNumber = usesnum
 			elseif uses == SKILLUSES_PSI then
 				tmp.Psi = usesnum
-			elseif uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+			elseif uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
 		end
@@ -2417,6 +2417,7 @@ function getTEXT(keystring)
 	end
 
 	local resultTEXT = memoryGetTEXT(keystring)
+	local playerNameUsed = false
 
 	-- Replace known sub key strings
 	for subKeyString in string.gmatch(resultTEXT,"%[(.-)%]") do
@@ -2424,6 +2425,7 @@ function getTEXT(keystring)
 		if subKeyString:sub(1,1) == "$" then -- variable. See if it's player.
 			if subKeyString == "$PLAYERNAME" or subKeyString == "$playername" then
 				translatedSubTEXT = player.Name
+				playerNameUsed = true
 			end
 		elseif tonumber(subKeyString) then -- Must be id
 			translatedSubTEXT = GetIdName(tonumber(subKeyString))
@@ -2440,7 +2442,7 @@ function getTEXT(keystring)
 	end
 
 	-- Remember result
-	if resultTEXT ~= keystring then
+	if resultTEXT ~= keystring and not playerNameUsed then
 		getTEXTCache[keystring] = resultTEXT
 	end
 

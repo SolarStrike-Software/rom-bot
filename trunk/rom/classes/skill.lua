@@ -53,7 +53,7 @@ CSkill = class(
 		self.NoBuffTarget = "player";
 		self.NoBuffName = ""; -- Name of the buff/debuff
 		self.AddWeaponRange = false;
-		
+
 		self.PlayerBlock = nil;
 		self.PlayerDodge = nil;
 		self.EnemyCritical = nil;
@@ -228,6 +228,9 @@ function CSkill:canUse(_only_friendly, target)
 		local remainingCooldown = self:getRemainingCooldown()
 		if remainingCooldown >= 1 then
 			debug_skilluse("ONCOOLDOWN", remainingCooldown );
+			return false;
+		elseif player.LastSkill.Id == self.Id and self.Cooldown > deltaTime(getTime(),player.LastSkill.LastCastTime) then
+			debug_skilluse("ONCOOLDOWN", deltaTime(getTime(),player.LastSkill.LastCastTime));
 			return false;
 		end
 	end
@@ -442,8 +445,11 @@ function CSkill:canUse(_only_friendly, target)
 
 
 	-- check if 'self' has buff
-	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target ~= STARGET_FRIENDLY and
-	   not(player.LastSkill.Id == self.Id and deltaTime(getTime(),player.LastSkill.LastCastTime) < 1000 )then
+	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target ~= STARGET_FRIENDLY then
+		if player.LastSkill.Id == self.Id and deltaTime(getTime(),player.LastSkill.LastCastTime) < 1000 then
+			debug_skilluse("BUFFDOUBLECAST");
+			return false
+		end
 		local buffitem = player:getBuff(self.BuffName)
 		--=== check for -1 for buffs with no duration like rogue hide ===--
 		if buffitem and ((buffitem.TimeLeft > self.rebuffcut + prior/1000) or buffitem.TimeLeft == -1 ) then
@@ -520,21 +526,21 @@ function CSkill:canUse(_only_friendly, target)
 		debug_skilluse("NEEDMORENATURE");
 		return false
 	end
-	
+
 	-- Requires player dodge
 	if self.PlayerDodge then
 		if getGameTime()- (player:getLastDodgeTime() or 0) > 3 then
 			return false
 		end
 	end
-		
+
 	-- Requires player block
 	if self.PlayerBlock then
 		if getGameTime()- (player:getLastBlockTime() or 0) > 3 then
 			return false
 		end
 	end
-		
+
 	-- Requires target dodge
 	if self.EnemyDodge then
 		if getGameTime()- (target:getLastDodgeTime() or 0) > 3 then
@@ -581,7 +587,6 @@ function CSkill:canUse(_only_friendly, target)
 
 	return true;
 end
-
 
 function CSkill:use()
 	local target
@@ -672,7 +677,6 @@ function CSkill:use()
 		end
 		return
 	end
-
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
 		-- Get skill name
 		local skillName = GetIdName(self.Id)
@@ -743,7 +747,10 @@ function CSkill:getRemainingCooldown()
 	if self.BaseItemAddress ~= 0 then
 		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
 		if offset and offset ~= 0 then
-			return (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
+			local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
+			if tmp > 0 then
+				return tmp
+			end
 		end
 	end
 	return 0

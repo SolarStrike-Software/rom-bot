@@ -176,6 +176,7 @@ settings = table.copy(settings_default);
 
 check_keys = { name = { } };
 
+--SKILLUSES_HP = 1 -- Not used by bot
 SKILLUSES_MANA = 2
 --SKILLUSES_HPPER = 3 -- Not used by bot
 --SKILLUSES_MPPER = 4 -- Not used by bot
