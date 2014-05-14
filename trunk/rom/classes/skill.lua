@@ -148,7 +148,7 @@ function CSkill:canUse(_only_friendly, target)
 		return false
 	end
 
-	if( target == nil ) then
+	if( target == nil or target.Address == 0 ) then
 		player:updateTargetPtr()
 		target = CPawn.new(player.TargetPtr)
 		target:updateId()
@@ -445,7 +445,7 @@ function CSkill:canUse(_only_friendly, target)
 
 
 	-- check if 'self' has buff
-	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target ~= STARGET_FRIENDLY then
+	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and (self.Target ~= STARGET_FRIENDLY and self.Target ~= STARGET_PARTY) then
 		if player.LastSkill.Id == self.Id and deltaTime(getTime(),player.LastSkill.LastCastTime) < 1000 then
 			debug_skilluse("BUFFDOUBLECAST");
 			return false
@@ -477,6 +477,23 @@ function CSkill:canUse(_only_friendly, target)
 	-- check if 'friendly' has buff
 	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target == STARGET_FRIENDLY then
 		if target and target.Type == PT_PLAYER then
+			if target:hasBuff(self.BuffName) then
+				debug_skilluse("TARGETHASBUFF");
+				return false
+			end
+		else
+			if player:hasBuff(self.BuffName) then
+				debug_skilluse("PLAYERHASBUFF");
+				return false
+			end
+		end
+	end
+
+
+	-- check if 'party' has buff
+	if (self.Type == STYPE_BUFF or self.Type == STYPE_HOT) and self.BuffName ~= "" and self.Target == STARGET_PARTY then
+		target:updateInParty()
+		if target and target.InParty == true then
 			if target:hasBuff(self.BuffName) then
 				debug_skilluse("TARGETHASBUFF");
 				return false

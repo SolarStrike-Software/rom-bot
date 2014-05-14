@@ -100,6 +100,7 @@
 		<option name="PARTY_FOLLOW_NAME"	value="" /> 			<!-- For party bot name of character to follow -->
 		<option name="HEAL_FIGHT"			value="false" />  		<!-- For party bot if you want healer to also fight -->
 		<option name="PARTYLEADER_WAIT"		value="false" /> 		<!-- to make a normal bot wait for party members -->
+		<option name="MONITOR_WHISPERS"		value="false" /> 		<!-- to monitor whispers instead of party chat -->
 
 		<!-- pvp -->
 		<option name="PVP"		value="" /> <!-- 'true' will auto attack players, 'false' will not fight back, no value will only fight if attacked. -->

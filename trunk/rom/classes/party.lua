@@ -1,7 +1,7 @@
 include("pawn.lua");
 include("player.lua");
 
-local _timexx, _firsttimes, partyleader, leaderobj, leaderpawn, stop, healer, havewarden
+local _timexx, _firsttimes, partyleader, leaderobj, leaderpawn, stop, healer, havewarden, _whispname
 
 local function _heal()
 	for i,v in ipairs(partymemberpawn) do
@@ -41,7 +41,7 @@ end
 
 function Party(heal)
 	if heal then healer = true settings.options.TARGET_FRAME = false end
-	eventParty("start")
+	eventParty("start",settings.profile.options.MONITOR_WHISPERS)
 	_timexx = os.time()
 	while(true) do
 		player:logoutCheck()
@@ -190,23 +190,25 @@ function getNameFollow()
 	player:updateXYZ()
 	local pcheck, whofollow
 	if stop then return end
-	local partynum = 1 -- default followed party
 	if ( settings.profile.options.PARTY_FOLLOW_NAME and settings.profile.options.PARTY_FOLLOW_NAME ~= "" ) then
-		for i = 1,5 do
-			if GetPartyMemberName(i) == settings.profile.options.PARTY_FOLLOW_NAME  then partynum = i  end
-		end
+		whofollow = player:findNearestNameOrId(settings.profile.options.PARTY_FOLLOW_NAME)
 	end
-	pcheck = GetPartyMemberAddress(partynum)
-	if pcheck then whofollow = CPawn(pcheck.Address) end
+	if not whofollow then
+		for i = 1,6 do
+			pcheck = GetPartyMemberAddress(i)
+			if pcheck then whofollow = CPawn(pcheck.Address) break end
+		end
+	else
+		whofollow = CPawn(whofollow.Address)
+	end
 	if whofollow then
 		if distance(whofollow.X,whofollow.Z,player.X,player.Z) > 150 then
 			player:moveTo(CWaypoint(whofollow.X,whofollow.Z),true,nil,50)
 		end
-	else
-		partynum = 1
+		player:target(whofollow)
+		RoMScript("FollowUnit('target');");
+		Mount()	
 	end
-	RoMScript("FollowUnit('party"..partynum.."');");
-	Mount()
 end
 
 function checkparty(_dist)
@@ -240,23 +242,33 @@ function checkEventParty()
 	repeat
 		local time, moreToCome, name, msg = EventMonitorCheck("pm1", "4,1")
 		if msg and name ~= player.Name then
+			_whispname = name
 			return msg, name
 		end
 	until msg == nil
 end
 
-function eventParty(_startstop)
+function eventParty(_startstop, whispers)
 	if _startstop == "stop" then
 		print("Party Monitor stopped.")
 		EventMonitorStop("pm1")
 	else
-		print("Party Monitor started.")
-		EventMonitorStart("pm1", "CHAT_MSG_PARTY")
+		if whispers then
+			print("Party Monitor started.")
+			EventMonitorStart("pm1", "CHAT_MSG_WHISPER")	
+		else
+			print("Party Monitor started.")
+			EventMonitorStart("pm1", "CHAT_MSG_PARTY")
+		end
 	end
 end
 
 function sendPartyChat(_msg)
-	RoMScript("SendChatMessage('".._msg.."', 'PARTY')")
+	if settings.profile.options.MONITOR_WHISPERS then
+		
+	else
+		RoMScript("SendChatMessage('".._msg.."', 'WHISPER',0,'".._whispname.."')")
+	end
 	cprintf(cli.blue,_msg.."\n")
 end
 
