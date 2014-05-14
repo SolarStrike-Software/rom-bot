@@ -67,6 +67,9 @@ end
 
 -- Ask witch character does the user want to be, from the open windows.
 function selectGame(character)
+	if functionBeingLoaded then
+		cprintf(cli.lightred,"The loading of userfunction '%s' is forcing the bot to attach to the game early. This can cause errors and features of the bot to not work properly. Userfunctions should execute as little code as possible while loading. This should be fixed.\n",functionBeingLoaded)
+	end
 	-- Get list of windows in an array
 	local windowList = findWindowList("*", "Radiant Arcana");
 
@@ -739,51 +742,66 @@ function RoMScript(script)
 
 		-- Check to make sure length is within bounds
 		local len = string.len(text);
+		local texts = {}
 		if( len > 254 ) then
-			error("Macro text too long by "..(len - 254), 2);
+			-- Break into parts
+			table.insert(texts,"!"..text:sub(1,253))
+			local count = 1
+			while #text:sub(253 * count + 1) > 253 do
+				table.insert(texts,"@"..text:sub(253 * count + 1, 253 * (count + 1)))
+				count = count + 1
+			end
+			table.insert(texts, "#"..text:sub(253 * count + 1))
 		end
-
 		repeat
-			-- Write the command macro
-			writeToMacro(commandMacro, text)
+			repeat
+				-- Write the command macro
+				if #texts > 0 then
+					text = texts[1]
+					table.remove(texts, 1)
+				end
 
-			-- Write something on the first address, to see when its over written
-			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
+				-- Send first part
+				writeToMacro(commandMacro, text)
 
-			-- Execute it
-			if( settings.profile.hotkeys.MACRO ) then
---				keyboardPress(settings.profile.hotkeys.MACRO.key);
-				keyboardHold(settings.profile.hotkeys.MACRO.key);
-				rest(100)
-				keyboardRelease(settings.profile.hotkeys.MACRO.key);
-			end
+				-- Write something on the first address, to see when its over written
+				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
 
-			local tryagain = false
+				-- Execute it
+				if( settings.profile.hotkeys.MACRO ) then
+	--				keyboardPress(settings.profile.hotkeys.MACRO.key);
+					keyboardHold(settings.profile.hotkeys.MACRO.key);
+					rest(100)
+					keyboardRelease(settings.profile.hotkeys.MACRO.key);
+				end
 
-			-- A cheap version of a Mutex... wait till it is "released"
-			-- Use high-res timers to find out when to time-out
-			local startWaitTime = getTime();
-			while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
-				if( deltaTime(getTime(), startWaitTime) > 800 ) then
-					if settings.options.DEBUGGING then
-						printf("0x%X\n", addresses.editBoxHasFocus_address)
-					end
-					if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-						keyboardPress(settings.hotkeys.ESCAPE.key); rest(500)
-						if RoMScript("GameMenuFrame:IsVisible()") then
-							-- Clear the game menu and reset editbox focus
-							keyboardPress(settings.hotkeys.ESCAPE.key); rest(300)
-							RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
+				local tryagain = false
+
+				-- A cheap version of a Mutex... wait till it is "released"
+				-- Use high-res timers to find out when to time-out
+				local startWaitTime = getTime();
+				while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
+					if( deltaTime(getTime(), startWaitTime) > 800 ) then
+						if settings.options.DEBUGGING then
+							printf("0x%X\n", addresses.editBoxHasFocus_address)
 						end
-					end
+						if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+							keyboardPress(settings.hotkeys.ESCAPE.key); rest(500)
+							if RoMScript("GameMenuFrame:IsVisible()") then
+								-- Clear the game menu and reset editbox focus
+								keyboardPress(settings.hotkeys.ESCAPE.key); rest(300)
+								RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
+							end
+						end
 
 
-					tryagain = true
-					break
-				end;
-				rest(5);
-			end
-		until tryagain == false
+						tryagain = true
+						break
+					end;
+					rest(5);
+				end
+			until tryagain == false
+		until #texts == 0
 
 		--- Read the outcome from the result macro
 		local rawPart = readMacro(resultMacro)
@@ -803,10 +821,14 @@ function RoMScript(script)
 			break;
 		elseif( byte == 9 ) then -- Use TAB to seperate
 			-- Implicit casting
-			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);  end;
-			if( string.find(readsz, "^[%-%+]?%d+$") ) then readsz = tonumber(readsz);  end;
-			if( readsz == "true" ) then readsz = true; end;
-			if( readsz == "false" ) then readsz = false; end;
+			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);
+			elseif( string.find(readsz, "^[%-%+]?%d+$") ) then readsz = tonumber(readsz);
+			elseif( readsz == "true" ) then readsz = true;
+			elseif( readsz == "false" ) then readsz = false;
+			elseif( readsz:sub(1,1) ) == "{" then
+				local func, err = loadstring("return "..readsz)
+				if func then readsz = func() else print(err) end
+			end
 
 			table.insert(ret, readsz);
 			cnt = cnt+1;
@@ -818,7 +840,7 @@ function RoMScript(script)
 
 	local err = ret[1]
 	if err == false then
-		error("IGF:".."\\"..script.."\\ "..ret[2],0)
+		error("IGF:".."\\"..script.."\\:IGF "..ret[2],0)
 	elseif err == true then
 		table.remove(ret,1)
 	end
@@ -2684,4 +2706,94 @@ function isClientCrashed()
 	end
 
 	return false
+end
+
+function tableToString(_table, _formated)
+	local tabs=0
+	local str = ""
+
+	local function exportstring( s )
+		s = string.format( "%q",s )
+		-- to replace
+		s = string.gsub( s,"\\\n","\\n" )
+		s = string.gsub( s,"\r","\\r" )
+		s = string.gsub( s,string.char(26),"\"..string.char(26)..\"" )
+		return s
+	end
+
+	local function makeString(_val, _name)
+
+		-- first value name
+		if type(_name) == "number" then
+			_name = "[".. _name .. "]"
+		end
+		local StringValue = ""
+		if _formated == true then
+			StringValue = StringValue .. string.rep ("\t",tabs )
+		end
+		if _name ~= nil then
+			StringValue = StringValue .. _name .. "="
+		end
+
+		-- Then the value
+		local typ = type(_val)
+		if typ == "string" then
+			StringValue = StringValue .. exportstring(_val)
+		elseif typ == "number" or  typ == "boolean" or  typ == "nil" then
+			StringValue = StringValue .. tostring(_val)
+		elseif typ == "function" or typ == "userdata" then
+			StringValue = StringValue .. "\"" .. tostring(_val) .. "\""
+		elseif typ == "table" then
+
+			-- First the bracket
+			StringValue = StringValue .. "{"
+			if _formated == true then
+				StringValue = StringValue .. "\n"
+			end
+
+			-- Then the indexed values
+			tabs = tabs + 1
+			local ipairsAdded = {}
+			for i,v in ipairs(_val) do
+				ipairsAdded[i] = true
+				local tmp
+				tmp = makeString(v)
+				if tmp ~= "" then
+					StringValue = StringValue .. tmp .. ","
+					if _formated == true then
+						StringValue = StringValue .. "\n"
+					end
+				end
+			end
+
+			-- then the values
+			for i,v in pairs(_val) do
+				if not ipairsAdded[i] then
+					local tmp = makeString(v,i)
+					if tmp ~= "" then
+						StringValue = StringValue .. tmp .. ","
+						if _formated == true then
+							StringValue = StringValue .. "\n"
+						end
+					end
+				end
+			end
+			tabs = tabs - 1
+
+			-- Remove last comma
+			if _noFormatting and StringValue:sub(#StringValue) == "," then
+				StringValue = StringValue:sub(1,#StringValue - 1)
+			end
+
+			-- then the end bracket
+			if _formated == true then
+				StringValue = StringValue .. string.rep ("\t",tabs )
+			end
+			StringValue = StringValue .. "}"
+		end
+
+		return StringValue
+	end
+
+	return makeString(_table)
 end

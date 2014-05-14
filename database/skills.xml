@@ -5,7 +5,7 @@
 	<skill name="MAGE_LIGHTNING"						id="490212" range="150" type="damage" 		casttime="0"	cooldown="20"	target="enemy"		minrange="75" priority="100" />
 	<skill name="MAGE_INTENSIFICATION" 					id="497976" range="225" type="buff"			casttime="0"	cooldown="120"  target="enemy"		buffname="620177" />
 	<skill name="MAGE_SILENCE"							id="490296" range="150" type="damage"		casttime="0"	cooldown="24"	target="enemy" />
-	<skill name="MAGE_FIRE_WARD"						id="490248" range=""	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500366" />
+	<skill name="MAGE_FIRE_WARD"						id="490248" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="500366" />
 	<!-- Primary -->
 	<skill name="MAGE_ELEMENTAL_CATALYSIS"				id="490238" range="225" type="buff"			casttime="0"	cooldown="300"	target="enemy"		buffname="500339" />
 	<skill name="MAGE_FLAME"							id="491150" range="225" type="damage"		casttime="3"	cooldown="0"	target="enemy" />
@@ -95,8 +95,8 @@
 	<skill name="PRIEST_URGENT_HEAL" 					id="491147" range="250"	type="heal"			casttime="1"	cooldown="0"	target="friendly" />
 	<skill name="PRIEST_REGENERATE" 					id="490269" range="180" type="hot"			casttime="0"	cooldown="0"	target="friendly"	buffname="500469" />
 	<skill name="PRIEST_HOLY_AURA" 						id="490300" range="0"	type="buff"			casttime="0"	cooldown="120"  target="self"		inbattle="true" maxhpper="30" />
-	<skill name="PRIEST_MAGIC_BARRIER" 					id="491166" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500548,501877" />
-	<skill name="PRIEST_BLESSED_SPRING_WATER" 			id="490298" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="500536" />
+	<skill name="PRIEST_MAGIC_BARRIER" 					id="491166" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="500548,501877" />
+	<skill name="PRIEST_BLESSED_SPRING_WATER" 			id="490298" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="500536" />
 	<!-- Primary -->
 	<skill name="PRIEST_SOUL_SOURCE" 					id="490288" range="0"	type="heal"			casttime="0"	cooldown="300"  target="self"		priority="100" maxhpper="25" inbattle="true" />
 	<skill name="PRIEST_WAVE_ARMOR" 					id="490273" range="180" type="buff"			casttime="0"	cooldown="20"	target="friendly"	buffname="500478" />
@@ -130,7 +130,7 @@
 	<!-- Priest/Mage -->
 	<skill name="PRIEST_FREEZE" 						id="491586" range="225"	type="damage"		casttime="1"	cooldown="0"	target="enemy"		buffname="501961" />
 	<skill name="PRIEST_REMOVE_CURSE" 					id="491646" range="150" type="buff"			casttime="0"	cooldown="10"	target="friendly"  />
-	<skill name="PRIEST_ANGELS_BLESSING" 				id="491644" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502026" />
+	<skill name="PRIEST_ANGELS_BLESSING" 				id="491644" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="502026" />
 	<skill name="PRIEST_ANGELS_CAROL" 					id="491365" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="PRIEST_ICEWIND_BLADE" 					id="493043" range="180" type="damage"		casttime="0"	cooldown="3"	target="enemy" />
 	<skill name="PRIEST_WIND_FAIRY" 					id="493270" range="0"	type="summon"		casttime="6"	cooldown="0"	target="self"		inbattle="false" />
@@ -139,10 +139,10 @@
 	<skill name="PRIEST_INFECTIOUS_WOUND" 				id="492402" range="200" type="damage"		casttime="0"	cooldown="10" 	target="enemy" />
 	<skill name="PRIEST_PURGE" 							id="492360" range="200" type="damage"		casttime="0"	cooldown="20" 	target="enemy" />
 	<skill name="PRIEST_LURE_OF_THE_SNAKE_WOMAN" 		id="492637" range="150"	type="damage"		casttime="1"	cooldown="45"	target="enemy"		priority="90" />
-	<skill name="PRIEST_SHADOW_FURY" 					id="492932" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503196" />
+	<skill name="PRIEST_SHADOW_FURY" 					id="492932" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="503196" />
 	<skill name="PRIEST_SHADOW_FAIRY" 					id="493269" range="0"	type="summon"		casttime="6"	cooldown="0"	target="self"		inbattle="false" />
 	<!-- Priest/Scout -->
-	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" 	id="491323" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501778" />
+	<skill name="PRIEST_EMBRACE_OF_THE_WATER_SPIRIT" 	id="491323" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="501778" />
 	<skill name="PRIEST_CURING_SHOT" 					id="492636" range="200" type="heal"			casttime="2"	cooldown="6"	target="friendly" />
 	<skill name="PRIEST_ICE_BLADE" 						id="492931" range="200" type="damage" 		casttime="0"	cooldown="0"	target="enemy" />
 	<skill name="PRIEST_ICE_BLADES" 					id="490071" range="200" type="damage"		casttime="0"	cooldown="3"	target="enemy" />
@@ -313,7 +313,7 @@
 	<skill name="ROGUE_PREMEDITATION_MAGE" 				id="491182" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		buffname="500961" inbattle="true" />
 	<skill name="ROGUE_ENCHANTED_THROW"					id="491178" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501279" inbattle="true" />
 	<!-- Rogue/Priest -->
-	<skill name="ROGUE_QUICKNESS_AURA" 					id="491536" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501932" />
+	<skill name="ROGUE_QUICKNESS_AURA" 					id="491536" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="501932" />
 	<skill name="ROGUE_FEARLESS" 						id="491540" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
 	<skill name="ROGUE_KICK" 							id="492627" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
 	<skill name="ROGUE_SLOWING_POISON" 					id="492351" range="120"	type="damage"		casttime="1"	cooldown="30"	target="enemy" />	<!-- Requires Poison Bottle 200762-->
@@ -504,7 +504,7 @@
 	<skill name="DRUID_ROCKSLIDE" 						id="493543" range="180"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="DRUID_BINDING_SILENCE" 				id="493541" range="180"	type="damage"		casttime="0"	cooldown="30"	target="enemy" />
 	<skill name="DRUID_CURING_SEED" 					id="493547" range="150"	type="buff"			casttime="0"	cooldown="30"	target="friendly"	buffname="503816" />
-	<skill name="DRUID_CONCENTRATION_PRAYER" 			id="493530" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503799" />
+	<skill name="DRUID_CONCENTRATION_PRAYER" 			id="493530" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="503799" />
 	<skill name="DRUID_ROCK_PROTECTION" 				id="493544" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		maxhpper="10" buffname="503813" />
 	<skill name="DRUID_SPIRIT_GUIDANCE" 				id="493536" range="180"	type="buff"			casttime="1"	cooldown="30"	target="enemy"		nature="1" buffname="503805" />
 	<skill name="DRUID_BODY_VITALIZATION" 				id="493532" range="200"	type="buff"			casttime="0"	cooldown="120"	target="friendly" />
@@ -537,7 +537,7 @@
 	<skill name="DRUID_MOTHER_EARTHS_BLESSING"			id="494367"	range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
 	<!-- Druid/Warden -->
 	<skill name="DRUID_HEALING_RIPPLE"	 				id="494323" range="250"	type="heal"			casttime="2"	cooldown="0"	target="friendly" />
-	<skill name="DRUID_MYSTERIOUS_GRACE" 				id="494372" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="505165" />
+	<skill name="DRUID_MYSTERIOUS_GRACE" 				id="494372" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="505165" />
 	<skill name="DRUID_ESSENCE_EXTRACTION" 				id="494373" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<skill name="DRUID_GRACE_OF_THE_FOREST"				id="494937" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="505901"/>
 	<skill name="DRUID_SPIRIT_OF_LIFE"	 				id="494938" range="0"	type="hot"			casttime="0"	cooldown="240"	target="self" />
@@ -547,7 +547,7 @@
 	<skill name="DRUID_GLORY_WAND"	 					id="494017"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="504526" />
 	<skill name="DRUID_CROSS_OF_THORNS_ATTACK"			id="494018"	range="90"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="DRUID_HEART_PIERCING" 					id="494216"	range="90"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
-	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" />
+	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="party" />
 	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="self"		buffname="506051" />
 	<skill name="DRUID_NOURISH" 						id="494930"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" 	buffname="505704" />
 
@@ -626,7 +626,7 @@
 	<skill name="WARLOCK_SEVERED_CONSCIOUSNESS" 		id="497962" range="200" type="damage"		casttime="1.5"  cooldown="0"	target="enemy"		reqbuffname="501571" reqbufftarget="player" />
 	<skill name="WARLOCK_LOCKED_HEART" 					id="497963" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		reqbuffname="501572" reqbufftarget="player" buffname="621187" />
 	<skill name="WARLOCK_SHIELD_OF_SOLID_MIND" 			id="497965" range="180" type="buff"			casttime="0"	cooldown="0"	target="friendly"	buffname="621189" inbattle="true" />
-	<skill name="WARLOCK_SUBLIMATION_WEAVE_CURSE" 		id="498914" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="621736" />
+	<skill name="WARLOCK_SUBLIMATION_WEAVE_CURSE" 		id="498914" range="0"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="621736" />
 	<skill name="WARLOCK_MIND_BARRIER" 					id="498542" range="150"	type="buff"			casttime="0"	cooldown="0"	target="friendly"	reqbuffname="501572" reqbufftarget="player" buffname="621196" clicktocast="true" />
 	<skill name="WARLOCK_RUTHLESS_JUDGMENT" 			id="498544" range="225"	type="damage"		casttime="2"	cooldown="0"	target="enemy"		reqbuffname="501571" reqbufftarget="player" />
 	<skill name="WARLOCK_HEART_COLLECTION_STRIKE" 		id="498545" range="225"	type="damage"		casttime="0"	cooldown="8"	target="enemy"/>

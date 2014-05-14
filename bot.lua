@@ -59,10 +59,12 @@ include("classes/pet.lua");
 include("settings.lua");
 include("macros.lua");
 
+functionBeingLoaded = "romglobal/userfunctions.lua"
 if( fileExists(getExecutionPath().."/../romglobal/userfunctions.lua") ) then
 	include("../romglobal/userfunctions.lua");
 end
 
+functionBeingLoaded = "userfunctions.lua"
 if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
@@ -81,9 +83,10 @@ local addondir = getDirectory(getExecutionPath() .. "/userfunctions/");
 for i,v in pairs(addondir) do
 	local match = string.match(v, "addon_(.*)%.lua");
 	if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
-
 	if( match ~= nil ) then
+		functionBeingLoaded = match
 		include("userfunctions/" .. v);
+		functionBeingLoaded = nil
 		logMessage("Bot userfunction \'" .. match .. "\' successfully loaded.");
 	end
 end
@@ -96,9 +99,10 @@ if globaladdondir then
 		if not(fileExists(localdir .. v)) then -- if not in local 'userfunctions'
 			local match = string.match(v, "addon_(.*)%.lua");
 			if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
-
 			if( match ~= nil ) then
+				functionBeingLoaded = match
 				include("../romglobal/userfunctions/" .. v);
+				functionBeingLoaded = nil
 				logMessage("Global bot userfunction \'" .. match .. "\' successfully loaded.");
 			end
 		end

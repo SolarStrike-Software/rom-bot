@@ -850,11 +850,13 @@ function CPlayer:cast(skill)
 		self:updateCasting();
 		if( skill.CastTime > 0 ) then
 			while( not self.Casting ) do -- wait for casting to start
-				-- Check if mob is dead during wait
-				local target = CPawn.new(self.TargetPtr);
-				if not target:isAlive() then
-					printf(language[82]);	-- close print 'Casting ..." / aborted
-					return false
+				-- Check if mob is dead during wait, only for damage skills
+				if skill.Type ~= STYPE_HEAL and skill.Type ~= STYPE_HOT then
+					local target = CPawn.new(self.TargetPtr);
+					if not target:isAlive() then
+						printf(language[82]);	-- close print 'Casting ..." / aborted
+						return false
+					end
 				end
 
 				-- break cast with jump if aggro before casting finished
@@ -1153,6 +1155,7 @@ function CPlayer:checkSkills(_only_friendly, target)
 	local used = false;
 	--if settings.profile.options.DISMOUNT == false and player.Mounted then return false end
 
+	player:updateTargetPtr()
 	local target = target or CPawn.new(self.TargetPtr);
 
 	local useQueue = false; -- Whether to use the regular profile skills
@@ -1815,7 +1818,7 @@ function CPlayer:fight()
 	end
 
 	self:updateCasting()
-	if self.Casting then
+	if self.Casting and self.LastSkill.ClickToCast then
 		keyboardPress(settings.hotkeys.MOVE_BACKWARD.key)
 	end
 
@@ -3655,7 +3658,7 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 	if type(_objtable) == "number" or type(_objtable) == "string" then
 		_objtable = {_objtable}
 	end
-
+	local foundobjects = {}
 	ignore = ignore or 0;
 	local closestObject = nil;
 	local obj = nil;
@@ -3672,24 +3675,24 @@ function CPlayer:findNearestNameOrId(_objtable, ignore, evalFunc)
 
 		if( obj ~= nil ) then
 			for __, _objnameorid in pairs(_objtable) do
-				if( obj.Address ~= ignore and obj.Address ~= player.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
+				if( obj.Address ~= ignore and obj.Address ~= self.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
 					if( evalFunc(obj.Address,obj) == true ) then
-						if( closestObject == nil ) then
-							closestObject = obj;
-						else
-							if( distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) <
-								distance(self.X, self.Z, self.Y, closestObject.X, closestObject.Z, closestObject.Y) ) then
-								-- this node is closer
-								closestObject = obj;
-							end
-						end
+						obj.Distance = distance(obj,self)
+						table.insert(foundobjects,obj)
 					end
 				end
 			end
 		end
 	end
-
-   return closestObject;
+	-- sort by distance
+	local function distancesortfunc(a,b)
+		return b.Distance > a.Distance
+	end
+	if #foundobjects ~= 0 then -- sort according to distance first
+		table.sort(foundobjects, distancesortfunc)
+		return foundobjects[1], foundobjects -- return closest object, return all objects found
+	end
+	return -- means you found nothing, so returns nil
 end
 
 function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, evalFunc)

@@ -1,4 +1,4 @@
-IGF_INSTALLED = 10;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
+IGF_INSTALLED = 11;	-- so we can detect if the addon is installed. The number is so we know what version is installed.
                     -- if any changes are made to any files in the 'ingamefunctions' folder, increment this number
 					-- and change the check in 'settings.lua' to match this number.
 
@@ -28,8 +28,6 @@ function igf_GetTooltip(_side, _setcommand, _arg1, ...)
 
 	GameTooltip:ClearLines();			-- seems not to work, still sometimes old values there ???
 	GameTooltip[_setcommand](GameTooltip,_arg1,...);		-- set tooltip for given item type and id
---	GameTooltip:Show()		-- ok
---	GameTooltip:Hide()		-- ok
 
 	-- tooltip values for one side
 	local tt = {};
@@ -52,11 +50,6 @@ function igf_GetTooltip(_side, _setcommand, _arg1, ...)
 
 	-- RoMScript can't handle tables, so we return single values
 	return unpack(tt)
-
--- /script ReloadUI();
--- /script GameTooltip:SetBagItem(68);
--- /script igf_GetTooltip("Right", 68)
-
 end
 
 
@@ -192,8 +185,99 @@ local function FindMacros()
 	return commandMacro, resultMacro
 end
 
+local function tableToString(_table, _formated)
+	local tabs=0
+	local str = ""
+
+	local function exportstring( s )
+		s = string.format( "%q",s )
+		-- to replace
+		s = string.gsub( s,"\\\n","\\n" )
+		s = string.gsub( s,"\r","\\r" )
+		s = string.gsub( s,string.char(26),"\"..string.char(26)..\"" )
+		return s
+	end
+
+	local function makeString(_val, _name)
+
+		-- first value name
+		if type(_name) == "number" then
+			_name = "[".. _name .. "]"
+		end
+		local StringValue = ""
+		if _formated == true then
+			StringValue = StringValue .. string.rep ("\t",tabs )
+		end
+		if _name ~= nil then
+			StringValue = StringValue .. _name .. "="
+		end
+
+		-- Then the value
+		local typ = type(_val)
+		if typ == "string" then
+			StringValue = StringValue .. exportstring(_val)
+		elseif typ == "number" or  typ == "boolean" or  typ == "nil" then
+			StringValue = StringValue .. tostring(_val)
+		elseif typ == "function" or typ == "userdata" then
+			StringValue = StringValue .. "\"" .. tostring(_val) .. "\""
+		elseif typ == "table" then
+
+			-- First the bracket
+			StringValue = StringValue .. "{"
+			if _formated == true then
+				StringValue = StringValue .. "\n"
+			end
+
+			-- Then the indexed values
+			tabs = tabs + 1
+			local ipairsAdded = {}
+			for i,v in ipairs(_val) do
+				ipairsAdded[i] = true
+				local tmp
+				tmp = makeString(v)
+				if tmp ~= "" then
+					StringValue = StringValue .. tmp .. ","
+					if _formated == true then
+						StringValue = StringValue .. "\n"
+					end
+				end
+			end
+
+			-- then the values
+			for i,v in pairs(_val) do
+				if not ipairsAdded[i] then
+					local tmp = makeString(v,i)
+					if tmp ~= "" then
+						StringValue = StringValue .. tmp .. ","
+						if _formated == true then
+							StringValue = StringValue .. "\n"
+						end
+					end
+				end
+			end
+			tabs = tabs - 1
+
+			-- Remove last comma
+			if _noFormatting and StringValue:sub(#StringValue) == "," then
+				StringValue = StringValue:sub(1,#StringValue - 1)
+			end
+
+			-- then the end bracket
+			if _formated == true then
+				StringValue = StringValue .. string.rep ("\t",tabs )
+			end
+			StringValue = StringValue .. "}"
+		end
+
+		return StringValue
+	end
+
+	return makeString(_table)
+end
+
 -- Highjack this function for our use
 -- F9 to trigger by default
+local MultiPartCommand = ""
 function ToggleUI_TITLE()
 	-- Check if macro numbers have been set
 	if commandMacro == nil or resultMacro == nil then
@@ -208,7 +292,8 @@ function ToggleUI_TITLE()
 
 	--Read command macro
 	local icnum,name,body=GetMacroInfo(commandMacro)
-	if string.find(body,"^/") then -- Should be slash command
+	local firstChar = body:sub(1,1)
+	if firstChar == "/" then -- Should be slash command
 		for line in string.gmatch(body, "/[^/]*") do
 			ExecuteMacroLine(line)
 		end
@@ -218,7 +303,19 @@ function ToggleUI_TITLE()
 		-- Remove previously sent 255 char
 		ResultOutput = string.sub(ResultOutput, 256)
 		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , ResultOutput)
+	elseif firstChar == "!" then
+		-- Start of multi part command longer than 255 characters
+		MultiPartCommand = body:sub(2)
+		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , "")
+	elseif firstChar == "@" then
+		-- Continuing multi part command
+		MultiPartCommand = MultiPartCommand .. body:sub(2)
+		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , "")
 	else
+		if firstChar == "#" then -- Final part of multi part command. Reconstruct body
+			body = MultiPartCommand .. body:sub(2)
+			MultiPartCommand = ""
+		end
 		-- The initial command macro
 		ResultOutput = ''
 		local func = loadstring("local a={".. body .. "} return a")
@@ -236,9 +333,12 @@ function ToggleUI_TITLE()
 			a = {false, "Error in command sent to IGF."}
 		end
 		for i = 1, #a do
-			ResultOutput = ResultOutput .. tostring(a[i]) .. string.char(9)
+			if type(a[i]) == "table" then
+				ResultOutput = ResultOutput .. tableToString(a[i]) .. string.char(9)
+			else
+				ResultOutput = ResultOutput .. tostring(a[i]) .. string.char(9)
+			end
 		end
 		EditMacro(resultMacro, RESULT_MACRO_NAME ,7 , ResultOutput)
 	end
 end
-

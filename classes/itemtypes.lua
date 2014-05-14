@@ -34,63 +34,46 @@ function LoadItemTypes_cached(filename)
 end
 
 function LoadItemTypes_memory()
-	--local starttime = os.clock()
+--	local starttime = getTime()
 
 	cprintf(cli.yellow,"Getting item type names.\n")
 
 	local data={}
 
-	-- Get Base type level data
-	local t1_data={RoMCode("A=0 repeat n='AC_ITEMTYPENAME_'..A T=TEXT(n)" ..
-		" if n==T then break end table.insert(a,A..','..T) A=A+1 until false")}
-	for k,v in pairs(t1_data) do
-		local t1, name = string.match(v,"(%d*),(.*)")
-		t1 = tonumber(t1)
-		data[t1] = {Name = name}
-	end
+	local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
+	local address = memoryReadInt(getProc(), addressPtrsBase + 0x268)
+	repeat
+		local key = memoryReadString(getProc(), address)
+		address = address + #key + 1
+		local text = memoryReadString(getProc(), address)
+		address = address + #text +1
 
-	displayProgressBar((1/(#data+3)) * 100, 20);
-
-	-- Get second level data
-	local t2_data={RoMCode("for A=0,".. #data .." do B=0 repeat " ..
-		"n='AC_ITEMTYPENAME_'..A..'_'..B T=TEXT(n) if n==T then break end " ..
-		"table.insert(a,A..','..B..','..T) B=B+1 until false end")}
-	for k,v in pairs(t2_data) do
-		local t1, t2, name = string.match(v,"(%d*),(%d*),(.*)")
-		t1, t2 = tonumber(t1), tonumber(t2)
-		data[t1][t2] = {Name = name}
-	end
-
-	-- Get third level data
-	for t1= 0, #data do
-		displayProgressBar(((t1+2)/(#data+3)) * 100, 20);
-		local t3_data = {RoMCode("for B=0," .. #data[t1] .. " do C=0 repeat " ..
-			"n='AC_ITEMTYPENAME_"..t1.."_'..B..'_'..C T=TEXT(n) if n==T then break end " ..
-			"table.insert(a,B..','..C..','..T) C=C+1 until false end")}
-		for k,v in pairs(t3_data) do
-			local t2, t3, name = string.match(v,"(%d*),(%d*),(.*)")
-			t2, t3 = tonumber(t2), tonumber(t3)
-			data[t1][t2][t3] = {Name = name}
-			if (t1 == 0 and t2 >= 0 and t2 <= 4) or -- non unique t3 weapon name
-				(t1 == 1 and t2 >= 0 and t2 <= 3) then -- non unique t3 armor name
+		local A, B, C = string.match(key,"AC_ITEMTYPENAME_(%d*)_?(%d*)_?(%d*)")
+		A, B, C = tonumber(A), tonumber(B), tonumber(C)
+		if C then
+			data[A][B][C] ={Name = text}
+			if (A == 0 and B >= 0 and B <= 4) or -- non unique t3 weapon name
+				(A == 1 and B >= 0 and B <= 3) then -- non unique t3 armor name
 				-- Add the t2 name to make a unique name
-				data[t1][t2][t3].UniqueName = data[t1][t2][t3].Name .. " " .. data[t1][t2].Name
+				data[A][B][C].UniqueName = data[A][B][C].Name .. " " .. data[A][B].Name
 			end
+		elseif B then
+			data[A][B] = {Name = text}
+		elseif A then
+			data[A] = {Name = text}
 		end
-	end
+	until A == nil
 
 	-- Get exceptions
 	-- Exceptions:
-	data[3][5] = {Name = RoMScript("TEXT(\"SYS_ITEMTYPE_14\")")} -- Prepared Materials
-
-	displayProgressBar(100, 20);
+	data[3][5] = {Name = getTEXT("SYS_ITEMTYPE_14")} -- Prepared Materials
 
 	printf("\n")
 
 	itemtypes =  data
 
 	itemtypes_language = string.sub(RoMScript("GetLanguage()"),1,2)
-	--print("time",os.clock() - starttime)
+--	print("time",deltaTime(getTime(), starttime))
 end
 
 function CacheItemTypes()

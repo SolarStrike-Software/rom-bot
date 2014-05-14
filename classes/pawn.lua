@@ -348,7 +348,7 @@ function CPawn:updateGUID()
 		return
 	end
 
-	self.GUID = memoryReadInt(getProc(), self.Address + addresses.pawnGUID_offset) or self.GUID;
+	self.GUID = memoryReadUInt(getProc(), self.Address + addresses.pawnGUID_offset) or self.GUID;
 end
 
 function CPawn:updateType()

@@ -566,7 +566,6 @@ function CInventory:autoSell(evalfunc)
 	end
 
 	local sellstartstring = "} local U=UseBagItem; if StoreFrame:IsVisible() then a={true};"
-	local sellendstring = "end;z={"
 	local sellstring = sellstartstring
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
@@ -576,27 +575,14 @@ function CInventory:autoSell(evalfunc)
 		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
 			if evalfunc(slotitem) == true then
 				-- Passed eval function. Then sell the item
-				sellstring = sellstring .. "U("..slotitem.BagId..");" -- max length 7
-				if #sellstring >= (254 - 7 - #sellendstring) then -- Can't fit more
-					sellstring = sellstring .. sellendstring
-					if RoMScript(sellstring) then
-						yrest(100)
-						hf_wesell = true;
-						sellstring = sellstartstring -- Reset for more
-					else
-						return hf_wesell
-					end
-				end
-
+				sellstring = sellstring .. "U("..slotitem.BagId..");"
 			end
-
 		end		-- end of: if( slotitem  and  slotitem.Id > 0 )
-
 	end
 
-	-- Sell any left over in list
+	-- Sell if any items were added
 	if #sellstring > #sellstartstring then
-		sellstring = sellstring .. sellendstring
+		sellstring = sellstring .. "end;z={"
 		if RoMScript(sellstring) then
 			yrest(100)
 			hf_wesell = true;
