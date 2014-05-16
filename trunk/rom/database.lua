@@ -112,6 +112,7 @@ function database.load()
 		if( target == "enemy" ) then target = STARGET_ENEMY; end;
 		if( target == "self" ) then target = STARGET_SELF; end;
 		if( target == "friendly" ) then target = STARGET_FRIENDLY; end;
+		if( target == "party" ) then target = STARGET_PARTY; end;
 
 		if(name) then tmp.Name = name; end;
 		if(id) then tmp.Id = id; end;
