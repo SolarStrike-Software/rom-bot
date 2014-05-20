@@ -242,8 +242,14 @@ function checkEventParty()
 	repeat
 		local time, moreToCome, name, msg = EventMonitorCheck("pm1", "4,1")
 		if msg and name ~= player.Name then
-			_whispname = name
-			return msg, name
+			if settings.profile.options.MONITOR_WHISPERS then
+				if table.contains(settings.profile.friends,name) then 
+					_whispname = name
+					return msg, name
+				end
+			else
+				return msg, name
+			end
 		end
 	until msg == nil
 end
@@ -264,12 +270,13 @@ function eventParty(_startstop, whispers)
 end
 
 function sendPartyChat(_msg)
-	if settings.profile.options.MONITOR_WHISPERS then
-		
-	else
-		RoMScript("SendChatMessage('".._msg.."', 'WHISPER',0,'".._whispname.."')")
-	end
-	cprintf(cli.blue,_msg.."\n")
+   if settings.profile.options.MONITOR_WHISPERS then
+      if not _whispname then cprintf(cli.red,"You don't have a name for someone to whisper.\n") return end 
+      RoMCode("SendChatMessage('".._msg.."', 'WHISPER',0,'".._whispname.."')")
+   else
+      RoMCode("SendChatMessage('".._msg.."', 'PARTY')")
+   end
+   cprintf(cli.blue,_msg.."\n")
 end
 
 function getPartyLeaderName()
