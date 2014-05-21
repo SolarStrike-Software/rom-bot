@@ -231,7 +231,7 @@ function CItem:delete()
 		self:pickup()
 
 		if RoMScript("CursorHasItem()") then
-			RoMScript("DeleteCursorItem()")
+			RoMCode("DeleteCursorItem()")
 		end
 
 		self:update()
@@ -564,7 +564,7 @@ function CItem:pickup()
 		self.LastMovedTime = os.clock()
 	end
 
-	RoMScript(pickupmethod.."("..self.BagId..")");
+	RoMCode(pickupmethod.."("..self.BagId..")");
 end
 
 function CItem:getRemainingCooldown()

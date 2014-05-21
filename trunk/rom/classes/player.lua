@@ -615,7 +615,7 @@ function CPlayer:target(pawnOrAddress)
 	local flags = memoryReadUInt(getProc(),address + addresses.pawnAttackable_offset)
 	if bitAnd(flags,0x10) and settings.options.TARGET_FRAME then -- Has bloodbar
 		local guid = memoryReadUInt(getProc(), address + addresses.pawnGUID_offset)
-		RoMScript("OBB_ChangeTraget("..tostring(guid)..")")
+		RoMCode("OBB_ChangeTraget("..tostring(guid)..")")
 	end
 	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
 	self.TargetPtr = address
@@ -2040,7 +2040,7 @@ function CPlayer:loot()
 		end;
 
 		-- Close the booty bag.
-		RoMScript("BootyFrame:Hide()");
+		RoMCode("BootyFrame:Hide()");
 	until true end -- 'end' ends the 'if' statement
 
 	local function sigilNameMatch(_name)
@@ -3022,7 +3022,7 @@ function CPlayer:clearTarget()
 	self.TargetPtr = 0;
 	self.Cast_to_target = 0;
 
-	RoMScript("TargetFrame:Hide()");
+	RoMCode("TargetFrame:Hide()");
 end
 
 -- returns true if target is in mobs
@@ -3092,9 +3092,9 @@ function CPlayer:logout(fc_shutdown, logout_close)
 		end
 	else
 		-- Close all windows to avoid problems when relogging.
-		RoMScript("CloseAllWindows()") yrest(500)
+		RoMCode("CloseAllWindows()") yrest(500)
 
-		RoMScript("Logout();");
+		RoMCode("Logout();");
 		yrest(30000); -- Wait for the log out to process
 	end
 
@@ -3266,7 +3266,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 	local we_sit = false;
 	if( _resttype == "full" and			-- only sit for full rest, not for times restings
 		settings.profile.options.SIT_WHILE_RESTING ) then
-		RoMScript("SitOrStand()");
+		RoMCode("SitOrStand()");
 		we_sit = true;
 	end;
 
@@ -3322,7 +3322,7 @@ function CPlayer:rest(_restmin, _restmax, _resttype, _restaddrnd)
 
 	if( we_sit == true  and
 		not self.Battling ) then	-- if aggro the char will standup automaticly
-		RoMScript("SitOrStand()");
+		RoMCode("SitOrStand()");
 		yrest(1500);					-- give time to standup
 	end;
 
@@ -3571,7 +3571,7 @@ function CPlayer:openStore(_npcname, _option)
 	_option = _option or 1
 	if self:target_NPC(_npcname) then
 		yrest(1000);
-		RoMScript("ChoiceOption(".._option..")");
+		RoMCode("ChoiceOption(".._option..")");
 		yrest(1000);
 		if RoMScript("StoreFrame:IsVisible()") then
 			return true
@@ -3584,7 +3584,7 @@ end
 -- auto interact with a merchant
 function CPlayer:merchant(_npcname, _option, _evalfunc)
 	if self:openStore(_npcname, _option) then
-		RoMScript("ClickRepairAllButton()");
+		RoMCode("ClickRepairAllButton()");
 		yrest(1000);
 
 		inventory:update();
@@ -3617,7 +3617,7 @@ function CPlayer:merchant(_npcname, _option, _evalfunc)
 		inventory:update();
 	end
 
-	RoMScript("CloseWindows()");
+	RoMCode("CloseWindows()");
 
 end
 
@@ -3854,7 +3854,7 @@ function CPlayer:mount(_dismount)
 
 	-- mount/dismount
 	if mountMethod == "partner" then
-		RoMScript("PartnerFrame_CallPartner(2,1)")
+		RoMCode("PartnerFrame_CallPartner(2,1)")
 	else
 		mount:use()
 	end
@@ -3871,7 +3871,7 @@ function CPlayer:mount(_dismount)
 		-- second try dismount
 		yrest(1000)
 		if mountMethod == "partner" then
-			RoMScript("PartnerFrame_CallPartner(2,1)")
+			RoMCode("PartnerFrame_CallPartner(2,1)")
 		else
 			mount:use()
 		end
@@ -3982,7 +3982,7 @@ function CPlayer:clickToCast()
 	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
 	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
 	yrest(50)
-	RoMScript("SpellTargetUnit()")
+	RoMCode("SpellTargetUnit()")
 	yrest(50)
 	-- unfreeze TargetPtr
 	unnopmouse()

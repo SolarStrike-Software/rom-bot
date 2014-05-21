@@ -675,10 +675,10 @@ function main()
 							tmp.wp_type = "ACCEPT"
 							local questIdsBefore = scanQuestIds()
 							if index ~= nil then
-								RoMScript("OnClick_QuestListButton(1,"..index..")") -- Clicks the quest
+								RoMCode("OnClick_QuestListButton(1,"..index..")") -- Clicks the quest
 							end
-							RoMScript("AcceptQuest()") yrest(1000) -- Accepts the quest
-							RoMScript("SpeakFrame:Hide()") -- Close dialog.
+							RoMCode("AcceptQuest()") yrest(1000) -- Accepts the quest
+							RoMCode("SpeakFrame:Hide()") -- Close dialog.
 							local questIdsAfter = scanQuestIds()
 							tmp.id = findId(questIdsAfter, questIdsBefore)
 							if tmp.id then
@@ -696,7 +696,7 @@ function main()
 							tmp.wp_type = "COMPLETE"
 							local questIdsBefore = scanQuestIds()
 							if index ~= nil then
-								RoMScript("OnClick_QuestListButton(3,"..index..")") -- Clicks the quest
+								RoMCode("OnClick_QuestListButton(3,"..index..")") -- Clicks the quest
 							end
 							-- Check for rewards
 							local rewardCount = RoMScript("GetQuestItemNumByType_QuestDetail(2)")
@@ -709,12 +709,12 @@ function main()
 								end
 								tmp.rewnum = getInput(true, sprintf(language[538],tmptext));	-- Select reward
 								if tonumber(tmp.rewnum) then
-									RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..tmp.rewnum..")")
+									RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..tmp.rewnum..")")
 								end
 							end
 
-							RoMScript("CompleteQuest()") yrest(1000) -- Completes the quest
-							RoMScript("SpeakFrame:Hide()") -- Close dialog.
+							RoMCode("CompleteQuest()") yrest(1000) -- Completes the quest
+							RoMCode("SpeakFrame:Hide()") -- Close dialog.
 							local questIdsAfter = scanQuestIds()
 							tmp.id = findId(questIdsBefore, questIdsAfter)
 							if tmp.id then
@@ -730,7 +730,7 @@ function main()
 							hf_type = sprintf("ChoiceOptionByName \'%s\'",name)
 							message(prefix..sprintf(language[516], "\'"..name.."\'" ) ); -- ChoiceOptionByName
 							tmp.keystring = getKeyStrings(name, true)--, "SC_", "SP")
-							RoMScript("ChoiceOption("..index..")")
+							RoMCode("ChoiceOption("..index..")")
 						end
 					end
 				elseif( hf_key == "FLY") then

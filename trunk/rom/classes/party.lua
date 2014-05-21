@@ -206,7 +206,7 @@ function getNameFollow()
 			player:moveTo(CWaypoint(whofollow.X,whofollow.Z),true,nil,50)
 		end
 		player:target(whofollow)
-		RoMScript("FollowUnit('target');");
+		RoMCode("FollowUnit('target');");
 		Mount()	
 	end
 end

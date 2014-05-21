@@ -60,7 +60,7 @@ function CCursor:clear()
 		error("Unable to clear the cursor. Cursor item location not supported.")
 	end
 
-	RoMScript(pickupmethod.."("..self.ItemBagId..")")
+	RoMCode(pickupmethod.."("..self.ItemBagId..")")
 
 	if self:hasItem() then
 		error("Unable to clear the cursor. Returning the item failed.")
