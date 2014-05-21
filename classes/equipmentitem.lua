@@ -51,7 +51,7 @@ function CEquipmentItem:use()
 		printf("Can't use equipment item %S, item is in use.\n", self.Name)
 	end;
 
-	RoMScript("UseEquipmentItem("..self.BagId..")"); yrest(500)
+	RoMCode("UseEquipmentItem("..self.BagId..")"); yrest(500)
 	self:update()
 
 	if ( settings.profile.options.DEBUG_INV ) then

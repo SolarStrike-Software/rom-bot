@@ -89,7 +89,7 @@ function CInventoryItem:use()
 	end;
 
 	if ( canUse ) then
-		RoMScript("UseBagItem("..self.BagId..")");
+		RoMCode("UseBagItem("..self.BagId..")");
 		self.LastTimeUsed = getTime();
 		yrest( 500 ); -- give time for server to respond with new item count
 	else

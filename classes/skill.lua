@@ -685,7 +685,7 @@ function CSkill:use()
 			   (skillName == GetIdName(493344) and pet.Name ~= GetIdName(102325)) or
 			   (skillName == GetIdName(493343) and pet.Name ~= GetIdName(102324)) or
 			   (skillName == GetIdName(494212) and pet.Name ~= GetIdName(102803)) then
-				RoMScript("CastSpellByName(\""..skillName.."\");");
+				RoMCode("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
 					player:updateCasting()
@@ -700,7 +700,7 @@ function CSkill:use()
 		local skillName = GetIdName(self.Id)
 
 		-- Cast skill
-		RoMScript("CastSpellByName(\""..skillName.."\");");
+		RoMCode("CastSpellByName(\""..skillName.."\");");
 		yrest(100)
 		-- Press the macro key a second time to make sure.
 		if not self.Toggleable then
@@ -754,7 +754,7 @@ function CSkill:use()
 		end
 
 		if skip then
-			RoMScript("SpellStopCasting()")
+			RoMCode("SpellStopCasting()")
 		else
 			player:clickToCast()
 		end

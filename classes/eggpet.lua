@@ -186,9 +186,9 @@ function CEggPet:feed(foodNameOrId, number)
 			end
 
 			-- Insert food in pet feed slot
-			RoMScript("ClearPetFeedItem()")
-			RoMScript("PickupBagItem("..foodItem.BagId..")")
-			RoMScript("ClickPetFeedItem()")
+			RoMCode("ClearPetFeedItem()")
+			RoMCode("PickupBagItem("..foodItem.BagId..")")
+			RoMCode("ClickPetFeedItem()")
 
 			-- How many left to do
 			local numberDone = originalFoodNumber - inventory:itemTotalCount(foodNameOrId)
@@ -203,10 +203,10 @@ function CEggPet:feed(foodNameOrId, number)
 
 			-- Feed number of times
 			for i = 1, times do
-				RoMScript("FeedPet(" .. self.EggSlot .. ")")
+				RoMCode("FeedPet(" .. self.EggSlot .. ")")
 			end
 
-			RoMScript("ClearPetFeedItem()")
+			RoMCode("ClearPetFeedItem()")
 		else
 			break -- No feed found
 		end
@@ -224,7 +224,7 @@ function CEggPet:Summon()
 	self:update()
 	if self.EggId > 0 and player.Level > self.Level-5 and self.Summoned == false and player.Alive and player.HP > 0 then
 		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200)
-		RoMScript("SummonPet("..self.EggSlot..")")
+		RoMCode("SummonPet("..self.EggSlot..")")
 		repeat
 			yrest(500)
 			self:update()
@@ -238,7 +238,7 @@ function CEggPet:Return()
 	self:update()
 	if self.EggId > 0 and self.Summoned then
 		repeat
-			RoMScript("ReturnPet("..self.EggSlot..")")
+			RoMCode("ReturnPet("..self.EggSlot..")")
 			yrest(100)
 			self:update()
 		until self.Summoned == false
@@ -250,7 +250,7 @@ function CEggPet:craft(_craftType, indexLevel)
 	if petInfoInstalled == nil then -- so it only checks once
 		petInfoInstalled = RoMScript("PetInfo~=nil")
 		if petInfoInstalled then
-			RoMScript("PetInfoFrame:UnregisterEvent(\"PET_CRAFT_END\")")
+			RoMCode("PetInfoFrame:UnregisterEvent(\"PET_CRAFT_END\")")
 		end
 	end
 
@@ -274,8 +274,8 @@ function CEggPet:craft(_craftType, indexLevel)
 			return
 		end
 
-		RoMScript("ClickPetCraftItem(".. self.EggSlot ..")")
-		RoMScript("PickupBagItem(".. emptyBagSlot.BagId ..")");
+		RoMCode("ClickPetCraftItem(".. self.EggSlot ..")")
+		RoMCode("PickupBagItem(".. emptyBagSlot.BagId ..")");
 		-- wait for a maximum of 1 second
 		for i = 1, 4 do
 			yrest(250)
@@ -349,21 +349,21 @@ function CEggPet:craft(_craftType, indexLevel)
 	end
 
 	-- Insert tool
-	RoMScript("PickupBagItem("..craftTool.BagId..")")
-	RoMScript("ClickPetCraftItem(".. self.EggSlot ..")")
+	RoMCode("PickupBagItem("..craftTool.BagId..")")
+	RoMCode("ClickPetCraftItem(".. self.EggSlot ..")")
 
 	yrest(1000)
 
 	-- Start crafting
-	RoMScript("SendSystemChat('Pet Crafting started.')")
-	RoMScript("PetCraftingStart(".. self.EggSlot ..",".. indexLevel ..")")
+	RoMCode("SendSystemChat('Pet Crafting started.')")
+	RoMCode("PetCraftingStart(".. self.EggSlot ..",".. indexLevel ..")")
 
 	self:update()
 end
 
 function CEggPet:harvest()
 	if #self.Products ~= 0 then
-		RoMScript("PetCraftHarvest(".. self.EggSlot.. ")")
+		RoMCode("PetCraftHarvest(".. self.EggSlot.. ")")
 		yrest(2000)
 		self:update()
 	end
@@ -535,7 +535,7 @@ function checkEggPets()
 
 		-- First make sure it isn't crafting
 		if assistEgg.Crafting then
-			RoMScript("PetCraftingStop(".. assistEgg.EggSlot ..")")
+			RoMCode("PetCraftingStop(".. assistEgg.EggSlot ..")")
 			repeat
 				assistEgg:update()
 			until assistEgg.Crafting == false

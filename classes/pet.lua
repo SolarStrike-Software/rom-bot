@@ -48,11 +48,11 @@ function setpetautoattacks()
 	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
 	if pet.Name ~= GetIdName(102325) then
 		if active ~= true then
-			RoMScript("UsePetAction(4)")
+			RoMCode("UsePetAction(4)")
 		end
 	else
 		if active == true then
-			RoMScript("UsePetAction(4)")
+			RoMCode("UsePetAction(4)")
 		end
 	end
 
@@ -61,13 +61,13 @@ function setpetautoattacks()
 			if v.skill5auto == "true" then
 				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
 				if active ~= true then
-					RoMScript("UsePetAction(5,true)")
+					RoMCode("UsePetAction(5,true)")
 				end
 			end
 			if v.skill5auto == "true" then
 				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(6)")
 				if active ~= true then
-					RoMScript("UsePetAction(6,true)")
+					RoMCode("UsePetAction(6,true)")
 				end
 			end
 		end
@@ -169,7 +169,7 @@ function petstartcombat()
 			_printed = true
 		end
 	else
-		RoMScript("UsePetAction(3)")
+		RoMCode("UsePetAction(3)")
 		print("Making Pet Attack")
 	end
 end

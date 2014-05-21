@@ -297,7 +297,7 @@ function main()
 	settings.loadProfile(load_profile_name);
 	if RoMScript("GC_GetMouseMoveEnable()") == false then
 		cprintf(cli.yellow, language[190],"Click to Move") -- The bot requires 'Click to Move'
-		RoMScript("GC_SetMouseMoveEnable(true)")
+		RoMCode("GC_SetMouseMoveEnable(true)")
 	end
 	if debug_override == true then -- Needs to be after loading profile.
 		--settings.profile.options.DEBUG_INV = true;
@@ -1112,9 +1112,9 @@ function resurrect()
 		-- Try to revive with macro
 		if( not player.Alive ) then
 			cprintf(cli.green, language[107]);  -- use the ingame resurrect macro
-			RoMScript("UseSelfRevive();");	-- first try self revive
+			RoMCode("UseSelfRevive();");	-- first try self revive
 			yrest(500);
-			RoMScript("BrithRevive();");
+			RoMCode("BrithRevive();");
 			waitForLoadingScreen(30)
 			yrest(settings.profile.options.WAIT_TIME_AFTER_RES);
 			player:update();

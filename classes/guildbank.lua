@@ -26,7 +26,7 @@ function CGuildbank:update()
 
 	-- Flick though pages to initialize items
 	for i = 1, #self.PageAddresses do
-		RoMScript("GuildBank_PageRequest("..i..")")
+		RoMCode("GuildBank_PageRequest("..i..")")
 	end
 
 	for slotNumber = 1, #self.PageAddresses*100, 1 do

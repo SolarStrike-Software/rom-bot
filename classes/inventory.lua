@@ -17,8 +17,8 @@ ITEM_TOOLTIP_DURABILITY = {
 
 CInventory = class(
 	function (self)
-		RoMScript("ToggleBackpack(), BagFrame:Hide()"); -- Make sure the client loads the tables first.
-		RoMScript("GoodsFrame:Show(), GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
+		RoMCode("ToggleBackpack() BagFrame:Hide()"); -- Make sure the client loads the tables first.
+		RoMCode("GoodsFrame:Show() GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
 
 		self.MaxSlots = 240;
 		self.BagSlot = {};

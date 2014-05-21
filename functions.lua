@@ -869,7 +869,7 @@ function addMessage(message)
 		message = asciiToUtf8_umlauts(message);	-- for ingame umlauts
 	end
 
-	RoMScript("ChatFrame1:AddMessage(\""..message.."\")");
+	RoMCode("ChatFrame1:AddMessage(\""..message.."\")");
 end
 
 
@@ -1583,9 +1583,9 @@ function EventMonitorStart(monitorName, event, filter)
 	end
 
 	if filter then
-		RoMScript("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\',\'"..filter.."\')")
+		RoMCode("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\',\'"..filter.."\')")
 	else
-		RoMScript("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\')")
+		RoMCode("igf_events:StartMonitor(\'"..monitorName.."\',\'" ..event.."\')")
 	end
 end
 
@@ -1596,7 +1596,7 @@ function EventMonitorStop(monitorName)
 		return false
 	end
 
-	RoMScript("igf_events:StopMonitor(\'"..monitorName.."\')")
+	RoMCode("igf_events:StopMonitor(\'"..monitorName.."\')")
 end
 
 function EventMonitorPause(monitorName)
@@ -1606,7 +1606,7 @@ function EventMonitorPause(monitorName)
 		return false
 	end
 
-	RoMScript("igf_events:PauseMonitor(\'"..monitorName.."\')")
+	RoMCode("igf_events:PauseMonitor(\'"..monitorName.."\')")
 end
 
 function EventMonitorResume(monitorName)
@@ -1616,7 +1616,7 @@ function EventMonitorResume(monitorName)
 		return false
 	end
 
-	RoMScript("igf_events:ResumeMonitor(\'"..monitorName.."\')")
+	RoMCode("igf_events:ResumeMonitor(\'"..monitorName.."\')")
 end
 
 function EventMonitorCheck(monitorName, returnFilter, lastEntryOnly)
@@ -1655,7 +1655,7 @@ function CallPartner(nameOrId)
 		for i = 1, count do
 			local _, id, name = RoMScript("PartnerFrame_GetPartnerInfo(".. tab ..",".. i ..")")
 			if id == nameOrId or name == nameOrId then -- found
-				RoMScript("PartnerFrame_CallPartner(".. tab ..",".. i ..")")
+				RoMCode("PartnerFrame_CallPartner(".. tab ..",".. i ..")")
 				yrest(500)
 				repeat player:updateCasting() yrest(1000) until not player.Casting
 				return
@@ -1669,7 +1669,7 @@ end
 function AddPartner(nameOrId)
 	local partner = inventory:findItem(nameOrId, "all")
 	if partner then
-		RoMScript("PartnerFrame_AddPartner(".. partner.BagId ..")")
+		RoMCode("PartnerFrame_AddPartner(".. partner.BagId ..")")
 	end
 end
 
@@ -1688,7 +1688,7 @@ function Attack()
 	if tmpTargetPtr ~= 0 then
 		player.TargetPtr = tmpTargetPtr
 		if settings.profile.hotkeys.AttackType == "macro" then
-			RoMScript("UseSkill(1,1)")
+			RoMCode("UseSkill(1,1)")
 		else
 			keyboardPress(settings.profile.hotkeys.AttackType)
 		end
@@ -1712,7 +1712,7 @@ function Attack()
 
 			-- 'Click'
 			if settings.profile.hotkeys.AttackType == "macro" then
-				RoMScript("UseSkill(1,1)")
+				RoMCode("UseSkill(1,1)")
 			else
 				keyboardPress(settings.profile.hotkeys.AttackType)
 			end
@@ -1878,9 +1878,9 @@ function AcceptQuestByName(_nameorid, _questgroup)
 			  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
 				matchFound = true
 				repeat
-					RoMScript("OnClick_QuestListButton(1,"..i..")") -- Clicks the quest
+					RoMCode("OnClick_QuestListButton(1,"..i..")") -- Clicks the quest
 					yrest(100)
-					RoMScript("AcceptQuest()") -- Accepts the quest
+					RoMCode("AcceptQuest()") -- Accepts the quest
 					yrest(100)
 				until (getQuestStatus(questOnBoard, qgroup)=="incomplete" or getQuestStatus(questOnBoard, qgroup)=="complete") -- Try again if accepting didn't work
 				printf("Quest accepted: %s\n",questOnBoard)
@@ -1898,7 +1898,7 @@ function AcceptQuestByName(_nameorid, _questgroup)
 			print("Maxim number of quests in questbook!")
 		end
 	end
-	RoMScript("SpeakFrame:Hide()")
+	RoMCode("SpeakFrame:Hide()")
 	yrest(750)
 	return matchFound
 end
@@ -1993,7 +1993,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 		  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
 			local _counttime = os.time()
 			repeat
-				RoMScript("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
+				RoMCode("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
 				yrest(100)
 
 				if _rewardnumberorname then
@@ -2001,7 +2001,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 								printf("_rewardnumberorname: %s \n",_rewardnumberorname)
 							end
 					if type(_rewardnumberorname) == "number" then
-						RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item".._rewardnumberorname..")")
+						RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item".._rewardnumberorname..")")
 						yrest(100)
 					elseif type(_rewardnumberorname) == "string" then
 						-- Search for reward name
@@ -2015,7 +2015,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 							local rewardName = RoMScript("SpeakQuestReward1_Item"..rewardNum.."_Desc:GetText()")
 							if FindNormalisedString(rewardName, _rewardnumberorname) then
 								found = true
-								RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..rewardNum..")")
+								RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..rewardNum..")")
 								yrest(100)
 								break
 							end
@@ -2029,10 +2029,10 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 						return
 					end
 				elseif (os.time() - _counttime) >= 2 then -- quest still there because of reward item needs choosing
-					RoMScript("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item1)")
+					RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item1)")
 					yrest(100)
 				end
-				RoMScript("CompleteQuest()") -- Completes the quest
+				RoMCode("CompleteQuest()") -- Completes the quest
 				yrest(100)
 				if _rewardnumberorname then
 					yrest(900) -- Give extra time for quests with rewards
@@ -2049,7 +2049,7 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 			printf("Questname not found: %s\n",questToComplete)
 		end
 	end
-	RoMScript("SpeakFrame:Hide()")
+	RoMCode("SpeakFrame:Hide()")
 	yrest(750)
 end
 
@@ -2068,9 +2068,9 @@ function CancelQuest(nameorid)
 		if questId == nameorid or string.find(GetIdName(questId), nameorid, 1, true) then
 			-- match found, delete
 			RoMCode("g_SelectedQuest = "..index)
-			RoMScript("ViewQuest_QuestBook( g_SelectedQuest )")
+			RoMCode("ViewQuest_QuestBook( g_SelectedQuest )")
 			yrest(500)
-			RoMScript("DeleteQuest()")
+			RoMCode("DeleteQuest()")
 			yrest(1000)
 			return
 		else
@@ -2097,8 +2097,8 @@ function AcceptPopup(popupName)
    -- Accept the popup
    if popup then
       print("Accepting popup "..RoMScript(popup..".which"))
-      RoMScript("StaticPopup_EnterPressed("..popup..");") yrest(1000)
-      RoMScript(popup..":Hide()")
+      RoMCode("StaticPopup_EnterPressed("..popup..");") yrest(1000)
+      RoMCode(popup..":Hide()")
    else
       print("Popup not found "..(popupName or ""))
    end
@@ -2151,12 +2151,12 @@ function ChoiceOptionByName(optiontext)
 		option = RoMScript("GetSpeakOption("..counter..")")
 		if option and FindNormalisedString(option,optiontext) then
 			-- First try "ChoiceOption"
-            RoMScript("ChoiceOption("..counter..");"); yrest(1000);
+            RoMCode("ChoiceOption("..counter..");"); yrest(1000);
 
 			-- If SpeakFrame is still open and option is still there then try "SpeakFrame_ListDialogOption"
 			option = RoMScript("GetSpeakOption("..counter..")")
 			if option and FindNormalisedString(option,optiontext) and RoMScript("SpeakFrame:IsVisible()") then
-				RoMScript("SpeakFrame_ListDialogOption(1,"..counter..");"); yrest(1000);
+				RoMCode("SpeakFrame_ListDialogOption(1,"..counter..");"); yrest(1000);
 			end
             return true
         end

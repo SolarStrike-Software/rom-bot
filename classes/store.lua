@@ -96,10 +96,10 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 	printf(language[1001]);  -- Shopping
 	repeat
 		if quantity > buyMaxHeap then
-			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. buyMaxHeap .. ")")
+			RoMCode("StoreBuyItem(" .. buyIndex .. "," .. buyMaxHeap .. ")")
 			quantity = quantity - buyMaxHeap
 		else
-			RoMScript("StoreBuyItem(" .. buyIndex .. "," .. quantity .. ")")
+			RoMCode("StoreBuyItem(" .. buyIndex .. "," .. quantity .. ")")
 			quantity = 0
 		end
 		printf(" .")

@@ -1055,7 +1055,7 @@ function settings.loadProfile(_name)
 		error(msg, 0);
 	else								-- return values found, clear it and send message
 		cprintf(cli.green, "MACRO Test: ok\n" );
-		RoMScript("xxxx; ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
+		RoMCode("ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 	end
 	settings.options.DEBUGGING_MACRO = false;
 
