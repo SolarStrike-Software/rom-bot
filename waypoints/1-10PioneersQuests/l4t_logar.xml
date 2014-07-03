@@ -78,7 +78,7 @@
 		player:target_Object(111622); -- Lola
 		AcceptQuestByName(421531) -- Tresure Hunt
 		Attack() yrest(2000)
-		RoMScript("ChoiceOption(1)")
+		RoMCode("ChoiceOption(1)")
 		CompleteQuestByName(421531) -- Tresure Hunt
 	</waypoint>
 	<!-- # 18 --><waypoint x="-761" z="-5906" y="57">

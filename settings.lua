@@ -133,7 +133,7 @@ settings_default = {
 
 		},
 		hotkeys = {  },
-		skills = {},
+		skills = nil,
 		skillsData = {},
 		friends = {},
 		mobs = {},
@@ -188,7 +188,7 @@ SKILLUSES_PROJECTILE = 13
 SKILLUSES_ARROW = 14
 SKILLUSES_PSI = 15
 PLAYERID_MIN = 1000
-PLAYERID_MAX = 1004
+PLAYERID_MAX = 1005
 
 function checkKeySettings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
@@ -738,14 +738,6 @@ function settings.loadProfile(_name)
 		end
 	end
 
-	local skillSort = function(tab1, tab2)
-		if( tab2.priority < tab1.priority ) then
-			return true;
-		end;
-
-		return false;
-	end
-
 	local loadSkills = function(node)
 		local className = string.upper(node:getName())
 		local classNum = 0
@@ -904,8 +896,6 @@ function settings.loadProfile(_name)
 			table.insert(settings.profile.skillsData[classNum], tmp);
 
 		end
-
-		table.sort(settings.profile.skills, skillSort);
 	end
 
 	local loadFriends = function(node)

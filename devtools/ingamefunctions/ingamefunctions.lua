@@ -203,6 +203,12 @@ local function tableToString(_table, _formated)
 		-- first value name
 		if type(_name) == "number" then
 			_name = "[".. _name .. "]"
+		elseif _name ~= nil then
+			_name = tostring(_name)
+			if type(_name) == "string" and not string.find(_name,"^[%a_][%a%d_]*$") then
+				-- Invalid name
+				_name = "[\"".. _name .. "\"]"
+			end
 		end
 		local StringValue = ""
 		if _formated == true then
