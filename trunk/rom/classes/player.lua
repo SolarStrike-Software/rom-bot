@@ -159,16 +159,23 @@ function CPlayer:update()
 	local oldClass1 = self.Class1
 	local oldClass2 = self.Class2
 	CPawn.update(self); -- run base function
+	local classChanged = self.Class1 ~= oldClass1 or self.Class2 ~= oldClass2
+	local newLoad = settings.profile.skills == nil
 
-	if addressChanged or self.Class1 ~= oldClass1 or self.Class2 ~= oldClass2 or (#settings.profile.skills == 0 and next(settings.profile.skillsData) ~= nil) then
-		settings.loadSkillSet(self.Class1)
-		-- Reset editbox false flag on start up
-		if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-			RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
-		end
-		addressChanged = false
-		if self.TargetPtr ~= 0 then
-			self:clearTarget()
+	-- Check if we need to load the skill set.
+	if next(settings.profile.skillsData) ~= nil then -- The skills are ready to be loaded
+		if addressChanged or classChanged or newLoad then
+			settings.loadSkillSet(self.Class1)
+			if newLoad then
+				-- Reset editbox false flag on start up
+				if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+					RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
+				end
+			end
+			if classChanged and self.TargetPtr ~= 0 then
+				self:clearTarget()
+			end
+			addressChanged = false
 		end
 	end
 

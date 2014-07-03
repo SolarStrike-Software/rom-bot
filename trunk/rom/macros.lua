@@ -86,6 +86,7 @@ function setupAttackKey()
 end
 
 -- Macro functions
+local MacroMaxBodyLength = 255
 function writeToMacro(macroNum, body, name, icon)
 	-- Check macroNum
 	if type(macroNum) ~= "number" or macroNum < 1 or macroNum > 49 then
@@ -94,35 +95,36 @@ function writeToMacro(macroNum, body, name, icon)
 
 	--- Get macros base address
 	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
-
 	--- Write the macro body
 	if body ~= null and type(body) == "string" then
-		local byte;
-		for i = 0, 254, 1 do
-			byte = string.byte(body, i + 1);
-			if( byte == nil or byte == 0 ) then
-				byte = 0;
-
-				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset + i, 0);
-				break;
-			end
-			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset + i, byte);
-		end
+		memoryWriteString(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset , string.sub(body, 1, MacroMaxBodyLength).."\0");
+--		local byte;
+--		for i = 0, 254, 1 do
+--			byte = string.byte(body, i + 1);
+--			if( byte == nil or byte == 0 ) then
+--				byte = 0;
+--
+--				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset + i, 0);
+--				break;
+--			end
+--			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset + i, byte);
+--		end
 	end
 
 	--- Write the macro name
 	if name ~= null and type(name) == "string" then
-		local byte;
-		for i = 0, 31, 1 do
-			byte = string.byte(name, i + 1);
-			if( byte == nil or byte == 0 ) then
-				byte = 0;
-
-				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset + i, 0);
-				break;
-			end
-			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset + i, byte);
-		end
+		memoryWriteString(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset , string.sub(name, 1, 32).."\0");
+--		local byte;
+--		for i = 0, 31, 1 do
+--			byte = string.byte(name, i + 1);
+--			if( byte == nil or byte == 0 ) then
+--				byte = 0;
+--
+--				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset + i, 0);
+--				break;
+--			end
+--			memoryWriteByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset + i, byte);
+--		end
 	end
 
 	-- Set the macro icon

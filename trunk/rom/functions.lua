@@ -367,7 +367,7 @@ function resumeCallback()
 	printf("Resumed.\n");
 
 	-- Make sure our player exists before trying to update it
-	if( player and #settings.profile.skills ~= 0) then
+	if( player and #settings.profile.skills ~= nil) then
 		-- Make sure we aren't using potentially old data
 		player:update();
 	end
@@ -537,11 +537,12 @@ function loadPaths( _wp_path, _rp_path)
 
 
 	-- check if function is not called empty
+	if( _wp_path == "" or _wp_path == " " ) then _wp_path = nil; end;
+	if( _rp_path == "" or _rp_path == " " ) then _rp_path = nil; end;
 	if( not _wp_path ) and ( not _rp_path ) then
 		cprintf(cli.yellow, language[161]);	 -- have to specify either
 		return;
 	end;
-	if( _wp_path == "" or _wp_path == " " ) then _wp_path = nil; end;
 
 	-- check suffix and remember default return path name
 	local rp_default;
@@ -568,7 +569,12 @@ function loadPaths( _wp_path, _rp_path)
 	if( _wp_path and
 		string.lower(_wp_path) ~= "wander" and
 		string.lower(_wp_path) ~= "resume" ) then
-		local filename = findFile("waypoints/" .. _wp_path )
+		local filename
+		if _wp_path:sub(2,2) == ":" then
+			filename = _wp_path
+		else
+			filename = findFile("waypoints/" .. _wp_path )
+		end
 		if not fileExists(filename) then
 			local msg = sprintf(language[142], filename ); -- We can't find your waypoint file
 			error(msg, 2);
@@ -683,7 +689,9 @@ function SlashCommand(script)
 
 	--- Execute it
 	if( settings.profile.hotkeys.MACRO ) then
-		keyboardPress(settings.profile.hotkeys.MACRO.key);
+--		keyboardPress(settings.profile.hotkeys.MACRO.key);
+		keyboardHold(settings.profile.hotkeys.MACRO.key);
+		keyboardRelease(settings.profile.hotkeys.MACRO.key);
 	end
 end
 
@@ -769,9 +777,9 @@ function RoMScript(script)
 
 				-- Execute it
 				if( settings.profile.hotkeys.MACRO ) then
-	--				keyboardPress(settings.profile.hotkeys.MACRO.key);
+--					keyboardPress(settings.profile.hotkeys.MACRO.key);
 					keyboardHold(settings.profile.hotkeys.MACRO.key);
-					rest(100)
+--					rest(100)
 					keyboardRelease(settings.profile.hotkeys.MACRO.key);
 				end
 
@@ -2726,6 +2734,12 @@ function tableToString(_table, _formated)
 		-- first value name
 		if type(_name) == "number" then
 			_name = "[".. _name .. "]"
+		elseif _name ~= nil then
+			_name = tostring(_name)
+			if type(_name) == "string" and not string.find(_name,"^[%a_][%a%d_]*$") then
+				-- Invalid name, surround in quotes
+				_name = "[\"".. _name .. "\"]"
+			end
 		end
 		local StringValue = ""
 		if _formated == true then

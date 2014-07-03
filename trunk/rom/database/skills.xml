@@ -65,6 +65,7 @@
 	<skill name="MAGE_EARTH_SURGE"						id="494049" range="200"	type="damage"		casttime="0"	cooldown="3"	target="enemy" />
 	<skill name="MAGE_EARTH_GROANING_WIND_BLADE"		id="494330" range="250"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="MAGE_EARTH_SCEPTER"					id="494562" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504913" />
+	<Skill name="MAGE_EARTH_CORE_BARRIER"				id="499620" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" 		buffname="623219" />
 	<!-- Mage/Warlock -->
 	<skill name="MAGE_STATIC_RESONANCE"					id="498744" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<skill name="MAGE_BREATH_ERASE"						id="498750" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
@@ -345,6 +346,8 @@
 	<!-- Rogue Item Set Skills -->
 	<skill name="ROGUE_YAWAKAS_BLESSING" 				id="495730" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="507485" />
 	<skill name="ROGUE_UNKNOWN_CHOICE" 					id="495715" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506868,506877,506880"  />
+	<skill name="ROGUE_KANCHES_REND"					id="498340" range="120"	type="damage"			casttime="0"	cooldown="60"	target="enemy" />
+	<skill name="ROGUE_PHANTOM_STAB"					id="495479" range="120"	type="damage"			casttime="0"	cooldown="60"	target="enemy" />
 
 	<!-- Rogue Outdated Skills -->
 	<skill name="ROGUE_POISON_TRAP" 					id="491340" 												cooldown="10" />
@@ -547,7 +550,7 @@
 	<skill name="DRUID_GLORY_WAND"	 					id="494017"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="504526" />
 	<skill name="DRUID_CROSS_OF_THORNS_ATTACK"			id="494018"	range="90"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="DRUID_HEART_PIERCING" 					id="494216"	range="90"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
-	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="100"	type="buff"			casttime="0"	cooldown="0"	target="party" />
+	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="620434" />
 	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="self"		buffname="506051" />
 	<skill name="DRUID_NOURISH" 						id="494930"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" 	buffname="505704" />
 

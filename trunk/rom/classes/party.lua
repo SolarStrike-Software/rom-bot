@@ -207,7 +207,7 @@ function getNameFollow()
 		end
 		player:target(whofollow)
 		RoMCode("FollowUnit('target');");
-		Mount()	
+		Mount()
 	end
 end
 
@@ -243,7 +243,7 @@ function checkEventParty()
 		local time, moreToCome, name, msg = EventMonitorCheck("pm1", "4,1")
 		if msg and name ~= player.Name then
 			if settings.profile.options.MONITOR_WHISPERS then
-				if table.contains(settings.profile.friends,name) then 
+				if table.contains(settings.profile.friends,name) then
 					_whispname = name
 					return msg, name
 				end
@@ -261,7 +261,7 @@ function eventParty(_startstop, whispers)
 	else
 		if whispers then
 			print("Party Monitor started.")
-			EventMonitorStart("pm1", "CHAT_MSG_WHISPER")	
+			EventMonitorStart("pm1", "CHAT_MSG_WHISPER")
 		else
 			print("Party Monitor started.")
 			EventMonitorStart("pm1", "CHAT_MSG_PARTY")
@@ -270,13 +270,13 @@ function eventParty(_startstop, whispers)
 end
 
 function sendPartyChat(_msg)
-   if settings.profile.options.MONITOR_WHISPERS then
-      if not _whispname then cprintf(cli.red,"You don't have a name for someone to whisper.\n") return end 
-      RoMCode("SendChatMessage('".._msg.."', 'WHISPER',0,'".._whispname.."')")
-   else
-      RoMCode("SendChatMessage('".._msg.."', 'PARTY')")
-   end
-   cprintf(cli.blue,_msg.."\n")
+	if settings.profile.options.MONITOR_WHISPERS then
+		if not _whispname then cprintf(cli.red,"You don't have a name for someone to whisper.\n") return end
+		RoMCode("SendChatMessage('".._msg.."', 'WHISPER',0,'".._whispname.."')")
+	else
+		RoMCode("SendChatMessage('".._msg.."', 'PARTY')")
+	end
+	cprintf(cli.blue,_msg.."\n")
 end
 
 function getPartyLeaderName()
@@ -467,8 +467,7 @@ function healfight()
 		-- Long time break: Exceeded max fight time (without hurting enemy) so break fighting
 		if (os.time() - player.FightStartTime) > settings.profile.options.MAX_FIGHT_TIME then
 			mob:updateLastHP()
-			player:updateLastHitTime()
-			if mob.LastHP == 0 or ((getGameTime() - player.LastHitTime) > settings.profile.options.MAX_FIGHT_TIME) then
+			if mob.LastHP == 0 or ((getGameTime() - mob:getLastDamage()) > settings.profile.options.MAX_FIGHT_TIME) then
 				printf(language[83]);			-- Taking too long to damage target
 				player:addToMobIgnoreList(mob.Address)
 				player:clearTarget();

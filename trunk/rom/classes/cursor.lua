@@ -5,6 +5,7 @@ CCursor = class(
 		self.ItemLocationName = ""
 		self.ItemId = 0
 		self.ItemBagId = 0
+		self.DBID = nil -- Only used for house items
 
 		self:update();
 	end
@@ -26,6 +27,8 @@ function CCursor:update()
 --		self.ItemLocationName = "actionbar"
 --	elseif self.ItemLocation == 8 then -- noted for possible future use
 --		self.ItemLocationName = "store"
+	elseif self.ItemLocation == 12 then
+		self.ItemLocationName = "house"
 	elseif self.ItemLocation == 14 then
 		self.ItemLocationName = "guildbank"
 	else
@@ -33,7 +36,13 @@ function CCursor:update()
 	end
 
 	self.ItemId = memoryReadInt(getProc(), self.Address + addresses.cursorItemId_offset)
-	self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset) + 1
+	if self.ItemLocation == 12 then
+		self.DBID =  memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset)
+		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset+0x4) + 1
+	else
+		self.DBID = nil
+		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset) + 1
+	end
 end
 
 function CCursor:hasItem()
@@ -54,13 +63,19 @@ function CCursor:clear()
 		pickupmethod = "PickupBankItem"
 	elseif self.ItemLocation == 4 then
 		pickupmethod = "PickupEquipmentItem"
+	elseif self.ItemLocation == 12 then
+		pickupmethod = "Houses_PickupItem"
 	elseif self.ItemLocation == 14 then
 		pickupmethod = "GuildBank_PickupItem"
 	else
-		error("Unable to clear the cursor. Cursor item location not supported.")
+		error("Unable to clear the cursor. Cursor item location not supported. "..self.ItemLocation)
 	end
 
-	RoMCode(pickupmethod.."("..self.ItemBagId..")")
+	if self.ItemLocation == 12 then
+		RoMCode(pickupmethod.."("..self.DBID..","..self.ItemBagId..")")
+	else
+		RoMCode(pickupmethod.."("..self.ItemBagId..")")
+	end
 
 	if self:hasItem() then
 		error("Unable to clear the cursor. Returning the item failed.")
