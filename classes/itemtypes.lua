@@ -42,6 +42,8 @@ function LoadItemTypes_memory()
 
 	local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
 	local address = memoryReadInt(getProc(), addressPtrsBase + 0x268)
+	-- Search for first type
+	address = findPatternInProcess(getProc(),"AC_ITEMTYPENAME","xxxxxxxxxxxxxxx",address,address+0x10000)
 	repeat
 		local key = memoryReadString(getProc(), address)
 		address = address + #key + 1
