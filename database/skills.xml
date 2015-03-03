@@ -539,6 +539,7 @@
 	<skill name="DRUID_WARM_SPRING"		 				id="494366"	range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="505159" />
 	<skill name="DRUID_MOTHER_EARTHS_BLESSING"			id="494367"	range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
 	<!-- Druid/Warden -->
+	<skill name="DRUID_BRIAR_SHIELD"					id="494062" range="50" 	type="buff"			casttime="0"	cooldown="0"	target="friendly"	/>
 	<skill name="DRUID_HEALING_RIPPLE"	 				id="494323" range="250"	type="heal"			casttime="2"	cooldown="0"	target="friendly" />
 	<skill name="DRUID_MYSTERIOUS_GRACE" 				id="494372" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="505165" />
 	<skill name="DRUID_ESSENCE_EXTRACTION" 				id="494373" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
@@ -548,7 +549,7 @@
 	<!-- Druid/Warrior -->
 	<skill name="DRUID_NATURAL_ATTACK" 					id="494016"	range="90"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="DRUID_GLORY_WAND"	 					id="494017"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="504526" />
-	<skill name="DRUID_CROSS_OF_THORNS_ATTACK"			id="494018"	range="90"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
+	<skill name="DRUID_CROSS_OF_THORNS_ATTACKS"			id="499956"	range="90"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="DRUID_HEART_PIERCING" 					id="494216"	range="90"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="DRUID_AWAKENING_OF_THE_WILD"			id="494364"	range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="620434" />
 	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="self"		buffname="506051" />
@@ -607,11 +608,11 @@
 	<!-- Warden/Warrior -->
 	<skill name="WARDEN_DOUBLE_CHOP" 					id="494001"	range="50"	type="damage"		casttime="0"	cooldown="3"	target="enemy" />
 	<skill name="WARDEN_BEAST_CHOP" 					id="494002"	range="50"	type="damage"		casttime="0"	cooldown="7"	target="enemy"		buffname="503580" />
-	<skill name="WARDEN_IRE"		 					id="494001"	range="50"	type="buff"			casttime="0"	cooldown="30"	target="enemy" />
-	<skill name="WARDEN_IMMORTAL_POWER" 				id="494001"	range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
+	<skill name="WARDEN_IRE"		 					id="494003"	range="50"	type="buff"			casttime="0"	cooldown="30"	target="enemy" />
+	<skill name="WARDEN_IMMORTAL_POWER" 				id="498220"	range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<skill name="WARDEN_PULSE_MASTERY" 					id="493607"	range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		reqbuffname="503580" reqbufftarget="target" />
-	<skill name="WARDEN_COAT_OF_ARMS" 					id="494001"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" />
-	<skill name="WARDEN_FERAL_LEADER" 					id="494001"	range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
+	<skill name="WARDEN_COAT_OF_ARMS" 					id="494611"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" />
+	<skill name="WARDEN_FERAL_LEADER" 					id="499900"	range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 
 	<!-- Warlock skills -->
 	<!-- General -->

@@ -677,6 +677,12 @@ function SlashCommand(script)
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
 		return
+	else -- check if still valid
+		local __, cName = readMacro(commandMacro)
+		local __, rName = readMacro(resultMacro)
+		if cName ~= COMMAND_MACRO_NAME or rName ~= RESULT_MACRO_NAME then -- macros moved
+			setupMacros()
+		end
 	end
 
 	-- add slash if needed
@@ -1504,8 +1510,16 @@ function waitForLoadingScreen(_maxWaitTime)
 	repeat
 		rest(1000)
 	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
-
 	rest(2000)
+
+	-- Check if fully in game by checking if RoMScript works
+	if not 1234 == RoMScript("1234")then
+		print("RoMScript isn't working. Lets wait until it works.")
+		repeat
+			rest(500)
+		until 1234 == RoMScript("1234")
+	end
+
 	player:update()
 	return true
 end

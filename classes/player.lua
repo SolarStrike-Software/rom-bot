@@ -3740,6 +3740,10 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				self:target(obj.Address);
 				if( distance(self.X, self.Z, obj.X, obj.Z) > 39 ) then
 					self:moveInRange(CWaypoint(obj.X, obj.Z), 39, true);
+					repeat
+						yrest(50)
+						self:updateActualSpeed()
+					until not self.Moving
 				end
 				yrest(100)
 				Attack()

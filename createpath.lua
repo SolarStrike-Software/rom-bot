@@ -481,7 +481,7 @@ function main()
 			.. language[518]		-- Reset script
 			.. language[506]		-- Save waypoints and restart
 			.. language[519]		-- Insert comment command
-			.. language[522]		-- Insert comment command
+			.. language[522]		-- Insert target object command
 			.. language[526]		-- Change Waypoint Type
 			.. language[537],		-- Toggle flying
 			getKeyName(wpKey), getKeyName(harvKey), getKeyName(saveKey),
@@ -667,6 +667,9 @@ function main()
 					else
 						tmp.com = getInput(true, language[507]);	-- Choose option
 						local name, typ, index = getChoice(tmp.com)
+						if( bot.ClientLanguage == "RU" ) then
+							name=utf82oem_russian(name) -- language conversations for Russian Client
+						end
 						if name == nil then
 							tmp.wp_type = nil
 							hf_type = "<Invalid Option>"
@@ -726,6 +729,7 @@ function main()
 							message(prefix..sprintf(language[535], tmp.name) ); -- CompleteQuestName
 						else
 							tmp.wp_type = "COBYNAME"
+							name = string.match(name,"^[> ]*(.-)[< ]*$") -- Filter >> and << added by addons.
 							tmp.text = name
 							hf_type = sprintf("ChoiceOptionByName \'%s\'",name)
 							message(prefix..sprintf(language[516], "\'"..name.."\'" ) ); -- ChoiceOptionByName

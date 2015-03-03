@@ -74,8 +74,10 @@ if originalInclude == nil then
 	originalInclude = include
 end
 function include(file, forceInclude)
-	return originalInclude(findFile(file), true)
+	return originalInclude(findFile(file), forceInclude)
 end
+
+functionBeingLoaded = nil -- In case the user has no userfunctions.
 
 printf("Installing userfunctions. ") -- Message to help tell when userfunctions are a problem
 -- Install bot userfunctions
@@ -298,6 +300,10 @@ function main()
 	if RoMScript("GC_GetMouseMoveEnable()") == false then
 		cprintf(cli.yellow, language[190],"Click to Move") -- The bot requires 'Click to Move'
 		RoMCode("GC_SetMouseMoveEnable(true)")
+	end
+	if RoMScript("GC_GetSelfCastEnable()") == false then
+		cprintf(cli.yellow, language[190],"Self Cast") -- The bot requires 'Self Cast'
+		RoMCode("GC_SetSelfCastEnable(true)")
 	end
 	if debug_override == true then -- Needs to be after loading profile.
 		--settings.profile.options.DEBUG_INV = true;
