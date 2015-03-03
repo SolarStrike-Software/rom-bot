@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
     <Script file="igf_events.lua"/>
-    <Frame name="igf_events_Frame" parent="UIParent" enableMouse="true" hidden="true">
+    <Frame name="igf_events_Frame" parent="" enableMouse="true" hidden="true">
 		<Scripts>
 
             <OnEvent>
