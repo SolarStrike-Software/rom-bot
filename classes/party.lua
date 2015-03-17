@@ -502,7 +502,7 @@ function healfight()
 		if( dist > suggestedRange and not player.Casting ) then
 			-- count move closer and break if to much
 			move_closer_counter = move_closer_counter + 1;		-- count our move tries
-			if( move_closer_counter > 3  and
+			if( move_closer_counter > 3 and
 			  (settings.profile.options.COMBAT_TYPE == "ranged" or
 			  player.ranged_pull == true) ) then
 				cprintf(cli.green, language[84]);	-- To much tries to come closer
