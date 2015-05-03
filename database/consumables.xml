@@ -29,7 +29,6 @@
 	<potion type="heal" id="200174" level="21" potency="600" name="Salve" />
 	<potion type="heal" id="200154" level="1" potency="300" name="Basic Healing Potion" />
 	<potion type="heal" id="200151" level="1" potency="220" name="Basic Medicine" />
-	<potion type="heal" id="203159" level="1" potency="500" name="Pumpkin Pizza" />
 
 	<!-- Mana potions -->
 	<potion type="mot" id="208486" level="96" name="Mysterious Sage Stone" />
@@ -155,11 +154,14 @@
 	<potion type="phirushealing" 	id="203496" name="Phirius Potion - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirushealing" 	id="203497" name="Phirius Potion - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirushealing" 	id="203498" name="Phirius Potion - Type E" potency="60" />			<!-- 60% -->
+	<potion type="phirushealing"  id="203159" name="Pumpkin Pizza"           potency="30" />			<!-- 30% -->
+	<potion type="phirushealing"  id="203023" name="Love Chocolate"          potency="35" />			<!-- 35% -->
 
 	<potion type="phirusmana" 		id="203499" name="Phirius Elixir - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirusmana" 		id="203500" name="Phirius Elixir - Type B" potency="30" />			<!-- 30% -->
 	<potion type="phirusmana" 		id="203501" name="Phirius Elixir - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirusmana" 		id="203502" name="Phirius Elixir - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirusmana" 		id="203503" name="Phirius Elixir - Type E" potency="60" />			<!-- 60% -->
+	<potion type="phirusmana" 		id="203160" name="Pumpkin Soup of Happiness" potency="30" />		<!-- 30% -->
 
 </potions>

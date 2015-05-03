@@ -69,6 +69,8 @@ if( fileExists(getExecutionPath().."/userfunctions.lua") ) then
 	include("userfunctions.lua");
 end
 
+functionBeingLoaded = nil -- In case the user has no userfunctions.
+
 -- Allow include to check global and relative folders too
 if originalInclude == nil then
 	originalInclude = include

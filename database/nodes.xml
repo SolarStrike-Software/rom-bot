@@ -1,123 +1,92 @@
 <nodes>
-<node name="Zinc Ore" id="560001" type="ORE" level="1" />
-<node name="Tin Ore" id="560002" type="ORE" level="8" />
-<node name="Iron Ore" id="560003" type="ORE" level="14" />
-<node name="Copper Ore" id="560004" type="ORE" level="20" />
-<node name="Dark Crystal" id="560005" type="ORE" level="26" />
-<node name="Silver Ore" id="560006" type="ORE" level="32" />
-<node name="Wizard-Iron Ore" id="560007" type="ORE" level="38" />
-<node name="Moon Silver Ore" id="560008" type="ORE" level="44" />
-<node name="Abyssal Mercury Ore" id="560009" type="ORE" level="51" />
-<node name="Rune Obsidian Ore" id="560010" type="ORE" level="57" />
-<node name="Olivine" id="560076" type="ORE" level="63" />
-<node name="Purple Agate Crystal" id="560080" type="ORE" level="69" />
-<node name="Olegan Stone" id="560085" type="ORE" level="75" />
-<node name="Silver Star Stone" id="560089" type="ORE" level="81" />
+<!-- ORE -->
+<node id="560001" type="ORE" level="1"  name="Zinc Ore" />
+<node id="560002" type="ORE" level="8"  name="Tin Ore" />
+<node id="560003" type="ORE" level="14" name="Iron Ore" />
+<node id="560004" type="ORE" level="20" name="Copper Ore" />
+<node id="560005" type="ORE" level="26" name="Dark Crystal" />
+<node id="560006" type="ORE" level="32" name="Silver Ore" />
+<node id="560007" type="ORE" level="38" name="Wizard-Iron Ore" />
+<node id="560008" type="ORE" level="44" name="Moon Silver Ore" />
+<node id="560009" type="ORE" level="51" name="Abyssal Mercury Ore" />
+<node id="560010" type="ORE" level="57" name="Rune Obsidian Ore" />
+<node id="560076" type="ORE" level="63" name="Olivine" />
+<node id="560080" type="ORE" level="69" name="Purple Agate Crystal" />
+<node id="560085" type="ORE" level="75" name="Olegan Stone" />
+<node id="560089" type="ORE" level="81" name="Silver Star Stone" />
+<node id="560090" type="ORE" level="86" name="Dust of Mutation" />
+<node id="560091" type="ORE" level="91" name="Rainbow Stone" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<!--node name="Zinc Ore" id="560054" type="ORE" level="" />
-<node name="Silver Ore" id="560011" type="ORE" level="" />
-<node name="Dark Crystal" id="560011" type="ORE" level="" />
-<node name="Rock Crystal" id="560012" type="ORE" level="" />
-<node name="Dark Crystal" id="560012" type="ORE" level="" />
-<node name="Silver Ore" id="560012" type="ORE" level="41" />
-<node name="Wizard-Iron Ore" id="560013" type="ORE" level="" />
-<node name="Moon Silver Ore" id="560014" type="ORE" level="" />
-<node name="Wizard-Iron Ore" id="560014" type="ORE" level="" />
-<node name="Mysticite" id="560015" type="ORE" level="" />
-<node name="Wizard-Iron Ore" id="560015" type="ORE" level="" />
-<node name="Moon Silver Ore" id="560015" type="ORE" level="" />
-<node name="Abyss-Mercury" id="560016" type="ORE" level="" />
-<node name="Rune Obsidian Ore" id="560016" type="ORE" level="" />
-<node name="Mithril" id="560017" type="ORE" level="" />
-<node name="Abyss-Mercury" id="560017" type="ORE" level="" />
-<node name="Rune Obsidian Ore" id="560017" type="ORE" level="" /-->
+<!-- RARE ORE -->
+<node id="560055" type="ORE" level="1"  name="Flame Dust" />
+<node id="560056" type="ORE" level="11" name="Cyanide" />
+<node id="560057" type="ORE" level="21" name="Rock Crystal" />
+<node id="560058" type="ORE" level="31" name="Mysticite" />
+<node id="560059" type="ORE" level="41" name="Mithril" />
+<node id="560060" type="ORE" level="51" name="Frost Crystal" />
+<node id="560061" type="ORE" level="61" name="Mica" />
+<node id="560088" type="ORE" level="71" name="Rein Crystal" />
+<node id="560101" type="ORE" level="81" name="Ironaxe Stone" />
+<node id="560102" type="ORE" level="91" name="Sea Cystal" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<node name="Flame Dust" id="560055" type="ORE" level="1" />
-<node name="Cyanide" id="560056" type="ORE" level="11" />
-<node name="Rock Crystal" id="560057" type="ORE" level="21" />
-<node name="Mysticite" id="560058" type="ORE" level="31" />
-<node name="Mithril" id="560059" type="ORE" level="41" />
-<node name="Frost Crystal" id="560060" type="ORE" level="51" />
-<node name="Mica" id="560061" type="ORE" level="61" />
-<node name="Rein Crystal" id="560088" type="ORE" level="71" />
-<node name="Ironaxe Stone" id="560101" type="ORE" level="81" />
+<!-- WOOD -->
+<node id="560018" type="WOOD" level="1"  name="Ash Wood" />
+<node id="560019" type="WOOD" level="8"  name="Willow Wood" />
+<node id="560020" type="WOOD" level="14" name="Maple Wood" />
+<node id="560021" type="WOOD" level="20" name="Oak Wood" />
+<node id="560022" type="WOOD" level="26" name="Pine Wood" />
+<node id="560023" type="WOOD" level="32" name="Holly Wood" />
+<node id="560024" type="WOOD" level="38" name="Yew Wood" />
+<node id="560025" type="WOOD" level="44" name="Tarslin Demon Wood" />
+<node id="560026" type="WOOD" level="51" name="Dragonlair Wood" />
+<node id="560027" type="WOOD" level="57" name="Ancient Spirit Oak Wood" />
+<node id="560077" type="WOOD" level="63" name="Fastan Banyan" />
+<node id="560081" type="WOOD" level="69" name="Janost Cypress Wood" />
+<node id="560084" type="WOOD" level="75" name="Todo Ginkgo Tree" />
+<node id="560093" type="WOOD" level="81" name="Nadal Wisteria Wood" />
+<node id="560094" type="WOOD" level="86" name="Summer Oak" />
+<node id="560095" type="WOOD" level="91" name="Fire Mountain Tree" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<node name="Ash Wood" id="560018" type="WOOD" level="1" />
-<node name="Willow Wood" id="560019" type="WOOD" level="8" />
-<node name="Maple Wood" id="560020" type="WOOD" level="14" />
-<node name="Oak Wood" id="560021" type="WOOD" level="20" />
-<node name="Pine Wood" id="560022" type="WOOD" level="26" />
-<node name="Holly Wood" id="560023" type="WOOD" level="32" />
-<node name="Yew Wood" id="560024" type="WOOD" level="38" />
-<node name="Tarslin Demon Wood" id="560025" type="WOOD" level="44" />
-<node name="Dragonlair Wood" id="560026" type="WOOD" level="51" />
-<node name="Ancient Spirit Oak Wood" id="560027" type="WOOD" level="57" />
-<node name="Fastan Banyan" id="560077" type="WOOD" level="63" />
-<node name="Janost Cypress Wood" id="560081" type="WOOD" level="69" />
-<node name="Todo Ginkgo Tree" id="560084" type="WOOD" level="75" />
-<node name="Nadal Wisteria Wood" id="560093" type="WOOD" level="81" />
+<!-- RARE WOOD -->
+<node id="560062" type="WOOD" level="1"  name="Chime Wood" />
+<node id="560063" type="WOOD" level="11" name="Stone Rotan Wood" />
+<node id="560064" type="WOOD" level="21" name="Redwood" />
+<node id="560065" type="WOOD" level="31" name="Dragon Beard Root Wood" />
+<node id="560066" type="WOOD" level="41" name="Sagewood" />
+<node id="560067" type="WOOD" level="51" name="Fairywood" />
+<node id="560068" type="WOOD" level="61" name="Aeontree Wood" />
+<node id="560087" type="WOOD" level="71" name="Stone Pine" />
+<node id="560103" type="WOOD" level="81" name="Blood Palm Wood" />
+<node id="560104" type="WOOD" level="91" name="Bald Fir Wood" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<!--node name="Holly Wood" id="560028" type="WOOD" level="" />
-<node name="Pine Wood" id="560028" type="WOOD" level="" />
-<node name="Redwood" id="560029" type="WOOD" level="" />
-<node name="Holly Wood" id="560029" type="WOOD" level="" />
-<node name="Pine Wood" id="560029" type="WOOD" level="" />
-<node name="Yew Wood" id="560030" type="WOOD" level="" />
-<node name="Tarslin Demon Wood" id="560031" type="WOOD" level="" />
-<node name="Yew Wood" id="560031" type="WOOD" level="" />
-<node name="Dragon Beard Root Wood" id="560032" type="WOOD" level="" />
-<node name="Tarslin Demon Wood" id="560032" type="WOOD" level="" />
-<node name="Yew Wood" id="560032" type="WOOD" level="" />
-<node name="Ancient Spirit Oak Wood" id="560033" type="WOOD" level="" />
-<node name="Dragonlair Wood" id="560033" type="WOOD" level="" />
-<node name="Sagewood" id="560034" type="WOOD" level="" />
-<node name="Ancient Spirit Oak Wood" id="560034" type="WOOD" level="" />
-<node name="Dragonlair Wood" id="560034" type="WOOD" level="" /-->
+<!-- HERBS -->
+<node id="560035" type="HERB" level="1"  name="Mountain Demon Grass" />
+<node id="560036" type="HERB" level="8"  name="Beetroot" />
+<node id="560037" type="HERB" level="14" name="Bitterleaf" />
+<node id="560038" type="HERB" level="20" name="Moxa" />
+<node id="560039" type="HERB" level="26" name="Dusk Orchid" />
+<node id="560040" type="HERB" level="32" name="Barsaleaf" />
+<node id="560041" type="HERB" level="38" name="Moon Orchid" />
+<node id="560042" type="HERB" level="44" name="Sinners Palm" />
+<node id="560043" type="HERB" level="51" name="Dragon Mallow" />
+<node id="560044" type="HERB" level="57" name="Thorn Apple" />
+<node id="560078" type="HERB" level="63" name="Verbena" />
+<node id="560082" type="HERB" level="69" name="Nocturnal Lantern Grass" />
+<node id="560083" type="HERB" level="75" name="Thunderhoof Grass" />
+<node id="560097" type="HERB" level="81" name="Isyeh Grass" />
+<node id="560098" type="HERB" level="86" name="Cold Psilotum" />
+<node id="560099" type="HERB" level="91" name="Snow Grass" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<node name="Chime Wood" id="560062" type="WOOD" level="1" />
-<node name="Stone Rotan Wood" id="560063" type="WOOD" level="11" />
-<node name="Redwood" id="560064" type="WOOD" level="21" />
-<node name="Dragon Beard Root Wood" id="560065" type="WOOD" level="31" />
-<node name="Sagewood" id="560066" type="WOOD" level="41" />
-<node name="Fairywood" id="560067" type="WOOD" level="51" />
-<node name="Aeontree Wood" id="560068" type="WOOD" level="61" />
-<node name="Stone Pine" id="560087" type="WOOD" level="71" />
-<node name="Blood Palm Wood" id="560103" type="WOOD" level="81" />
+<!-- RARE HERBS -->
+<node id="560069" type="HERB" level="1"  name="Rosemary" />
+<node id="560070" type="HERB" level="11" name="Bison Grass" />
+<node id="560071" type="HERB" level="21" name="Foloin Nut" />
+<node id="560072" type="HERB" level="31" name="Green Thistle" />
+<node id="560073" type="HERB" level="41" name="Straw Mushroom" />
+<node id="560074" type="HERB" level="51" name="Mirror Sedge" />
+<node id="560075" type="HERB" level="61" name="Goblin Grass" />
+<node id="560086" type="HERB" level="71" name="Dovetail Flower" />
+<node id="560105" type="HERB" level="81" name="Dragonsprout Grass" />
+<node id="560106" type="HERB" level="91" name="Moon Grass" /> <!-- Just a guess. Needs to be confirmed. -->
 
-<node name="Mountain Demon Grass" id="560035" type="HERB" level="1" />
-<node name="Beetroot" id="560036" type="HERB" level="8" />
-<node name="Bitterleaf" id="560037" type="HERB" level="14" />
-<node name="Moxa" id="560038" type="HERB" level="20" />
-<node name="Dusk Orchid" id="560039" type="HERB" level="26" />
-<node name="Barsaleaf" id="560040" type="HERB" level="32" />
-<node name="Moon Orchid" id="560041" type="HERB" level="38" />
-<node name="Sinners Palm" id="560042" type="HERB" level="44" />
-<node name="Dragon Mallow" id="560043" type="HERB" level="51" />
-<node name="Thorn Apple" id="560044" type="HERB" level="57" />
-<node name="Verbena" id="560078" type="HERB" level="63" />
-<node name="Nocturnal Lantern Grass" id="560082" type="HERB" level="69" />
-<node name="Thunderhoof Grass" id="560083" type="HERB" level="75" />
-<node name="Isyeh Grass" id="560097" type="HERB" level="81" />
-
-<!--node name="Pure Bitterleaf Extract" id="560045" type="HERB" level="" />
-<node name="Dusk Orchid" id="560045" type="HERB" level="" />
-<node name="Pure Bitterleaf Extract" id="560046" type="HERB" level="" />
-<node name="Dusk Orchid" id="560046" type="HERB" level="" />
-<node name="Moon Orchid" id="560047" type="HERB" level="" />
-<node name="Moon Orchid" id="560048" type="HERB" level="" />
-<node name="Moon Orchid" id="560049" type="HERB" level="" />
-<node name="Thorn Apple" id="560050" type="HERB" level="" />
-<node name="Dragon Mallow" id="560050" type="HERB" level="" />
-<node name="Thorn Apple" id="560051" type="HERB" level="" />
-<node name="Dragon Mallow" id="560051" type="HERB" level="" /-->
-
-<node name="Rosemary" id="560069" type="HERB" level="1" />
-<node name="Bison Grass" id="560070" type="HERB" level="11" />
-<node name="Foloin Nut" id="560071" type="HERB" level="21" />
-<node name="Green Thistle" id="560072" type="HERB" level="31" />
-<node name="Straw Mushroom" id="560073" type="HERB" level="41" />
-<node name="Mirror Sedge" id="560074" type="HERB" level="51" />
-<node name="Goblin Grass" id="560075" type="HERB" level="61" />
-<node name="Dovetail Flower" id="560086" type="HERB" level="71" />
-<node name="Dragonsprout Grass" id="5600105" type="HERB" level="81" />
 </nodes>
