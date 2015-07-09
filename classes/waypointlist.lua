@@ -56,7 +56,7 @@ function CWaypointList:load(filename)
 		local name = v:getName() or "";
 		local tag = v:getAttribute("tag") or "";
 
-		if( string.lower(name) == "waypoint" ) then
+		if( string.lower(name) == "waypoint" ) and x and z then
 			local tmp = CWaypoint(x, z, y);
 			if( action ) then tmp.Action = action; end;
 			if( type ) then

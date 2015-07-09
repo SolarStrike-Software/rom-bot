@@ -85,8 +85,8 @@ printf("Installing userfunctions. ") -- Message to help tell when userfunctions 
 -- Install bot userfunctions
 local addondir = getDirectory(getExecutionPath() .. "/userfunctions/");
 for i,v in pairs(addondir) do
-	local match = string.match(v, "addon_(.*)%.lua");
-	if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
+	local match = string.match(v, "^addon_(.*)%.lua");
+	if( not match ) then match = string.match(v, "^userfunction_(.*)%.lua"); end;
 	if( match ~= nil ) then
 		functionBeingLoaded = match
 		include("userfunctions/" .. v);
@@ -101,8 +101,8 @@ if globaladdondir then
 	local localdir = getExecutionPath() .. "/userfunctions/"
 	for i,v in pairs(globaladdondir) do
 		if not(fileExists(localdir .. v)) then -- if not in local 'userfunctions'
-			local match = string.match(v, "addon_(.*)%.lua");
-			if( not match ) then match = string.match(v, "userfunction_(.*)%.lua"); end;
+			local match = string.match(v, "^addon_(.*)%.lua");
+			if( not match ) then match = string.match(v, "^userfunction_(.*)%.lua"); end;
 			if( match ~= nil ) then
 				functionBeingLoaded = match
 				include("../romglobal/userfunctions/" .. v);
@@ -719,6 +719,8 @@ function main()
 	CurrentLoginAcc = RoMScript("LogID")
 	CurrentLoginChar = RoMScript("CHARACTER_SELECT.selectedIndex")
 	CurrentLoginServer = RoMScript ("GetCurrentRealm()")
+	__, CurrentLoginChannel = getZoneId()
+	CurrentLoginMaxChannels = RoMScript("GetNumParalleZones()")
 
 	local function checkClientCrash()
 		if isClientCrashed() then
@@ -755,7 +757,9 @@ function main()
 		-- reloading ammunition
 		if ( settings.profile.options.RELOAD_AMMUNITION ) then
 			local ammo = string.lower(settings.profile.options.RELOAD_AMMUNITION);
-			if  ammo == "thrown" and (player.Class1 == CLASS_ROGUE or (player.Class2 == CLASS_ROGUE and player.Level > 11 and player.Level2 > 11)) then
+			if ammo ~= "thrown" and ammo ~= "arrow" then
+				print("RELOAD_AMMUNITION can only be false, arrow or thrown!");
+			elseif  ammo == "thrown" and (player.Class1 == CLASS_ROGUE or (player.Class2 == CLASS_ROGUE and player.Level > 11 and player.Level2 > 11)) then
 				if inventory:getAmmunitionCount() == 0 then
 					inventory:reloadAmmunition(ammo);
 				end
@@ -763,8 +767,6 @@ function main()
 				if inventory:getAmmunitionCount() == 0 then
 					inventory:reloadAmmunition(ammo);
 				end
-			else
-			    print("RELOAD_AMMUNITION can only be false, arrow or thrown!");
 			end
 		end
 
@@ -947,11 +949,13 @@ function main()
 			if( player.Returning ) then
 				wp = __RPL:getNextWaypoint();
 				wpnum = __RPL.CurrentWaypoint;
-				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z);	-- Moving to returnpath waypoint
+				wptag = (wp.Tag~='' and ' tag: '..wp.Tag or '')
+				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z, wptag);   -- Moving to returnpath waypoint
 			else
 				wp = __WPL:getNextWaypoint();
 				wpnum = __WPL.CurrentWaypoint;
-				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z);	-- Moving to waypoint
+				wptag = (wp.Tag~='' and ' tag: '..wp.Tag or '')
+				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z, wptag);   -- Moving to waypoint
 			end;
 
 			player.Current_waypoint_type = wp.Type;		-- remember current waypoint type

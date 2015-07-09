@@ -182,38 +182,42 @@ function CInventory:itemTotalCount(itemNameOrId, range)
 	return totalCount;
 end;
 
-function CInventory:findItem( itemNameOrId, range)
+function CInventory:findItem (itemNameOrIdOrPattern, range, usePattern)
+	local itemList = {}
 	local first, last, location = getInventoryRange(range) -- get bag slot range
+	local smallestStack = nil
+	local item
 
 	if location ~= "inventory" and location ~= nil then
 		printf("You can only use inventory ranges with 'inventory:findItem'. You cannot use '%s' which is in %s\n", range, location)
+	end
+
+	if type(itemNameOrIdOrPattern)=='number' then
+		usePattern = false
 	end
 
 	if first == nil then
 		first , last = 1, 240 -- default, search all
 	end
 
-	local smallestStack = nil
-	local item
-
 	for slot = first, last do
 		item = self.BagSlot[slot]
 		item:update()
- 	    if item.Available and (not item.InUse) and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
+		if item.Available and (not item.InUse) and (usePattern and string.find (item.Name, itemNameOrIdOrPattern) or (item.Name == itemNameOrIdOrPattern or item.Id == itemNameOrIdOrPattern)) then
 			if (os.clock() - item.LastMovedTime) > ITEM_REUSE_DELAY then
-				if item.ItemCount > 1 then
-					-- find smallest stack
-					if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
-						smallestStack = item
-					end
-				else
-					return item
+				-- Make table of matching items
+				table.insert (itemList, item)
+				-- find smallest stack
+				if smallestStack == nil or smallestStack.ItemCount > item.ItemCount then
+					smallestStack = item
 				end
 			end
-		end;
-	end;
+		end
+	end
 
-	return smallestStack
+	itemList = #itemList>0 and itemList or nil -- Make list nil if empty.
+
+	return smallestStack, itemList
 end
 
 function CInventory:useItem(itemNameOrId)
@@ -629,8 +633,10 @@ function CInventory:getMount()
 	{first = 204929, last = 204948},
 	{first = 204950, last = 204979},
 	{first = 204982, last = 204999},
+	205025,
 	{first = 205748, last = 205749},
 	{first = 206016, last = 206020},
+	206044,
 	{first = 206196, last = 206207},
 	{first = 206212, last = 206215},
 	{first = 206234, last = 206239},
@@ -646,12 +652,14 @@ function CInventory:getMount()
 	{first = 206934, last = 206936},
 	{first = 206939, last = 206941},
 	{first = 206944, last = 206946},
+	{first = 206949, last = 206951},
+	207348,
 	{first = 207501, last = 207503},
-	{first = 207515, last = 207536},
-	{first = 207546, last = 207551},
+	{first = 207509, last = 207551},
 	{first = 207558, last = 207560},
-	{first = 207566, last = 207571},
+	{first = 207563, last = 207571},
 	207624,
+	207958,
 	{first = 208159, last = 208161},
 	{first = 208570, last = 208572},
 	208691,
@@ -660,15 +668,21 @@ function CInventory:getMount()
 	208702,
 	{first = 208704, last = 208707},
 	{first = 208910, last = 208912},
+	208960,
+	{first = 209480, last = 209481},
 	{first = 209485, last = 209487},
 	209490,
 	{first = 209500, last = 209502},
 	{first = 209505, last = 209508},
+	209591,
 	{first = 209601, last = 209602},
+	{first = 209605, last = 209618},
 	{first = 209961, last = 209966},
 	{first = 240036, last = 240038},
 	{first = 240081, last = 240083},
 	{first = 240086, last = 240088},
+	{first = 240499, last = 240501},
+	{first = 240916, last = 240918},
 	{first = 240928, last = 240930},
 	{first = 240933, last = 240935},
 	241101,
@@ -680,15 +694,13 @@ function CInventory:getMount()
 	{first = 241777, last = 241779},
 	{first = 241786, last = 241788},
 	{first = 241791, last = 241793},
-	241805,
+	{first = 241805, last = 241808},
 	{first = 241997, last = 241999},
 	{first = 242149, last = 242157},
 	242161,
 	{first = 242447, last = 242449},
-
-
-	-- Temp mounts
-	505113,494474,
+	494474,
+	505113,
 	};
 
  	for slot,item in pairs(self.BagSlot) do

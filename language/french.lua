@@ -5,14 +5,14 @@ language = {
 	[3] = "Mort. Le joueur ressuscite...\n",
 	[4] = "Retour au trajet.\n",
 	[5] = "Ignorer la cible (%s): Anti-KS.\n",
-	[6] = "Deplacement au chemin #%d, (%d, %d).\n",
+	[6] = "Deplacement au chemin #%d, (%d, %d) %s.\n",
 	[7] = "Fin du chemin du retour. Debut du trajet.\n",
 	[8] = "Echec du deplacement vers le trajet!\n",
 
 	[10] = "MACRO: Utilisation HP potion %s/%s(%d%%): %s (nombre %s).\n",
 	[11] = "MACRO: Utilisation MP potion %s/%s(%d%%): %s (nombre %s).\n",
 	[12] = "Le chemin de retour est plus proche que le trajet. Demarrage du chemin du retour!\n",
-	[13] = "Deplacement vers le chemin de retour #%d, (%d, %d).\n",
+	[13] = "Deplacement vers le chemin de retour #%d, (%d, %d) %s.\n",
 	[14] = "Nous sommes attaque. Arret du deplacement et attente de la cible.\n",
 
 	[20] = "Incantation terminee.\n",

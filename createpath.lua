@@ -734,7 +734,7 @@ function main()
 							hf_type = sprintf("ChoiceOptionByName \'%s\'",name)
 							message(prefix..sprintf(language[516], "\'"..name.."\'" ) ); -- ChoiceOptionByName
 							tmp.keystring = getKeyStrings(name, true)--, "SC_", "SP")
-							RoMCode("ChoiceOption("..index..")")
+							ChoiceOptionByName(name)
 						end
 					end
 				elseif( hf_key == "FLY") then

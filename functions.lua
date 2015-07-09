@@ -1835,7 +1835,7 @@ function AcceptQuestByName(_nameorid, _questgroup)
 				end
 
 	-- Check if already accepted
-	if questToAccept ~= "all" and getQuestStatus(questToAccept, _questgroup) ~= "not accepted" then
+	if questToAccept ~= "all" and getQuestStatus(_nameorid, _questgroup) ~= "not accepted" then
 		printf("Quest already accepted: %s\n", questToAccept)
 		return
 	end
@@ -2167,25 +2167,30 @@ function ChoiceOptionByName(optiontext)
 		return
 	end
 
-    local counter = 1
+	if FindNormalisedString(getTEXT("HOUSE_MAID_LEAVE_TALK"),optiontext) then -- Should be the "Leave conversation" option
+		RoMCode("SpeakFrame_Hide()")
+		return true
+	end
+
+	local counter = 1
 	local option
-    repeat
+	repeat
 		option = RoMScript("GetSpeakOption("..counter..")")
 		if option and FindNormalisedString(option,optiontext) then
 			-- First try "ChoiceOption"
-            RoMCode("ChoiceOption("..counter..");"); yrest(1000);
+			RoMCode("ChoiceOption("..counter..");"); yrest(1000);
 
 			-- If SpeakFrame is still open and option is still there then try "SpeakFrame_ListDialogOption"
 			option = RoMScript("GetSpeakOption("..counter..")")
 			if option and FindNormalisedString(option,optiontext) and RoMScript("SpeakFrame:IsVisible()") then
 				RoMCode("SpeakFrame_ListDialogOption(1,"..counter..");"); yrest(1000);
 			end
-            return true
-        end
-        counter = counter + 1
-    until not option
+			return true
+		end
+		counter = counter + 1
+	until not option
 	printf("Option \"%s\" not found.\n",optiontext)
-    return false
+	return false
 end
 
 function PointInPoly(vertices, testx, testz )
@@ -2275,7 +2280,7 @@ function GetSkillBookData(_tabs)
 				tmp.ConsumableNumber = usesnum
 			elseif uses == SKILLUSES_PSI then
 				tmp.Psi = usesnum
-			elseif uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+			elseif tmp.Name ~= "" and uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
 		end
