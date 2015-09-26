@@ -446,7 +446,7 @@ function CWaypointList:updateResume()
 	if self.Mode ~= "wander" then
 		local file=io.open(getExecutionPath() .. "/logs/resumes/"..player.Name..".txt","w")
 		if file then
-			file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint)
+			file:write("return \""..self.FileName.."\", "..self.CurrentWaypoint..", "..(player.Current_waypoint_type or "nil"))
 			file:close()
 		end
 	end

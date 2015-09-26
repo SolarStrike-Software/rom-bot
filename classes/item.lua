@@ -133,6 +133,7 @@ function CItem:update()
 			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
 		end;
 
+		local tmp
 		if( nameAddress == nil or nameAddress == 0 ) then
 			tmp = "<EMPTY>";
 		else

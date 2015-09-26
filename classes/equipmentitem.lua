@@ -6,7 +6,7 @@ CEquipmentItem = class(CItem,
 		self.SlotNumber = slot
 		self.BagId = slot
 
-		if ( self.SlotNumber ~= nil and self.SlotNumber ~= 0 ) then
+		if self.SlotNumber ~= nil then
 			self:update();
 		end;
 	end

@@ -360,6 +360,9 @@ function errorCallback(script, line, message)
 
 		printf("The game client did not crash.\n");
 	end
+	if player and player.Name then
+		printf("Character: %s\n",player.Name)
+	end
 end
 atError(errorCallback);
 
@@ -598,11 +601,11 @@ function loadPaths( _wp_path, _rp_path)
 			local msg = sprintf(language[142], resumelogname ); -- We can't find your waypoint file
 			error(msg, 2);
 		end
-		local filename, resume_num = dofile(resumelogname)
-
+		local filename, resume_num, resumeType = dofile(resumelogname)
 		wpfilename = findFile("waypoints/"..filename)
 		__WPL = CWaypointList();
 		__WPL.ResumePoint = resume_num
+		__WPL.ResumeType = resumeType
 		cprintf(cli.yellow, language[0], wpfilename);	-- Loaded waypoint path
 	end
 
@@ -650,6 +653,9 @@ function loadPaths( _wp_path, _rp_path)
 			cprintf(cli.green, language[15], 					-- Waypoint #%d is closer then #1
 			   __WPL.CurrentWaypoint, __WPL.CurrentWaypoint);
 		end;
+		if __WPL.ResumeType then
+			__WPL:setForcedWaypointType(__WPL.ResumeType)
+		end
 	end
 
 	-- return path defined or default found ... load it
@@ -2624,11 +2630,11 @@ function getGameVersion(proc)
 	end
 
 	-- Look for pattern in 64 bit memory area first
-	local foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x186000, 0xA000)
+	local foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x186000, 0x20000)
 
 	-- If it fails then look in 32 bit memory area
 	if foundAddress == nil or foundAddress == 0 then
-		foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x126000, 0xA000)
+		foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x126000, 0x20000)
 	end
 
 	if foundAddress == nil or foundAddress == 0 then
@@ -2829,4 +2835,8 @@ function tableToString(_table, _formated)
 	end
 
 	return makeString(_table)
+end
+
+function dailyCount()
+	return memoryReadInt(getProc(), addresses.charClassInfoBase + addresses.dailyCount_offset)
 end
