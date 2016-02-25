@@ -1103,8 +1103,21 @@ function settings.loadProfile(_name)
 	-- now we can do all other setting checks
 
 	-- check if igf addon is active
-	local igf_version = RoMScript("IGF_INSTALLED")
 	local current_version = 11 -- Change this value to match the value in "ingamefunctions.lua".
+	local igf_version = 1
+	if getModuleFilename then
+		local gamefolder = getFilePath(getModuleFilename(__PROC))
+		local addonfile = gamefolder.."/interface/addons/ingamefunctions/ingamefunctions.lua"
+		if( fileExists(addonfile) ) then
+			 local file = io.open(addonfile, "r");
+			 local line = file:read('*l');
+			 igf_version = tonumber(string.match(line, "%d+"))
+			 file:close()
+		end
+	else
+		igf_version = RoMScript("IGF_INSTALLED")
+	end
+
 	if igf_version then
 		bot.IgfAddon = true;
 		bot.IgfVersion = igf_version

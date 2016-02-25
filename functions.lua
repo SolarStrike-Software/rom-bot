@@ -71,7 +71,32 @@ function selectGame(character)
 		cprintf(cli.lightred,"The loading of userfunction '%s' is forcing the bot to attach to the game early. This can cause errors and features of the bot to not work properly. Userfunctions should execute as little code as possible while loading. This should be fixed.\n",functionBeingLoaded)
 	end
 	-- Get list of windows in an array
-	local windowList = findWindowList("*", "Radiant Arcana");
+	local windowList = {}
+	if findProcessByExeList then
+		local processList = findProcessByExeList("client.exe")
+		if( processList == nil or #processList == 0 ) then
+			error("You need to run rom first!", 0);
+			return 0;
+		end
+		for k,v in pairs(processList) do
+			for i,j in pairs( getWindowsFromProcess(v) ) do
+				local parent = getWindowParent(j)
+				if getWindowClassName(j) == "IME" and parent then
+				   local x,y,w,h = windowRect(parent)
+				   if h ~= 0 then
+						table.insert(windowList, parent)
+				   end
+				end
+			end
+		end
+	else
+		windowList = findWindowList("*", "Radiant Arcana");
+		if( #windowList == 0 ) then
+			error("You need to run rom first!", 0);
+			return 0;
+		end
+	end
+
 
 	if( #windowList == 0 ) then
 		print("You need to run rom first!");
