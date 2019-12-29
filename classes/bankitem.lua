@@ -14,11 +14,11 @@ CBankItem = class(CItem,
 );
 
 function CBankItem:update()
-	self.Address = addresses.staticBankbase + ( (self.BagId - 1) * 68 );
+	self.Address = getBaseAddress(addresses.bank.base) + ( (self.BagId - 1) * 68 );
 
 	-- Check if available
 	if self.BagId > 40 and self.BagId <= 200 then
-		self.Available = memoryReadUInt(getProc(), addresses.rentBankBase + math.floor((self.BagId - 41)/40) * 4) ~= 0xFFFFFFFF
+		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.bank.rent.base) + math.floor((self.BagId - 41)/40) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end

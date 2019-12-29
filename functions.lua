@@ -38,7 +38,7 @@ function getMacroUpdateOffset()
 	return macroUpdateOffset;
 end
 
-function checkExecutableCompatible()
+function checkExecutableCompatible()--[[
 	if( findPatternInProcess(getProc(), charUpdatePattern, charUpdateMask,
 	addresses.staticpattern_char, 1) == 0 ) then
 		return false;
@@ -49,6 +49,8 @@ function checkExecutableCompatible()
 		return false;
 	end
 
+	return true;
+	--]]
 	return true;
 end
 
@@ -73,7 +75,7 @@ function selectGame(character)
 	-- Get list of windows in an array
 	local windowList = {}
 	if findProcessByExeList then
-		local processList = findProcessByExeList("client.exe")
+		local processList = findProcessByExeList("Client.exe")
 		if( processList == nil or #processList == 0 ) then
 			error("You need to run rom first!", 0);
 			return 0;
@@ -357,7 +359,8 @@ end
 -- Used in pause/exit callbacks. Just releases movement keys.
 function releaseKeys()
 	if windowValid(__WIN) and __PROC then
-		memoryWriteBytePtr(__PROC, addresses.staticbase_char ,addresses.moveKeysPressed_offset, 0 )
+		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		memoryWriteBytePtr(getProc(), gameroot, addresses.game_root.input.movement, MOVEMENT_STILL);
 	end
 end
 
@@ -440,9 +443,9 @@ local LAST_PLAYER_Z = 0;
 function timedSetWindowName(profile)
 	-- Update our exp gain
 	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
-		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.pawnClass1_offset) or player.Class1;
-		player.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset) or player.Level
-		player.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoXP_offset) or player.XP
+		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
+		player.Level = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.level --[[addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset--]]) or player.Level
+		player.XP = 0;--memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoXP_offset) or player.XP
 		if player.XP == 0 or player.Level == 0 then return end
 
 		local newExp = player.XP or 0;
@@ -752,7 +755,7 @@ function RoMScript(script)
 	end
 
 	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
+	local macro_address = memoryReadUInt(getProc(), addresses.client_exe_module_start + addresses.macro.base);
 
 --	local scriptDef;
 
@@ -810,7 +813,7 @@ function RoMScript(script)
 				writeToMacro(commandMacro, text)
 
 				-- Write something on the first address, to see when its over written
-				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
+				memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6);
 
 				-- Execute it
 				if( settings.profile.hotkeys.MACRO ) then
@@ -825,7 +828,7 @@ function RoMScript(script)
 				-- A cheap version of a Mutex... wait till it is "released"
 				-- Use high-res timers to find out when to time-out
 				local startWaitTime = getTime();
-				while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
+				while( memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6 ) do
 					if( deltaTime(getTime(), startWaitTime) > 800 ) then
 						if settings.options.DEBUGGING then
 							printf("0x%X\n", addresses.editBoxHasFocus_address)
@@ -1535,12 +1538,14 @@ function waitForLoadingScreen(_maxWaitTime)
 			return false
 		end
 		rest(1000)
-		local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
-	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0
+		--local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		local base = getBaseAddress(addresses.game_root.base);--
+		newAddress = memoryReadRepeat("uintptr", getProc(), base, addresses.game_root.player.base);
+	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets) ~= 0
 	-- wait until loading screen is gone
 	repeat
 		rest(1000)
-	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
+	until memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets) == 0
 	rest(2000)
 
 	-- Check if fully in game by checking if RoMScript works
@@ -1556,9 +1561,11 @@ function waitForLoadingScreen(_maxWaitTime)
 end
 
 function isInGame()
-	-- Note: if not in game, addresses.isInGame + 0xBF4 is 1 when at the character selection screen.
-	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 and
-	   memoryReadInt(getProc(), addresses.isInGame) == 1 then
+	-- At character select screen, (addresses.client_exe_module_start + addresses.in_game) = 0,
+	-- If in game, it is = 1
+	local loading = memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets);
+	local in_game = memoryReadInt(getProc(), addresses.client_exe_module_start + addresses.in_game);
+	if( loading == 0 and in_game == 1 ) then
 		return true
 	else
 		return false
@@ -1731,7 +1738,7 @@ function Attack()
 		setupAttackKey()
 	end
 
-	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnTargetPtr_offset) or 0
+	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), player.Address + addresses.game_root.pawn.target) or 0
 
 	if tmpTargetPtr == 0 and player.TargetPtr == 0 then
 		-- Nothing to attack
@@ -1758,10 +1765,10 @@ function Attack()
 			end
 
 			-- freeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.rep(string.char(0x90),#addresses.functionTargetBytes));
+			--memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.rep(string.char(0x90),#addresses.functionTargetBytes));
 
 			-- Target it
-			memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, player.TargetPtr);
+			memoryWriteInt(getProc(), player.Address + addresses.game_root.pawn.target, player.TargetPtr);
 
 			-- 'Click'
 			if settings.profile.hotkeys.AttackType == "macro" then
@@ -1779,13 +1786,15 @@ function Attack()
 end
 
 function getZoneId()
-	local zonechannel = memoryReadRepeat("int", getProc(), addresses.zoneId)
-	if zonechannel ~= nil then
+	local zoneId = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.zone_id))
+	local channelId = memoryReadIntPtr(getProc(), getBaseAddress(addresses.channel.base), addresses.channel.id);
+	return zoneId, channelId;
+	--[[if zonechannel ~= nil then
 		local zone = zonechannel%1000
 		return zone, (zonechannel-zone)/1000 + 1 -- zone and channel
 	else
 		printf("Failed to get zone id\n")
-	end
+	end--]]
 end
 
 function bankItemBySlot(SlotNumber)
@@ -2275,17 +2284,17 @@ function GetSkillBookData(_tabs)
 		tmp.Address = address
 		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
 		tmp.Name = GetIdName(tmp.Id)
-		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
-		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
-		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
+		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skill.tp_to_level)
+		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skill.level)
+		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skill.as_level)
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
 		-- Get power and consumables
 		for count = 0, 1 do
-			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset)
+			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
 			if uses == 0 then
 				break
 			end
-			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
 			if uses == SKILLUSES_MANA then
 				if tmp.Level > 49 then
 					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
@@ -2323,8 +2332,9 @@ function GetSkillBookData(_tabs)
 	local tabData = {}
 
 	for __, tab in pairs(_tabs) do
-		local tabBaseAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
-		local tabEndAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
+		local base = addresses.client_exe_module_start + addresses.skill.base;
+		local tabBaseAddress = memoryReadRepeat("uint", proc, base + skillsTableTabSize*(tab-1) + addresses.skill.tab_start);
+		local tabEndAddress = memoryReadRepeat("uint", proc, base + skillsTableTabSize*(tab-1) + addresses.skill.tab_end);
 
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
@@ -2401,7 +2411,8 @@ function keyboardHold(key)
 	end
 
 	-- Get current move keys pressed
-	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	--local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	local keyspressed = player:getMovement();
 
 	-- Set 'key' pressed
 	if keyspressed and not bitAnd(keyspressed, keybit) then
@@ -2413,7 +2424,8 @@ function keyboardHold(key)
 		end
 
 		-- Write result to memory
-		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		player:setMovement(keyspressed);
+		--memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
 	end
 end
 
@@ -2436,17 +2448,21 @@ function keyboardRelease(key)
 	end
 
 	-- Get current move keys pressed
-	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	--local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	local keyspressed = player:getMovement();
 
 	-- Set 'key' released
 	if keyspressed and bitAnd(keyspressed, keybit) then
 		keyspressed = keyspressed - keybit
-		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		--memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		player:setMovement(keyspressed);
 	end
 end
 
 function getGameTime()
-	return memoryReadRepeat("uint",getProc(),addresses.gameTimeAddress)/1000
+	local address = addresses.client_exe_module_start + addresses.game_time;
+	local gtime = memoryReadUInt(getProc(), address) or 0;
+	return gtime / 1000;
 end
 
 local getTEXTCache = {}
@@ -2864,4 +2880,8 @@ end
 
 function dailyCount()
 	return memoryReadInt(getProc(), addresses.charClassInfoBase + addresses.dailyCount_offset)
+end
+
+function getBaseAddress(offsetFromExe)
+	return addresses.client_exe_module_start + offsetFromExe;
 end

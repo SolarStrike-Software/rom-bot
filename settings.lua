@@ -1270,6 +1270,7 @@ function settings.updateSkillsAvailability()
 	local tabData = GetSkillBookData({2,3,4}) -- tabs of interest 2,3 and 4
 
 	-- Then collect item set skills
+	--[[	TODO: Re-enable this later
 	for num = 1, 5 do -- 5 possible enabled item set skills
 		local id = memoryReadInt(getProc(), addresses.itemSetSkillsBase + (num - 1)*4)
 		if id ~= 0 then
@@ -1325,6 +1326,7 @@ function settings.updateSkillsAvailability()
 			end
 		end
 	end
+	]]
 
 	-- Next go through the profile skills and see which are available
 	for _, skill in pairs(settings.profile.skills) do

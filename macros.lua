@@ -94,10 +94,12 @@ function writeToMacro(macroNum, body, name, icon)
 	end
 
 	--- Get macros base address
-	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
+	local address = addresses.client_exe_module_start + addresses.macro.base;
+	local macro_address = memoryReadUInt(getProc(), address);
+	
 	--- Write the macro body
 	if body ~= null and type(body) == "string" then
-		memoryWriteString(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset , string.sub(body, 1, MacroMaxBodyLength).."\0");
+		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content , string.sub(body, 1, MacroMaxBodyLength).."\0");
 --		local byte;
 --		for i = 0, 254, 1 do
 --			byte = string.byte(body, i + 1);
@@ -113,7 +115,7 @@ function writeToMacro(macroNum, body, name, icon)
 
 	--- Write the macro name
 	if name ~= null and type(name) == "string" then
-		memoryWriteString(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset , string.sub(name, 1, 32).."\0");
+		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name , string.sub(name, 1, 32).."\0");
 --		local byte;
 --		for i = 0, 31, 1 do
 --			byte = string.byte(name, i + 1);
@@ -129,7 +131,7 @@ function writeToMacro(macroNum, body, name, icon)
 
 	-- Set the macro icon
 	if icon ~= null and type(icon) == "number" and icon > 0 and icon <= 60 then
-		memoryWriteInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroIcon_offset , icon);
+		memoryWriteInt(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.icon, icon);
 	end
 
 end
@@ -140,12 +142,13 @@ function readMacro(macroNum)
 	end
 
 	--- Get macros base address
-	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
+	local address = addresses.client_exe_module_start + addresses.macro.base;
+	local macro_address = memoryReadUInt(getProc(), address);
 
 	--- Read the macro body
 	local body = "";
 	for i = 0, 254, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroBody_offset + i);
+		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content + i);
 
 		if( byte == 0 ) then -- Break on NULL terminator
 			break;
@@ -157,7 +160,7 @@ function readMacro(macroNum)
 	--- Read the macro name
 	local name = "";
 	for i = 0, 31, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroName_offset + i);
+		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name + i);
 
 		if( byte == 0 ) then -- Break on NULL terminator
 			break;
@@ -167,10 +170,12 @@ function readMacro(macroNum)
 	end
 
 	-- Read the macro icon
-	local icon = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroIcon_offset);
+	--local icon = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroIcon_offset);
+	local icon = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.icon);
 
 	-- Read the macro id
-	local id = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroId_offset);
+	--local id = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroId_offset);
+	local id = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.id);
 
 	return body, name, icon, id
 end
@@ -298,16 +303,17 @@ end
 
 -- Hotkey functions
 function getHotkey(number)
-	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), addresses.hotkeysPtr, addresses.hotkeys_offset)
+	local address = addresses.client_exe_module_start + addresses.hotkey.base;
+	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), address, addresses.hotkey.list);
 	local hotkeyAddress = memoryReadUInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
 	if hotkeyAddress < 1 then return end -- invalid number
-	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset)
+	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkey.hotkey1);
 
-	local name = memoryReadString(getProc(), hotkeyAddress + addresses.hotkeysName_offset)
+	local name = memoryReadString(getProc(), hotkeyAddress + addresses.hotkey.name)
 	if name ~= string.match(name,"[%u%d_]*") or name == "" then
-		name = memoryReadStringPtr(getProc(), hotkeyAddress + addresses.hotkeysName_offset, 0)
+		name = memoryReadStringPtr(getProc(), hotkeyAddress + addresses.hotkey.name, 0)
 	end
-	local tempModifier = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkeysKey_offset + 2)
+	local tempModifier = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkey.modifier1)
 	local modifier;
 	if tempModifier == 1 then
 		modifier = key.VK_SHIFT

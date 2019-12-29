@@ -13,7 +13,7 @@ CEquipmentItem = class(CItem,
 );
 
 function CEquipmentItem:update()
-	self.Address = addresses.staticEquipBase + ( self.BagId * 68 );
+	self.Address = addresses.equipment.base + ( self.BagId * 68 );
 
 	CItem.update(self)
 

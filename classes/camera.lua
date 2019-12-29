@@ -1,6 +1,9 @@
 CCamera = class(
 	function(self)
-		self.Address = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset) or 0
+		--self.Address = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset) or 0
+		
+		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		self.Address = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.camera.base) or 0;
 
 		self.XUVec = 0.0;
 		self.YUVec = 0.0;
@@ -25,28 +28,39 @@ function CCamera:update()
 	local proc = getProc();
 	local memerrmsg = "Error reading memory in CCamera:update()";
 
+--[[
 	self.XUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camXUVec_offset), memerrmsg);
 	self.YUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camYUVec_offset), memerrmsg);
 	self.ZUVec = debugAssert(memoryReadFloat(proc, self.Address + addresses.camZUVec_offset), memerrmsg);
+--]]
 
 	-- camera coordinates
+	--[[
 	self.X = debugAssert(memoryReadFloat(proc, self.Address + addresses.camX_offset), memerrmsg);
 	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.camY_offset), memerrmsg);
 	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.camZ_offset), memerrmsg);
+	--]]
+	self.X = memoryReadFloat(proc, self.Address + addresses.game_root.camera.x);
+	self.Y = memoryReadFloat(proc, self.Address + addresses.game_root.camera.y);
+	self.Z = memoryReadFloat(proc, self.Address + addresses.game_root.camera.z);
 
 	-- camera focus coordinates
+	--[[
 	self.XFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camXFocus_offset), memerrmsg);
 	self.ZFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camZFocus_offset), memerrmsg);
 	self.YFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camYFocus_offset), memerrmsg);
+	--]]
 
 	-- camera distance
-	self.Distance = debugAssert(memoryReadFloatPtr( proc, addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}))
+	--self.Distance = debugAssert(memoryReadFloatPtr( proc, addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}))
+	self.Distance = memoryReadFloat(proc, self.Address + addresses.game_root.camera.distance);
 
-	if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
+	--[[if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
 	self.X == nil or self.Y == nil or self.Z == nil or
 	self.XFocus == nil or self.YFocus == nil or self.ZFocus == nil or self.Distance == nil) then
 		error("Error reading memory in CCamera:update()");
 	end
+	--]]
 end
 
 function CCamera:setPosition(x, y, z)
@@ -56,12 +70,13 @@ function CCamera:setPosition(x, y, z)
 	self.YUVec = y;
 	--self.ZUVec = z;
 
-	memoryWriteFloat(proc, self.Address + addresses.camXUVec_offset, x);
-	memoryWriteFloat(proc, self.Address + addresses.camYUVec_offset, y);
+	--memoryWriteFloat(proc, self.Address + addresses.camXUVec_offset, x);
+	--memoryWriteFloat(proc, self.Address + addresses.camYUVec_offset, y);
 	--memoryWriteFloat(proc, self.Address + addresses.camZUVec_offset, z);
 end
 
 function CCamera:setRotation(angle)
+--[[
 	local proc = getProc();
 	self:update()
 
@@ -89,6 +104,7 @@ function CCamera:setRotation(angle)
 	memoryWriteFloat(proc, self.Address + addresses.camX_offset, nx);
 	memoryWriteFloat(proc, self.Address + addresses.camZ_offset, nz);
 	memoryWriteFloat(proc, self.Address + addresses.camY_offset, ny);
+	--]]
 end
 
 function CCamera:setDistance(distance)
@@ -104,8 +120,8 @@ function CCamera:setDistance(distance)
 	end
 
 	-- Change distance
-	memoryWriteFloatPtr( getProc(), addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}, distance)
+	memoryWriteFloat( getProc(), self.Address + addresses.game_root.camera.distance, distance)
 
 	-- Save distance setting
-	memoryWriteFloatPtr( getProc(), addresses.staticbase_char, addresses.camDistanceSave_offset, distance)
+	--memoryWriteFloatPtr( getProc(), addresses.staticbase_char, addresses.camDistanceSave_offset, distance)
 end

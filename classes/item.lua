@@ -64,7 +64,7 @@ CItem = class(
 function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
-
+--[[
 	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
 	self.Available = (self.Available ~= false)
 
@@ -75,19 +75,18 @@ function CItem:update()
 			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));
 			return;
 		end;
-
 		self.Name = "";
 		self.Empty = false;
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
-		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.maxDurabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability );
+		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.valueOffset );
+		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.value );
 		self.Worth = self.Value / 10;
-		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.boundStatusOffset );
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
+		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.item.bound_status );
 		self.Bound = not bitAnd(self.BoundStatus,1)
 		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
 		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
@@ -207,15 +206,16 @@ function CItem:update()
 		self.Range = 0;
 	else
 		-- if id is not 0 and hasn't changed we only update these values
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.itemCountOffset );
-		self.Durability = memoryReadInt( getProc(), self.Address + addresses.durabilityOffset );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability );
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.InUse = memoryReadInt( getProc(), self.Address + addresses.inUseOffset ) ~= 0;
-		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.boundStatusOffset );
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
+		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.item.bound_status );
 		self.Bound = not bitAnd(self.BoundStatus,1)
 	end;
+	--]]
 end
 
 
@@ -223,7 +223,8 @@ function CItem:delete()
 	if self.Available and not self.Empty then
 		-- Special case for bank. Check if it's open
 		if self.Location == "bank" then
-			local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+			local base = addresses.client_exe_module_start + addresses.bank.open.base;
+			local BankClosed = memoryReadIntPtr(getProc(), base, addresses.bank.open.offset) == -1
 			if BankClosed then
 				return
 			end
