@@ -1,40 +1,7 @@
 BOT_VERSION = 3.29;
+BOT_REVISION = '<UNKNOWN>';
 
-local handle = io.popen("SubWCRev \""..getExecutionPath().."\"")
-local result = handle:read("*a")
-handle:close()
-BOT_REVISION = string.match(result,"Updated to revision (%d*)") or "<UNKNOWN>"
-
---[[
-BOT_REVISION = "<UNKNOWN>"
-
--- Check version 1.7 style svn folder.
-local fname = getExecutionPath() .. "/.svn/wc.db"
-if( fileExists(fname) ) then
-	local file, err = io.open(fname, "rb");
-	if file then
-		local string = file:read("*a")
-		for ver in string.gmatch(string,"%(svn:wc:ra_dav:version.url %d* %/svn%/!svn%/ver%/(%d*)%/trunk%/rom%)") do
-			if BOT_REVISION == "<UNKNOWN>" or ver > BOT_REVISION then
-				BOT_REVISION = ver
-			end
-		end
-		file:close();
-	end
-end
-
--- If not found, try version 1.6 style svn folder.
-if BOT_REVISION == "<UNKNOWN>" then
-	local fname = getExecutionPath() .. "/.svn/entries"
-	if( fileExists(fname) ) then
-		local dirfound = false
-		for line in io.lines(fname) do
-			if dirfound then BOT_REVISION = line break elseif line == "dir" then dirfound = true end
-		end
-	end
-end
-]]
-
+include('qword.lua');
 include("addresses.lua");
 include("database.lua");
 include("functions.lua");
@@ -229,7 +196,8 @@ function main()
 		end
 	end
 
-	local playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
@@ -238,8 +206,6 @@ function main()
 		local msg = sprintf(language[48], "playerAddress");	-- pls update to current version
 		error(msg, 0);
 	end;
-	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
-		tonumber(addresses.staticbase_char), tonumber(playerAddress)));
 
 	equipment = CEquipment()
 	player = CPlayer.new();
