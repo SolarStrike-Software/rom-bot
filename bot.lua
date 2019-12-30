@@ -1,4 +1,4 @@
-BOT_VERSION = 3.29;
+BOT_VERSION = 4.0;
 BOT_REVISION = '<UNKNOWN>';
 
 include('qword.lua');

@@ -230,8 +230,6 @@ function CPawn:update()
 
 	local attackableFlag = memoryReadRepeat("uint", proc, self.Address + addresses.game_root.pawn.attackable_flags);
 	if attackableFlag then
-		self.Mounted = bitAnd(attackableFlag, 0x10000000)
-
 		--=== Does icon appear when you click pawn ===--
 		if bitAnd(attackableFlag,0x10) then
 			self.TargetIcon = true
@@ -266,6 +264,7 @@ function CPawn:update()
 		end
 	end
 
+	self:updateMounted();
 	self:updateSpeed()
 
 	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.game_root.pawn.swimming.base, addresses.game_root.pawn.swimming.swimming)
@@ -372,9 +371,7 @@ function CPawn:updateAlive()
 	end
 
 	-- Check Alive flag
-	--local alive = memoryReadRepeat("int", getProc(), self.Address + addresses.charAlive_offset);
 	local alive = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.alive_flag);
-	--self.Alive = not bitAnd(alive, 8)
 	self.Alive = (alive ~= 0);
 
 	-- If 'alive' then also check if fading (only for mobs).
@@ -500,11 +497,11 @@ function CPawn:updateBuffs()
 		return
 	end
 
---[[
+
 	local proc = getProc()
-	local BuffSize = 0x54
-	local buffStart = memoryReadRepeat("uint", proc, self.Address + addresses.pawnBuffsStart_offset);
-	local buffEnd = memoryReadRepeat("uint", proc, self.Address + addresses.pawnBuffsEnd_offset);
+	local BuffSize = addresses.game_root.pawn.buffs.buff.size;
+	local buffStart = memoryReadRepeat("uint", proc, self.Address + addresses.game_root.pawn.buffs.array_start);
+	local buffEnd = memoryReadRepeat("uint", proc, self.Address + addresses.game_root.pawn.buffs.array_end);
 
 	self.Buffs = {} -- clear old values
 	if buffStart == nil or buffEnd == nil or buffStart == 0 or buffEnd == 0 then return end
@@ -514,19 +511,20 @@ function CPawn:updateBuffs()
 
 	for i = buffStart, buffEnd - 4, BuffSize do
 		local tmp = {}
-		--yrest(1)
-		tmp.Id = memoryReadRepeat("int", proc, i + addresses.pawnBuffId_offset);
-		local name = GetIdName(tmp.Id)
+		tmp.Id = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.id);
+		--local name = GetIdName(tmp.Id) -- TODO: Fix this
+		local name = "<Unknown>";
 
 		if name ~= nil then
-			tmp.Name, tmp.Count = parseBuffName(name)
-			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.pawnBuffTimeLeft_offset);
-			tmp.Level = memoryReadRepeat("int", proc, i + addresses.pawnBuffLevel_offset);
+			--tmp.Name, tmp.Count = parseBuffName(name) -- TODO: Fix this
+			tmp.Name = "<Unknown>";
+			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
+			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
 
+			print("buffs on", self.Name, tmp.Id, tmp.Name, sprintf("%0.2f", tmp.TimeLeft), tmp.Level);
 			table.insert(self.Buffs,tmp)
 		end
 	end
-	--]]
 end
 
 function CPawn:updateLootable()
@@ -632,10 +630,7 @@ function CPawn:updateMounted()
 		return
 	end
 
-	local attackableFlag = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.attackable_flags);
-	if attackableFlag then
-		self.Mounted = bitAnd(attackableFlag, 0x10000000)
-	end
+	self.Mounted = memoryReadByte(getProc(), self.Address + addresses.game_root.pawn.mounted);
 end
 
 function CPawn:updateInParty()
@@ -743,12 +738,6 @@ function CPawn:isAlive()
 	-- Check if still valid target
 	if not self:exists() then
 		return false
-	end
-
-	-- Dead
-	self:updateHP()
-	if( self.HP < 1 ) then
-		return false;
 	end
 
 	-- Also dead (and has loot)

@@ -452,7 +452,7 @@ function healfight()
 		player:updateHP();
 		player:updateAlive();
 		-- If we die, break
-		if( player.HP < 1 or player.Alive == false ) then
+		if( player.HP <= 0 or player.Alive == false ) then
 			player.Fighting = false;
 			break_fight = true;
 			break;

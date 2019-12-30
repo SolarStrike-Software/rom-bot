@@ -5,6 +5,7 @@ addresses = {
 	player_name = 0x602510,
 	in_game = 0x65E5F0,
 	zone_id = 0x659250,
+	buff_count = 0x6031B0,
 	channel = {
 		base = 0x661188,
 		id = 0x4c4,
@@ -62,10 +63,20 @@ addresses = {
 			race = 0x328,
 			lootable_flags = 0x3a0,
 			attackable_flags = 0x39c,
-			mounted = 0x7C,
+			mounted = 0x3fa,
 			swimming = {
 				base = 0xf0,
 				swimming = 0xb4
+			},
+			buffs = {
+				array_start = 0x26c,
+				array_end = 0x270,
+				buff = {
+					size = 0x54,
+					time_remaining = 0x30,
+					id = 0x20,
+					level = 0x44,
+				},
 			},
 		},
 	},
