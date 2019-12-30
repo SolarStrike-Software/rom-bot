@@ -444,12 +444,13 @@ function timedSetWindowName(profile)
 	-- Update our exp gain
 	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
 		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
-		player.Level = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.level --[[addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset--]]) or player.Level
-		player.XP = 0;--memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoXP_offset) or player.XP
+		player.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level--memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.level --[[addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset--]]) or player.Level
+		player.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1))) or player.XP
+		
 		if player.XP == 0 or player.Level == 0 then return end
 
 		local newExp = player.XP or 0;
-		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (player.Level-1) * 4) or 1;
+		local maxExp = memoryReadRepeat("intptr", getProc(), getBaseAddress(addresses.exp_table), (player.Level-1) * 8) or 1;
 
 		player.LastExpUpdateTime = os.time();					-- Reset timer
 
@@ -2321,6 +2322,8 @@ function GetSkillBookData(_tabs)
 			elseif uses == SKILLUSES_PSI then
 				tmp.Psi = usesnum
 			elseif tmp.Name ~= "" and uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+				uses = uses or -1;
+				usesnum = usesnum or -1;
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
 		end

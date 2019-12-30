@@ -9,6 +9,12 @@ addresses = {
 		base = 0x661188,
 		id = 0x4c4,
 	},
+	class_info = {
+		base = 0x60C5F0,
+		size = 0x430,
+		level = 0x28,
+	},
+	exp_table = 0x65930C,
 	game_root = {
 		base = 0x60099c,
 		gold = 0x6144B4,

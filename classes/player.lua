@@ -1619,7 +1619,6 @@ function CPlayer:fight()
 			local target = CPawn.new(self.TargetPtr);
 			target:updateHP()
 			if (target.HP/target.MaxHP) <= 0.1 then
-				print("Check 2");
 				return;
 			end
 
