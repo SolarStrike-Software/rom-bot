@@ -1613,7 +1613,6 @@ function CPlayer:fight()
 		-- Prevents looting when looting is turned off
 		-- (target is dead, or about to be dead)
 		if self.TargetPtr == 0 then
-			print("Check 1");
 			return
 		else
 			local target = CPawn.new(self.TargetPtr);

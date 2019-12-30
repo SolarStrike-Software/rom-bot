@@ -58,6 +58,7 @@ addresses = {
 			class1 = 0x310,
 			level = 0x314,
 			class2 = 0x318,
+			race = 0x328,
 			lootable_flags = 0x3a0,
 			attackable_flags = 0x39c,
 			mounted = 0x7C,

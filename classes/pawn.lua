@@ -208,7 +208,7 @@ function CPawn:update()
 	self:updateMP() -- Also updates MP2, MaxMP, MaxMP2, Rage, Focus, Energy
 	self:updateLastHP()
 
-	--self.Race = memoryReadRepeat("int", proc, self.Address + addresses.pawnRace_offset) or self.Race;
+	self.Race = memoryReadRepeat("int", proc, self.Address + addresses.game_root.pawn.race) or self.Race;
 
 
 	self:updateGUID()
