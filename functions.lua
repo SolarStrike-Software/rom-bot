@@ -1009,7 +1009,9 @@ function utf8ToAscii_umlauts(_str)
 	-- key is the combined UTF8 code
 	local function replaceUtf8( _str, _key )
 		local tmp = database.utf8_ascii[_key];
-		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		if( tmp ~= nil ) then
+			_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		end
 		return _str
 	end
 

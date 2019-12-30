@@ -221,9 +221,8 @@ function CPawn:update()
 
 	self:updateLootable()
 
-	--self.Level = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel_offset) or self.Level;
 	self.Level = memoryReadInt(proc, self.Address + addresses.game_root.pawn.level) or self.Level;
-	--self.Level2 = memoryReadRepeat("int", proc, self.Address + addresses.pawnLevel2_offset) or self.Level2;
+	self.Level = memoryReadInt(proc, self.Address + addresses.game_root.pawn.level2) or self.Level;
 
 	self:updateTargetPtr()
 	self:updateXYZ()
@@ -269,18 +268,18 @@ function CPawn:update()
 
 	self:updateSpeed()
 
-	--[[tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.pawnSwim_offset1, addresses.pawnSwim_offset2)
+	tmp = memoryReadRepeat("byteptr",proc, self.Address + addresses.game_root.pawn.swimming.base, addresses.game_root.pawn.swimming.swimming)
 	self.Swimming = (tmp == 3 or tmp == 4)
-	--]]
 	self:updateIsPet()
 
-	--[[if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
+
+	if( self.Alive ==nil or self.HP == nil or self.MaxHP == nil or self.MP == nil or self.MaxMP == nil or
 		self.MP2 == nil or self.MaxMP2 == nil or self.Name == nil or
 		self.Level == nil or self.Level2 == nil or self.TargetPtr == nil or
 		self.X == nil or self.Y == nil or self.Z == nil or self.Attackable == nil ) then
 
 		error("Error reading memory in CPawn:update()");
-	end--]]
+	end
 
 end
 
