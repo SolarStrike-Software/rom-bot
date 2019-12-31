@@ -189,4 +189,8 @@ addresses = {
 		base = 0x663DD4,
 		size = 0x663DD0,
 	},
+	input_box = {
+		base = 0x660B00,
+		offsets = {0xc, 0x9a4},
+	},
 }

@@ -520,8 +520,6 @@ function CPawn:updateBuffs()
 			tmp.Name = "<Unknown>";
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
-
-			print("buffs on", self.Name, tmp.Id, tmp.Name, sprintf("%0.2f", tmp.TimeLeft), tmp.Level);
 			table.insert(self.Buffs,tmp)
 		end
 	end

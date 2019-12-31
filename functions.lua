@@ -835,10 +835,12 @@ function RoMScript(script)
 							printf("0x%X\n", addresses.editBoxHasFocus_address)
 						end
 						if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-							keyboardPress(settings.hotkeys.ESCAPE.key); rest(500)
+						local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
+						if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
+							-- Clear input box focus
+							memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0);
 							if RoMScript("GameMenuFrame:IsVisible()") then
 								-- Clear the game menu and reset editbox focus
-								keyboardPress(settings.hotkeys.ESCAPE.key); rest(300)
 								RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 							end
 						end
@@ -847,7 +849,7 @@ function RoMScript(script)
 						tryagain = true
 						break
 					end;
-					rest(5);
+					rest(10);
 				end
 			until tryagain == false
 		until #texts == 0
@@ -1782,7 +1784,7 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(unpack(addresses.functionTargetBytes)));
+			--memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(unpack(addresses.functionTargetBytes)));
 
 		end
 	end
