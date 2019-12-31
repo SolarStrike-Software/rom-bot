@@ -834,7 +834,7 @@ function RoMScript(script)
 						if settings.options.DEBUGGING then
 							printf("0x%X\n", addresses.editBoxHasFocus_address)
 						end
-						if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+						local base = getBaseAddress(addresses.input_box.base);
 						local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
 						if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
 							-- Clear input box focus
