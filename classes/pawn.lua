@@ -222,7 +222,7 @@ function CPawn:update()
 	self:updateLootable()
 
 	self.Level = memoryReadInt(proc, self.Address + addresses.game_root.pawn.level) or self.Level;
-	self.Level = memoryReadInt(proc, self.Address + addresses.game_root.pawn.level2) or self.Level;
+	self.Level2 = memoryReadInt(proc, self.Address + addresses.game_root.pawn.level2) or self.Level;
 
 	self:updateTargetPtr()
 	self:updateXYZ()
@@ -545,7 +545,7 @@ function CPawn:updateHarvesting()
 		return
 	end
 
-	--self.Harvesting = memoryReadRepeat("int", getProc(), self.Address + addresses.pawnHarvesting_offset) ~= 0;
+	self.Harvesting = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.harvesting) ~= 0;
 end
 
 function CPawn:updateCasting()
@@ -554,7 +554,7 @@ function CPawn:updateCasting()
 		return
 	end
 
-	--self.Casting = (memoryReadRepeat("int", getProc(), self.Address + addresses.pawnCasting_offset) ~= 0);
+	self.Casting = (memoryReadRepeat("float", getProc(), self.Address + addresses.game_root.pawn.cast_full_time) ~= 0);
 end
 
 function CPawn:updateLevel()
@@ -564,6 +564,8 @@ function CPawn:updateLevel()
 	end
 
 	self.Level = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.level) or self.Level;
+	self.Level2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.level2) or self.Level;
+
 end
 
 function CPawn:updateTargetPtr()
@@ -1112,15 +1114,15 @@ function CPawn:targetIsFriend(aggroonly)
 end
 
 function CPawn:getRemainingCastTime()
-	--[[local casttime = memoryReadFloat( getProc(), self.Address + addresses.pawnCasting_offset)
-	local castsofar = memoryReadFloat( getProc(), self.Address + addresses.pawnCastingElapsed_offset)
+	local castFullTime = memoryReadFloat( getProc(), self.Address + addresses.game_root.pawn.cast_full_time);
+	local castSoFar = memoryReadFloat( getProc(), self.Address + addresses.game_root.pawn.cast_time);
 
-	if casttime and castsofar then
-		return casttime - castsofar, casttime
+	if castFullTime and castSoFar then
+		return castFullTime - castSoFar, castFullTime
 	else
 		return 0,0
 	end
-	--]]
+	
 	return 0;
 end
 

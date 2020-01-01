@@ -195,23 +195,22 @@ function CPlayer:update()
 		end
 	end--]]
 
---[[
-	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
-	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
-	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
-	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
-	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
---]]
-	self.Level = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.level);
+
+	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class1) or self.Class1;
+	self.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
+		
+	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
+	self.Level2 = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
+	
+	self.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
+	
+	
 	self:updateCasting()
 	self:updateBattling()
 	self:updateStance() -- Also updates Stance2
 	self:updateActualSpeed() -- Also updates Moving
 	self:updateNature()
-
-	--[[if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
-		error("Error reading memory in CPlayer:update()");
-	end--]]
 
 --[[
 	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
@@ -247,13 +246,7 @@ function CPlayer:checkAddress()
 	end
 end
 
-function CPlayer:updateCasting()
-	--self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
-end
-
 function CPlayer:updateBattling()
-	--self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
-
 	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
 	self.Battling = memoryReadBytePtr(getProc(), gameroot, addresses.game_root.combat_status) ~= 0;
 
@@ -347,7 +340,6 @@ function CPlayer:popSkillQueue()
 end
 
 function CPlayer:harvest(_id)
---[[
 	local function findNearestHarvestable(_id, ignore)
 		self:updateXYZ()
 		ignore = ignore or 0;
@@ -533,7 +525,6 @@ function CPlayer:harvest(_id)
 			lastHarvestedNodeAddr = closestHarvestable.Address;
 		end
 	end
-	--]]
 end
 
 -- Returns nil if nothing found, otherwise returns a pawn
@@ -4065,8 +4056,7 @@ function CPlayer:getCraftLevel(craft)
 		return
 	end
 
-	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + addresses.playerCraftLevel_offset + craft*4)
-
+	local lvl = memoryReadFloat(getProc(), getBaseAddress(addresses.crafting.base) + craft * 4)
 	return lvl
 end
 

@@ -22,7 +22,7 @@ CInventory = class(
 
 		self.MaxSlots = 240;
 		self.BagSlot = {};
-		self.Money = memoryReadInt( getProc(), addresses.client_exe_module_start + addresses.game_root.gold );
+		self.Money = memoryReadInt( getProc(), getBaseAddress(addresses.game_root.gold) );
 
 		local timeStart = getTime();
 

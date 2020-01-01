@@ -444,7 +444,7 @@ function timedSetWindowName(profile)
 	-- Update our exp gain
 	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
 		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
-		player.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level--memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.level --[[addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset--]]) or player.Level
+		player.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level
 		player.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1))) or player.XP
 		
 		if player.XP == 0 or player.Level == 0 then return end
@@ -1770,7 +1770,27 @@ function Attack()
 			end
 
 			-- freeze TargetPtr
-			--memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.rep(string.char(0x90),#addresses.functionTargetBytes));
+			local freezeAddr = getBaseAddress(addresses.code_mod.freeze_target.base);
+			local original = addresses.code_mod.freeze_target.original_code;
+			local replacement = addresses.code_mod.freeze_target.replace_code;
+			
+			local currentData = memoryReadBatch(getProc(), freezeAddr, string.rep('B', #original));
+			local modified = false;
+			for i,v in pairs(currentData) do
+				-- reading batches of unsigned bytes isn't working correctly for some reason,
+				-- so we manually convert it instead.
+				if( v < 0 ) then v = v + 256; end;
+				
+				local expectedByte = string.byte(original:sub(i, i + 1));
+				if( v ~= expectedByte ) then
+					modified = false;
+					break;
+				end
+			end
+			
+			if( not modified ) then
+				memoryWriteString(getProc(), freezeAddr, replacement);
+			end
 
 			-- Target it
 			memoryWriteInt(getProc(), player.Address + addresses.game_root.pawn.target, player.TargetPtr);
@@ -1784,7 +1804,10 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			--memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(unpack(addresses.functionTargetBytes)));
+			local replacement = addresses.code_mod.freeze_target.original_code;
+			if( not modified ) then
+				memoryWriteString(getProc(), freezeAddr, replacement);
+			end
 
 		end
 	end

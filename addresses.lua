@@ -14,11 +14,23 @@ addresses = {
 		base = 0x60C5F0,
 		size = 0x430,
 		level = 0x28,
+		tp = 0x10
+	},
+	crafting = {
+		base = 0x602bfc,
+	},
+	code_mod = {
+		freeze_target = {
+			base = 0x4970f1,
+			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
+			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
+		},
 	},
 	exp_table = 0x65930C,
 	game_root = {
 		base = 0x60099c,
 		gold = 0x6144B4,
+		mouseover_object_ptr = 0x75c,
 		input = {
 			movement = 0xAAC,
 		},
@@ -46,7 +58,10 @@ addresses = {
 			rotation_y = 0x38,
 			rotation_z = 0x3c,
 			fading = 0x68,
+			harvesting = 0x164,
 			stance = 0x228,
+			cast_full_time = 0x260,
+			cast_time = 0x264,
 			target = 0x278,
 			hp = 0x2d4,
 			previous_hp = 0x2dc,
