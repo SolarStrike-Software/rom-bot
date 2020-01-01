@@ -106,6 +106,7 @@ function selectGame(character)
 	end
 
 	charToUse = {};
+	
 	for i = 1, #windowList, 1 do
 		local process, playerAddress, nameAddress;
 	    -- open first window
@@ -116,15 +117,19 @@ function selectGame(character)
 		else
 			ver = ""
 		end
+		
 		-- read player address
 		showWarnings(false);
-		if addresses["staticbase_char"] and addresses["charPtr_offset"] and addresses["pawnName_offset"] then
-			playerAddress = memoryReadUIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
-			-- read player name
-			if( playerAddress ) then
-				nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
-			end
+		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base);
+		
+		-- read player name
+		if( playerAddress ) then
+			nameAddress = memoryReadUInt(process, playerAddress + addresses.game_root.pawn.name_ptr);
+		else
+			nameAddress = nil;
 		end
+		
 		-- store the player name, with window number
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
@@ -142,6 +147,7 @@ function selectGame(character)
 				charToUse[i] = tmp
 			end
 		end
+
 		showWarnings(true);
 		closeProcess(process);
 	end
