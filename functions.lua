@@ -1479,7 +1479,8 @@ end
 
 -- Read the ping variable from the client
 function getPing()
-	return memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.ping_offset);
+	return 10;
+	--return memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.ping_offset);
 end
 
 -- Returns the proper SKILL_USE_PRIOR value (whether manual or auto, and adjusted)

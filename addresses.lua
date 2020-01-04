@@ -33,6 +33,7 @@ addresses = {
 		base = 0x60099c,
 		gold = 0x6144B4,
 		mouseover_object_ptr = 0x75c,
+		player_actual_speed = 0x790,
 		input = {
 			movement = 0xAAC,
 		},

@@ -170,10 +170,15 @@ function CPlayer:update()
 		if addressChanged or classChanged or newLoad then
 			settings.loadSkillSet(self.Class1)
 			if newLoad then
-				-- Reset editbox false flag on start up
-				--[[if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+				local base = getBaseAddress(addresses.input_box.base);
+				local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
+				if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
+					-- Clear input box focus
+					memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0);
+					-- Clear the game menu and reset editbox focus
 					RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
-				end--]]
+				end
+
 			end
 			if classChanged and self.TargetPtr ~= 0 then
 				self:clearTarget()
@@ -246,8 +251,15 @@ function CPlayer:checkAddress()
 	end
 end
 
+
+function CPlayer:updateActualSpeed()
+	local base = getBaseAddress(addresses.game_root.base);
+	self.Speed = memoryReadFloatPtr(getProc(), base, addresses.game_root.player_actual_speed);
+	print("Player actual speed:", self.Speed);
+end
+
 function CPlayer:updateBattling()
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	self.Battling = memoryReadBytePtr(getProc(), gameroot, addresses.game_root.combat_status) ~= 0;
 
 	-- remember aggro start time, used for timed ranged pull

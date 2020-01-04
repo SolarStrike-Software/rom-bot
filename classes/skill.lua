@@ -762,6 +762,7 @@ function CSkill:use()
 end
 
 function CSkill:getRemainingCooldown()
+--[[
 	if self.BaseItemAddress ~= 0 then
 		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
 		if offset and offset ~= 0 then
@@ -771,6 +772,7 @@ function CSkill:getRemainingCooldown()
 			end
 		end
 	end
+	--]]
 	return 0
 end
 
