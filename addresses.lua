@@ -27,6 +27,8 @@ addresses = {
 		},
 	},
 	exp_table = 0x65930C,
+	psi = 0x606B08,
+	global_cooldown = 0x603990,
 	game_root = {
 		base = 0x60099c,
 		gold = 0x6144B4,
@@ -43,7 +45,6 @@ addresses = {
 		},
 		player = {
 			base = 0x5a8,
-			speed = 0x790,
 		},
 		combat_status = 0x74a,
 		pawn = { -- These can apply to a player, monster, NPC, etc..
@@ -59,6 +60,7 @@ addresses = {
 			rotation_z = 0x3c,
 			fading = 0x68,
 			harvesting = 0x164,
+			speed = 0x1f0,
 			stance = 0x228,
 			cast_full_time = 0x260,
 			cast_time = 0x264,

@@ -705,7 +705,8 @@ function CPawn:updateIsPet()
 end
 
 function CPawn:updateSpeed()
-	--self.Speed = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnSpeed_offset)
+	self.Speed = memoryReadRepeat("float", getProc(), self.Address + addresses.game_root.pawn.speed);
+	self.Moving = (self.ActualSpeed ~= 0);
 end
 
 function CPawn:haveTarget()

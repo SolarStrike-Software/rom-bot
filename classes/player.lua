@@ -222,10 +222,9 @@ function CPlayer:update()
 			self.Pet:update();
 		end
 	end
-	--[[
+
 	self:updatePsi()
 	self:updateGlobalCooldown()
-	--]]
 end
 
 function CPlayer:exists()
@@ -267,12 +266,6 @@ function CPlayer:updateStance()
 	--self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
 end
 
-function CPlayer:updateActualSpeed()
-	local base = addresses.client_exe_module_start + addresses.game_root.base;
-	self.ActualSpeed = memoryReadFloatPtr(getProc(), base, addresses.game_root.player.speed) or self.ActualSpeed
-	self.Moving = (self.ActualSpeed ~= 0)
-end
-
 function CPlayer:updateNature()
 	--[[local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
@@ -284,11 +277,11 @@ function CPlayer:updateNature()
 end
 
 function CPlayer:updatePsi()
-	--self.Psi = memoryReadRepeat("uint",getProc(), addresses.psi)
+	self.Psi = memoryReadRepeat("uint", getProc(), getBaseAddress(addresses.psi));
 end
 
 function CPlayer:updateGlobalCooldown()
-	--self.GlobalCooldown = memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase)/10
+	self.GlobalCooldown = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.global_cooldown))/10
 end
 
 -- Inserts a skill at the end of the queue.
@@ -3487,7 +3480,7 @@ function CPlayer:scan_for_NPC(_npcname)
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
 				mousePawn = CPawn(memoryReadRepeat("uintptr", getProc(),
-				addresses.staticbase_char, addresses.mousePtr_offset));
+				getBaseAddress(addresses.game_root.base), addresses.game_root.mouseover_object_ptr));
 
 				-- id 110504 Waffenhersteller Dimar
 				-- id 110502 Dan (Gemischtwarenh�ndler
