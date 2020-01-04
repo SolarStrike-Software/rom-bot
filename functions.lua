@@ -762,7 +762,7 @@ function RoMScript(script)
 	end
 
 	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), addresses.client_exe_module_start + addresses.macro.base);
+	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base));
 
 --	local scriptDef;
 

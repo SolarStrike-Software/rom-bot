@@ -75,7 +75,7 @@ function setpetautoattacks()
 end
 
 function petupdate()
-	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnPetPtr_offset);
+	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.game_root.pawn.pet_ptr);
 	pet = CPawn(petaddress)
 	setpettable()
 end

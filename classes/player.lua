@@ -212,8 +212,8 @@ function CPlayer:update()
 	self:updateActualSpeed() -- Also updates Moving
 	self:updateNature()
 
---[[
-	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
+
+	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.pet_ptr) or self.PetPtr
 	if( self.Pet == nil ) then
 		self.Pet = CPawn(self.PetPtr);
 	else
@@ -222,6 +222,7 @@ function CPlayer:update()
 			self.Pet:update();
 		end
 	end
+	--[[
 	self:updatePsi()
 	self:updateGlobalCooldown()
 	--]]

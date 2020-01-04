@@ -598,7 +598,7 @@ function PartyTable()
 			objectList:update();
 			for i = 0,objectList:size() do
 				obj = objectList:getObject(i);
-				local IsPet = memoryReadRepeat("uint",getProc(), obj.Address + addresses.pawnIsPet_offset)
+				local IsPet = memoryReadRepeat("uint",getProc(), obj.Address + addresses.game_root.pawn.owner_ptr)
 				if IsPet == v.Address then
 					table.insert(petmemberpawn, CPawn(obj.Address))
 				end

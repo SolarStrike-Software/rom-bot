@@ -696,12 +696,12 @@ function CPawn:updateIsPet()
 		return
 	end
 
---[[
+
 	if self.IsPet == nil then -- not updated yet
-		self.IsPet = memoryReadRepeat("uint",getProc(), self.Address + addresses.pawnIsPet_offset)
+		self.IsPet = memoryReadRepeat("uint",getProc(), self.Address + addresses.game_root.pawn.owner_ptr)
 		if self.IsPet == 0 then self.IsPet = false end
 	end
-	--]]
+
 end
 
 function CPawn:updateSpeed()
