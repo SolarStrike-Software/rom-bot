@@ -766,7 +766,8 @@ function CSkill:getRemainingCooldown()
 	if self.BaseItemAddress ~= 0 then
 		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
 		if offset and offset ~= 0 then
-			local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
+			--local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
+			local tmp = (memoryReadInt(getProc(), getBaseAddress(addresses.skill.cooldowns.base) + (offset+1)*4) or 0)/10
 			if tmp > 0 then
 				return tmp
 			end

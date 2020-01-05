@@ -34,6 +34,7 @@ addresses = {
 		gold = 0x6144B4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
+		ping = 0x7c0,
 		input = {
 			movement = 0xAAC,
 		},
@@ -123,6 +124,9 @@ addresses = {
 	},
 	skill = {
 		base = 0x663864,
+		cooldowns = {
+			base = 0x603990,
+		},
 		level = 0xc,
 		tp_to_level = 0x8,
 		uses = 0xc0,

@@ -255,7 +255,6 @@ end
 function CPlayer:updateActualSpeed()
 	local base = getBaseAddress(addresses.game_root.base);
 	self.Speed = memoryReadFloatPtr(getProc(), base, addresses.game_root.player_actual_speed);
-	print("Player actual speed:", self.Speed);
 end
 
 function CPlayer:updateBattling()
