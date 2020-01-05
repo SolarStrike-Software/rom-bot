@@ -22,7 +22,7 @@ function CWaypointListWander:getNextWaypoint()
 		Z = player.Z;
 	end
 
-	return CWaypoint(X, Z); -- TODO: Make sure this works
+	return CWaypoint(X, Z);
 end
 
 

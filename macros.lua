@@ -52,9 +52,9 @@ function setupMacroHotkey()
 	end
 	settings.profile.hotkeys.MACRO.key = hotkey
 
-	if( settings.options.DEBUGGING_MACRO ) then
-		printf("The macro hotkey is ".. string.char(hotkey) .. ".\n")
-	end
+	--if( settings.options.DEBUGGING_MACRO ) then
+		printf("The macro hotkey is ".. getKeyName(hotkey) .. ".\n")
+	--end
 end
 
 settings.profile.hotkeys.AttackType = nil
@@ -80,9 +80,9 @@ function setupAttackKey()
 		settings.profile.hotkeys.AttackType = "macro"
 	end
 
-	if( settings.options.DEBUGGING_MACRO ) then
+	--if( settings.options.DEBUGGING_MACRO ) then
 		printf("The 'Attack' hotkey is set to '".. settings.profile.hotkeys.AttackType .. "'.\n")
-	end
+	--end
 end
 
 -- Macro functions
@@ -207,26 +207,27 @@ end
 
 -- Action Key functions
 function getActionKeyInfo(actionKey)
-	local actionBar_base = memoryReadUInt(getProc(), addresses.actionBarPtr)
-	local actionBar_offset = 0x640 * player.Class1
-	local actionKey_offset = 0x14 * (actionKey - 1)
-	local actionKey_address = actionBar_base + actionBar_offset + actionKey_offset
-	local id =  memoryReadInt(getProc(), actionKey_address + addresses.actionKeyId_offset)
-	local type =  memoryReadInt(getProc(), actionKey_address + addresses.actionKeyType_offset) -- 4 = macro, 3 = skill, 1 = item, 0 = empty
+	-- Not sure what this was for. Does not appear to be relevant to the current game, but keeping it just in case.
+	-- local actionBar_offset = 0x640 * player.Class1
+	
+	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
+	local bar1 = base + addresses.actionbar.bar1_start;
+	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
+	local id = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id);
+	local type = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.type);
 	return id, type
 end
 
 function setActionKeyToId(actionkey, id)
-	local actionBar_base = memoryReadUInt(getProc(), addresses.actionBarPtr)
-	local actionBar_offset = 0x640 * player.Class1
-	local actionKey_offset = 0x14 * (actionkey - 1)
-	local actionKey_address = actionBar_base + actionBar_offset + actionKey_offset
+	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
+	local bar1 = base + addresses.actionbar.bar1_start;
+	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
 
 	-- write id
 	if id == "delete" then
-		memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyId_offset, 0)
+		memoryWriteInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id, 0)
 	else
-		memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyId_offset, id)
+		memoryWriteInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id, id)
 	end
 
 	-- get type
@@ -243,7 +244,7 @@ function setActionKeyToId(actionkey, id)
 	-- Don't know if there is a type 2
 
 	-- write type
-	memoryWriteInt(getProc(), actionKey_address + addresses.actionKeyType_offset, type)
+	memoryWriteInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.type, type)
 end
 
 function setActionKeyToMacro(actionkey, macroNum)
@@ -303,7 +304,7 @@ end
 
 -- Hotkey functions
 function getHotkey(number)
-	local address = addresses.client_exe_module_start + addresses.hotkey.base;
+	local address = getBaseAddress(addresses.hotkey.base);
 	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), address, addresses.hotkey.list);
 	local hotkeyAddress = memoryReadUInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
 	if hotkeyAddress < 1 then return end -- invalid number

@@ -29,6 +29,15 @@ addresses = {
 	exp_table = 0x65930C,
 	psi = 0x606B08,
 	global_cooldown = 0x603990,
+	actionbar = {
+		base = 0x660C0C,
+		slot = {
+			size = 0x14,
+			type = 0x0,
+			id = 0x4,
+		},
+		bar1_start = 0x12cc
+	},
 	game_root = {
 		base = 0x60099c,
 		gold = 0x6144B4,
