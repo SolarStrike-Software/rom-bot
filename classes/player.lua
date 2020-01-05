@@ -278,13 +278,12 @@ function CPlayer:updateStance()
 end
 
 function CPlayer:updateNature()
-	--[[local tmp = self:getBuff(503827)
+	local tmp = self:getBuff(503827)
 	if tmp then -- has natures power
 		self.Nature = tmp.Level + 1
 	else
 		self.Nature = 0
 	end
-	--]]
 end
 
 function CPlayer:updatePsi()

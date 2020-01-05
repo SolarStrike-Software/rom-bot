@@ -520,6 +520,7 @@ function CPawn:updateBuffs()
 			tmp.Name = "<Unknown>";
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
+			
 			table.insert(self.Buffs,tmp)
 		end
 	end
@@ -797,19 +798,18 @@ function CPawn:getBuff(buffnamesorids, count)
 	for i, buff in pairs(self.Buffs) do
 		-- compare against each 'buffname'
 		for j,buffname in pairs(buffnamesorids) do
-			if type(tonumber(buffname)) == "number" then
-				buffname = tonumber(buffname)
-				-- Get name from id
-				local tmpbuffname = GetIdName(buffname)
-				-- Take of end numbers
-				tmpbuffname = parseBuffName(tmpbuffname)
-				-- Use only if id has a name
-				if tmpbuffname ~= "" then
-					buffname = tmpbuffname
+			if( count == nil or buff.Count >= count ) then
+				if( type(tonumber(buffname)) == "number" ) then
+					-- Must be an ID. Do ID comparison.
+					if( tonumber(buffname) == buff.Id ) then
+						return buff;
+					end
+				else
+					-- Do name comparison
+					if( buffname == buff.Name ) then
+						return buff
+					end
 				end
-			end
-			if (buffname == buff.Name or buffname == buff.Id) and ( count == nil or buff.Count >= count ) then
-				return buff
 			end
 		end
 	end
