@@ -644,7 +644,7 @@ function CPlayer:target(pawnOrAddress)
 end
 
 function CPlayer:initialize()
-	--memoryWriteInt(getProc(), self.Address + addresses.pawnCasting_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.game_root.pawn.cast_full_time, 0);
 end
 
 -- Resets "toggled" combat skills to off & used counter to 0

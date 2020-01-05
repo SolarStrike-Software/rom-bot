@@ -2311,25 +2311,29 @@ function GetSkillBookData(_tabs)
 	end
 
 	local proc = getProc()
-	local skillsTableTabSize = 0x10
-	local skillSize = 0x4c
 
+	local tabInfoSize = addresses.skillbook.tabinfo_size;
+	local skillSize = addresses.skillbook.skill.size;
 	local function GetSkillInfo (address)
 		local tmp = {}
 		tmp.Address = address
 		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
-		tmp.Name = GetIdName(tmp.Id)
-		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skill.tp_to_level)
-		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skill.level)
-		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skill.as_level)
-		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
+		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);--GetIdName(tmp.Id)
+		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
+		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.level)
+		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.as_level)
+		
 		-- Get power and consumables
+		--[[
+		TODO: Fix this
+		
+		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
 		for count = 0, 1 do
-			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
+			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillbook.skillinfo.uses)
 			if uses == 0 then
 				break
 			end
-			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
+			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillbook.skillinfo.uses + 4)
 			if uses == SKILLUSES_MANA then
 				if tmp.Level > 49 then
 					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
@@ -2360,7 +2364,7 @@ function GetSkillBookData(_tabs)
 				usesnum = usesnum or -1;
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
-		end
+		end--]]
 
 		return tmp
 	end
@@ -2369,9 +2373,14 @@ function GetSkillBookData(_tabs)
 	local tabData = {}
 
 	for __, tab in pairs(_tabs) do
-		local base = addresses.client_exe_module_start + addresses.skill.base;
-		local tabBaseAddress = memoryReadRepeat("uint", proc, base + skillsTableTabSize*(tab-1) + addresses.skill.tab_start);
-		local tabEndAddress = memoryReadRepeat("uint", proc, base + skillsTableTabSize*(tab-1) + addresses.skill.tab_end);
+		-- The first tab in skillbook isn't stored in this same way, so the 2nd tab is actually
+		-- the first in this memory structure.
+		-- Additionally, we need to subtract 1 anyways because array index start at 0.
+		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
+		local tabindex = tab - 2;
+		local base = getBaseAddress(addresses.skillbook.base);
+		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + addresses.skillbook.tab_start);
+		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + addresses.skillbook.tab_end);
 
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do

@@ -131,11 +131,11 @@ addresses = {
 		base = 0x662430,
 		offsets = {0x18, 0x1C},
 	},
-	skill = {
+	cooldowns = {
+		base = 0x603990,
+	},
+	--[[skill = {
 		base = 0x663864,
-		cooldowns = {
-			base = 0x603990,
-		},
 		level = 0xc,
 		tp_to_level = 0x8,
 		uses = 0xc0,
@@ -169,6 +169,22 @@ addresses = {
 		type_flag9 = 0x274,
 		tab_end = 0x8,
 		tab_start = 0x4,
+	skillbook = {
+		base = 0x663864,
+		tab_start = 0x0,
+		tab_end = 0x4,
+		tabinfo_size = 0x20,
+		skill = {
+			size = 0x4c,
+			id = 0x0,
+			name = 0x24,
+			tp_to_level = 0x8,
+			level = 0xc,
+			as_level = 0x18,
+		},
+	},
+	itemset_skills = {
+		base = 0x620550,
 	},
 	item = {
 		table = {

@@ -1332,7 +1332,7 @@ function settings.updateSkillsAvailability()
 	for _, skill in pairs(settings.profile.skills) do
 		-- Check Id
 		if skill.Id == 0 or skill.Id == nil then
-			if skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil then
+			if string.lower(skill.hotkey) == "macro" or skill.hotkey == "" or skill.hotkey == nil then
 				-- Skill unusable without id or hotkey
 				skill.Available = false
 			else
