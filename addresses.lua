@@ -169,6 +169,7 @@ addresses = {
 		type_flag9 = 0x274,
 		tab_end = 0x8,
 		tab_start = 0x4,
+	},--]]
 	skillbook = {
 		base = 0x663864,
 		tab_start = 0x0,
