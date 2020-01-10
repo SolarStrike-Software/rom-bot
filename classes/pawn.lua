@@ -631,7 +631,12 @@ function CPawn:updateMounted()
 		return
 	end
 
-	self.Mounted = memoryReadByte(getProc(), self.Address + addresses.game_root.pawn.mounted);
+	local mounted = memoryReadByte(getProc(), self.Address + addresses.game_root.pawn.mounted);
+	if( mounted ~= nil and mounted ~= 0 ) then
+		self.Mounted = true;
+	else
+		self.Mounted = false;
+	end
 end
 
 function CPawn:updateInParty()
