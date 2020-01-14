@@ -1270,24 +1270,23 @@ function settings.updateSkillsAvailability()
 	local tabData = GetSkillBookData({2,3,4}) -- tabs of interest 2,3 and 4
 
 	-- Then collect item set skills
-	--[[	TODO: Re-enable this later
 	for num = 1, 5 do -- 5 possible enabled item set skills
-		local id = memoryReadInt(getProc(), addresses.itemSetSkillsBase + (num - 1)*4)
+		local id = memoryReadInt(getProc(), getBaseAddress(addresses.itemset_skills.base) + (num - 1)*4)
 		if id ~= 0 then
 			local address = GetItemAddress(id)
 			local name = GetIdName(id)
 			if name ~= nil and name ~= "" and address ~= nil then
-				local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
+				local aslevel = 1;--local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
 
 				-- Get power and consumables
 				local baseAddress = GetItemAddress(id)
 				local mana, rage, focus, energy, consumable, consumablenumber, psi
 				for count = 0, 1 do
-					local uses = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset)
+					local uses = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.memdatabase.skill.uses)
 					if uses == 0 then
 						break
 					end
-					local usesnum = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+					local usesnum = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.memdatabase.skill.usesnum + 4)
 					if uses == SKILLUSES_MANA then
 						mana = usesnum
 					elseif uses == SKILLUSES_RAGE then
@@ -1326,7 +1325,6 @@ function settings.updateSkillsAvailability()
 			end
 		end
 	end
-	]]
 
 	-- Next go through the profile skills and see which are available
 	for _, skill in pairs(settings.profile.skills) do

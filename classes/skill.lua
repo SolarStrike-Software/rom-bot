@@ -155,7 +155,9 @@ function CSkill:canUse(_only_friendly, target)
 		target:updateId()
 	end
 
-	if( self.hotkey == 0 ) then return false; end; --hotkey must be set!
+	if( self.hotkey == 0 ) then
+		return false;
+	end; --hotkey must be set!
 
 	-- a local function to make it more easy to insert debuging lines
 	-- you have to insert the correspointing options into your profile
@@ -767,7 +769,7 @@ function CSkill:getRemainingCooldown()
 		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
 		if offset and offset ~= 0 then
 			--local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
-			local tmp = (memoryReadInt(getProc(), getBaseAddress(addresses.skill.cooldowns.base) + (offset+1)*4) or 0)/10
+			local tmp = (memoryReadInt(getProc(), getBaseAddress(addresses.cooldowns.base) + (offset+1)*4) or 0)/10
 			if tmp > 0 then
 				return tmp
 			end

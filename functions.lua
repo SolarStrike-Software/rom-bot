@@ -2513,6 +2513,8 @@ end
 
 local getTEXTCache = {}
 function getTEXT(keystring)
+	return;
+--[[
 	if not keystring or type(keystring) ~= "string" then return end
 
 	-- Return cached value if it exists
@@ -2589,6 +2591,7 @@ function getTEXT(keystring)
 	end
 
 	return resultTEXT
+	--]]
 end
 
 function getKeyStrings(text, returnfirst)

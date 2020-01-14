@@ -23,6 +23,7 @@ include("classes/store.lua");
 include("classes/party.lua");
 include("classes/itemtypes.lua");
 include("classes/pet.lua");
+include("classes/memdatabase.lua");
 include("settings.lua");
 include("macros.lua");
 
@@ -98,6 +99,7 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
+MemDatabase = CMemDatabase();
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..

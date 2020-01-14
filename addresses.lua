@@ -187,11 +187,22 @@ addresses = {
 	itemset_skills = {
 		base = 0x620550,
 	},
-	item = {
-		table = {
-			--base = ???,
-			--start = ???,
+	memdatabase = {
+		base = 0x628B24,
+		offset = 0xD4,
+		branch = {
+			size = 0x8CA0,
+			info_size = 0x24,
+			itemset_address = 0x18,
+			itemset_size = 0x8C7B,
 		},
+		skill = {
+			uses = 0xC0,
+			usesnum = 0xC4,
+			level = 0x98,
+		},
+	},
+	item = {
 		card_or_npc_id = 0x364,
 		recipe_id = 0xF0,
 		name = 0xC,
