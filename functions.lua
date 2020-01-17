@@ -2544,6 +2544,7 @@ end
 
 function readAndCacheGameTexts()
 	print("Collecting and caching game texts... Please be patient.");
+	
 	local base = getBaseAddress(addresses.text.base);
 	local startAddress = memoryReadIntPtr(getProc(), base, addresses.text.start_addr);
 	local endAddress = memoryReadIntPtr(getProc(), base, addresses.text.end_addr);
@@ -2556,6 +2557,13 @@ function readAndCacheGameTexts()
 	outFile = io.open(textCacheFilename, 'w');
 	outFile:write("return {\n");
 	outFile:write(sprintf("\t['GAME_VERSION'] = \"%s\",\n", getGameVersion()));
+	
+	local progressBarSize = 20;
+	local progressBarFmt = "\rProgress: [%-"..progressBarSize .. "s] %3d%%";
+	local percentage = 0;
+	local lastPercentage = percentage;
+	local lastProgressUpdateTime = os.time();
+	printf(progressBarFmt, "", percentage);
 	while(currentAddress < endAddress) do
 		local key = memoryReadString(getProc(), currentAddress, maxKeySize);
 		local value = memoryReadString(getProc(), currentAddress + #key + 1, maxValueSize);
@@ -2573,9 +2581,17 @@ function readAndCacheGameTexts()
 		value = value:gsub('"', '\\"');
 		value = value:gsub('\'', "\\'");
 		outFile:write(sprintf("\t['%s'] = \"%s\",\n", key, value));
+		
+		percentage = math.floor(((currentAddress - startAddress) / totalSize)*100 + 0.5);
+		if( percentage ~= lastPercentage and (os.time() - lastProgressUpdateTime > 0) ) then
+			printf(progressBarFmt, string.rep('=', percentage/100 * progressBarSize), percentage);
+			lastProgressUpdateTime = os.time();
+		end
 	end
 	outFile:write("}\n");
 	outFile:close();
+	
+	printf(progressBarFmt .. "\n", string.rep('=', progressBarSize), 100);
 end
 
 function getKeyStrings(text, returnfirst)
