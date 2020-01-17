@@ -2525,9 +2525,14 @@ end
 
 function readCachedGameTexts()
 	if( fileExists(textCacheFilename) ) then
-		getTEXTCache = dofile(textCacheFilename);
-		if( getTEXTCache['GAME_VERSION'] ~= getGameVersion() ) then
-			getTEXTCache = {}; -- Unload
+		local status,result = pcall(dofile, textCacheFilename);
+		if( status ) then
+			getTEXTCache = result;
+			if( getTEXTCache['GAME_VERSION'] ~= getGameVersion() ) then
+				getTEXTCache = {}; -- Unload
+				return false;
+			end
+		else
 			return false;
 		end
 		
@@ -2538,7 +2543,7 @@ function readCachedGameTexts()
 end
 
 function readAndCacheGameTexts()
-	print("Collecting game texts... Please be patient.");
+	print("Collecting and caching game texts... Please be patient.");
 	local base = getBaseAddress(addresses.text.base);
 	local startAddress = memoryReadIntPtr(getProc(), base, addresses.text.start_addr);
 	local endAddress = memoryReadIntPtr(getProc(), base, addresses.text.end_addr);

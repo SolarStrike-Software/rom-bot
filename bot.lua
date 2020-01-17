@@ -193,6 +193,7 @@ function main()
 
 	database.load();
 	attach(getWin(forcedCharacter));
+	getTEXT(); -- Ensure that we cache game text info now rather than later
 
 	if( not checkExecutableCompatible() ) then
 		printf("Addresses seem off, trying to update.\n")
