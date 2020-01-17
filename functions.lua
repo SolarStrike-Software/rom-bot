@@ -2562,7 +2562,6 @@ function readAndCacheGameTexts()
 	local progressBarFmt = "\rProgress: [%-"..progressBarSize .. "s] %3d%%";
 	local percentage = 0;
 	local lastPercentage = percentage;
-	local lastProgressUpdateTime = os.time();
 	printf(progressBarFmt, "", percentage);
 	while(currentAddress < endAddress) do
 		local key = memoryReadString(getProc(), currentAddress, maxKeySize);
@@ -2583,9 +2582,9 @@ function readAndCacheGameTexts()
 		outFile:write(sprintf("\t['%s'] = \"%s\",\n", key, value));
 		
 		percentage = math.floor(((currentAddress - startAddress) / totalSize)*100 + 0.5);
-		if( percentage ~= lastPercentage and (os.time() - lastProgressUpdateTime > 0) ) then
+		if( percentage ~= lastPercentage ) then
 			printf(progressBarFmt, string.rep('=', percentage/100 * progressBarSize), percentage);
-			lastProgressUpdateTime = os.time();
+			lastPercentage = percentage;
 		end
 	end
 	outFile:write("}\n");
