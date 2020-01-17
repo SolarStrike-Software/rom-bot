@@ -512,18 +512,17 @@ function CPawn:updateBuffs()
 	for i = buffStart, buffEnd - 4, BuffSize do
 		local tmp = {}
 		tmp.Id = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.id);
-		--local name = GetIdName(tmp.Id) -- TODO: Fix this
-		local name = "<Unknown>";
+		local name = GetIdName(tmp.Id)
 
 		if name ~= nil then
-			--tmp.Name, tmp.Count = parseBuffName(name) -- TODO: Fix this
-			tmp.Name = "<Unknown>";
+			tmp.Name, tmp.Count = parseBuffName(name)
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
 			
 			table.insert(self.Buffs,tmp)
 		end
 	end
+	
 end
 
 function CPawn:updateLootable()

@@ -1568,6 +1568,7 @@ function waitForLoadingScreen(_maxWaitTime)
 		until 1234 == RoMScript("1234")
 	end
 
+	MemDatabase:flush();
 	player:update()
 	return true
 end
@@ -2512,205 +2513,68 @@ function getGameTime()
 end
 
 local getTEXTCache = {}
-function getTEXT(keystring)
-	return;
---[[
-	if not keystring or type(keystring) ~= "string" then return end
-
-	-- Return cached value if it exists
-	if getTEXTCache[keystring] then
-		return getTEXTCache[keystring]
-	end
-
-	local function memoryGetTEXT(str)
-		local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
-		local startloc = memoryReadInt(getProc(), addressPtrsBase + 0x268)
-		local endloc = memoryReadInt(getProc(), addressPtrsBase + 0x26C)
-		local quarter = math.floor((endloc-startloc) / 4)
-
-		-- Pattern doesn't work with first string so check that first
-		if str == "AC_ITEMTYPENAME_0" then
-			return memoryReadString(getProc(), startloc + 18)
-		end
-
-		local tmpStart = endloc
-		local tmpEnd = endloc
-		-- Find which quarter of memory holds string to speed up search
-		for count = 1,3 do
-			tmpStart = tmpStart - quarter
-			local found = findPatternInProcess(getProc(), string.char(0).."Sys", "xxx", tmpStart, tmpEnd);
-			local tmpText = memoryReadString(getProc(), found + 1)
-			if tmpText <= str then
-				startloc = tmpStart
-				break
-			else
-				endloc = tmpStart
-			end
-		end
-
-		local searchlen = endloc - startloc
-		local pattern = string.char(0x00) .. str .. string.char(0x00)
-		local mask = string.rep("x", #pattern)
-		local offset = #pattern
-		local found = findPatternInProcess(getProc(), pattern, mask, startloc, searchlen);
-		if found ~= 0 then
-			return memoryReadString(getProc(), found + offset)
-		else
-			return str
+local textCacheFilename = getExecutionPath() .. "/cache/texts.lua";
+function getTEXT(key)
+	if( #getTEXTCache == 0 ) then
+		if( not readCachedGameTexts() ) then
+			readAndCacheGameTexts();
 		end
 	end
+	return getTEXTCache[key];
+end
 
-	local resultTEXT = memoryGetTEXT(keystring)
-	local playerNameUsed = false
-
-	-- Replace known sub key strings
-	for subKeyString in string.gmatch(resultTEXT,"%[(.-)%]") do
-		local translatedSubTEXT
-		if subKeyString:sub(1,1) == "$" then -- variable. See if it's player.
-			if subKeyString == "$PLAYERNAME" or subKeyString == "$playername" then
-				translatedSubTEXT = player.Name
-				playerNameUsed = true
-			end
-		elseif tonumber(subKeyString) then -- Must be id
-			translatedSubTEXT = GetIdName(tonumber(subKeyString))
-		elseif subKeyString:find("|",1,true) then -- Id with a text override
-			translatedSubTEXT = subKeyString:match(".*|(.*)")
-		elseif subKeyString:sub(1,3) == "<S>" then -- Must be id plural
-			translatedSubTEXT = GetIdName(tonumber(subKeyString:sub(4,9)),true)
- 		elseif not string.find(subKeyString,"%%") then
-			translatedSubTEXT = getTEXT(subKeyString)
+function readCachedGameTexts()
+	if( fileExists(textCacheFilename) ) then
+		getTEXTCache = dofile(textCacheFilename);
+		if( getTEXTCache['GAME_VERSION'] ~= getGameVersion() ) then
+			getTEXTCache = {}; -- Unload
+			return false;
 		end
-		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString then
-			resultTEXT = string.gsub(resultTEXT, "%["..subKeyString.."%]", translatedSubTEXT)
-		end
+		
+		return true;
 	end
+	
+	return false;
+end
 
-	-- Remember result
-	if resultTEXT ~= keystring and not playerNameUsed then
-		getTEXTCache[keystring] = resultTEXT
+function readAndCacheGameTexts()
+	print("Collecting game texts... Please be patient.");
+	local base = getBaseAddress(addresses.text.base);
+	local startAddress = memoryReadIntPtr(getProc(), base, addresses.text.start_addr);
+	local endAddress = memoryReadIntPtr(getProc(), base, addresses.text.end_addr);
+	local totalSize = endAddress - startAddress;
+	
+	local maxKeySize = 128;
+	local maxValueSize = 4096;
+	local currentAddress = startAddress;
+	
+	outFile = io.open(textCacheFilename, 'w');
+	outFile:write("return {\n");
+	outFile:write(sprintf("\t['GAME_VERSION'] = \"%s\",\n", getGameVersion()));
+	while(currentAddress < endAddress) do
+		local key = memoryReadString(getProc(), currentAddress, maxKeySize);
+		local value = memoryReadString(getProc(), currentAddress + #key + 1, maxValueSize);
+		currentAddress = currentAddress + #key + #value + 2;
+		
+		getTEXTCache[key] = value;
+		
+		
+		-- Do some character substitutions to ensure that we're formatting it correctly for Lua
+		key = key:gsub('\'', "\\'");
+		
+		value = value:gsub("\\", '\\\\');
+		value = value:gsub("\r", '\\r');
+		value = value:gsub("\n", '\\n');
+		value = value:gsub('"', '\\"');
+		value = value:gsub('\'', "\\'");
+		outFile:write(sprintf("\t['%s'] = \"%s\",\n", key, value));
 	end
-
-	return resultTEXT
-	--]]
+	outFile:write("}\n");
+	outFile:close();
 end
 
 function getKeyStrings(text, returnfirst)
-	-- Heavily filtered to make the speed usable but should find most texts. If not found, use language converter tool.
-	-- Excludes key strings beginning with "Sys". They are for ids so you can use GetIdName instead.
-	local proc = getProc()
-	local addressPtrsBase = memoryReadInt(proc, addresses.getTEXT)
-	local startloc = memoryReadInt(proc, addressPtrsBase + 0x268)
-	local endloc = memoryReadInt(proc, addressPtrsBase + 0x26C)
-	local results = {}
-
-	-- Returns the key string of the text found at address 'address'. 'address' points to the 0 before the text.
-	local function getkeystr(address)
-		repeat
-			address = address -1
-		until memoryReadByte(proc, address) == 0
-		if address < startloc then
-			address = startloc
-		else
-			address = address + 1
-		end
-		return memoryReadString(proc, address)
-	end
-
-	-- Returns nil if no results and prints them if there are results. Only applies to result tables.
-	local function getResults()
-		if #results == 0 then
-			return
-		else
-			-- Prints results for user convenience.
-			for k,v in pairs(results) do
-				print("\t"..v)
-			end
-			return results
-		end
-	end
-
-	--== First search for an exact match with findPatternInProcess because it's so fast.
-
-	local rangestart = startloc
-	local found, tmpkey
-	repeat
-		found = findPatternInProcess(proc, string.char(0)..text..string.char(0), string.rep("x",#text+2), rangestart, endloc-rangestart);
-		if found ~= 0 then
-			tmpkey = getkeystr(found)
-			if returnfirst == true then
-				return tmpkey -- Return the first found result
-			else
-				table.insert(results, tmpkey) -- Add to results table
-			end
-			rangestart = found + #text+1 -- continue from here to find more matches
-			if rangestart >= endloc - 1 then break end
-		end
-	until found == 0
-
-	-- If results found, return them.
-	if #results > 0 then
-		return getResults()
-	end
-
-	--== Now search for text with substrings that match.
-
-	-- Get address ranges to skip "Sys" key strings
-	local addressrange = {
-				-- Range before "Sys"
-		[1]={	start = startloc,
-				finish = findPatternInProcess(proc, string.char(0).."Sys1", string.rep("x",5), startloc, endloc)+1},
-				-- Range after "Sys"
-		[2]={	start = findPatternInProcess(proc, string.char(0).."SYST", string.rep("x",5), startloc, endloc)+1,
-				finish = endloc},
-		}
-
-	local tmpkey, tmptext, tmpstrpat = "","",""
-	local translatedSubTEXT, finish
-	for k,v in pairs(addressrange) do
-		address = v.start
-		finish = v.finish
-		repeat repeat -- Second 'repeat' is break loop
-			-- Get key string and text
-			tmpkey = memoryReadString(proc, address) -- key string
-			address = address + #tmpkey + 1
-			tmptext = memoryReadString(proc, address) -- text
-			address = address + #tmptext + 1
-
-			-- only search key strings with valid substrings.
-			if not string.find(tmptext,"%[^%$]-%]") then break end
-
-			-- Skip text with %s or %d because they wont match anyway.
-			if string.find(tmptext,"%%[sd]") then break end
-
-			-- Create find pattern
-			tmpstrpat = string.gsub(tmptext,"[%(%)%-%+%*%?]","%%%1") -- prefix special characters with '%'
-			tmpstrpat = string.gsub(tmpstrpat,"%[.-%]",".*") -- change substrings to '.*'
-
-			if string.find(tmpstrpat,"%w") and string.find(text, tmpstrpat) then -- See if text matches without sub strings
-				-- Replace substrings with correct texts
-				for subKeyString in string.gmatch(tmptext,"%[([^%$].-)%]") do
-					if tonumber(subKeyString) then -- Must be id
-						translatedSubTEXT = GetIdName(tonumber(subKeyString))
-					else
-						translatedSubTEXT = getTEXT(subKeyString)
-					end
-					if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString and not string.find(translatedSubTEXT,"%%") then
-						tmptext = string.gsub(tmptext, "%["..subKeyString.."%]", translatedSubTEXT, 1)
-					end
-				end
-				-- Do final comparison
-				if tmptext == text then
-					if returnfirst == true then
-						return tmpkey -- Return the first found result
-					else
-						table.insert(results, tmpkey) -- Add to results table
-					end
-				end
-			end
-		until true until address >= finish-1
-	end
-
-	return getResults()
+	getTEXT(text);
 end
 
 function getGameVersion(proc)

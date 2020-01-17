@@ -45,5 +45,6 @@ function GetIdName(itemId, plural)
 		until nameaddress ~= 0 or deltaTime(getTime(),starttime) > 200
 	end
 
-	return name .. memoryReadString(proc, nameaddress)
+	local name2 = memoryReadString(proc, nameaddress) or "";
+	return name .. name2;
 end

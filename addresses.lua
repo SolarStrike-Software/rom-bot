@@ -254,4 +254,9 @@ addresses = {
 		base = 0x660B00,
 		offsets = {0xc, 0x9a4},
 	},
+	text = {
+		base = 0x624AFC,
+		start_addr = 0x268,
+		end_addr = 0x26C,
+	},
 }

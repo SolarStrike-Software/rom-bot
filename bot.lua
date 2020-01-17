@@ -27,6 +27,7 @@ include("classes/memdatabase.lua");
 include("settings.lua");
 include("macros.lua");
 
+
 functionBeingLoaded = "romglobal/userfunctions.lua"
 if( fileExists(getExecutionPath().."/../romglobal/userfunctions.lua") ) then
 	include("../romglobal/userfunctions.lua");
@@ -99,7 +100,12 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
+
+
 MemDatabase = CMemDatabase();
+
+
+
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
@@ -710,6 +716,10 @@ function main()
 		end
 		if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
 			error(language[114],1) -- No waypoints to go to
+		end
+		
+		if( not isInGame() ) then
+			MemDatabase:flush();
 		end
 
 		player:checkAddress()
