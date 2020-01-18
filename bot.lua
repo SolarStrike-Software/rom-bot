@@ -24,6 +24,7 @@ include("classes/party.lua");
 include("classes/itemtypes.lua");
 include("classes/pet.lua");
 include("classes/memdatabase.lua");
+include("classes/codemod.lua");
 include("settings.lua");
 include("macros.lua");
 

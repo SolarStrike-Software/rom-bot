@@ -3985,62 +3985,30 @@ function CPlayer:aimAt(target)
 end
 
 function CPlayer:clickToCast( onmouseover )
-	-- Freeze mouse function
-	local function nopmouse()
-		-- x axis
-		local addressX1 = addresses.functionMousePatchAddr
-		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
-		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
-		memoryWriteString(getProc(), addressX1, string.rep(string.char(0x90),#addresses.functionMouseX1Bytes)); -- left of window
-		memoryWriteString(getProc(), addressX2, string.rep(string.char(0x90),#addresses.functionMouseX2Bytes)); -- right of window
-		memoryWriteString(getProc(), addressX3, string.rep(string.char(0x90),#addresses.functionMouseX3Bytes)); -- over window
+	local codemodDetails = addresses.code_mod.freeze_mousepos;
+	local codemod = CCodeMod(codemodDetails.base, codemodDetails.original_code, codemodDetails.replace_code);
 
-		-- y axis
-		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
-		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
-		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
-		memoryWriteString(getProc(), addressY1, string.rep(string.char(0x90),#addresses.functionMouseY1Bytes)); -- above window
-		memoryWriteString(getProc(), addressY2, string.rep(string.char(0x90),#addresses.functionMouseY2Bytes)); -- below window
-		memoryWriteString(getProc(), addressY3, string.rep(string.char(0x90),#addresses.functionMouseY3Bytes)); -- over window
-	end
-
-	-- Unfreeze mouse function
-	local function unnopmouse()
-		-- x axis
-		local addressX1 = addresses.functionMousePatchAddr
-		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
-		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
-		memoryWriteString(getProc(), addressX1, string.char(unpack(addresses.functionMouseX1Bytes)));
-		memoryWriteString(getProc(), addressX2, string.char(unpack(addresses.functionMouseX2Bytes)));
-		memoryWriteString(getProc(), addressX3, string.char(unpack(addresses.functionMouseX3Bytes)));
-
-		-- y axis
-		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
-		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
-		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
-		memoryWriteString(getProc(), addressY1, string.char(unpack(addresses.functionMouseY1Bytes)));
-		memoryWriteString(getProc(), addressY2, string.char(unpack(addresses.functionMouseY2Bytes)));
-		memoryWriteString(getProc(), addressY3, string.char(unpack(addresses.functionMouseY3Bytes)));
-	end
-
-	local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
-	local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
+	local hf_x, hf_y, ww, wh = windowRect( getWin());
 	local clickX = math.ceil(ww/2)
 	local clickY = math.ceil(wh/2)
-	yrest(50)
-	nopmouse()
-	yrest(50)
-	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
-	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
-	yrest(50)
+	
+	-- Freeze mouse
+	local codemodInstalled = codemod:safeInstall();
+	
+	local base = getBaseAddress(addresses.mouse.base);
+	memoryWriteIntPtr(getProc(), base, addresses.mouse.x_in_window, clickX);
+	memoryWriteIntPtr(getProc(), base, addresses.mouse.y_in_window, clickY);
+	yrest(50);
 	if onmouseover then
 		RoMCode('SpellTargetUnit("mouseover")')
 	else
 		RoMCode("SpellTargetUnit()")
 	end
 	yrest(50)
-	-- unfreeze TargetPtr
-	unnopmouse()
+	-- unfreeze
+	if( codemodInstalled ) then
+		codemod:uninstall();
+	end
 end
 
 function CPlayer:getCraftLevel(craft)
