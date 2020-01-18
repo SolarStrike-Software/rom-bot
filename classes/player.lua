@@ -3979,9 +3979,9 @@ function CPlayer:aimAt(target)
 	local ny = camera.YFocus + vec3
 
 	-- write camera coordinates
-	memoryWriteFloat(getProc(), camera.Address + addresses.camX_offset, nx);
-	memoryWriteFloat(getProc(), camera.Address + addresses.camZ_offset, nz);
-	memoryWriteFloat(getProc(), camera.Address + addresses.camY_offset, ny);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.x, nx);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.z, nz);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.y, ny);
 end
 
 function CPlayer:clickToCast( onmouseover )

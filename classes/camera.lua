@@ -35,25 +35,18 @@ function CCamera:update()
 --]]
 
 	-- camera coordinates
-	--[[
-	self.X = debugAssert(memoryReadFloat(proc, self.Address + addresses.camX_offset), memerrmsg);
-	self.Y = debugAssert(memoryReadFloat(proc, self.Address + addresses.camY_offset), memerrmsg);
-	self.Z = debugAssert(memoryReadFloat(proc, self.Address + addresses.camZ_offset), memerrmsg);
-	--]]
 	self.X = memoryReadFloat(proc, self.Address + addresses.game_root.camera.x);
 	self.Y = memoryReadFloat(proc, self.Address + addresses.game_root.camera.y);
 	self.Z = memoryReadFloat(proc, self.Address + addresses.game_root.camera.z);
 
 	-- camera focus coordinates
-	--[[
-	self.XFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camXFocus_offset), memerrmsg);
-	self.ZFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camZFocus_offset), memerrmsg);
-	self.YFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.camYFocus_offset), memerrmsg);
-	--]]
+	self.XFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.game_root.camera.focus_x), memerrmsg);
+	self.ZFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.game_root.camera.focus_z), memerrmsg);
+	self.YFocus = debugAssert(memoryReadFloat( proc, self.Address + addresses.game_root.camera.focus_y), memerrmsg);
 
 	-- camera distance
-	--self.Distance = debugAssert(memoryReadFloatPtr( proc, addresses.staticbase_char, {addresses.camDistance_offset1,addresses.camDistance_offset2}))
-	self.Distance = memoryReadFloat(proc, self.Address + addresses.game_root.camera.distance);
+	--self.Distance = memoryReadFloat(proc, self.Address + addresses.game_root.camera.distance);
+	self.Distance = distance(self.X, self.Y, self.Z, self.XFocus, self.YFocus, self.ZFocus);
 
 	--[[if( self.XUVec == nil or self.YUVec == nil or self.ZUVec == nil or
 	self.X == nil or self.Y == nil or self.Z == nil or
@@ -66,45 +59,25 @@ end
 function CCamera:setPosition(x, y, z)
 	local proc = getProc();
 
-	self.XUVec = x;
-	self.YUVec = y;
-	--self.ZUVec = z;
+	x = x or self.X;
+	y = y or self.Y;
+	z = z or self.Z;
 
-	--memoryWriteFloat(proc, self.Address + addresses.camXUVec_offset, x);
-	--memoryWriteFloat(proc, self.Address + addresses.camYUVec_offset, y);
-	--memoryWriteFloat(proc, self.Address + addresses.camZUVec_offset, z);
+	memoryWriteFloat(proc, self.Address + addresses.game_root.camera.x, x);
+	memoryWriteFloat(proc, self.Address + addresses.game_root.camera.y, y);
+	memoryWriteFloat(proc, self.Address + addresses.game_root.camera.z, z);
 end
 
 function CCamera:setRotation(angle)
---[[
-	local proc = getProc();
-	self:update()
-
-	local yangle = 0.35 -- About 20 degrees. Angle in radians from the horizontal. Can be changed.
-
-	-- y vector
-	local playerYAngle = player.DirectionY
-	if playerYAngle > 0.35 then
-		playerYAngle = 0.35
-	elseif playerYAngle < -0.35 then
-		playerYAngle = -0.35
-	end
-	local vec3 = math.sin(yangle-playerYAngle) * self.Distance
-
-	-- x and z vectors
-	local hypotenuse = (self.Distance^2 - vec3^2)^.5
-	local vec1 = math.cos(angle + math.pi) * hypotenuse;
-	local vec2 = math.sin(angle + math.pi) * hypotenuse;
-
-	-- new camera coordinates
-	local nx = self.XFocus + vec1;
-	local nz = self.ZFocus + vec2;
-	local ny = self.YFocus + vec3;
-
-	memoryWriteFloat(proc, self.Address + addresses.camX_offset, nx);
-	memoryWriteFloat(proc, self.Address + addresses.camZ_offset, nz);
-	memoryWriteFloat(proc, self.Address + addresses.camY_offset, ny);
-	--]]
+	self:update();
+	
+	local originalDistance = self.Distance;
+	
+	-- Position camera behind player along this new angle.
+	local nx = player.X + math.cos(angle + math.pi)*originalDistance;
+	local nz = player.Z + math.sin(angle + math.pi)*originalDistance;
+	
+	self:setPosition(nx, nil, nz);
 end
 
 function CCamera:setDistance(distance)
@@ -118,10 +91,13 @@ function CCamera:setDistance(distance)
 		-- invalid value.
 		return
 	end
-
-	-- Change distance
-	memoryWriteFloat( getProc(), self.Address + addresses.game_root.camera.distance, distance)
-
-	-- Save distance setting
-	--memoryWriteFloatPtr( getProc(), addresses.staticbase_char, addresses.camDistanceSave_offset, distance)
+	
+	local base = getBaseAddress(addresses.game_root.base);
+	memoryWriteFloatPtr(getProc(), base, addresses.game_root.camdistance, distance);
+	
+	local angle = math.atan2(self.ZFocus - self.Z, self.XFocus - self.X);
+	angle = math.fmod(angle + math.pi, math.pi*2);
+	local nx = self.XFocus + math.cos(angle)*distance;
+	local nz = self.ZFocus + math.sin(angle)*distance;
+	self:setPosition(nx, nil, nz);
 end

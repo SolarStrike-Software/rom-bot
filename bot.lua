@@ -106,6 +106,7 @@ MemDatabase = CMemDatabase();
 
 
 
+
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
@@ -248,6 +249,7 @@ function main()
 	if( settings.options.DEBUGGING ) then
 		printf("[DEBUG] camAddress: 0x%X\n", camera.Address);
 	end
+	
 
 	if( settings.options.DEBUGGING ) then
 		-- Camera debugging info
