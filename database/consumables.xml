@@ -1,5 +1,6 @@
 <potions>
 	<!-- Healing potions -->
+	<potion type="hot" id="208520" level="100" name="Hundred Grass Essence" />
 	<potion type="hot" id="208479" level="96" name="Sage Herb" />
 	<potion type="hot" id="208478" level="91" name="Miracle Flower" />
 	<potion type="hot" id="208477" level="86" name="Elven Herb" />
@@ -21,6 +22,13 @@
 	<potion type="hot" id="200664" level="6" name="Basic First Aid Potion" />
 	<potion type="hot" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
 
+	<potion type="heal" id="242899" level="98" potency="7500" name="Healing Potion of Redemption" />
+	<potion type="heal" id="242895" level="95" potency="7000" name="Source of Healing" />
+	<potion type="heal" id="242891" level="90" potency="6500" name="Healing Potion of Hope" />
+	<potion type="heal" id="242887" level="85" potency="6000" name="Vitality Healing Potion" />
+	<potion type="heal" id="242191" level="80" potency="5500" name="Blessed Healing Potion" />
+	<potion type="heal" id="241113" level="75" potency="5000" name="Blessed Healing Water" />
+	<potion type="heal" id="240426" level="70" potency="4500" name="Swift Healing Potion" />
 	<potion type="heal" id="207677" level="65" potency="4000" name="Super Healing Potion" />
 	<potion type="heal" id="207676" level="60" potency="3500" name="Super Salve" />
 	<potion type="heal" id="200274" level="41" potency="1500" name="Strong Healing Potion" />
@@ -31,6 +39,7 @@
 	<potion type="heal" id="200151" level="1" potency="220" name="Basic Medicine" />
 
 	<!-- Mana potions -->
+	<potion type="mot" id="208521" level="100" name="Divine Magic Stone" />
 	<potion type="mot" id="208486" level="96" name="Mysterious Sage Stone" />
 	<potion type="mot" id="208485" level="91" name="Rare Sage Stone" />
 	<potion type="mot" id="208484" level="86" name="Mysterious Elf Stone" />
@@ -52,6 +61,13 @@
 	<potion type="mot" id="201043" level="6" name="Basic Magic Potion" />
 	<potion type="mot" id="201042" level="1" potency="180" name="Simple Magic Potion" />
 
+	<potion type="mana" id="242900" level="98" potency="7500" name="Magical Potion of Redemption" />
+	<potion type="mana" id="242896" level="95" potency="7000" name="Magical Potion of Source" />
+	<potion type="mana" id="242892" level="90" potency="6500" name="Magical Potion of Hope" />
+	<potion type="mana" id="242888" level="85" potency="6000" name="Vitality Magic Potion" />
+	<potion type="mana" id="242192" level="80" potency="5500" name="Blessed Magic Potion" />
+	<potion type="mana" id="241387" level="75" potency="5000" name="Prayer Magic Spring" />
+	<potion type="mana" id="240427" level="70" potency="4500" name="Swift Thinking Potion" />
 	<potion type="mana" id="207679" level="65" potency="4000" name="Super Mana Potion" />
 	<potion type="mana" id="207678" level="60" potency="3500" name="Super Spirit Potion" />
 	<potion type="mana" id="200275" level="43" potency="1500" name="Strong Mana Potion" />
@@ -154,8 +170,8 @@
 	<potion type="phirushealing" 	id="203496" name="Phirius Potion - Type C" potency="40" />			<!-- 40% -->
 	<potion type="phirushealing" 	id="203497" name="Phirius Potion - Type D" potency="50" />			<!-- 50% -->
 	<potion type="phirushealing" 	id="203498" name="Phirius Potion - Type E" potency="60" />			<!-- 60% -->
-	<potion type="phirushealing"  id="203159" name="Pumpkin Pizza"           potency="30" />			<!-- 30% -->
-	<potion type="phirushealing"  id="203023" name="Love Chocolate"          potency="35" />			<!-- 35% -->
+	<potion type="phirushealing"  	id="203159" name="Pumpkin Pizza"           potency="30" />			<!-- 30% -->
+	<potion type="phirushealing" 	id="203023" name="Love Chocolate"          potency="35" />			<!-- 35% -->
 
 	<potion type="phirusmana" 		id="203499" name="Phirius Elixir - Type A" potency="20" />			<!-- 20% -->
 	<potion type="phirusmana" 		id="203500" name="Phirius Elixir - Type B" potency="30" />			<!-- 30% -->
