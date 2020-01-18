@@ -3995,16 +3995,20 @@ function CPlayer:clickToCast( onmouseover )
 	-- Freeze mouse
 	local codemodInstalled = codemod:safeInstall();
 	
-	local base = getBaseAddress(addresses.mouse.base);
-	memoryWriteIntPtr(getProc(), base, addresses.mouse.x_in_window, clickX);
-	memoryWriteIntPtr(getProc(), base, addresses.mouse.y_in_window, clickY);
-	yrest(50);
-	if onmouseover then
-		RoMCode('SpellTargetUnit("mouseover")')
-	else
-		RoMCode("SpellTargetUnit()")
-	end
-	yrest(50)
+	-- Ensure that an error here doesn't prevent us from uninstalling the code mod
+	pcall(function ()
+		local base = getBaseAddress(addresses.mouse.base);
+		memoryWriteIntPtr(getProc(), base, addresses.mouse.x_in_window, clickX);
+		memoryWriteIntPtr(getProc(), base, addresses.mouse.y_in_window, clickY);
+		rest(50);
+		
+		if onmouseover then
+			RoMCode('SpellTargetUnit("mouseover")')
+		else
+			RoMCode("SpellTargetUnit()")
+		end
+		rest(50)
+	end);
 	-- unfreeze
 	if( codemodInstalled ) then
 		codemod:uninstall();
