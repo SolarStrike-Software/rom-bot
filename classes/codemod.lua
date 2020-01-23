@@ -3,6 +3,16 @@ CCodeMod = class(function(self, base, origCode, replacement)
 	self.base = base;
 	self.origCode = origCode;
 	self.replacement = replacement;
+	
+	if( self.base) then
+		if( not origCode ) then
+			error("Cannot create a codemod without original code", 3);
+		end
+		
+		if( not replacement ) then
+			error("Cannot create a codemod without replacement code", 3);
+		end
+	end
 end);
 
 function CCodeMod:install()
@@ -34,9 +44,45 @@ function CCodeMod:checkModified()
 	return modified;
 end
 
+function CCodeMod:checkInstalled()
+	local address = getBaseAddress(self.base);
+	local currentData = memoryReadBatch(getProc(), address, string.rep('B', #self.replacement));
+	local installed = true;
+	for i,v in pairs(currentData) do
+		-- reading batches of unsigned bytes isn't working correctly for some reason,
+		-- so we manually convert it instead.
+		if( v < 0 ) then v = v + 256; end;
+		
+		local expectedByte = string.byte(self.replacement:sub(i, i + 1));
+		if( v ~= expectedByte ) then
+			installed = false;
+			break;
+		end
+	end
+	
+	return installed;
+end
+
+
 function CCodeMod:safeInstall()
-	if( not self:checkModified() ) then
+	-- Is it in its original state?
+	if( self:checkModified() == true ) then
 		self:install();
+		return true;
+	end
+	
+	-- Is it already installed? Pretend it was successful
+	if( self:checkInstalled() == true ) then
+		return true;
+	end
+	
+	-- Didn't work
+	return false;
+end
+
+function CCodeMod:safeUninstall()
+	if( self:checkInstalled() == true ) then
+		self:uninstall();
 		return true;
 	end
 	
