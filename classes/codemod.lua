@@ -35,9 +35,13 @@ function CCodeMod:checkModified()
 		if( v < 0 ) then v = v + 256; end;
 		
 		local expectedByte = string.byte(self.origCode:sub(i, i + 1));
+		
 		if( v ~= expectedByte ) then
 			modified = false;
+			--printf("0x%X <> 0x%X = false\n", expectedByte, v);
 			break;
+		else
+			--printf("0x%X <> 0x%X = true\n", expectedByte, v);
 		end
 	end
 	
@@ -66,7 +70,8 @@ end
 
 function CCodeMod:safeInstall()
 	-- Is it in its original state?
-	if( self:checkModified() == true ) then
+	local state = self:checkModified();
+	if( self:checkModified() == false ) then
 		self:install();
 		return true;
 	end

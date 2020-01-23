@@ -1149,7 +1149,7 @@ function CPawn:isOnMobIgnoreList()
 end
 
 function CPawn:getLastDamage()
-	return RoMScript("igf_events:getLastEnemyDamage()")
+	return RoMScript("igf_events:getLastEnemyDamage()") or 0;
 end
 
 function CPawn:getLastCriticalTime()
