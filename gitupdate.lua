@@ -36,10 +36,17 @@ function checkout()
 	logMessage(msg);
 end
 
+function trim(str)
+	return str:gsub("^%s*(.-)%s*$", "%1");
+end
+
 function update()
 	local path = getExecutionPath();
-	local currentBranch = io.popen(sprintf('cd "%s" && git rev-parse --abbrev-ref HEAD', path)):read('*a'):gsub("^%s*(.-)%s*$", "%1");
+	local currentBranch = io.popen(sprintf('cd "%s" && git rev-parse --abbrev-ref HEAD', path)):read('*a');
 	local origRevision = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
+	
+	currentBranch = trim(currentBranch);
+	origRevision = trim(origRevision);
 	
 	local result = '';
 	local cmd = '';
@@ -50,11 +57,14 @@ function update()
 		system(cmd);
 	end
 	
-	cmd = sprintf('cd "%s" && git pull', path);
+	cmd = sprintf('cd "%s" && git fetch origin && git pull', path);
 	result = io.popen(cmd):read('*a');
 	print(result);
 	if( result:find('Already up to date.') == nil ) then
-		printLog(origRevision);
+		local newRevision = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
+		newRevision = trim(newRevision);
+	
+		printLog(origRevision, newRevision);
 	end
 end
 
@@ -63,7 +73,7 @@ function printLog(oldRevision, newRevision)
 	local path = getExecutionPath();
 	
 	local cmd = sprintf('cd %s && git log --abbrev-commit --pretty=oneline %s..%s', path, oldRevision, newRevision);
-	--print(system(cmd));
+	print(system(cmd));
 end
 
 function main()
