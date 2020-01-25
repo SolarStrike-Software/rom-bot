@@ -764,18 +764,17 @@ function CSkill:use()
 end
 
 function CSkill:getRemainingCooldown()
---[[
 	if self.BaseItemAddress ~= 0 then
-		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
-		if offset and offset ~= 0 then
-			--local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
-			local tmp = (memoryReadInt(getProc(), getBaseAddress(addresses.cooldowns.base) + (offset+1)*4) or 0)/10
+		local index = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skill.remaining_cooldown) or 0
+		if index and index ~= 0 then
+			local addr = getBaseAddress(addresses.cooldowns.base + addresses.cooldowns.array_start) + (index*4);
+			local tmp = (memoryReadInt(getProc(), addr) or 0) / 10;
 			if tmp > 0 then
 				return tmp
 			end
 		end
 	end
-	--]]
+
 	return 0
 end
 

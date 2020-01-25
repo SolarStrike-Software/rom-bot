@@ -152,11 +152,7 @@ addresses = {
 		base = 0x662430,
 		offsets = {0x18, 0x1C},
 	},
-	cooldowns = {
-		base = 0x603990,
-	},
-	--[[skill = {
-		base = 0x663864,
+	skill = {
 		level = 0xc,
 		tp_to_level = 0x8,
 		uses = 0xc0,
@@ -167,6 +163,7 @@ addresses = {
 		buff_flag = 0xec,
 		cast_time = 0xf4,
 		class = 0x304,
+		remaining_cooldown = 0xe4,
 		cooldown = 0xe8,
 		effect_start = 0x188,
 		item_set_as_level = 0x328,
@@ -174,7 +171,6 @@ addresses = {
 		range_aoe = 0xa0,
 		target_type = 0x98,
 		range = 0x9c,
-		remaining_cooldown = 0xe4,
 		required_effect_flag = 0xd0,
 		required_effect = 0xd4,
 		required_effect_start = 0x190,
@@ -188,9 +184,11 @@ addresses = {
 		type_flag7 = 0x300,
 		type_flag8 = 0xe4,
 		type_flag9 = 0x274,
-		tab_end = 0x8,
-		tab_start = 0x4,
-	},--]]
+	},
+	cooldowns = {
+		base = 0x601F68,
+		array_start = 0x1A2C,
+	},
 	skillbook = {
 		base = 0x663864,
 		tab_start = 0x0,

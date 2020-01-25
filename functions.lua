@@ -2325,16 +2325,17 @@ function GetSkillBookData(_tabs)
 		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.as_level)
 		
 		-- Get power and consumables
-		--[[
-		TODO: Fix this
-		
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
+		if( tmp.BaseItemAddress == nil ) then
+			return nil;
+		end
+		
 		for count = 0, 1 do
-			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillbook.skillinfo.uses)
+			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
 			if uses == 0 then
 				break
 			end
-			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillbook.skillinfo.uses + 4)
+			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
 			if uses == SKILLUSES_MANA then
 				if tmp.Level > 49 then
 					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
@@ -2365,7 +2366,7 @@ function GetSkillBookData(_tabs)
 				usesnum = usesnum or -1;
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
-		end--]]
+		end
 
 		return tmp
 	end
@@ -2387,7 +2388,7 @@ function GetSkillBookData(_tabs)
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
 				local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
-				if tmpData.Name ~= nil and tmpData.Name ~= "" then
+				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
