@@ -111,9 +111,13 @@ MemDatabase = CMemDatabase();
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
-	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, BOT_REVISION);
+	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, getCurrentRevision());
 
 printPicture("logo", text, 4);
+
+if( isGitUpdateAvailable() ) then
+	print("\nA new update is available. Please run `gitupdate.lua` to install");
+end
 
 function main()
 	local forcedProfile = nil;
