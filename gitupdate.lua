@@ -38,18 +38,32 @@ end
 
 function update()
 	local path = getExecutionPath();
-	local currentBranch = io.popen(sprintf('cd "%s" && git branch', path)):read('*a');
-	currentBranch = currentBranch:gsub("* (.*)\n", '%1');
+	local currentBranch = io.popen(sprintf('cd "%s" && git rev-parse --abbrev-ref HEAD', path)):read('*a'):gsub("^%s*(.-)%s*$", "%1");
+	local origRevision = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
 	
+	local result = '';
+	local cmd = '';
 	if( currentBranch ~= branch ) then
-		-- Switch branch and pull
-		local cmd = sprintf('cd "%s" && git checkout %s && git pull', path, branch);
-		print(io.popen(cmd):read('*a'));
-	else
-		-- Already on the correct branch; just pull
-		local cmd = sprintf('cd "%s" && git pull', path);
-		print(io.popen(cmd):read('*a'));
+		-- Switch branch before pull
+		printf("`%s`, `%s`\n", currentBranch, branch);
+		cmd = sprintf('cd "%s" && git checkout %s', path, branch);
+		system(cmd);
 	end
+	
+	cmd = sprintf('cd "%s" && git pull', path);
+	result = io.popen(cmd):read('*a');
+	print(result);
+	if( result:find('Already up to date.') == nil ) then
+		printLog(origRevision);
+	end
+end
+
+function printLog(oldRevision, newRevision)
+	newRevision = newRevision or 'HEAD';
+	local path = getExecutionPath();
+	
+	local cmd = sprintf('cd %s && git log --abbrev-commit --pretty=oneline %s..%s', path, oldRevision, newRevision);
+	--print(system(cmd));
 end
 
 function main()

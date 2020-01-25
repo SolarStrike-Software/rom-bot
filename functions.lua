@@ -2819,3 +2819,36 @@ end
 function getBaseAddress(offsetFromExe)
 	return addresses.client_exe_module_start + offsetFromExe;
 end
+
+function isGitInstalled()
+	if( io.popen == nil ) then
+		-- Can't check
+		return false;
+	end
+	
+	local response = io.popen('where git'):read('*a');
+	return response ~= "";
+end
+
+function isGitUpdateAvailable()
+	if( isGitInstalled() == false ) then
+		return false;
+	end
+	
+	local path = getExecutionPath();
+	local response = io.popen(sprintf('cd "%s" && git status -uno', path)):read('*a');
+	if( response:find('Your branch is behind') ~= nil ) then
+		return true;
+	end
+	return false;
+end
+
+function getCurrentRevision()
+	if( isGitInstalled() == false ) then
+		return "unknown";
+	end
+	
+	local path = getExecutionPath();
+	local response = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
+	return response;
+end
