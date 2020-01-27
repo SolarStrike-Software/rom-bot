@@ -1,3 +1,4 @@
+include('qword.lua');
 include("database.lua");
 include("addresses.lua");
 include("classes/player.lua");
@@ -11,9 +12,12 @@ include("functions.lua");
 include("macros.lua");
 include("classes/object.lua");
 include("classes/memorytable.lua");
+include("classes/memdatabase.lua");
 
 settings.load();
 database.load();
+
+MemDatabase = CMemDatabase();
 
 -- ********************************************************************
 -- Change the parameters below to your need                           *
@@ -62,6 +66,9 @@ flyToggle = key.VK_ADD				-- Toggles fly and optionally inserts fly command
 
 -- read arguments / forced profile perhaps
 local forcedProfile = nil;
+
+local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+
 for i = 2,#args do
 
 	local foundpos = string.find(args[i], ":", 1, true);
@@ -88,7 +95,7 @@ end
 
 local wpList = {};
 
-local playerPtr = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+local playerPtr = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.player.base);
 player = CPlayer(playerPtr);
 player:update();
 
@@ -571,7 +578,7 @@ function main()
 					break;
 				end;
 
-				player.Address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+				player.Address = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base) or 0;
 				player:updateXYZ();
 
 				local tmp = {}, hf_type;
@@ -621,7 +628,7 @@ function main()
 					tmp.mx, tmp.my, tmp.wide, tmp.high )); -- Mouseclick
 				elseif( hf_key == "OBJ" ) then 	-- target object
 					tmp.wp_type = "OBJ";
-					local mouseObj = CObject(memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset));
+					local mouseObj = CObject(memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.mouseover_object_ptr));
 					tmp.obj_name = "("..mouseObj.Id..") -- "..mouseObj.Name
 					hf_type = sprintf("target object \'%s\'", mouseObj.Name );
 					message(prefix..sprintf(language[523],mouseObj.Name)); -- target object
@@ -739,16 +746,17 @@ function main()
 					end
 				elseif( hf_key == "FLY") then
 					-- Toggle flying
-					local offsets = {addresses.charPtr_offset, addresses.pawnSwim_offset1, addresses.pawnSwim_offset2}
+
+					local offsets = {addresses.game_root.player.base, addresses.game_root.pawn.swimming.base, addresses.game_root.pawn.swimming.swimming}
 					local active = 4
-					local flying = (memoryReadIntPtr(getProc(), addresses.staticbase_char, offsets) == active)
+					local flying = (memoryReadIntPtr(getProc(), gameroot, offsets) == active)
 					if flying then
 						tmp.com = "flyoff()"
-						memoryWriteString(getProc(), addresses.swimAddress, string.char(unpack(addresses.swimAddressBytes)));
+						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + addresses.client_exe_module_start, addresses.code_mod.swimhack.original_code);
 					else
 						tmp.com = "fly()"
-						memoryWriteString(getProc(), addresses.swimAddress, string.rep(string.char(0x90),#addresses.swimAddressBytes));
-						memoryWriteIntPtr(getProc(), addresses.staticbase_char, offsets, active);
+						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + addresses.client_exe_module_start, string.rep(string.char(0x90),#addresses.code_mod.swimhack.original_code));
+						memoryWriteIntPtr(getProc(), gameroot, offsets, active);
 					end
 
 					-- Ask user if they want to insert command
@@ -792,27 +800,27 @@ function main()
 
 			-- To reduce cpu usage, do memory reads every 500ms.
 			if deltaTime(getTime(), lastTime) > 500 then
-				playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-				playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
-				playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
+				playerAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.player.base);
+   	        		playerId = memoryReadInt(getProc(), playerAddress + addresses.game_root.pawn.id) or 0
+				playerHP = memoryReadInt(getProc(), playerAddress + addresses.game_root.pawn.hp) or 0
 				if not isInGame() or playerId < PLAYERID_MIN or playerId > PLAYERID_MAX or playerHP < 1 then
 					repeat
 						yrest(1000)
-						playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-						playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
-						playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
+						playerAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.player.base);
+						playerId = memoryReadInt(getProc(), playerAddress + addresses.game_root.pawn.id) or 0
+						playerHP = memoryReadInt(getProc(), playerAddress + addresses.game_root.pawn.hp) or 0
 					until isInGame() and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX and playerHP > 1
 				end
-				playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
-				playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
-				playerZ = memoryReadFloat(getProc(), playerAddress + addresses.pawnZ_offset) or playerZ
-				mousePawnAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) or 0
+				playerX = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.x) or playerX
+				playerY = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.y) or playerY
+				playerZ = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.z) or playerZ
+				mousePawnAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.mouse.base) or 0
 				if( mousePawnAddress ~= 0) then
-					mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.pawnId_offset) or 0
+					mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.game_root.pawn.id) or 0
 					mousePawnName = GetIdName(mousePawnId) or "<UNKNOWN>"
-					mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnX_offset) or mousePawnX
-					mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnY_offset) or mousePawnY
-					mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnZ_offset) or mousePawnZ
+					mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.x) or mousePawnX
+					mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.y) or mousePawnY
+					mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.z) or mousePawnZ
 					setWindowName(getHwnd(), sprintf("\rObject found Id %d \"%s\", Distance %d\t\t\t", mousePawnId, mousePawnName, distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY)));
 				else
 					setWindowName(getHwnd(), sprintf("\rPlayer Position X: %d, Z: %d, Y: %d\t\t\t",playerX, playerZ, playerY));

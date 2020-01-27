@@ -1,4 +1,14 @@
 addresses = {
+	--== speedhack addresses ==--
+	speedhack = {
+		mounted = 0x7c,
+		pawn_speed = 0x40,
+		speed = {
+			base = 0x6047A0,
+			offset = 0x1498,
+		},
+	},
+	--== speedhack addresses end ==--
 	client_exe_module_start = 0x400000,
 	game_time = 0x601F58,
 	player_name = 0x602510,
