@@ -115,9 +115,14 @@ text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 
 printPicture("logo", text, 4);
 
-if( isGitUpdateAvailable() ) then
-	print("\nA new update is available. Please run `gitupdate.lua` to install");
+
+if( (os.time() - getLastUpdateCheckedTime())  > 60*10 ) then
+	if( isGitUpdateAvailable() ) then
+		print("\nA new update is available. Please run `gitupdate.lua` to install");
+	end
+	setLastUpdateCheckedTime();
 end
+
 
 function main()
 	local forcedProfile = nil;

@@ -2836,7 +2836,7 @@ function isGitUpdateAvailable()
 	end
 	
 	local path = getExecutionPath();
-	local response = io.popen(sprintf('cd "%s" && git status -uno', path)):read('*a');
+	local response = io.popen(sprintf('cd "%s" && git fetch origin && git status -uno', path)):read('*a');
 	if( response:find('Your branch is behind') ~= nil ) then
 		return true;
 	end
@@ -2851,4 +2851,22 @@ function getCurrentRevision()
 	local path = getExecutionPath();
 	local response = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
 	return response;
+end
+
+function setLastUpdateCheckedTime()
+	local path = getExecutionPath();
+	local file = io.open(path .. "/cache/updatecheck.txt", 'w');
+	file:write(os.time());
+	file:close();
+end
+
+function getLastUpdateCheckedTime()
+	local path = getExecutionPath();
+	local file = io.open(path .. "/cache/updatecheck.txt", 'r');
+	local checkedTime = 0;
+	if( file ) then
+		checkedTime = file:read('*n');
+	end
+	
+	return checkedTime;
 end
