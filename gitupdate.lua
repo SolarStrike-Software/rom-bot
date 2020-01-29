@@ -14,11 +14,17 @@ end
 function backup()
 	local path = getExecutionPath();
 	local backupName = 'gitupdate-backup';
+	local cmd;
 	
 	printf("Backing up current code to %s\n", backupName);
 	
-	local cmd = sprintf('cd "%s" && if exist "%s/" rd /s /q "%s" && robocopy . %s /s /e /xd %s',
-		path, backupName, backupName, backupName, backupName);
+	-- Remove old folder if it exists
+	local backupFullPath = sprintf("%s/%s", path, backupName);
+	cmd = sprintf('if exist "%s/" rd /s /q "%s"', backupFullPath, backupFullPath);
+	
+	-- Backup into the folder
+	local cmd = sprintf('robocopy %s %s /s /e /xd %s',
+		path, backupFullPath, backupName);
 	
 	system(cmd);
 end
@@ -28,11 +34,30 @@ function checkout()
 	local tmpName = '.tmp';
 	local branchPart = sprintf('-b %s', branch);
 	
-	system(sprintf('cd "%s" && git clone %s %s %s && xcopy /E /H /-Y /Q %s . && rd /s /q "%s"',
-		path, branchPart, url, tmpName, tmpName, tmpName));
-
+	local cmd;
+	
+	-- Remove tmp folder if needed
+	local tmpFullPath = sprintf("%s/%s", path, tmpName);
+	cmd = sprintf('if exist "%s/" rd /s /q "%s"', tmpFullPath, tmpFullPath);
+	system(cmd);
+	
+	-- Clone branch into temp directory (this gets around the "directory is not empty" issue)
+	cmd = sprintf('cd "%s" && git clone %s %s %s',
+		path, branchPart, url, tmpName);
+	system(cmd);
+		
+	-- Copy from temporary storage into main directory
+	cmd = sprintf('robocopy /s /e "%s" "%s"', tmpFullPath, path);
+	system(cmd);
+	
+	
+	-- Remove tmp folder (again)
+	cmd = sprintf('if exist "%s/" rd /s /q "%s"', tmpFullPath, tmpFullPath);
+	system(cmd);
+	
+	
 	local msg = sprintf("Completed checkout.");
-	printf("%s\n", msg);
+	print(msg);
 	logMessage(msg);
 end
 
@@ -95,7 +120,7 @@ function main()
 	end
 	
 	if( not getDirectory(getExecutionPath() .. "/.git") ) then
-		warning("Git has not been configured for this path yet. You must do so now.");
+		warning("Git has not been configured for this path yet. Doing project checkout now.");
 		backup();
 		checkout();
 	else
