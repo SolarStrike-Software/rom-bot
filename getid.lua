@@ -2,6 +2,8 @@
 
 include("addresses.lua");
 include("functions.lua");
+include("classes/pawn.lua");
+include("classes/player.lua");
 include("classes/memorytable.lua");
 
 setStartKey(key.VK_DELETE);
@@ -14,45 +16,43 @@ atPause(pauseCallback);
 
 function exitCallback()
 
-	printf("exitcakkback\n");
+	printf("exitcallback\n");
 end
 atExit(exitCallback);
 
-function main()
-	local playerAddress
-	local playerId
-	local playerHP
-	local playerX = 0
-	local playerZ = 0
-	local playerY = 0
+function main()	
+	local displayWidth = 74;
 
+	printf("\n\n");
+	printf("%" .. displayWidth .. "s\n", string.rep('-', displayWidth));
+	printf(" %-10s| %-16s| %-20s| %-20s|\n", "Player", "X,Y,Z", "Target", "Mouseover");
+	printf("%" .. displayWidth .. "s\n", string.rep('-', displayWidth));
 	while(true) do
-		yrest(500);
-		playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-		playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
-		playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
-		if not isInGame() or playerId < PLAYERID_MIN or playerId > PLAYERID_MAX or playerHP < 1 then
-			repeat
-				yrest(1000)
-				playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
-				playerId = memoryReadInt(getProc(), playerAddress + addresses.pawnId_offset) or 0
-				playerHP = memoryReadInt(getProc(), playerAddress + addresses.pawnHP_offset) or 0
-			until isInGame() and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX and playerHP > 1
-		end
-		playerX = memoryReadFloat(getProc(), playerAddress + addresses.pawnX_offset) or playerX
-		playerY = memoryReadFloat(getProc(), playerAddress + addresses.pawnY_offset) or playerY
-		playerZ = memoryReadFloat(getProc(), playerAddress + addresses.pawnZ_offset) or playerZ
-		mousePawnAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.mousePtr_offset) or 0
-		if( mousePawnAddress ~= 0) then
-			mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.pawnId_offset) or 0
-			mousePawnName = GetIdName(mousePawnId) or "<UNKNOWN>"
-			mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnX_offset) or mousePawnX
-			mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnY_offset) or mousePawnY
-			mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.pawnZ_offset) or mousePawnZ
-			printf("\rObject found id %d %s distance %d\t\t", mousePawnId, mousePawnName, distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY));
+		local gameroot = getBaseAddress(addresses.game_root.base);
+		local playerAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.player.base) or 0;
+		local targetAddress = memoryReadRepeat("uint", getProc(), playerAddress + addresses.game_root.pawn.target) or 0;
+		local mouseOverAddress = memoryReadRepeat("uintptr", getProc(),
+			getBaseAddress(addresses.game_root.base), addresses.game_root.mouseover_object_ptr) or 0;
+		
+		
+		local X = memoryReadRepeat("float", getProc(), playerAddress + addresses.game_root.pawn.x) or 0;
+		local Y = memoryReadRepeat("float", getProc(), playerAddress + addresses.game_root.pawn.y) or 0;
+		local Z = memoryReadRepeat("float", getProc(), playerAddress + addresses.game_root.pawn.z) or 0;
+		
+		local playerId = PLAYERID_MIN;
+		if( isInGame() and playerAddress ~= nil and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX ) then
+			local targetId = memoryReadRepeat("uint", getProc(), targetAddress + addresses.game_root.pawn.id) or 0;
+			local mouseOverId = memoryReadRepeat("uint", getProc(), mouseOverAddress + addresses.game_root.pawn.id) or 0;
+			
+			local pos = sprintf("%d,%d,%d", X, Y, Z);
+			local target = sprintf("%X (%d)", targetAddress, targetId);
+			local mouseOver = sprintf("%X (%d)", mouseOverAddress, mouseOverId);
+			printf("\r%10X |%16s |%20s |%20s |", playerAddress, pos, target, mouseOver);
 		else
-			printf("\rNo id at current mouse location\t\t\t\t");
+			printf("\r");
 		end
+		
+		yrest(500);
 	end
 end
 startMacro(main, true);

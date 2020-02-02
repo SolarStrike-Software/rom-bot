@@ -119,7 +119,7 @@ CPlayer = class(CPawn,
 
 
 function CPlayer.new()
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 	
 	local np = CPlayer(playerAddress);
