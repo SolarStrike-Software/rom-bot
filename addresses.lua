@@ -243,10 +243,10 @@ addresses = {
 		value = 0x34,
 	},
 	equipment = {
-		base = 0x6025E0
+		base = 0x60259C,
 	},
 	bank = {
-		base = 0x6143F4,
+		base = 0x6144C0,
 		open = {
 			base = 0x660C4C,
 			offset = 0x10,
@@ -259,12 +259,12 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x611418,
+		base = 0x6114E4,
 		bag_ids = {
 			base = 0x61b3b4,
 		},
 		rent = {
-			base = 0x61BF5C
+			base = 0x61BF5C,
 		},
 	},
 	cursor = {

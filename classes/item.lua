@@ -64,12 +64,15 @@ CItem = class(
 function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
---[[
 	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
 	self.Available = (self.Available ~= false)
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
-		self.BaseItemAddress = GetItemAddress( self.Id );
+		local readattempts = 0;
+		repeat
+			self.BaseItemAddress = GetItemAddress( self.Id );
+			readattempts = readattempts + 1;
+		until readattempts == 5 or (self.BaseItemAddress ~= nil and self.BaseItemAddress > 0)
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
 			cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", self.Id );
 			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));
@@ -88,20 +91,20 @@ function CItem:update()
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
 		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.item.bound_status );
 		self.Bound = not bitAnd(self.BoundStatus,1)
-		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.requiredLevelOffset );
-		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.maxStackOffset );
-		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset );
-		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 4);
-		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.typeOffset + 8);
-		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.itemRange)
+		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.required_level );
+		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.max_stack );
+		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type );
+		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type + 4);
+		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type + 8);
+		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.range)
 
 		self.CoolDownTime = 0
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
-			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.realItemIdOffset );
+			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id );
 			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
 				local skillItemAddress = GetItemAddress( skillItemId );
 				if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
-					self.CoolDownTime = memoryReadInt( getProc(), skillItemAddress + addresses.coolDownOffset );
+					self.CoolDownTime = memoryReadInt( getProc(), skillItemAddress + addresses.item.cooldown );
 				end;
 			end;
 			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
@@ -110,26 +113,26 @@ function CItem:update()
 		-- Special case for cards
 		if ( self.Id >= 770000 and self.Id <= 772000 ) then
 			-- We need to get info from NPC...
-			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idCardNPCOffset );
+			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.card_or_npc_id );
 			npcInfoAddress = GetItemAddress( tmp );
 			if npcInfoAddress then
-				nameAddress = memoryReadUInt( getProc(), npcInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadUInt( getProc(), npcInfoAddress + addresses.item.name );
 			else
 				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
 			end
 			self.Name = getTEXT("SYS_CARD_TITLE"); -- 'Card - '
 		elseif ( self.Id >= 550000 and self.Id <=553000 ) then
 			-- We need to get info from item...
-			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.idRecipeItemOffset )
+			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.recipe_id )
 			itemInfoAddress = GetItemAddress(  tmp );
 			if itemInfoAddress then
-				nameAddress = memoryReadUInt( getProc(), itemInfoAddress + addresses.nameOffset );
+				nameAddress = memoryReadUInt( getProc(), itemInfoAddress + addresses.item.name );
 			else
 				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
 			end
 			self.Name = getTEXT("SYS_RECIPE_TITLE"); -- 'Recipe - '
 		else
-			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.nameOffset );
+			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.item.name );
 		end;
 
 		local tmp
@@ -142,8 +145,8 @@ function CItem:update()
 
 		self.Name = self.Name .. tmp;
 
-		self.Quality = memoryReadInt( getProc(), self.BaseItemAddress + addresses.qualityBaseOffset );
-		local plusQuality = memoryReadByte( getProc(), self.Address + addresses.qualityTierOffset );
+		self.Quality = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.quality );
+		local plusQuality = memoryReadByte( getProc(), self.Address + addresses.item.quality );
 		local quality, tier = math.modf ( plusQuality / 16 );
 		-- tier = tier * 16; -- Tier not really used yet...
 		if ( quality > 0 ) then
@@ -162,7 +165,7 @@ function CItem:update()
 		self.Runes = {}
 		if self.ObjType == 0 or self.ObjType == 1 or self.ObjType == 5 then -- Weapons, Armor and Equipment Enhancements
 			for i = 1, 6 do
-				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0x2*(i-1) );
+				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.item.stats + 0x2*(i-1) );
 				if tmpid == 0 then -- No More stats
 					break
 				end
@@ -173,7 +176,7 @@ function CItem:update()
 		end
 		if self.ObjType == 0 or self.ObjType == 1 then
 			for i = 1, 4 do
-				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.itemStatsOffset + 0xC + (0x2*(i-1)) );
+				local tmpid = memoryReadUShort( getProc(), self.Address + addresses.item.stats + 0xC + (0x2*(i-1)) );
 				if tmpid == 0 then -- No More runes
 					break
 				end
@@ -184,7 +187,7 @@ function CItem:update()
 		end
 
 		-- Get base item flag values
-		local flags = memoryReadInt(getProc(),self.BaseItemAddress + addresses.itemFlagsOffset)
+		local flags = memoryReadInt(getProc(),self.BaseItemAddress + addresses.item.flags)
 		self.ItemShopItem = bitAnd(flags,ITEMFLAGs_ITEMSHOPITEM_MASK)
 		self.CanBeSold = bitAnd(flags,ITEMFLAGs_CANBESOLD_MASK)
 
@@ -215,7 +218,6 @@ function CItem:update()
 		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.item.bound_status );
 		self.Bound = not bitAnd(self.BoundStatus,1)
 	end;
-	--]]
 end
 
 
@@ -566,11 +568,11 @@ function CItem:pickup()
 		self.LastMovedTime = os.clock()
 	end
 
-	RoMCode(pickupmethod.."("..self.BagId..")");
+	RoMCode(pickupmethod.."(".. self.BagId ..")");
 end
 
 function CItem:getRemainingCooldown()
-	local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.realItemIdOffset );
+	local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id );
 	if ( skillItemId ~= nil and skillItemId ~= 0 ) then
 		local skillItemAddress = GetItemAddress( skillItemId );
 		if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
@@ -578,8 +580,11 @@ function CItem:getRemainingCooldown()
 			local plusoffset
 			if val == 1 then plusoffset = 0 elseif val == 3 then plusoffset = 0x80C else return 0, false end
 			if memoryReadRepeat("int", getProc(), skillItemAddress + 0xE0) ~= 0 then
-				local offset = memoryReadRepeat("int", getProc(), skillItemAddress + addresses.skillRemainingCooldown_offset)
-				return (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + plusoffset + (offset+1)*4) or 0)/10, true
+				--local offset = memoryReadRepeat("int", getProc(), skillItemAddress + addresses.skillRemainingCooldown_offset)
+				--return (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + plusoffset + (offset+1)*4) or 0)/10, true
+				local index = memoryReadRepeat("int", getProc(), skillItemAddress + addresses.skill.remaining_cooldown) or 0
+				local addr = getBaseAddress(addresses.cooldowns.base + addresses.cooldowns.array_start + plusoffset) + (index*4);
+				local tmp = (memoryReadInt(getProc(), addr) or 0) / 10;
 			end
 		end
 	end

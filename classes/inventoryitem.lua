@@ -42,10 +42,10 @@ function CInventoryItem:update()
 
 	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
-			printf( "BagID: %d is <EMPTY>.\n", self.BagId );
+			printf( "BagID: %d Slot: %d is <EMPTY>.\n", self.BagId, self.SlotNumber );
 		else
 			local _color = cli.white;
-			printf( "BagID: %d\tcontains: %d\t (%d) ", self.BagId, self.ItemCount, self.Id );
+			printf( "BagID: %d Slot: %d\tcontains: %d\t (%d) ", self.BagId, self.SlotNumber, self.ItemCount, self.Id );
 			if ( self.Quality == 1 ) then
 				_color = cli.lightgreen;
 			end;
