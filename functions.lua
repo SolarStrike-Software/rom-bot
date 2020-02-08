@@ -2603,6 +2603,10 @@ function getGameVersion(proc)
 	if proc == nil then
 		proc = getProc()
 	end
+	
+	if( proc == nil ) then
+		error("Could not find game client; please make sure the game is running and IS NOT MINIMIZED.");
+	end
 
 	-- Look for pattern in 64 bit memory area first
 	local foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", 0x186000, 0x20000)
