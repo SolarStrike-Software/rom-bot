@@ -67,6 +67,73 @@ function debugAssert(args)
 	end
 end
 
+function memoryReadRepeat(_type, proc, address, offset)
+	local readfunc;
+	local ptr = false;
+	local val;
+
+	if( type(proc) ~= "userdata" ) then
+		error("Invalid proc", 2);
+	end
+
+	if( type(address) ~= "number" ) then
+		error("Invalid address", 2);
+	end
+
+	if( _type == "int" ) then
+		readfunc = memoryReadInt;
+	elseif( _type == "uint" ) then
+		readfunc = memoryReadUInt;
+	elseif( _type == "float" ) then
+		readfunc = memoryReadFloat;
+	elseif( _type == "byte" ) then
+		readfunc = memoryReadByte;
+	elseif( _type == "string" ) then
+		readfunc = memoryReadString;
+	elseif( _type == "intptr" ) then
+		readfunc = memoryReadIntPtr;
+		ptr = true;
+	elseif( _type == "uintptr" ) then
+		readfunc = memoryReadUIntPtr;
+		ptr = true;
+	elseif( _type == "byteptr" ) then
+		readfunc = memoryReadBytePtr;
+		ptr = true;
+
+	else
+		return nil;
+	end
+
+	for i = 1, 10 do
+		if( ptr ) then
+			val = readfunc(proc, address, offset);
+		else
+			val = readfunc(proc, address);
+		end
+
+		if( val ~= nil ) then
+			return val;
+		end
+	end
+
+	if( settings.options.DEBUGGING ) then
+		printf("Error in memory reading: memoryread%s(proc,0x%X", _type, address)
+		if ptr then
+			if type(offset) == "number" then
+				printf(" ,0x%X)\n",offset)
+			elseif type(offset) == "table" then
+				printf(" ,{")
+				for k,v in pairs(offset) do
+					printf("0x%X,",v)
+				end
+				printf("})\n")
+			end
+		else
+			print(")")
+		end
+	end
+end
+
 -- Ask witch character does the user want to be, from the open windows.
 function selectGame(character)
 	if functionBeingLoaded then
