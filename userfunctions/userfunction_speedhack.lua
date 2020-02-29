@@ -34,13 +34,15 @@ end
 function speed(_speed)
 	-- Current base speed, includes buff effects.
 	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.speedhack.speed.base) + addresses.speedhack.speed.offset)
-
+	print("base speed:", baseSpeed);
 	if _speed == false then
 		_speed = baseSpeed
 	else
 		_speed = baseSpeed * (1+percent_speed_increase/100)
 		print("set speed to:", _speed);
 	end
+
+_speed = 10.0;
 
 	-- Change the speed.
 	local playerAddress = memoryReadIntPtr(getProc(), gameroot, addresses.game_root.player.base) or 0

@@ -1845,26 +1845,17 @@ function Attack()
 			end
 
 			-- freeze TargetPtr
-			local freezeAddr = getBaseAddress(addresses.code_mod.freeze_target.base);
-			local original = addresses.code_mod.freeze_target.original_code;
-			local replacement = addresses.code_mod.freeze_target.replace_code;
+			local codemod = CCodeMod(addresses.code_mod.freeze_target.base,
+				addresses.code_mod.freeze_target.original_code,
+				addresses.code_mod.freeze_target.replace_code
+			);
 			
-			local currentData = memoryReadBatch(getProc(), freezeAddr, string.rep('B', #original));
-			local modified = false;
-			for i,v in pairs(currentData) do
-				-- reading batches of unsigned bytes isn't working correctly for some reason,
-				-- so we manually convert it instead.
-				if( v < 0 ) then v = v + 256; end;
-				
-				local expectedByte = string.byte(original:sub(i, i + 1));
-				if( v ~= expectedByte ) then
-					modified = false;
-					break;
-				end
-			end
+			local codemodInstalled = codemod:safeInstall();
 			
-			if( not modified ) then
-				memoryWriteString(getProc(), freezeAddr, replacement);
+			if( codemodInstalled ) then
+				print("installed code mod");
+			else
+				print("Codemod not installed");
 			end
 
 			-- Target it
@@ -1879,9 +1870,8 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			local replacement = addresses.code_mod.freeze_target.original_code;
-			if( not modified ) then
-				memoryWriteString(getProc(), freezeAddr, replacement);
+			if( codemodInstalled ) then
+				codemod:uninstall();
 			end
 
 		end
