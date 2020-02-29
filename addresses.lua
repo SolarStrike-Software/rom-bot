@@ -10,13 +10,13 @@ addresses = {
 	},
 	--== speedhack addresses end ==--
 	client_exe_module_start = 0x400000,
-	game_time = 0x601F58,
+	game_time = 0x601F68,
 	player_name = 0x602510,
-	in_game = 0x65E5F0,
-	zone_id = 0x659250,
+	in_game = 0x65E600,
+	zone_id = 0x659260,
 	buff_count = 0x6031B0,
 	channel = {
-		base = 0x661188,
+		base = 0x661198,
 		id = 0x4c4,
 	},
 	class_info = {
@@ -57,7 +57,7 @@ addresses = {
 	psi = 0x606B08,
 	global_cooldown = 0x603990,
 	actionbar = {
-		base = 0x660C0C,
+		base = 0x660C1C,
 		slot = {
 			size = 0x14,
 			type = 0x0,
@@ -66,8 +66,8 @@ addresses = {
 		bar1_start = 0x12cc
 	},
 	game_root = {
-		base = 0x60099c,
-		gold = 0x6144B4,
+		base = 0x6009ac,
+		gold = 0x6144C4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
 		ping = 0x7c0,
@@ -142,7 +142,7 @@ addresses = {
 		},
 	},
 	macro = {
-		base = 0x662474,
+		base = 0x662484,
 		size = 0x508,
 		id = 0x10,
 		icon = 0x14,
@@ -150,7 +150,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-		base = 0x662320,
+		base = 0x662330,
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -159,7 +159,7 @@ addresses = {
 		modifier2 = 0x5a
 	},
 	loading = {
-		base = 0x662430,
+		base = 0x662440,
 		offsets = {0x18, 0x1C},
 	},
 	skill = {
@@ -200,7 +200,7 @@ addresses = {
 		array_start = 0x1A2C,
 	},
 	skillbook = {
-		base = 0x663864,
+		base = 0x663874,
 		tab_start = 0x0,
 		tab_end = 0x4,
 		tabinfo_size = 0x20,
@@ -217,7 +217,7 @@ addresses = {
 		base = 0x620550,
 	},
 	memdatabase = {
-		base = 0x628B24,
+		base = 0x628B34,
 		offset = 0xD4,
 		branch = {
 			size = 0x8CA0,
@@ -287,20 +287,20 @@ addresses = {
 		},
 	},
 	object_list = {
-		base = 0x663DD4,
-		size = 0x663DD0,
+		base = 0x663DE4,
+		size = 0x663DE0,
 	},
 	input_box = {
 		base = 0x660B00,
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x624AFC,
+		base = 0x624B0C,
 		start_addr = 0x268,
 		end_addr = 0x26C,
 	},
 	mouse = {
-		base = 0x62A9A4,
+		base = 0x62A9B4,
 		x = 0x8C,
 		y = 0x90,
 		x_in_window = {0xC, 0x3B4},
