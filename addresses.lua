@@ -4,29 +4,29 @@ addresses = {
 		mounted = 0x7c,
 		pawn_speed = 0x40,
 		speed = {
-			base = 0x6047A0,
+			base = 0x6047B0,
 			offset = 0x1498,
 		},
 	},
 	--== speedhack addresses end ==--
 	client_exe_module_start = 0x400000,
 	game_time = 0x601F68,
-	player_name = 0x602510,
+	player_name = 0x602520,
 	in_game = 0x65E600,
 	zone_id = 0x659260,
-	buff_count = 0x6031B0,
+	buff_count = 0x6031C0,
 	channel = {
 		base = 0x661198,
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x60C5F0,
+		base = 0x60C600,
 		size = 0x430,
 		level = 0x28,
 		tp = 0x10
 	},
 	crafting = {
-		base = 0x602bfc,
+		base = 0x602c0c,
 	},
 	code_mod = {
 		freeze_target = {
@@ -53,9 +53,9 @@ addresses = {
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 	},
-	exp_table = 0x65930C,
-	psi = 0x606B08,
-	global_cooldown = 0x603990,
+	exp_table = 0x65931C,
+	psi = 0x606B18,
+	global_cooldown = 0x6039A0,
 	actionbar = {
 		base = 0x660C1C,
 		slot = {
@@ -196,7 +196,7 @@ addresses = {
 		type_flag9 = 0x274,
 	},
 	cooldowns = {
-		base = 0x601F68,
+		base = 0x601F78,
 		array_start = 0x1A2C,
 	},
 	skillbook = {
@@ -214,7 +214,7 @@ addresses = {
 		},
 	},
 	itemset_skills = {
-		base = 0x620550,
+		base = 0x620560,
 	},
 	memdatabase = {
 		base = 0x628B34,
@@ -254,19 +254,19 @@ addresses = {
 		cooldown = 0x8E,
 	},
 	equipment = {
-		base = 0x60259C,
+		base = 0x6025AC,
 	},
 	bank = {
-		base = 0x6144C0,
+		base = 0x6144D0,
 		open = {
-			base = 0x660C4C,
+			base = 0x660C5C,
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x61BF84,
+			base = 0x61BF94,
 		},
 		guild = {
-			base = 0x663A14,
+			base = 0x663A24,
 		},
 	},
 	inventory = {
