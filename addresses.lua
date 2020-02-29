@@ -270,16 +270,16 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x6114E4,
+		base = 0x6114f0,
 		bag_ids = {
-			base = 0x61b3b4,
+			base = 0x61B400,
 		},
 		rent = {
-			base = 0x61BF5C,
+			base = 0x61BF6C,
 		},
 	},
 	cursor = {
-		base = 0x6622FC,
+		base = 0x66230C,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,
