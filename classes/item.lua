@@ -67,12 +67,9 @@ function CItem:update()
 	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
 	self.Available = (self.Available ~= false)
 
-	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) then
-		local readattempts = 0;
-		repeat
-			self.BaseItemAddress = GetItemAddress( self.Id );
-			readattempts = readattempts + 1;
-		until readattempts == 5 or (self.BaseItemAddress ~= nil and self.BaseItemAddress > 0)
+	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then
+		self.BaseItemAddress = GetItemAddress( self.Id );
+		
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
 			cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", self.Id );
 			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));

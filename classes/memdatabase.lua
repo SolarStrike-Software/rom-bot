@@ -1,11 +1,12 @@
 local LOWEST_BRANCH = 0x6c; -- The lowest useful branch (real start is at 0)
 local HIGHEST_BRANCH = 0x348; -- The highest branch
 local BRANCH_OLD_SECONDS = 60; -- How long ago a branch was loaded before it is considered out-of-date
-
+local INITIALIZE_ITEM_DELAY = 0.25; -- How much to wait when spamming the in-game command
 
 CMemDatabase = class(function(self)
 	self.database = {};
 	self.loadedBranches = {};
+	self.lastLoad = os.clock();
 end);
 
 -- Dump information about all available IDs into a CSV file
@@ -102,8 +103,18 @@ function CMemDatabase:getAddress(id)
 		return self.database[id].address;
 	end
 
+	-- We slow down to avoid hitting the limit on the ingame api
+	if (os.clock() - self.lastLoad < INITIALIZE_ITEM_DELAY) then
+		while (os.clock() - self.lastLoad < INITIALIZE_ITEM_DELAY) do
+			yrest(50);
+		end
+	end
+	
+	-- Update last loaded time
+	self.lastLoad = os.clock();
+	
 	-- Try to force it to load
-	SlashCommand("/script GetCraftRequestItem(".. id ..",-1)")
+	SlashCommand("/script GetCraftRequestItem(".. id ..",-1)");
 	
 	-- Still no good? Try running through predicted branches
 	-- based on our ID first.
