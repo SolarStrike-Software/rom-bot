@@ -3854,7 +3854,8 @@ function CPlayer:mount(_dismount)
 	local mount
 
 	-- Find mount
-	if RoMScript("PartnerFrame_GetPartnerCount(2)") > 0 then
+	local partnerFrameCount = RoMScript("PartnerFrame_GetPartnerCount(2)") or 0;
+	if partnerFrameCount > 0 then
 		-- There is a mount in the partner bag. Assign the mountmethod.
 		mountMethod = "partner"
 	elseif inventory then -- Make sure inventory has been mapped.
@@ -3866,6 +3867,7 @@ function CPlayer:mount(_dismount)
 
 	-- Mount found?
 	if(not mountMethod ) then
+		print("Could not find usable mount");
 		return
 	end
 
