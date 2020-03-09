@@ -42,8 +42,6 @@ function speed(_speed)
 		print("set speed to:", _speed);
 	end
 
-_speed = 10.0;
-
 	-- Change the speed.
 	local playerAddress = memoryReadIntPtr(getProc(), gameroot, addresses.game_root.player.base) or 0
 	if playerAddress ~= 0 then
