@@ -10,8 +10,6 @@
 percent_speed_increase    = 19 		-- Percent to increase speed. (19% is 'safe')
 maintain_speed			= true		-- Keeps checking speed and keep at optimal.
 
-local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
-
 
 
 function isSpeedFast()
@@ -20,7 +18,7 @@ function isSpeedFast()
 end
 
 function getSpeed()
-	local playerAddress = memoryReadIntPtr(getProc(), gameroot, addresses.game_root.player.base) or 0
+	local playerAddress = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base) or 0
 	if playerAddress ~= 0 then
 		local mountaddress = memoryReadInt(getProc(), playerAddress + addresses.speedhack.mounted) or 0
 		if mountaddress == 0 then
@@ -43,7 +41,7 @@ function speed(_speed)
 	end
 
 	-- Change the speed.
-	local playerAddress = memoryReadIntPtr(getProc(), gameroot, addresses.game_root.player.base) or 0
+	local playerAddress = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base) or 0
 	if playerAddress ~= 0 then
 		local mountaddress = memoryReadInt(getProc(), playerAddress + addresses.speedhack.mounted) or 0
 		if mountaddress == 0 then

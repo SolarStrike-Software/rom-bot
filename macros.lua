@@ -94,7 +94,7 @@ function writeToMacro(macroNum, body, name, icon)
 	end
 
 	--- Get macros base address
-	local address = addresses.client_exe_module_start + addresses.macro.base;
+	local address = getBaseAddress(addresses.macro.base);
 	local macro_address = memoryReadUInt(getProc(), address);
 	
 	--- Write the macro body
@@ -142,7 +142,7 @@ function readMacro(macroNum)
 	end
 
 	--- Get macros base address
-	local address = addresses.client_exe_module_start + addresses.macro.base;
+	local address = getBaseAddress(addresses.macro.base);
 	local macro_address = memoryReadUInt(getProc(), address);
 
 	--- Read the macro body

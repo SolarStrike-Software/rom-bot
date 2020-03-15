@@ -2,7 +2,7 @@ CCamera = class(
 	function(self)
 		--self.Address = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.camPtr_offset) or 0
 		
-		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		local gameroot = getBaseAddress(addresses.game_root.base);
 		self.Address = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.camera.base) or 0;
 
 		self.XUVec = 0.0;

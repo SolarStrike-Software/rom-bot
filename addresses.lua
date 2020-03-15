@@ -9,14 +9,12 @@ addresses = {
 		},
 	},
 	--== speedhack addresses end ==--
-	client_exe_module_start = 0x400000,
-	game_time = 0x601F68,
-	player_name = 0x602520,
-	in_game = 0x65E600,
-	zone_id = 0x659260,
+	game_time = 0x602F70,
+	in_game = 0x65F608,
+	zone_id = 0x65A268,
 	buff_count = 0x6031C0,
 	channel = {
-		base = 0x661198,
+		base = 0x6621A0,
 		id = 0x4c4,
 	},
 	class_info = {
@@ -66,8 +64,8 @@ addresses = {
 		bar1_start = 0x12cc
 	},
 	game_root = {
-		base = 0x6009ac,
-		gold = 0x6144C4,
+		base = 0x6019B4,
+		gold = 0x6154C4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
 		ping = 0x7c0,
@@ -159,7 +157,7 @@ addresses = {
 		modifier2 = 0x5a
 	},
 	loading = {
-		base = 0x662440,
+		base = 0x663448,
 		offsets = {0x18, 0x1C},
 	},
 	skill = {
@@ -217,7 +215,7 @@ addresses = {
 		base = 0x620560,
 	},
 	memdatabase = {
-		base = 0x628B34,
+		base = 0x629B3C,
 		offset = 0xD4,
 		branch = {
 			size = 0x8CA0,
@@ -287,15 +285,15 @@ addresses = {
 		},
 	},
 	object_list = {
-		base = 0x663DE4,
-		size = 0x663DE0,
+		base = 0x664DEC,
+		size = 0x664DF0,
 	},
 	input_box = {
 		base = 0x660B00,
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x624B0C,
+		base = 0x625B14,
 		start_addr = 0x268,
 		end_addr = 0x26C,
 	},

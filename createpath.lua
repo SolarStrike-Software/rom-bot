@@ -67,7 +67,7 @@ flyToggle = key.VK_ADD				-- Toggles fly and optionally inserts fly command
 -- read arguments / forced profile perhaps
 local forcedProfile = nil;
 
-local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+local gameroot = getBaseAddress(addresses.game_root.base);
 
 for i = 2,#args do
 
@@ -752,10 +752,10 @@ function main()
 					local flying = (memoryReadIntPtr(getProc(), gameroot, offsets) == active)
 					if flying then
 						tmp.com = "flyoff()"
-						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + addresses.client_exe_module_start, addresses.code_mod.swimhack.original_code);
+						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + getClientExeAddress(), addresses.code_mod.swimhack.original_code);
 					else
 						tmp.com = "fly()"
-						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + addresses.client_exe_module_start, string.rep(string.char(0x90),#addresses.code_mod.swimhack.original_code));
+						memoryWriteString(getProc(), addresses.code_mod.swimhack.base + getClientExeAddress(), string.rep(string.char(0x90),#addresses.code_mod.swimhack.original_code));
 						memoryWriteIntPtr(getProc(), gameroot, offsets, active);
 					end
 

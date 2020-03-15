@@ -177,7 +177,8 @@ function selectGame(character)
 	for i = 1, #windowList, 1 do
 		local process, playerAddress, nameAddress;
 	    -- open first window
-		process = openProcess(findProcessByWindow(windowList[i]));
+		local procId = findProcessByWindow(windowList[i]);
+		process = openProcess(procId);
 		local ver = getGameVersion(process)
 		if ver ~= 0 then
 			ver = " - " .. ver
@@ -187,7 +188,7 @@ function selectGame(character)
 		
 		-- read player address
 		showWarnings(false);
-		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		local gameroot = getModuleAddress(procId, "Client.exe") + addresses.game_root.base;
 		local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base);
 		
 		-- read player name
@@ -387,10 +388,17 @@ function getWin(character)
 	return __WIN;
 end
 
+local _procId = nil;
+function getProcId()
+	_procId = _procId or findProcessByWindow(getWin())
+	
+	return _procId;
+end
+
 function getProc()
 	if( __PROC == nil or not windowValid(__WIN) ) then
 		if( __PROC ) then closeProcess(__PROC) end;
-		__PROC = openProcess( findProcessByWindow(getWin()) );
+		__PROC = openProcess( getProcId() );
 	end
 
 	return __PROC;
@@ -432,7 +440,7 @@ end
 -- Used in pause/exit callbacks. Just releases movement keys.
 function releaseKeys()
 	if windowValid(__WIN) and __PROC then
-		local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+		local gameroot = getBaseAddress(addresses.game_root.base);
 		memoryWriteBytePtr(getProc(), gameroot, addresses.game_root.input.movement, MOVEMENT_STILL);
 	end
 end
@@ -1620,11 +1628,11 @@ function waitForLoadingScreen(_maxWaitTime)
 		--local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 		local base = getBaseAddress(addresses.game_root.base);--
 		newAddress = memoryReadRepeat("uintptr", getProc(), base, addresses.game_root.player.base);
-	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets) ~= 0
+	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) ~= 0
 	-- wait until loading screen is gone
 	repeat
 		rest(1000)
-	until memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets) == 0
+	until memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) == 0
 	rest(2000)
 
 	-- Check if fully in game by checking if RoMScript works
@@ -1641,10 +1649,10 @@ function waitForLoadingScreen(_maxWaitTime)
 end
 
 function isInGame()
-	-- At character select screen, (addresses.client_exe_module_start + addresses.in_game) = 0,
+	-- At character select screen = 0
 	-- If in game, it is = 1
-	local loading = memoryReadBytePtr(getProc(), addresses.client_exe_module_start + addresses.loading.base, addresses.loading.offsets);
-	local in_game = memoryReadInt(getProc(), addresses.client_exe_module_start + addresses.in_game);
+	local loading = memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets);
+	local in_game = memoryReadInt(getProc(), getBaseAddress(addresses.in_game));
 	if( loading == 0 and in_game == 1 ) then
 		return true
 	else
@@ -2565,7 +2573,7 @@ function keyboardRelease(key)
 end
 
 function getGameTime()
-	local address = addresses.client_exe_module_start + addresses.game_time;
+	local address = getBaseAddress(addresses.game_time);
 	local gtime = memoryReadUInt(getProc(), address) or 0;
 	return gtime / 1000;
 end
@@ -2877,8 +2885,12 @@ function dailyCount()
 	return memoryReadInt(getProc(), addresses.charClassInfoBase + addresses.dailyCount_offset)
 end
 
+function getClientExeAddress()
+	return getModuleAddress(getProcId(), "Client.exe");
+end
+
 function getBaseAddress(offsetFromExe)
-	return addresses.client_exe_module_start + offsetFromExe;
+	return getClientExeAddress() + offsetFromExe;
 end
 
 function isGitInstalled()

@@ -134,7 +134,7 @@ function CPlayer:update()
 	-- Ensure that our address hasn't changed. If it has, fix it.
 
 	-- Read the address
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 
 	-- Bad read, return
@@ -243,7 +243,7 @@ function CPlayer:exists()
 end
 
 function CPlayer:checkAddress()
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 
 	if( playerAddress ~= self.Address and playerAddress ~= 0 ) then
@@ -705,12 +705,12 @@ MOVEMENT_LEFT = 8;
 MOVEMENT_TURN_RIGHT = 16;
 MOVEMENT_TURN_LEFT = 32;
 function CPlayer:setMovement(movement)
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	memoryWriteBytePtr(getProc(), gameroot, addresses.game_root.input.movement, movement);
 end
 
 function CPlayer:getMovement()
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	return memoryReadBytePtr(getProc(), gameroot, addresses.game_root.input.movement) or 0;
 end
 

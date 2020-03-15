@@ -11,8 +11,6 @@ local VERSION = 2.1
 local STEP_SIZE = 115 -- Actually 120 but set to 115 to give a bit of a buffer.
 local STEP_PAUSE = 500 -- in ms
 
-local gameroot = addresses.client_exe_module_start + addresses.game_root.base; -- old staticbase_char
-
 function teleport_GetVersion()
 	return VERSION
 end
@@ -47,6 +45,7 @@ function teleport(dX,dZ,dY, absolute)
 	end
 
 	player:update()
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	local address  = memoryReadInt(getProc(), gameroot) + addresses.game_root.player.base
 	local offsetX = { 0x4, 0xB0};
 	local offsetZ = { 0x4, 0xB8};

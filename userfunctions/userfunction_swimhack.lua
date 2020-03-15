@@ -13,7 +13,6 @@
 --===  								===--
 
 
-local base = getBaseAddress(addresses.code_mod.swimhack.base);
 local codemod = CCodeMod(addresses.code_mod.swimhack.base,
 	addresses.code_mod.swimhack.original_code,
 	addresses.code_mod.swimhack.replace_code);

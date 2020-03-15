@@ -222,7 +222,7 @@ function CItem:delete()
 	if self.Available and not self.Empty then
 		-- Special case for bank. Check if it's open
 		if self.Location == "bank" then
-			local base = addresses.client_exe_module_start + addresses.bank.open.base;
+			local base = getBaseAddress(addresses.bank.open.base);
 			local BankClosed = memoryReadIntPtr(getProc(), base, addresses.bank.open.offset) == -1
 			if BankClosed then
 				return

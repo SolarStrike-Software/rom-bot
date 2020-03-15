@@ -216,7 +216,8 @@ function main()
 		end
 	end
 
-	local gameroot = addresses.client_exe_module_start + addresses.game_root.base;
+
+	local gameroot = getBaseAddress(addresses.game_root.base);
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
