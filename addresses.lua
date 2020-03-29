@@ -4,58 +4,74 @@ addresses = {
 		mounted = 0x7c,
 		pawn_speed = 0x40,
 		speed = {
-			base = 0x6047B0,
+		    	base = 0x601A00,
 			offset = 0x1498,
 		},
 	},
 	--== speedhack addresses end ==--
+	
+	--== this must be a link between the quest-text and the id ==--
+	questGroup_offset = 0x4F0,
+	--===========================================================--
+
+	--== fixed the casting bar but i'm not sure, that the "player.casting" is completely fixed ==--
+	castingBarPtr = 0xA61D20,
+	castingBar_offset = 0xC,
+	--===========================================================================================--
+
+	--== trying to fix the partyDPS (no success) ==--
+	partyIconList_base = 0xA63528,
+	partyIconList_offset = 0xC,
+	partyLeader_address = 0xA27240,
+	partyMemberList_address = 0xA647B0,
+	--=============================================--
+	
+	client_exe_module_start = 0x400000,
 	game_time = 0x602F70,
 	in_game = 0x65F608,
 	zone_id = 0x65A268,
-	buff_count = 0x6031C0,
+	buff_count = 0x6041C0,
 	channel = {
 		base = 0x6621A0,
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x60C600,
+		base = 0x60D600,
 		size = 0x430,
 		level = 0x28,
 		tp = 0x10
 	},
 	crafting = {
-		base = 0x602c0c,
+		base = 0x603c0c,
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x4970B1,
-			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
-			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
+			base = 0x5F324F,
+			original_code = string.char(0x56, 0x8B, 0xCD, 0xE8, 0x79, 0x41, 0x2A, 0x00),
+			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		
-		freeze_mousepos = {
-			base = 0x2306F4,
+		freeze_mousepos = { --the bot works stable with it, but something must be wrong
+			base = 0x230594,
 			original_code = string.char(0x89, 0x8E, 0xB4, 0x03, 0x00, 0x00, 0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
-		
-		freeze_mousepos2 = {
-			base = 0x2306FA,
+		freeze_mousepos2 = { --the bot works stable with it, but something must be wrong
+			base = 0x22FDEA,
 			original_code = string.char(0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
-		
 		swimhack = {
-			base = 0x4D959,
+            		base = 0x4D519,
 			original_code = string.char(0xC7, 0x83, 0xB4, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 	},
-	exp_table = 0x65931C,
-	psi = 0x606B18,
-	global_cooldown = 0x6039A0,
+	exp_table = 0x65A324,
+	psi = 0x607B18,
+	global_cooldown = 0x6049A0,
 	actionbar = {
-		base = 0x660C1C,
+		base = 0x661C24,
 		slot = {
 			size = 0x14,
 			type = 0x0,
@@ -140,7 +156,7 @@ addresses = {
 		},
 	},
 	macro = {
-		base = 0x662484,
+		base = 0x66348C,
 		size = 0x508,
 		id = 0x10,
 		icon = 0x14,
@@ -148,7 +164,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-		base = 0x662330,
+        	base = 0x663338,
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -194,11 +210,11 @@ addresses = {
 		type_flag9 = 0x274,
 	},
 	cooldowns = {
-		base = 0x601F78,
+		base = 0x602F78,
 		array_start = 0x1A2C,
 	},
 	skillbook = {
-		base = 0x663874,
+        	base = 0x66487C,
 		tab_start = 0x0,
 		tab_end = 0x4,
 		tabinfo_size = 0x20,
@@ -212,10 +228,10 @@ addresses = {
 		},
 	},
 	itemset_skills = {
-		base = 0x620560,
+		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x629B3C,
+		base = 0x629B3c,
 		offset = 0xD4,
 		branch = {
 			size = 0x8CA0,
@@ -250,34 +266,36 @@ addresses = {
 		flags = 0x28,
 		real_id = 0x98,
 		cooldown = 0x8E,
+		
 	},
 	equipment = {
-		base = 0x6025AC,
+		base = 0x6035F0, --(scout skills are fixed)
 	},
 	bank = {
-		base = 0x6144D0,
+		base = 0x6154D0,
 		open = {
-			base = 0x660C5C,
+			--base = 0x660C5C,
+            		base = 0x661C64,
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x61BF94,
+			base = 0x608FF0,
 		},
 		guild = {
-			base = 0x663A24,
+			base = 0x664A2C,
 		},
 	},
 	inventory = {
-		base = 0x6114f0,
+		base = 0x6124f0,
 		bag_ids = {
-			base = 0x61B3C4,
+			base = 0x61C3C4,
 		},
 		rent = {
-			base = 0x61BF6C,
+			base = 0x608FC8,
 		},
 	},
 	cursor = {
-		base = 0x66230C,
+		base = 0x663314,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,
@@ -286,10 +304,10 @@ addresses = {
 	},
 	object_list = {
 		base = 0x664DEC,
-		size = 0x664DF0,
+		size = 0x664DE8,
 	},
 	input_box = {
-		base = 0x660B00,
+		base = 0x661B18, -- fixes UMM
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
@@ -298,7 +316,7 @@ addresses = {
 		end_addr = 0x26C,
 	},
 	mouse = {
-		base = 0x62A9B4,
+		base = 0x62B9BC, -- maybe 0x62B9B4????????? (related the codemod problem?)
 		x = 0x8C,
 		y = 0x90,
 		x_in_window = {0xC, 0x3B4},
