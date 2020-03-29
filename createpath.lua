@@ -811,17 +811,19 @@ function main()
 						playerHP = memoryReadInt(getProc(), playerAddress + addresses.game_root.pawn.hp) or 0
 					until isInGame() and playerId >= PLAYERID_MIN and playerId <= PLAYERID_MAX and playerHP > 1
 				end
+				
 				playerX = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.x) or playerX
 				playerY = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.y) or playerY
 				playerZ = memoryReadFloat(getProc(), playerAddress + addresses.game_root.pawn.z) or playerZ
-				mousePawnAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.mouse.base) or 0
+				mousePawnAddress = memoryReadUIntPtr(getProc(), gameroot, addresses.game_root.mouseover_object_ptr) or 0
 				if( mousePawnAddress ~= 0) then
 					mousePawnId = memoryReadUInt(getProc(), mousePawnAddress + addresses.game_root.pawn.id) or 0
 					mousePawnName = GetIdName(mousePawnId) or "<UNKNOWN>"
 					mousePawnX = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.x) or mousePawnX
 					mousePawnY = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.y) or mousePawnY
 					mousePawnZ = memoryReadFloat(getProc(), mousePawnAddress + addresses.game_root.pawn.z) or mousePawnZ
-					setWindowName(getHwnd(), sprintf("\rObject found Id %d \"%s\", Distance %d\t\t\t", mousePawnId, mousePawnName, distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY)));
+					local dist = distance(playerX, playerZ, playerY, mousePawnX, mousePawnZ, mousePawnY) or 0;
+					setWindowName(getHwnd(), sprintf("\rObject found Id %d \"%s\", Distance %d\t\t\t", mousePawnId, mousePawnName, dist));
 				else
 					setWindowName(getHwnd(), sprintf("\rPlayer Position X: %d, Z: %d, Y: %d\t\t\t",playerX, playerZ, playerY));
 				end
