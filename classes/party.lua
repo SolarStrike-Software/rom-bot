@@ -53,16 +53,16 @@ function Party(heal)
 			end
 			repeat
 				yrest(1000)
-				local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
-				local id = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset)
-				local hp = memoryReadRepeat("int", getProc(), address + addresses.pawnHP_offset)
+				local address = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base)
+				local id = memoryReadRepeat("uint", getProc(), address + addresses.game_root.pawn.id)
+				local hp = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.hp)
 			until isInGame() and id and id >= PLAYERID_MIN and PLAYERID_MAX >= id and hp > 1
 			yrest(3000)
 			print("Continuing.")
 			player:update()
 		end
 
-		local address = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		local address = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base)
 		if address ~= player.Address then
 			player:update()
 		end
@@ -167,7 +167,7 @@ function Mount(_dismount)
 	local mounted
 	getPartyLeaderpawn()
 	if partyleader and leaderobj then
-		local attackableFlag = memoryReadRepeat("int", getProc(), leaderobj.Address + addresses.pawnAttackable_offset)
+		local attackableFlag = memoryReadRepeat("int", getProc(), leaderobj.Address + addresses.game_root.pawn.attackable_flags)
 		if attackableFlag then
 			mounted = bitAnd(attackableFlag, 0x10000000)
 			if not _dismount then
@@ -222,8 +222,8 @@ function checkparty(_dist)
 	if partynum == #partymemberpawn then
 		player:updateXYZ()
 		for i = 1,#partymemberpawn do
-			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnX_offset) or partymemberpawn[i].X
-			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.pawnZ_offset) or partymemberpawn[i].Z
+			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.game_root.pawn.x) or partymemberpawn[i].X
+			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses..game_root.pawn.z) or partymemberpawn[i].Z
 			if partyX ~= nil then
 				if distance(partyX,partyZ,player.X,player.Z) > _dist then
 					_go = false
@@ -562,7 +562,7 @@ function PartyTable()
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
 		if( obj ~= nil and obj.Type == PT_PLAYER and obj.Address ~= 0 and obj.Address ~= player.Address ) then
-			local attackableFlag = memoryReadRepeat("uint", getProc(), obj.Address + addresses.pawnAttackable_offset)
+            local attackableFlag = memoryReadRepeat("uint", getProc(), obj.Address + addresses.game_root.pawn.attackable_flags)
 			if attackableFlag and bitAnd(attackableFlag,0x80000000) then -- in party
 				if obj.Address ~= player.Address then
 					table.insert(partymemberpawn, CPawn(obj.Address))

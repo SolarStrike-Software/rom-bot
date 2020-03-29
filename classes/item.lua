@@ -354,7 +354,7 @@ function CItem:moveTo(bag)
 
 	-- Check if bank is open
 	if location == "bank" then
-		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		local BankClosed = memoryReadIntPtr(getProc(), getBaseAddress(addresses.bank.open.base), addresses.bank.open.offset) == -1
 		if BankClosed then
 			return
 		end
@@ -512,7 +512,7 @@ function CItem:pickup()
 
 	-- Special case for bank. Check if it's open
 	if self.Location == "bank" then
-		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		local BankClosed = memoryReadIntPtr(getProc(), getBaseAddress(addresses.bank.open.base),  addresses.bank.open.offset) == -1
 		if BankClosed then
 			return
 		end

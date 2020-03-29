@@ -487,7 +487,7 @@ function CPawn:updateCasting()
 		return
 	end
 
-	self.Casting = (memoryReadRepeat("float", getProc(), self.Address + addresses.game_root.pawn.cast_full_time) ~= 0);
+    self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
 end
 
 function CPawn:updateLevel()

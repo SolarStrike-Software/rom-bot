@@ -2914,7 +2914,7 @@ function CPlayer:faceDirection(dir,diry)
 	if diry then
 		Vec3 = math.sin(diry);
 	else
-		Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+		Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.game_root.pawn.rotation_y);
 	end
 	local hypotenuse = (1 - Vec3^2)^.5
 	local Vec1 = math.cos(dir) * hypotenuse;
@@ -2922,11 +2922,16 @@ function CPlayer:faceDirection(dir,diry)
 
 	self.Direction = math.atan2(Vec2, Vec1);
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
-
-	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.mounted);
+	
+	local tmpMountAddress;
+	if( addresses.speedhack and addresses.speedhack.mounted ) then
+		tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.speedhack.mounted);
+	else
+		tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.mounted);
+	end
 	self:updateMounted()
 	if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
-		memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_x, Vec1);
+	    memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_x, Vec1);
 		memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_z, Vec2);
 		memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_y, Vec3);
 	else
