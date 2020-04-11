@@ -12,7 +12,7 @@ end
 
 local function addFoundPrediction(id, branch)
 	local idBlock = idToBlock(id);
-	printf("Add prediction for block %d, branch 0x%X\n", idBlock, branch);
+	cprintf(cli.purple, "Add prediction for block %d, branch 0x%X\n", idBlock, branch);
 	if( foundPredictedBranches[idBlock] == nil ) then
 		foundPredictedBranches[idBlock] = {};
 	end
@@ -141,16 +141,13 @@ function CMemDatabase:getAddress(id)
 	-- Merge predictions found at runtime
 	local idBlock = idToBlock(id);
 	for i,v in pairs(foundPredictedBranches[idBlock] or {}) do
-		print("Merge predicted branch 0x%X\n", v);
 		table.insert(predictedBranches, v);
 	end
 	
 	for i,v in pairs(predictedBranches) do
 		-- Load another branch, check to see if we found it
 		self:loadBranch(v);
-		--printf("Load predicted branch 0x%X in search of %d\n", v, id);
 		if( self.database[id] ~= nil ) then
-			--printf("Found %d in branch 0x%X\n", id, i);
 			return self.database[id].address;
 		end
 	end
@@ -230,7 +227,7 @@ function CMemDatabase:getPredictedBranches(id)
 	
 	-- Skills
 	if( id >= 490000 and id < 510000 ) then
-		return {0x190, 0x194, 0x1A4, 0x154, 0x158, 0x168, 0x174, 0x178, 0x1B0, 0x1B4, 0x198, 0x150};
+		return {0x190, 0x194, 0x1A4, 0x154, 0x158, 0x168, 0x174, 0x178, 0x1B0, 0x1B4, 0x198, 0x150, 0x154, 0x158, 0x15C};
 	end
 	
 	-- Runes

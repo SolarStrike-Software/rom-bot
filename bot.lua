@@ -719,6 +719,11 @@ function main()
 		end
 	end
 	registerTimer("ClientDetection", secondsToTimer(2), checkClientCrash);
+	
+	collectgarbage("collect");
+	registerTimer("collectgarbage", secondsToTimer(60), function ()
+		collectgarbage("collect");
+	end);
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
