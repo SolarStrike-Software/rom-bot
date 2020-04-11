@@ -24,6 +24,7 @@ addresses = {
 	partyIconList_offset = 0xC,
 	partyLeader_address = 0xA27240,
 	partyMemberList_address = 0xA647B0,
+	partyMemberList_offset = 0x68,
 	--=============================================--
 	
 	client_exe_module_start = 0x400000,
@@ -279,7 +280,7 @@ addresses = {
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x608FF0,
+			base = 0x61CF94,
 		},
 		guild = {
 			base = 0x664A2C,
@@ -291,7 +292,7 @@ addresses = {
 			base = 0x61C3C4,
 		},
 		rent = {
-			base = 0x608FC8,
+			base = 0x61CF6C,
 		},
 	},
 	cursor = {

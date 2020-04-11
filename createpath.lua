@@ -17,7 +17,6 @@ include("classes/memdatabase.lua");
 settings.load();
 database.load();
 
-MemDatabase = CMemDatabase();
 
 -- ********************************************************************
 -- Change the parameters below to your need                           *

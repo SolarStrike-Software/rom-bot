@@ -103,8 +103,6 @@ __RPL = nil;	-- Return Point List
 
 
 
-MemDatabase = CMemDatabase();
-
 
 
 

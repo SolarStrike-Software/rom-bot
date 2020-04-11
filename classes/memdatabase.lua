@@ -3,6 +3,24 @@ local HIGHEST_BRANCH = 0x348; -- The highest branch
 local BRANCH_OLD_SECONDS = 60; -- How long ago a branch was loaded before it is considered out-of-date
 local INITIALIZE_ITEM_DELAY = 0.25; -- How much to wait when spamming the in-game command
 
+local foundPredictedBranches		= {}; -- Branch predictions found at runtime
+local foundPredictedBranchBlockSize = 1000;
+
+local function idToBlock(id)
+	return math.floor(id / foundPredictedBranchBlockSize)*foundPredictedBranchBlockSize;
+end
+
+local function addFoundPrediction(id, branch)
+	local idBlock = idToBlock(id);
+	printf("Add prediction for block %d, branch 0x%X\n", idBlock, branch);
+	if( foundPredictedBranches[idBlock] == nil ) then
+		foundPredictedBranches[idBlock] = {};
+	end
+	
+	table.insert(foundPredictedBranches, idBlock, branch);
+end
+
+
 CMemDatabase = class(function(self)
 	self.database = {};
 	self.loadedBranches = {};
@@ -119,13 +137,24 @@ function CMemDatabase:getAddress(id)
 	-- Still no good? Try running through predicted branches
 	-- based on our ID first.
 	local predictedBranches = self:getPredictedBranches(id) or {};
+	
+	-- Merge predictions found at runtime
+	local idBlock = idToBlock(id);
+	for i,v in pairs(foundPredictedBranches[idBlock] or {}) do
+		print("Merge predicted branch 0x%X\n", v);
+		table.insert(predictedBranches, v);
+	end
+	
 	for i,v in pairs(predictedBranches) do
 		-- Load another branch, check to see if we found it
 		self:loadBranch(v);
+		--printf("Load predicted branch 0x%X in search of %d\n", v, id);
 		if( self.database[id] ~= nil ) then
+			--printf("Found %d in branch 0x%X\n", id, i);
 			return self.database[id].address;
 		end
 	end
+
 	
 	-- Still no good? We have no choice but to try running through them all.
 	for i = LOWEST_BRANCH,HIGHEST_BRANCH,4 do
@@ -133,6 +162,7 @@ function CMemDatabase:getAddress(id)
 		if( self:isBranchDirty(i) ) then
 			self:loadBranch(i);
 			if( self.database[id] ~= nil ) then
+				addFoundPrediction(id, i);
 				return self.database[id].address;
 			end
 		end
@@ -178,7 +208,7 @@ function CMemDatabase:getPredictedBranches(id)
 	end
 	
 	if( id >= 210000 and id < 212000 ) then
-		return {0x28C, 0x290, 0x294};
+		return {0x84, 0x28C, 0x290, 0x294};
 	end
 	
 	if( id >= 220000 and id < 230000 ) then
@@ -200,16 +230,16 @@ function CMemDatabase:getPredictedBranches(id)
 	
 	-- Skills
 	if( id >= 490000 and id < 510000 ) then
-		return {0x190, 0x194, 0x1A4, 0x154, 0x158, 0x168, 0x174};
+		return {0x190, 0x194, 0x1A4, 0x154, 0x158, 0x168, 0x174, 0x178, 0x1B0, 0x1B4, 0x198, 0x150};
 	end
 	
 	-- Runes
 	if( id >= 510000 and id < 520000 ) then
-		return {0x6C};
+		return {0x6C, 0x70};
 	end
 	
 	if( id >= 520000 and id < 540000 ) then
-		return {0x254, 0x260, 0x264};
+		return {0x254, 0x258, 0x260, 0x264};
 	end
 	
 	-- Skills, ie. Attack, Recall, etc.
@@ -236,3 +266,6 @@ function CMemDatabase:getPredictedBranches(id)
 		return {0x178, 0x180, 0x184};
 	end
 end
+
+
+MemDatabase = CMemDatabase();
