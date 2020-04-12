@@ -213,7 +213,7 @@ function CMemDatabase:getPredictedBranches(id)
 	end
 	
 	if( id >= 230000 and id < 240000 ) then
-		return {0xA8, 0xAC, 0xB4};
+		return {0xA8, 0xAC, 0xB4, 0xB8, 0xBC};
 	end
 	
 	if( id >= 240000 and id < 245000) then
