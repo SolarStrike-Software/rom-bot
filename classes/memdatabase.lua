@@ -17,7 +17,7 @@ local function addFoundPrediction(id, branch)
 		foundPredictedBranches[idBlock] = {};
 	end
 	
-	table.insert(foundPredictedBranches, idBlock, branch);
+	table.insert(foundPredictedBranches[idBlock], branch);
 end
 
 
@@ -140,7 +140,7 @@ function CMemDatabase:getAddress(id)
 	
 	-- Merge predictions found at runtime
 	local idBlock = idToBlock(id);
-	for i,v in pairs(foundPredictedBranches[idBlock] or {}) do
+	for i,v in pairs((foundPredictedBranches[idBlock] or {})) do
 		table.insert(predictedBranches, v);
 	end
 	
@@ -201,11 +201,11 @@ function CMemDatabase:getPredictedBranches(id)
 	end
 
 	if( id >= 200000 and id < 210000 ) then
-		return {0xF0, 0xF4, 0xF8, 0xFC, 0x104, 0x108, 0x10C, 0x110, 0x114};
+		return {0xF0, 0xF4, 0xF8, 0xFC, 0x104, 0x108, 0x10C, 0x110, 0x114, 0x294};
 	end
 	
-	if( id >= 210000 and id < 212000 ) then
-		return {0x84, 0x28C, 0x290, 0x294};
+	if( id >= 210000 and id < 214000 ) then
+		return {0x84, 0x28C, 0x290, 0x294, 0x298, 0x29C};
 	end
 	
 	if( id >= 220000 and id < 230000 ) then
