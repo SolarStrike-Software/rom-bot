@@ -1,0 +1,14 @@
+<waypoints type="TRAVEL" >
+	<!-- # 1 --><waypoint x="2387" z="1685"></waypoint>
+	<!-- # 2 --><waypoint x="2494" z="1491"></waypoint>
+	<!-- # 3 --><waypoint x="2394" z="1249"></waypoint>
+	<!-- # 4 --><waypoint x="2235" z="1132"></waypoint>
+	<!-- # 5 --><waypoint x="1937" z="968"></waypoint>
+	<!-- # 6 --><waypoint x="1619" z="820"></waypoint>
+	<!-- # 7 --><waypoint x="1260" z="652"></waypoint>
+	<!-- # 8 --><waypoint x="1011" z="620"></waypoint>
+	<!-- # 9 --><waypoint x="895" z="442"></waypoint>
+	<!-- #10 --><waypoint x="864" z="168"></waypoint>
+	<!-- #11 --><waypoint x="826" z="-125"></waypoint>
+	<!-- #12 --><waypoint x="800" z="-297"></waypoint>
+</waypoints>

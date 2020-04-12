@@ -1,0 +1,61 @@
+<waypoints type="NORMAL" >
+	<onLoad>
+		settings.profile.mobs = {100132, 100212, 106107} -- Cow Beetle, Black Boar, Small Boar
+		changeProfileOption("TARGET_LEVELDIF_ABOVE", 1)
+		changeProfileOption("HP_LOW_POTION", 80);
+		changeProfileOption("HP_REST", 60);
+		changeProfileOption("LOOT", false);
+		if( player.Level > 9 ) then
+			__WPL:setForcedWaypointType("RUN")
+		end
+	</onLoad>
+	<!-- # 1 --><waypoint x="242" z="-1039"></waypoint>
+	<!-- # 2 --><waypoint x="250" z="-1191"></waypoint>
+	<!-- # 3 --><waypoint x="388" z="-1171"></waypoint>
+	<!-- # 4 --><waypoint x="521" z="-1029"></waypoint>
+	<!-- # 5 --><waypoint x="607" z="-858"></waypoint>
+	<!-- # 6 --><waypoint x="713" z="-739">
+		if( player.Level > 9 ) then
+			loadPaths("1-10PioneersQuests/l10t_classhall");
+		end
+	</waypoint>
+	<!-- # 7 --><waypoint x="772" z="-613"></waypoint>
+	<!-- # 8 --><waypoint x="821" z="-447">player:restrnd(10, 1, 10);</waypoint>
+	<!-- # 9 --><waypoint x="903" z="-270"></waypoint>
+	<!-- #10 --><waypoint x="917" z="-190"></waypoint>
+	<!-- #11 --><waypoint x="1034" z="-103">player:restrnd(20, 1, 10);</waypoint>
+	<!-- #12 --><waypoint x="816" z="-185"></waypoint>
+	<!-- #13 --><waypoint x="772" z="-171"></waypoint>
+	<!-- #14 --><waypoint x="701" z="-82"></waypoint>
+	<!-- #15 --><waypoint x="575" z="28"></waypoint>
+	<!-- #16 --><waypoint x="408" z="-59">
+		if( player.Level > 9 ) then
+			loadPaths("1-10PioneersQuests/l10t_classhall");
+	  	end
+	</waypoint>
+	<!-- #17 --><waypoint x="436" z="-248"></waypoint>
+	<!-- #18 --><waypoint x="500" z="-480"></waypoint>
+	<!-- #19 --><waypoint x="662" z="-487"></waypoint>
+	<!-- #20 --><waypoint x="799" z="-426">player:restrnd(20, 1, 10);</waypoint>
+	<!-- #21 --><waypoint x="1023" z="-329"></waypoint>
+	<!-- #22 --><waypoint x="973" z="-413"></waypoint>
+	<!-- #23 --><waypoint x="798" z="-492"></waypoint>
+	<!-- #24 --><waypoint x="771" z="-635">player:restrnd(20, 1, 10);
+		if( player.Level > 9 ) then
+			loadPaths("1-10PioneersQuests/l10t_classhall");
+	  	end
+	</waypoint>
+	<!-- #25 --><waypoint x="566" z="-894"></waypoint>
+	<!-- #26 --><waypoint x="508" z="-985"></waypoint>
+	<!-- #27 --><waypoint x="411" z="-1200"></waypoint>
+	<!-- #28 --><waypoint x="310" z="-1390"></waypoint>
+	<!-- #29 --><waypoint x="247" z="-1407"></waypoint>
+	<!-- #30 --><waypoint x="172" z="-1282">player:restrnd(30, 1, 10);</waypoint>
+	<!-- #31 --><waypoint x="-85" z="-1054"></waypoint>
+	<!-- #32 --><waypoint x="26" z="-939"></waypoint>
+	<!-- #33 --><waypoint x="119" z="-942">
+		if( player.Level > 9 ) then
+			loadPaths("1-10PioneersQuests/l10t_classhall");
+	  	end
+	</waypoint>
+</waypoints>

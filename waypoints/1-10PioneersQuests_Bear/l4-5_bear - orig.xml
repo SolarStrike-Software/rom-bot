@@ -1,0 +1,47 @@
+<waypoints>
+	<onLoad>
+		settings.profile.mobs = {100056}; -- Bear
+
+		function checkquest()
+			if getQuestStatus(420677) ~= "incomplete" then -- Bear Fur Gloves
+				loadPaths("1-10PioneersQuests/l4t_bear_quest");
+			end
+		end
+	</onLoad>
+	<!-- #  1 --><waypoint x="205" z="-8187">
+		checkquest()
+	</waypoint>
+	<!-- #  2 --><waypoint x="344" z="-8057">
+		checkquest()
+	</waypoint>
+	<!-- #  3 --><waypoint x="326" z="-7977">
+		checkquest()
+	</waypoint>
+	<!-- #  4 --><waypoint x="174" z="-7968">
+		checkquest()
+	</waypoint>
+	<!-- #  5 --><waypoint x="40" z="-7861">
+		checkquest()
+	</waypoint>
+	<!-- #  6 --><waypoint x="29" z="-7797">
+		checkquest()
+	</waypoint>
+	<!-- #  7 --><waypoint x="-147" z="-7713">
+		checkquest()
+	</waypoint>
+	<!-- #  8 --><waypoint x="-171" z="-7658">
+		checkquest()
+	</waypoint>
+	<!-- #  9 --><waypoint x="-254" z="-7981">
+		checkquest()
+	</waypoint>
+	<!-- # 10 --><waypoint x="-305" z="-8083">
+		checkquest()
+	</waypoint>
+	<!-- # 11 --><waypoint x="-272" z="-8206">
+		checkquest()
+	</waypoint>
+	<!-- # 12 --><waypoint x="205" z="-8187">
+		checkquest()
+	</waypoint>
+</waypoints>
