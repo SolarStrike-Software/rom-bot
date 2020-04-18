@@ -2388,12 +2388,9 @@ function GetSkillBookData(_tabs)
 		-- name can either be a string or a pointer to a string
 		-- Try to read it as a string; if it contains unexpected
 		-- characters, try reading it as a pointer
-		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
-		if( tmp.Name:find("[^%s%w%d]") ) then
-			local ptrName = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
-			if( ptrName ) then
-				tmp.Name = ptrName;
-			end
+		tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
+		if( type(tmp.Name) ~= "string" or tmp.Name:find("[^%s%w%d-]") ) then
+			tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
 		end
 		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
 		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.level)
