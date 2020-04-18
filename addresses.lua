@@ -165,7 +165,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-        	base = 0x663338,
+        base = 0x663338,
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -215,9 +215,9 @@ addresses = {
 		array_start = 0x1A2C,
 	},
 	skillbook = {
-        	base = 0x66487C,
-		tab_start = 0x0,
-		tab_end = 0x4,
+        base = 0x664870,
+		tab_start = 0xc,
+		tab_end = 0x10,
 		tabinfo_size = 0x20,
 		skill = {
 			size = 0x4c,

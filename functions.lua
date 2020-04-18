@@ -2384,7 +2384,17 @@ function GetSkillBookData(_tabs)
 		local tmp = {}
 		tmp.Address = address
 		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
-		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);--GetIdName(tmp.Id)
+		
+		-- name can either be a string or a pointer to a string
+		-- Try to read it as a string; if it contains unexpected
+		-- characters, try reading it as a pointer
+		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
+		if( tmp.Name:find("[^%s%w%d]") ) then
+			local ptrName = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
+			if( ptrName ) then
+				tmp.Name = ptrName;
+			end
+		end
 		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
 		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.level)
 		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.as_level)
@@ -2454,6 +2464,7 @@ function GetSkillBookData(_tabs)
 				local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
+					cprintf(cli.green, "Found skill 0x%X %d %s\n", tmpData.Address, tmpData.Id or -1, tmpData.Name or "<no name>");
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
