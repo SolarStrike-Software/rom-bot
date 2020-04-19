@@ -216,8 +216,10 @@ addresses = {
 	},
 	skillbook = {
         base = 0x664870,
-		tab_start = 0xc,
-		tab_end = 0x10,
+		book1_start = 0xc,
+		book1_end = 0x10,
+		book2_start = 0x1c,
+		book2_end = 0x20,
 		tabinfo_size = 0x20,
 		skill = {
 			size = 0x4c,

@@ -2389,7 +2389,7 @@ function GetSkillBookData(_tabs)
 		-- Try to read it as a string; if it contains unexpected
 		-- characters, try reading it as a pointer
 		tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
-		if( type(tmp.Name) ~= "string" or tmp.Name:find("[^%s%w%d-]") ) then
+		if( type(tmp.Name) ~= "string" or #tmp.Name < 2 or tmp.Name:find("[^%s%w%d-]") ) then
 			tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
 		end
 		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
@@ -2451,17 +2451,31 @@ function GetSkillBookData(_tabs)
 		-- the first in this memory structure.
 		-- Additionally, we need to subtract 1 anyways because array index start at 0.
 		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
-		local tabindex = tab - 2;
+		local tabindex = tab-2;
 		local base = getBaseAddress(addresses.skillbook.base);
-		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + addresses.skillbook.tab_start);
-		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + addresses.skillbook.tab_end);
-
+		
+		-- 2nd class skills are stored on a separate section of memory
+		local book			=	1;
+		local tabStartOff	=	addresses.skillbook.book1_start;
+		local tabEndOff		=	addresses.skillbook.book1_end;
+		
+		if( tab >= 4 ) then
+			book		=	2;
+			tabindex	=	tab - 4; -- Switch books, so need to roll back more
+			tabStartOff	=	addresses.skillbook.book2_start;
+			tabEndOff	=	addresses.skillbook.book2_end;
+		end
+		
+		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff);
+		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabEndOff);
+		
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
 				local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
-					cprintf(cli.green, "Found skill 0x%X %d %s\n", tmpData.Address, tmpData.Id or -1, tmpData.Name or "<no name>");
+					
+					cprintf(cli.green, "Found skill 0x%X ID(%d) Book(%d-%d) %s\n", tmpData.Address, tmpData.Id or -1, book, tabindex, tmpData.Name or "<no name>");
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
