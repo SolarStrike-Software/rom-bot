@@ -200,15 +200,15 @@ function CPlayer:update()
 		end
 	end--]]
 
-
+	local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
 	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class1) or self.Class1;
-	self.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
-		
+	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
+
 	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
-	self.Level2 = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
+	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
 	
-	self.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
-	self.TP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
+	self.XP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
 	
 	
 	self:updateCasting()

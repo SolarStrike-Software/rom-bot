@@ -524,8 +524,9 @@ local LAST_PLAYER_Z = 0;
 function timedSetWindowName(profile)
 	-- Update our exp gain
 	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
+		local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
 		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
-		player.Level = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level
+		player.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level
 		player.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1))) or player.XP
 		
 		if player.XP == 0 or player.Level == 0 then return end
@@ -2475,7 +2476,7 @@ function GetSkillBookData(_tabs)
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
 					
-					cprintf(cli.green, "Found skill 0x%X ID(%d) Book(%d-%d) %s\n", tmpData.Address, tmpData.Id or -1, book, tabindex, tmpData.Name or "<no name>");
+					cprintf(cli.green, "Found skill 0x%X ID(%d) Book(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, book, tabindex, tmpData.Name or "<no name>");
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,

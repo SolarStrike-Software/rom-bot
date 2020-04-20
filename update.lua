@@ -1,3 +1,5 @@
+error("Update script is deprecated\nUse rom-bot/addrupdate instead.");
+
 include("addresses.lua");
 include("functions.lua");
 -- Note: We get 'char' and 'macro' data from functions.lua

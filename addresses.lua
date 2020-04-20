@@ -30,14 +30,14 @@ addresses = {
 	client_exe_module_start = 0x400000,
 	game_time = 0x602F70,
 	in_game = 0x65F608,
-	zone_id = 0x65A268,
-	buff_count = 0x6041C0,
+	zone_id = 0x65A268 --[[{zone_id}]],
 	channel = {
 		base = 0x6621A0,
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x60D600,
+		base = 0x607B50 --[[{class_info_base}]],
+		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
 		tp = 0x10
@@ -81,7 +81,7 @@ addresses = {
 		bar1_start = 0x12cc
 	},
 	game_root = {
-		base = 0x6019B4,
+		base = 0x6019B4--[[{game_root_base}]],
 		gold = 0x6154C4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
@@ -101,7 +101,7 @@ addresses = {
 		},
 		camdistance = {0x454, 0x244},
 		player = {
-			base = 0x5a8,
+			base = 0x5a8--[[{player_base}]],
 		},
 		combat_status = 0x74a,
 		pawn = { -- These can apply to a player, monster, NPC, etc..
