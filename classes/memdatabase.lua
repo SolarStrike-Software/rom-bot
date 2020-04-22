@@ -67,7 +67,7 @@ end
 function CMemDatabase:loadBranch(branch)
 	local base = getBaseAddress(addresses.memdatabase.base);
 	local branchListAddress = memoryReadUIntPtr(getProc(), base, addresses.memdatabase.offset);
-	local branchAddress = memoryReadUInt(getProc(), branchListAddress + branch);
+	local branchAddress = memoryReadRepeat("uint", getProc(), branchListAddress + branch);
 	
 	if( branchAddress ~= nil and branchAddress ~= 0 ) then
 		for j = 0,addresses.memdatabase.branch.size,addresses.memdatabase.branch.info_size do
