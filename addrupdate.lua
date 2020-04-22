@@ -136,6 +136,7 @@ end
 	value_offset	How many bytes offset from the found location that contains the value we want
 	value_size		The size (in bytes) of the value we want to read
 	value_raw		True = use read value as is, false = subtract Client.exe start address
+	value_type		"address" (Use found location) or "default" (use value read from location)
 	pattern			String pattern representing data to find
 ]]
 local updatables = {
@@ -281,6 +282,33 @@ local updatables = {
 			69 D2
 		]])
 	},
+	
+	freeze_target_codemod = {
+		value_offset = 0x11,
+		value_size = 4,
+		value_raw = false,
+		value_type = "address",
+		pattern = byteArrayToPattern([[
+		8B 44 24 04
+		56
+		8B F1
+		8B 96 ?? ?? ?? ??
+		3B D0
+		74 35
+		89 86 ?? ?? ?? ??
+		8B 0D ?? ?? ?? ??
+		85 C9
+		74 0A
+		52
+		50
+		6A 0D
+		56
+		FF D1
+		83 C4 10
+		83 BE ?? ?? ?? ?? 00
+		75 12
+		]])
+	},
 };
 
 function findGameRoot()
@@ -291,21 +319,101 @@ function findGameRoot()
 end
 
 local foundUpdates = {};
+local missingUpdates = 0;
 for i,v in pairs(updatables) do
 	local found = findPattern(v.pattern);
 	if( found ) then
-		local val = getInt(found + v.value_offset, v.value_size);
-		if( not v.value_raw ) then
-			-- If this is supposed to be an offset from client.exe, subtract it.
-			val = val - exeStartAddress;
-			if( val < 0 ) then
-				error(sprintf("\n{%s} has value_raw=true, but final result was negitive; are you sure that's right?", i));
+		local val = nil;
+		if( v.value_type == "address" ) then
+			val = found + (v.value_offset or 0);
+		else
+			val = getInt(found + (v.value_offset or 0), (v.value_size or 4));
+			if( not v.value_raw ) then
+				-- If this is supposed to be an offset from client.exe, subtract it.
+				val = val - exeStartAddress;
+				if( val < 0 ) then
+					error(sprintf("\n{%s} has value_raw=true, but final result was negitive; are you sure that's right?", i));
+				end
 			end
 		end
+	
 		cprintf_ex("|green|Found pattern for |pink|{%s}|green| at |yellow|0x%X|green|, new value: |yellow|0x%X\n",
 		i, found + v.value_offset, val);
 		foundUpdates[i] = val;
 	else
 		cprintf(cli.red, "Could not find pattern for {%s}\n", i);
+		missingUpdates = missingUpdates + 1;
 	end
+end
+
+function save(filename, backup)
+	backup = backup or true;
+	
+	local handle = io.open(getExecutionPath() .. '/' .. filename, 'r');
+	if( not handle ) then
+		error("Could not open " .. filename .. " for reading.");
+	end
+	
+	local addressFile = handle:read('*a');
+	
+	if( backup ) then
+		local backupFilename = 'backup-' .. filename;
+		printf("Backuping up to %s\n", backupFilename);
+		
+		local outhandle = io.open(getExecutionPath() .. '/' .. backupFilename, 'w');
+		outhandle:write(addressFile);
+		outhandle:close();
+	end
+	
+	-- Do replacements as requested
+	printf("Replacing addresses...\n");
+	for key,value in pairs(foundUpdates) do
+		local hexValue = sprintf("0x%x", value);
+		local changed = string.gsub(addressFile,
+			"(.*)=(%s*)([x%x]+)([%,%s]*)%-%-%[%[(.*){" .. key .. "}(%s*)%]%]([^\n]*)",
+			"%1=%2" .. hexValue .. "%4--[[%5{" .. key .. "}%6]]%7");
+		
+		if( changed ~= addressFile ) then
+			cprintf_ex("|green|[+]|white| Successfully patched |pink|{%s}\n", key);
+			addressFile = changed;
+		else
+			if( addressFile:find("%-%-%[%[%s*{" .. key .. "}%s*%]%]") ) then
+				cprintf_ex("|yellow|[!]|white| Failed to patch |pink|{%s}|white| or already valid.\n", key);
+			else
+				cprintf_ex("|lightred|[-]|white| Failed to patch |pink|{%s}|white| (token not found in file)\n", key);
+			end
+		end
+	end
+	
+	printf("Writing new addresses to %s\n", filename);
+	local newHandle = io.open(getExecutionPath() .. "/" .. newFilename, 'w');
+	newHandle:write(addressFile);
+end
+
+local continue = true;
+if( missingUpdates > 0 ) then
+	cprintf_ex([[
+\n\n
+|yellow|Not all updatable addresses could be found.\n
+Do you want to continue and update found information? |white|y/n:
+]]);
+	while(true) do
+		local inp = string.lower(io.read('1'));
+		if( inp ~= 'y' and inp ~= 'n' ) then
+			printf("Not a valid option. Select (y)es or (n)o:");
+		else
+			if( inp == 'y' ) then
+				continue = true;
+			else
+				continue = false;
+			end
+			
+			break;
+		end
+	end
+end
+
+
+if( continue ) then
+	save('addresses.lua', true);
 end

@@ -3,3 +3,4 @@ cache/
 profiles/*
 !profiles/Default.xml
 logs/*
+backup-addresses.lua

@@ -30,13 +30,13 @@ addresses = {
 	client_exe_module_start = 0x400000,
 	game_time = 0x602F70,
 	in_game = 0x65F608,
-	zone_id = 0x65A268 --[[{zone_id}]],
+	zone_id = 0x65A268, --[[{zone_id}]]
 	channel = {
 		base = 0x6621A0,
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x607B50 --[[{class_info_base}]],
+		base = 0x607B50, --[[{class_info_base}]]
 		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
@@ -47,7 +47,7 @@ addresses = {
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x4973E1,
+			base = 0x0, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
@@ -81,7 +81,7 @@ addresses = {
 		bar1_start = 0x12cc
 	},
 	game_root = {
-		base = 0x6019B4--[[{game_root_base}]],
+		base = 0x6019B4, --[[{game_root_base}]]
 		gold = 0x6154C4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
@@ -101,7 +101,7 @@ addresses = {
 		},
 		camdistance = {0x454, 0x244},
 		player = {
-			base = 0x5a8--[[{player_base}]],
+			base = 0x5a8, --[[{player_basex}]]
 		},
 		combat_status = 0x74a,
 		pawn = { -- These can apply to a player, monster, NPC, etc..
@@ -277,8 +277,7 @@ addresses = {
 	bank = {
 		base = 0x6154D0,
 		open = {
-			--base = 0x660C5C,
-            		base = 0x661C64,
+            base = 0x661C64,
 			offset = 0x10,
 		},
 		rent = {
@@ -319,7 +318,7 @@ addresses = {
 		end_addr = 0x26C,
 	},
 	mouse = {
-		base = 0x62B9BC, -- maybe 0x62B9B4????????? (related the codemod problem?)
+		base = 0x62B9BC,
 		x = 0x8C,
 		y = 0x90,
 		x_in_window = {0xC, 0x3B4},
