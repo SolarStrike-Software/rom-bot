@@ -386,7 +386,7 @@ function save(filename, backup)
 	end
 	
 	printf("Writing new addresses to %s\n", filename);
-	local newHandle = io.open(getExecutionPath() .. "/" .. newFilename, 'w');
+	local newHandle = io.open(getExecutionPath() .. "/" .. filename, 'w');
 	newHandle:write(addressFile);
 end
 
