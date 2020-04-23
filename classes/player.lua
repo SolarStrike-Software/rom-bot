@@ -207,6 +207,14 @@ function CPlayer:update()
 	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
 	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
 	
+	if( self.Class1 > CLASS_CHAMPION ) then
+		cprintf(cli.yellow, "[warn] Player class may be invalid (%d)\n", self.Class1);
+	end
+	
+	if( self.Class2 > CLASS_CHAMPION ) then
+		cprintf(cli.yellow, "[warn] Player class 2 may be invalid (%d)\n", self.Class2);
+	end
+	
 	self.XP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
 	self.TP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
 	
