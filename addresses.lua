@@ -249,7 +249,7 @@ addresses = {
 		},
 	},
 	item = {
-		card_or_npc_id = 0x364,
+		card_or_npc_id = 0x368,
 		recipe_id = 0xF0,
 		name = 0xC,
 		count = 0x10,

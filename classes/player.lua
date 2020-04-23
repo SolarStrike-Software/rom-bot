@@ -1043,7 +1043,8 @@ function CPlayer:cast(skill)
 		end
 
 		-- first part of 'casting ...'
-		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));
+		-- skill.Name
+		printf(language[21], hf_temp, string.sub(skill.Name..sprintf("(%s)", GetIdName(skill.Id)) ..string.rep(' ', 40), 1, 40));
 
 		faceTarget()
 
