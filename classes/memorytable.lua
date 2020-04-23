@@ -3,7 +3,22 @@ function GetItemAddress(id)
 end
 
 -- Returns the name for a given id
+local idNameMap = {};
 function GetIdName(itemId, plural)
+	local tab = idNameMap[itemId]
+	if( tab ~= nil ) then
+		-- from cache
+		if( plural ) then
+			if( tab['plural'] ) then
+				return tab['plural'];
+			end
+		else
+			if( tab['single'] ) then
+				return tab['single'];
+			end
+		end
+	end
+	
 	-- Check itemId
 	if itemId == nil or itemId == 0 then
 		return
@@ -52,5 +67,16 @@ function GetIdName(itemId, plural)
 	end
 	name2 = name2 or "";
 	
-	return name .. name2;
+	local result = name .. name2;
+	
+	local cacheType = 'single';
+	if( plural ) then
+		cacheType = 'plural';
+	end
+	
+	if( idNameMap[itemId] == nil ) then
+		idNameMap[itemId] = {};
+	end
+	idNameMap[itemId][cacheType] = result;
+	return result;
 end
