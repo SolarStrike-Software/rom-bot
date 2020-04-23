@@ -45,6 +45,12 @@ function GetIdName(itemId, plural)
 		until nameaddress ~= 0 or deltaTime(getTime(),starttime) > 200
 	end
 
-	local name2 = memoryReadString(proc, nameaddress) or "";
+	
+	local name2 = memoryReadString(proc, nameaddress);
+	if( type(name2) ~= "string" or #name2 < 2 or #name2 > 24 or name2:find("[^%s%w%d-]") ) then
+		name2 = memoryReadStringPtr(proc, nameaddress, 0);
+	end
+	name2 = name2 or "";
+	
 	return name .. name2;
 end

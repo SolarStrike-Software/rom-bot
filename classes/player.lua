@@ -2359,7 +2359,7 @@ function evalTargetDefault(address, target)
 
 	-- Dead
 	target:updateHP()
-	if( target.HP < 1 ) then
+	if( target.HP <= 0 ) then
 		debug_target("target HP is less than 1")
 		return false;
 	end
@@ -2613,7 +2613,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		local target = CPawn.new(self.TargetPtr)
 		if target:exists() then -- Target exists
 			target:updateHP()
-			if( target.HP <= 1 ) then
+			if( target.HP <= 0 ) then
 				self:clearTarget();
 			end
 		end

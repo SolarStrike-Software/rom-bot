@@ -66,9 +66,13 @@ end
 -- Loads information about a branch into our local DB
 function CMemDatabase:loadBranch(branch)
 	local base = getBaseAddress(addresses.memdatabase.base);
-	local branchListAddress = memoryReadUIntPtr(getProc(), base, addresses.memdatabase.offset);
-	local branchAddress = memoryReadRepeat("uint", getProc(), branchListAddress + branch);
+	local branchListAddress = memoryReadRepeat("uintptr", getProc(), base, addresses.memdatabase.offset);
 	
+	if( branchListAddress == nil ) then
+		return;
+	end
+	
+	local branchAddress = memoryReadRepeat("uint", getProc(), branchListAddress + branch);
 	if( branchAddress ~= nil and branchAddress ~= 0 ) then
 		for j = 0,addresses.memdatabase.branch.size,addresses.memdatabase.branch.info_size do
 			local itemAddress = memoryReadUInt(getProc(), branchAddress + j + addresses.memdatabase.branch.itemset_address);
@@ -275,6 +279,10 @@ function CMemDatabase:getPredictedBranches(id)
 	-- Buffs & debuffs
 	if( id >= 620000 and id < 630000 ) then
 		return {0x178, 0x180, 0x184, 0x188, 0x18C};
+	end
+	
+	if( id >= 770000 and id < 780000 ) then
+		return {0xC0};
 	end
 end
 

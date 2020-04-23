@@ -83,25 +83,25 @@ function CItem:update()
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
-		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.value );
+		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.value ) or self.Value or 1;
 		self.Worth = self.Value / 10;
 		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
 		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.item.bound_status );
 		self.Bound = not bitAnd(self.BoundStatus,1)
-		self.RequiredLvl = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.required_level );
-		self.MaxStack = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.max_stack );
-		self.ObjType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type );
-		self.ObjSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type + 4);
-		self.ObjSubSubType = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.type + 8);
-		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.range)
+		self.RequiredLvl = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.required_level) or self.RequiredLvl;
+		self.MaxStack = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.max_stack) or self.MaxStack;
+		self.ObjType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type) or self.ObjType;
+		self.ObjSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 4) or self.ObjSubType;
+		self.ObjSubSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 8) or self.ObjSubSubType;
+		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.range) or self.Range;
 
-		self.CoolDownTime = 0
+		self.CoolDownTime = 0;
 		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
 			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id );
 			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
 				local skillItemAddress = GetItemAddress( skillItemId );
 				if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
-					self.CoolDownTime = memoryReadInt( getProc(), skillItemAddress + addresses.item.cooldown );
+					self.CoolDownTime = memoryReadInt(getProc(), skillItemAddress + addresses.item.cooldown) or self.CoolDownTime;
 				end;
 			end;
 			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
@@ -142,8 +142,8 @@ function CItem:update()
 
 		self.Name = self.Name .. tmp;
 
-		self.Quality = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.quality );
-		local plusQuality = memoryReadByte( getProc(), self.Address + addresses.item.quality );
+		self.Quality = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.quality) or 0;
+		local plusQuality = memoryReadByte(getProc(), self.Address + addresses.item.quality);
 		local quality, tier = math.modf ( plusQuality / 16 );
 		-- tier = tier * 16; -- Tier not really used yet...
 		if ( quality > 0 ) then
