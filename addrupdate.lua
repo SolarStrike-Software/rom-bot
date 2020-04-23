@@ -309,14 +309,82 @@ local updatables = {
 		75 12
 		]])
 	},
+	
+	freeze_mousepos_codemod = {
+		value_offset = 0x1F,
+		value_size = 4,
+		value_raw = false,
+		value_type = "address",
+		pattern = byteArrayToPattern([[
+		51
+		52
+		8B CE
+		E8 ?? ?? ?? ??
+		5F
+		5E
+		5D
+		33 C0
+		5B
+		C2 10 00
+		8B C5
+		8B C8
+		81 E1 FF FF 00 00
+		C1 F8 10
+		89 8E ?? ?? ?? ??
+		89 86 ?? ?? ?? ??
+		5F
+		5E
+		5D
+		33 C0
+		5B
+		C2 10 00
+		83 FB 79
+		0F 84 ?? ?? ?? ??
+		F7 C5 00 00 00 20
+		]])
+	},
+	
+	freeze_mousepos2_codemod = {
+		value_offset = 0x5F,
+		value_size = 4,
+		value_raw = false,
+		value_type = "address",
+		pattern = byteArrayToPattern([[
+		83 C4 0C
+		80 7E ?? 00
+		74 5C
+		8D 4C 24 08
+		51
+		FF 15 ?? ?? ?? ??
+		8B 46 ??
+		8D 54 24 ??
+		52
+		50
+		FF 15 ?? ?? ?? ??
+		8B 4C 24 ??
+		85 C9
+		7D 0C
+		C7 86 ?? ?? ?? ?? ?? ?? ?? ??
+		EB 0D
+		8B 46 ??
+		3B C8
+		7E 06
+		89 86 ?? ?? ?? ??
+		8B 4C ?? ??
+		85 C9
+		7D 0C
+		C7 86 ?? ?? ?? ?? ?? ?? ?? ??
+		EB 0D
+		8B 46 ??
+		3B C8
+		7E 06
+		89 86 ?? ?? ?? ??
+		DB 86 ?? ?? ?? ??
+		8B 4E ??
+		85 C9
+		]])
+	},
 };
-
-function findGameRoot()
-	if( found ) then
-		local bytes = getInt(found +2, 4) - exeStartAddress;
-		printf("Found game root: 0x%X\n", bytes);
-	end
-end
 
 local foundUpdates = {};
 local missingUpdates = 0;
@@ -341,7 +409,7 @@ for i,v in pairs(updatables) do
 		i, found + v.value_offset, val);
 		foundUpdates[i] = val;
 	else
-		cprintf(cli.red, "Could not find pattern for {%s}\n", i);
+		cprintf(cli.lightred, "Could not find pattern for {%s}\n", i);
 		missingUpdates = missingUpdates + 1;
 	end
 end
@@ -368,21 +436,27 @@ function save(filename, backup)
 	-- Do replacements as requested
 	printf("Replacing addresses...\n");
 	for key,value in pairs(foundUpdates) do
-		local hexValue = sprintf("0x%x", value);
+		--local hexValue = sprintf("0x%x", value);
+		local skip = false;
 		local changed = string.gsub(addressFile,
-			"(.*)=(%s*)([x%x]+)([%,%s]*)%-%-%[%[(.*){" .. key .. "}(%s*)%]%]([^\n]*)",
-			"%1=%2" .. hexValue .. "%4--[[%5{" .. key .. "}%6]]%7");
+			"=(%s-)([x%x]+)([%,%s]*)%-%-%[%[(%s*)%{" .. key .. "%}(%s*)%]%]([^\n]*)",
+			function (ws1, curValue, ws2, ws3, ws4, ws5)
+				if( tonumber(curValue) == value ) then
+					skip = true;
+				end
+				return sprintf("=%s0x%x%s--[[%s{%s}%s]]%s", ws1, value, ws2, ws3, key, ws4, ws5);
+			end);
 		
-		if( changed ~= addressFile ) then
+		if( skip or changed ~= addressFile ) then
 			cprintf_ex("|green|[+]|white| Successfully patched |pink|{%s}\n", key);
-			addressFile = changed;
 		else
-			if( addressFile:find("%-%-%[%[%s*{" .. key .. "}%s*%]%]") ) then
+			if( addressFile:find("%-%-%[%[%s*%{" .. key .. "%}%s*%]%]") ) then
 				cprintf_ex("|yellow|[!]|white| Failed to patch |pink|{%s}|white| or already valid.\n", key);
 			else
 				cprintf_ex("|lightred|[-]|white| Failed to patch |pink|{%s}|white| (token not found in file)\n", key);
 			end
 		end
+		addressFile = changed;
 	end
 	
 	printf("Writing new addresses to %s\n", filename);
@@ -392,15 +466,16 @@ end
 
 local continue = true;
 if( missingUpdates > 0 ) then
-	cprintf_ex([[
-\n\n
-|yellow|Not all updatable addresses could be found.\n
-Do you want to continue and update found information? |white|y/n:
-]]);
+	cprintf_ex("\n\n|yellow|Not all updatable addresses could be found.\n"
+		.. "Do you want to continue and update found information? |white|y/n: ");
 	while(true) do
-		local inp = string.lower(io.read('1'));
+		local inp = string.lower(string.sub(io.read("*l"), 1, 1));
+		if( #inp == 0 ) then
+			continue = false; -- Default = don't write
+			break;
+		end
 		if( inp ~= 'y' and inp ~= 'n' ) then
-			printf("Not a valid option. Select (y)es or (n)o:");
+			printf("Not a valid option. Select (y)es or (n)o: ");
 		else
 			if( inp == 'y' ) then
 				continue = true;
@@ -416,4 +491,6 @@ end
 
 if( continue ) then
 	save('addresses.lua', true);
+else
+	print("Changed were not committed");
 end
