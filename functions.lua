@@ -2390,7 +2390,7 @@ function GetSkillBookData(_tabs)
 		-- Try to read it as a string; if it contains unexpected
 		-- characters, try reading it as a pointer
 		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
-		if( type(tmp.Name) ~= "string" or #tmp.Name < 2 or #tmp.Name > 24 or tmp.Name:find("[^%s%w%d-]") ) then
+		if( not validName(tmp.Name, 24) ) then
 			tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
 			
 		end
@@ -2966,4 +2966,44 @@ function getLastUpdateCheckedTime()
 	end
 	
 	return checkedTime;
+end
+
+function validName(name, maxlen)
+	if( type(name) ~= "string" ) then
+		return false;
+	end
+	
+	if( #name == 0 ) then
+		return false;
+	end
+	
+	if( maxlen and (#name > 24) ) then
+		return false;
+	end
+	
+	if( name:find("[^%s%w%d-]") ) then
+		return false;
+	end
+	
+	-- More in-depth character-by-character checking
+	for i = 1,#name do
+		local chrCode = string.byte(name:sub(i,i));
+		if( chrCode < 32 ) then -- non-printable / control characters
+			return false;
+		end
+		
+		if( chrCode == 127 ) then -- DEL
+			return false;
+		end
+		
+		if(
+			(chrCode >= 155 and chrCode <= 159) -- Extended ascii that we don't expect to see
+			or (chrCode >= 169 and chrCode <= 223) -- Console block chars
+			or (chrCode >= 226) -- Various symbols
+		) then
+			return false;
+		end
+	end
+	
+	return true;
 end

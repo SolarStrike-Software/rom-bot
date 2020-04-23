@@ -47,7 +47,7 @@ function GetIdName(itemId, plural)
 
 	
 	local name2 = memoryReadString(proc, nameaddress);
-	if( type(name2) ~= "string" or #name2 < 2 or #name2 > 24 or name2:find("[^%s%w%d-]") ) then
+	if( not validName(name2, 24) ) then
 		name2 = memoryReadStringPtr(proc, nameaddress, 0);
 	end
 	name2 = name2 or "";
