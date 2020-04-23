@@ -1107,7 +1107,11 @@ function CPlayer:cast(skill)
 		end
 
 		target:updateHP()
-		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
+		local perHp = 0;
+		if( target.MaxHP > 0 ) then
+			perHp = math.floor(target.HP * 100.0 / target.MaxHP);
+		end
+		printf("=>%16s %d%%\n", target.Name, perHp);	-- second part of 'casting ...'
 
 		if( type(settings.profile.events.onSkillCast) == "function" ) then
 			arg1 = skill;
