@@ -2993,10 +2993,6 @@ function validName(name, maxlen)
 		return false;
 	end
 	
-	if( name:find("[^%s%w%d-]") ) then
-		return false;
-	end
-	
 	-- More in-depth character-by-character checking
 	for i = 1,#name do
 		local chrCode = string.byte(name:sub(i,i));
@@ -3008,11 +3004,17 @@ function validName(name, maxlen)
 			return false;
 		end
 		
-		if(
-			(chrCode >= 155 and chrCode <= 159) -- Extended ascii that we don't expect to see
-			or (chrCode >= 169 and chrCode <= 223) -- Console block chars
-			or (chrCode >= 226) -- Various symbols
+		if( (chrCode >= 34 and chrCode <= 38)
+			or (chrCode >= 91 and chrCode <= 93)
+			or (chrCode == 95)
+			or (chrCode >= 42 and chrCode <= 43)
+			or (chrCode == 47)
+			or (chrCode >= 58 and chrCode <= 62)
 		) then
+			return false; -- Non-name symbols
+		end
+		
+		if(chrCode >= 255) then
 			return false;
 		end
 	end
