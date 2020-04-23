@@ -384,6 +384,27 @@ local updatables = {
 		85 C9
 		]])
 	},
+
+	exp_table = {
+		value_offset = 0x20,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			8B 44 24 ??
+			83 F8 FF
+			75 05
+			33 C0
+			C2 04 00
+			8B 89 ?? ?? ?? ??
+			69 C0 ?? ?? ?? ??
+			8B 44 01 ??
+			8B 0D ?? ?? ?? ??
+			85 C9
+			56
+			8B 35 ?? ?? ?? ??
+			75 04
+		]])
+	},
 };
 
 local foundUpdates = {};
