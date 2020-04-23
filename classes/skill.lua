@@ -687,6 +687,7 @@ function CSkill:use()
 			   (skillName == GetIdName(493344) and pet.Name ~= GetIdName(102325)) or
 			   (skillName == GetIdName(493343) and pet.Name ~= GetIdName(102324)) or
 			   (skillName == GetIdName(494212) and pet.Name ~= GetIdName(102803)) then
+			   
 				RoMCode("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
@@ -698,11 +699,10 @@ function CSkill:use()
 		return
 	end
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
-		-- Get skill name
-		local skillName = GetIdName(self.Id)
-
 		-- Cast skill
-		RoMCode("CastSpellByName(\""..skillName.."\");");
+		local cmd = sprintf("UseSkill(%d,%d)", self.skilltab, self.skillnum)
+		RoMCode(cmd);
+		
 		yrest(100)
 		-- Press the macro key a second time to make sure.
 		if not self.Toggleable then

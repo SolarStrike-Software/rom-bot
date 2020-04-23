@@ -2448,24 +2448,36 @@ function GetSkillBookData(_tabs)
 	-- Collect tab skill info
 	local tabData = {}
 
-	for __, tab in pairs(_tabs) do
+	local tabCount	=	3;
+	local hasClass2	=	false;
+	
+	if( type(player) ~= "nil" and player.Class2 > 0 ) then
+		tabCount	=	4;
+		hasClass2	=	true;
+	end
+	
+	for tab = 2,tabCount do
 		-- The first tab in skillbook isn't stored in this same way, so the 2nd tab is actually
 		-- the first in this memory structure.
 		-- Additionally, we need to subtract 1 anyways because array index start at 0.
 		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
-		local tabindex = tab-2;
-		local base = getBaseAddress(addresses.skillbook.base);
+		local tabindex	=	tab - 2;
+		local base		=	getBaseAddress(addresses.skillbook.base);
 		
 		-- 2nd class skills are stored on a separate section of memory
 		local book			=	1;
 		local tabStartOff	=	addresses.skillbook.book1_start;
 		local tabEndOff		=	addresses.skillbook.book1_end;
 		
-		if( tab >= 4 ) then
+		if( tab == 3 and hasClass2 ) then
 			book		=	2;
-			tabindex	=	tab - 4; -- Switch books, so need to roll back more
+			tabindex	=	tab - 3; -- Switch books, so need to roll back more
 			tabStartOff	=	addresses.skillbook.book2_start;
 			tabEndOff	=	addresses.skillbook.book2_end;
+		end
+		
+		if( tab >= 4 ) then
+			tabindex = tab - 3;
 		end
 		
 		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff);
@@ -2477,7 +2489,7 @@ function GetSkillBookData(_tabs)
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
 					
-					cprintf(cli.green, "Found skill 0x%X ID(%d) Book(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, book, tabindex, tmpData.Name or "<no name>");
+					cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,

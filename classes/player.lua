@@ -942,7 +942,7 @@ function CPlayer:cast(skill)
 
 				if not skill.Toggleable then
 					if(skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil ) then
-						SlashCommand("/script CastSpellByName(\""..GetIdName(skill.Id).."\");");
+						skill:use();
 					else
 						keyboardPress(skill.hotkey, skill.modifier);
 					end
@@ -1052,7 +1052,7 @@ function CPlayer:cast(skill)
 
 		-- first part of 'casting ...'
 		-- skill.Name
-		printf(language[21], hf_temp, string.sub(skill.Name..sprintf("(%s)", GetIdName(skill.Id)) ..string.rep(' ', 40), 1, 40));
+		printf(language[21], hf_temp, string.sub(skill.Name ..string.rep(' ', 40), 1, 40));
 
 		faceTarget()
 
