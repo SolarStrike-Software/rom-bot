@@ -75,31 +75,19 @@ printf("File size: %d bytes\n", #fileContents);
 function byteArrayToPattern(bytes)
 	local str = "";
 	
-	-- Note: The value is just here for info purposes;
-	-- It just needs to be non-false, so I'm setting it
-	-- to the string representation so you can easily tell
-	-- what each hexcode represents.
-	local escapeNeeded = {
-		["25"] = "%",
-		["5B"] = "[",
-		["2A"] = "*", 
-		["2B"] = "+",
-		["2D"] = "-",
-		["2E"] = ".",
-		["40"] = "(",
-		["41"] = ")",
-	};
-	
 	for match in bytes:gmatch("([%x?][%x?])%s*") do
 		if( match == "??" ) then
 			-- Match anything
 			str = str .. ".";
-		elseif( escapeNeeded[match] ) then
-			-- Escape character %; we need to double escape it
-			str = str .. "%" .. string.char(tonumber("0x"..match));
 		else
 			-- Match exact
 			local chr = string.char(tonumber("0x"..match));
+			
+			if( string.find(chr, "[^a-zA-Z0-9]") ) then
+				-- escape it
+				chr = "%" .. chr;
+			end
+			
 			str = str .. chr;
 		end
 	end
@@ -403,6 +391,49 @@ local updatables = {
 			56
 			8B 35 ?? ?? ?? ??
 			75 04
+		]])
+	},
+	
+	global_cooldown_offset = {
+		value_offset = 0x0A,
+		value_size = 4,
+		value_raw = true,
+		pattern = byteArrayToPattern([[
+			8B 44 24 10
+			85 C0
+			74 4B
+			89 81 ?? ?? ?? ??
+			8B 91 ?? ?? ?? ??
+			33 C0
+			85 D2
+			76 1F
+			8D 9B 00 00 00 00
+			66 83 BC 41 ?? ?? ?? ?? 00
+			74 09
+			83 C0 01
+			3B C2
+			72 EE
+		]])
+	},
+	
+	global_cooldown_base = {
+		value_offset = 0x26,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			0F 85 ?? ?? ?? ??
+			A1 ?? ?? ?? ??
+			50
+			E8 ?? ?? ?? ??
+			83 C4 ??
+			85 C0
+			74 0C
+			39 A8 ?? ?? ?? ??
+			0F 84 ?? ?? ?? ??
+			55
+			B9 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			84 C0
 		]])
 	},
 };

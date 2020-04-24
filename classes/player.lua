@@ -299,7 +299,8 @@ function CPlayer:updatePsi()
 end
 
 function CPlayer:updateGlobalCooldown()
-	self.GlobalCooldown = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.global_cooldown))/10
+	local address = addresses.global_cooldown.base + addresses.global_cooldown.offset;
+	self.GlobalCooldown = memoryReadRepeat("int", getProc(), getBaseAddress(address))/10
 end
 
 -- Inserts a skill at the end of the queue.

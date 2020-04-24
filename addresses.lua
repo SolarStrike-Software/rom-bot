@@ -70,7 +70,10 @@ addresses = {
 	},
 	exp_table = 0x65a324, --[[{exp_table}]]
 	psi = 0x607B18,
-	global_cooldown = 0x6049A0,
+	global_cooldown = {
+		base = 0x602f78, --[[{global_cooldown_base}]]
+		offset = 0x1a28, --[[{global_cooldown_offset}]]
+	},
 	actionbar = {
 		base = 0x661C24,
 		slot = {
