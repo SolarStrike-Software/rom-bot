@@ -36,7 +36,7 @@ addresses = {
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x607b50, --[[{class_info_base}]]
+		base = 0x60D600, --[[{class_info_base}]]
 		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
@@ -240,10 +240,11 @@ addresses = {
 		base = 0x629B3c,
 		offset = 0xD4,
 		branch = {
-			size = 0x8CA0,
+			itemset_id = 0x4,
+			size = 999,
 			info_size = 0x24,
 			itemset_address = 0x18,
-			itemset_size = 0x8C7B,
+			--itemset_size = 0x8C7B,
 		},
 		skill = {
 			uses = 0xC0,

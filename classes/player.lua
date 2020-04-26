@@ -2024,7 +2024,8 @@ function CPlayer:loot()
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 			yrest(200)
 			self:updateSpeed()
-			local maxWaitTime = dist*1000/self.Speed -- more accurate calculation of how long it takes to walk there
+			local speed = math.max(25.0, self.Speed or 0);
+			local maxWaitTime = dist*1000/speed -- more accurate calculation of how long it takes to walk there
 			local startWait = getTime()
 
 			-- Move to loot
