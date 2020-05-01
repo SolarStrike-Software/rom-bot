@@ -2929,6 +2929,9 @@ function getClientExeAddress()
 end
 
 function getBaseAddress(offsetFromExe)
+	if( offsetFromExe == nil ) then
+		error("Cannot get base address of nil", 2);
+	end
 	return getClientExeAddress() + offsetFromExe;
 end
 

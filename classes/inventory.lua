@@ -22,7 +22,7 @@ CInventory = class(
 
 		self.MaxSlots = 240;
 		self.BagSlot = {};
-		self.Money = memoryReadInt( getProc(), getBaseAddress(addresses.game_root.gold) );
+		self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
 
 		local timeStart = getTime();
 
@@ -40,7 +40,7 @@ CInventory = class(
 
 function CInventory:update( _maxslot )
 
-	self.Money = memoryReadInt( getProc(), getBaseAddress(addresses.game_root.gold) );
+	self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
 
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 

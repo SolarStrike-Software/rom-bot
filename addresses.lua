@@ -32,7 +32,7 @@ addresses = {
 	in_game = 0x65F608,
 	zone_id = 0x65a268, --[[{zone_id}]]
 	channel = {
-		base = 0x6621A0,
+		base = 0x6621a0, --[[{channel_base}]]
 		id = 0x4c4,
 	},
 	class_info = {
@@ -63,29 +63,32 @@ addresses = {
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		swimhack = {
-			base = 0x4D519,
+			base = 0x4d519, --[[{swimhack_codemod}]]
 			original_code = string.char(0xC7, 0x83, 0xB4, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 	},
 	exp_table = 0x65a324, --[[{exp_table}]]
-	psi = 0x607B18,
+	psi = 0x607b18, --[[{psi}]]
 	global_cooldown = {
 		base = 0x602f78, --[[{global_cooldown_base}]]
 		offset = 0x1a28, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
-		base = 0x661C24,
+		base = 0x661c24, --[[{actionbar_base}]]
 		slot = {
 			size = 0x14,
 			type = 0x0,
 			id = 0x4,
 		},
-		bar1_start = 0x12cc
+		bar1_start = 0x384c
+	},
+	gold = {
+		base = 0x607b50, --[[{gold_base}]]
+		offset = 0x82fc, --[[{gold_offset}]]
 	},
 	game_root = {
 		base = 0x6019b4, --[[{game_root_base}]]
-		gold = 0x6154C4,
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
 		ping = 0x7c0,
@@ -237,14 +240,13 @@ addresses = {
 		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x629B3c,
+		base = 0x629b3c,
 		offset = 0xD4,
 		branch = {
 			itemset_id = 0x4,
 			size = 999,
 			info_size = 0x24,
 			itemset_address = 0x18,
-			--itemset_size = 0x8C7B,
 		},
 		skill = {
 			uses = 0xC0,
