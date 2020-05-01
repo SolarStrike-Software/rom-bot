@@ -25,6 +25,7 @@ CMemDatabase = class(function(self)
 	self.database = {};
 	self.loadedBranches = {};
 	self.lastLoad = os.clock();
+	self.loadedIds = {};
 end);
 
 -- Dump information about all available IDs into a CSV file
@@ -74,20 +75,27 @@ function CMemDatabase:loadBranch(branch)
 	
 	local branchAddress = memoryReadRepeat("uint", getProc(), branchListAddress + branch);
 	if( branchAddress ~= nil and branchAddress ~= 0 ) then
-		for j = 0,addresses.memdatabase.branch.size,addresses.memdatabase.branch.info_size do
-			local itemAddress = memoryReadUInt(getProc(), branchAddress + j + addresses.memdatabase.branch.itemset_address);
+		for j = 0,addresses.memdatabase.branch.size do
+			local branchItemOffset = j * addresses.memdatabase.branch.info_size
+			local itemsetId = memoryReadUInt(getProc(), branchAddress + branchItemOffset + addresses.memdatabase.branch.itemset_id);
 			
-			if( itemAddress ~= nil and itemAddress ~= 0 ) then
-				local itemId = memoryReadUInt(getProc(), itemAddress);
-				if( itemId == nil or itemId <  50000 or itemId > 800000 ) then
-				else
-					local itemName = memoryReadStringPtr(getProc(), itemAddress + 0xC, 0);
-					self.database[itemId] = {
-						id		=	itemId,
-						address	=	itemAddress,
-						branch	=	branch,
-						name	=	itemName,
-					};
+			-- If the itemsetId we read from the branch matches 'j' (the offset from start of branch)
+			-- then it is probably correct. If not, then we ignore it entirely!
+			if( itemsetId == j ) then
+				local itemAddress = memoryReadUInt(getProc(), branchAddress + branchItemOffset + addresses.memdatabase.branch.itemset_address);
+			
+				if( itemAddress ~= nil and itemAddress ~= 0 ) then
+					local itemId = memoryReadUInt(getProc(), itemAddress);
+					if( itemId == nil or itemId <  50000 or itemId > 800000 ) then
+					else
+						local itemName = memoryReadStringPtr(getProc(), itemAddress + 0xC, 0);
+						self.database[itemId] = {
+							id		=	itemId,
+							address	=	itemAddress,
+							branch	=	branch,
+							name	=	itemName,
+						};
+					end
 				end
 			end
 		end
@@ -101,6 +109,7 @@ end
 function CMemDatabase:flush()
 	self.database = {};
 	self.loadedBranches = {};
+	self.loadedIds = {};
 end
 
 -- Checks if a branch is not loaded, or is "old"
@@ -136,7 +145,14 @@ function CMemDatabase:getAddress(id)
 	self.lastLoad = os.clock();
 	
 	-- Try to force it to load
-	SlashCommand("/script GetCraftRequestItem(".. id ..",-1)");
+	if( (id >= 200000 and id < 240000)
+		or (id >= 490000 and id < 640000) )
+	then
+		if( self.loadedIds[id] == nil ) then
+			local res = SlashCommand("/script GetCraftRequestItem(".. id ..",-1)");
+			self.loadedIds[id] = res;
+		end
+	end
 	
 	-- Still no good? Try running through predicted branches
 	-- based on our ID first.
@@ -278,7 +294,7 @@ function CMemDatabase:getPredictedBranches(id)
 	
 	-- Buffs & debuffs
 	if( id >= 620000 and id < 630000 ) then
-		return {0x178, 0x180, 0x184, 0x188, 0x18C};
+		return {0x178, 0x180, 0x184, 0x188, 0x18C, 0x190};
 	end
 	
 	if( id >= 770000 and id < 780000 ) then

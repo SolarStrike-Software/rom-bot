@@ -1849,10 +1849,6 @@ function Attack()
 		player:updateTargetPtr()
 		if player.TargetPtr ~= 0 then -- still valid target
 
-			if( memoryWriteString == nil ) then
-				error("Update your copy of MicroMacro to version 1.02!");
-			end
-
 			-- freeze TargetPtr
 			local codemod = CCodeMod(addresses.code_mod.freeze_target.base,
 				addresses.code_mod.freeze_target.original_code,
@@ -2384,7 +2380,10 @@ function GetSkillBookData(_tabs)
 	local function GetSkillInfo (address)
 		local tmp = {}
 		tmp.Address = address
-		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
+		tmp.Id = memoryReadRepeat("int", proc, address);
+		if( not tmp.Id ) then
+			return nil;
+		end
 		
 		-- name can either be a string or a pointer to a string
 		-- Try to read it as a string; if it contains unexpected

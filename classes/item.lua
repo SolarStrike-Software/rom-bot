@@ -136,7 +136,7 @@ function CItem:update()
 		if( nameAddress == nil or nameAddress == 0 ) then
 			tmp = "<EMPTY>";
 		else
-			tmp = memoryReadString(getProc(), nameAddress);
+			tmp = memoryReadString(getProc(), nameAddress) or "";
 		end;
 
 
