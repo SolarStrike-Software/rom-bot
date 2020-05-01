@@ -36,7 +36,7 @@ addresses = {
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x60D600, --[[{class_info_base}]]
+		base = 0x607b50, --[[{class_info_base}]]
 		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
