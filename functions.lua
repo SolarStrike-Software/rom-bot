@@ -2921,8 +2921,12 @@ function dailyCount()
 	return memoryReadInt(getProc(), addresses.charClassInfoBase + addresses.dailyCount_offset)
 end
 
+local _clientExeAddress = nil;
 function getClientExeAddress()
-	return getModuleAddress(getProcId(), "Client.exe");
+	if( _clientExeAddress == nil ) then
+		_clientExeAddress = getModuleAddress(getProcId(), "Client.exe");
+	end
+	return _clientExeAddress;
 end
 
 function getBaseAddress(offsetFromExe)
