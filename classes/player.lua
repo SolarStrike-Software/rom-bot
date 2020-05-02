@@ -2938,8 +2938,7 @@ function CPlayer:faceDirection(dir,diry)
 	self.Direction = math.atan2(Vec2, Vec1);
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
-	-- local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.mounted);
-	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.speedhack.mounted);
+	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.mount_ptr);
 	self:updateMounted()
 	if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
 	    memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_x, Vec1);

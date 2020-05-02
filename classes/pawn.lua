@@ -563,8 +563,8 @@ function CPawn:updateMounted()
 		return
 	end
 
-	local mounted = memoryReadByte(getProc(), self.Address + addresses.game_root.pawn.mounted);
-	if( mounted ~= nil and mounted ~= 0 ) then
+	local mount_address = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.mount_ptr);
+	if( mount_address ~= nil and mount_address ~= 0 ) then
 		self.Mounted = true;
 	else
 		self.Mounted = false;

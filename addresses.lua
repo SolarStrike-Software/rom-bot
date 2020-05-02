@@ -1,15 +1,4 @@
 addresses = {
-	--== speedhack addresses ==--
-	speedhack = {
-		mounted = 0x7c,
-		pawn_speed = 0x40,
-		speed = {
-		    	base = 0x601A00,
-			offset = 0x1498,
-		},
-	},
-	--== speedhack addresses end ==--
-	
 	--== this must be a link between the quest-text and the id ==--
 	questGroup_offset = 0x4F0,
 	--===========================================================--
@@ -27,10 +16,12 @@ addresses = {
 	partyMemberList_offset = 0x68,
 	--=============================================--
 	
-	client_exe_module_start = 0x400000,
 	game_time = 0x602F70,
 	in_game = 0x65F608,
 	zone_id = 0x65a268, --[[{zone_id}]]
+	movement_speed = {
+		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
+	},
 	channel = {
 		base = 0x6621a0, --[[{channel_base}]]
 		id = 0x4c4,
@@ -121,9 +112,10 @@ addresses = {
 			rotation_x = 0x34,
 			rotation_y = 0x38,
 			rotation_z = 0x3c,
+			base_speed = 0x40, -- Your "normal" speed if you are moving
+			speed = 0x1f0, -- 0 when standing still, actual speed when moving
 			fading = 0x68,
 			harvesting = 0x164,
-			speed = 0x1f0,
 			stance = 0x228,
 			cast_full_time = 0x260,
 			cast_time = 0x264,
@@ -145,7 +137,7 @@ addresses = {
 			race = 0x328,
 			lootable_flags = 0x3a0,
 			attackable_flags = 0x39c,
-			mounted = 0x3fa,
+			mount_ptr = 0x7c,
 			swimming = {
 				base = 0xf0,
 				swimming = 0xb4
