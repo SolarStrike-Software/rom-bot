@@ -303,8 +303,8 @@ addresses = {
 		},
 	},
 	object_list = {
-		base = 0x664DEC,
-		size = 0x664DE8,
+		base = 0x664dec, --[[{object_list_base}]]
+		size = 0x664de8, --[[{object_list_size}]]
 	},
 	input_box = {
 		base = 0x661B18, -- fixes UMM

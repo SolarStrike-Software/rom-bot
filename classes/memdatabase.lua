@@ -294,7 +294,7 @@ function CMemDatabase:getPredictedBranches(id)
 	
 	-- Buffs & debuffs
 	if( id >= 620000 and id < 630000 ) then
-		return {0x178, 0x180, 0x184, 0x188, 0x18C, 0x190};
+		return {0x178, 0x17C, 0x180, 0x184, 0x188, 0x18C, 0x190};
 	end
 	
 	if( id >= 770000 and id < 780000 ) then

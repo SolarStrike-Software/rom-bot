@@ -126,6 +126,7 @@ end
 	value_raw		True = use read value as is, false = subtract Client.exe start address
 	value_type		"address" (Use found location) or "default" (use value read from location)
 	pattern			String pattern representing data to find
+	partners		Table of extra addresses to update based on the found result of this pattern
 ]]
 local updatables = {
 	game_root_base = {
@@ -585,6 +586,41 @@ local updatables = {
 			85 F6
 		]]),
 	},
+	
+	object_list_base = {
+		value_offset = 0x4C,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			7E 14
+			8B 15 ?? ?? ?? ??
+			8B FF
+			3B 34 82
+			74 16
+			83 C0 01
+			3B C1
+			7C F4
+			8D 44 24 ??
+			50
+			B9 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			8D 4C 24 ??
+			E8 ?? ?? ?? ??
+			8B 5C 24 ??
+			8B 74 24 ??
+			E9 ?? ?? ?? ??
+			33 DB
+			39 1D ?? ?? ?? ??
+			0F 8E ?? ?? ?? ??
+			90
+			8B 0D ?? ?? ?? ??
+		]]),
+		partners = {
+			object_list_size = {
+				add_value = -4; -- 4 bytes previous to object_list_base
+			},
+		},
+	},
 };
 
 local foundUpdates = {};
@@ -609,6 +645,25 @@ for i,v in pairs(updatables) do
 		cprintf_ex("|green|Found pattern for |pink|{%s}|green| at |yellow|0x%X|green|, new value: |yellow|0x%X\n",
 		i, found + v.value_offset, val);
 		foundUpdates[i] = val;
+		
+		if( v.partners ~= nil ) then
+			for j,k in pairs(v.partners) do
+				local moddesc = "+0";
+				if( k.add_value ~= nil ) then
+					val = val + k.add_value;
+					if( k.add_value >= 0 ) then
+						moddesc = "+";
+					else
+						moddesc = "-";
+					end
+					moddesc = moddesc .. sprintf("0x%X", math.abs(k.add_value));
+				end
+				cprintf_ex("|green|Found |pink|{%s}|green| at |pink|{%s}|yellow| %s|green|, new value: |yellow|0x%X\n",
+					j, i, moddesc, val
+				);
+				foundUpdates[j] = val;
+			end
+		end
 	else
 		cprintf(cli.lightred, "Could not find pattern for {%s}\n", i);
 		missingUpdates = missingUpdates + 1;
