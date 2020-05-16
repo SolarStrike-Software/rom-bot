@@ -16,7 +16,7 @@ addresses = {
 	partyMemberList_offset = 0x68,
 	--=============================================--
 	
-	game_time = 0x602F70,
+	game_time = 0x602f70, --[[{game_time}]]
 	in_game = 0x65F608,
 	zone_id = 0x65a268, --[[{zone_id}]]
 	movement_speed = {
@@ -155,8 +155,8 @@ addresses = {
 		},
 	},
 	macro = {
-		base = 0x66348C,
-		size = 0x508,
+		base = 0x66348c, --[[{macro_base}]]
+		size = 0x508, --[[{macro_size}]]
 		id = 0x10,
 		icon = 0x14,
 		name = 0x18,
@@ -172,7 +172,7 @@ addresses = {
 		modifier2 = 0x5a
 	},
 	loading = {
-		base = 0x663448,
+		base = 0x663448, --[[{loading_base}]]
 		offsets = {0x18, 0x1C},
 	},
 	skill = {

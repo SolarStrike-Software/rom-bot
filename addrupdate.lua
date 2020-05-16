@@ -621,6 +621,92 @@ local updatables = {
 			},
 		},
 	},
+	
+	game_time = {
+		value_offset = 0x24,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			68 ?? ?? ?? ??
+			FF D0
+			8B 0D ?? ?? ?? ??
+			8B 49 ??
+			8B 11
+			8B 42 ??
+			68 ?? ?? ?? ??
+			FF D0
+			FF D6
+			B9 ?? ?? ?? ??
+			A3 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			B9 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			DD 05 ?? ?? ?? ??
+			DD 05 ?? ?? ?? ??
+			DC C1
+			D9 C9
+		]]),
+	},
+	
+	loading_base = {
+		value_offset = 0x32,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			83 C4 ??
+			FF D7
+			E8 ?? ?? ?? ??
+			8B C8
+			E8 ?? ?? ?? ??
+			FF D7
+			8B CE
+			E8 ?? ?? ?? ??
+			FF D7
+			FF D7
+			80 BE ?? ?? ?? ?? 00
+			74 26
+			80 3D ?? ?? ?? ?? 00
+			74 1D
+			8B 0D ?? ?? ?? ??
+			8B 11
+			8B 42 ??
+			FF D0
+			84 C0
+		]]),
+	},
+	
+	macro_base = {
+		value_offset = 0x1A,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			56
+			8B 74 24 ??
+			6A 01
+			56
+			E8 ?? ?? ?? ??
+			83 E8 01
+			83 C4 ??
+			83 F8 ??
+			77 2E
+			8B 0D ?? ?? ?? ??
+			69 C0 ?? ?? ?? ??
+			8D 44 08 ??
+			85 C0
+			74 1A
+			33 D2
+			83 78 ?? FF
+			0F 95 C2
+		]]),
+		partners = {
+			macro_size = {
+				value_offset = 6; -- 6 bytes after macro_base
+				value_size = 4,
+			},
+		},
+	}
 };
 
 local foundUpdates = {};
@@ -649,6 +735,8 @@ for i,v in pairs(updatables) do
 		if( v.partners ~= nil ) then
 			for j,k in pairs(v.partners) do
 				local moddesc = "+0";
+				local value_size = k.value_size or 4;
+				
 				if( k.add_value ~= nil ) then
 					val = val + k.add_value;
 					if( k.add_value >= 0 ) then
@@ -657,6 +745,15 @@ for i,v in pairs(updatables) do
 						moddesc = "-";
 					end
 					moddesc = moddesc .. sprintf("0x%X", math.abs(k.add_value));
+				elseif( k.value_offset ~= nil ) then
+					if( k.value_offset >= 0 ) then
+						moddesc = "+";
+					else
+						moddesc = "-";
+					end
+					moddesc = moddesc .. sprintf("0x%X", math.abs(k.value_offset));
+					local newLoc = (v.value_offset or 0) + k.value_offset;
+					val = getInt(found + newLoc, value_size);
 				end
 				cprintf_ex("|green|Found |pink|{%s}|green| at |pink|{%s}|yellow| %s|green|, new value: |yellow|0x%X\n",
 					j, i, moddesc, val
