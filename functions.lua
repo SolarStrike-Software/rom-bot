@@ -2461,7 +2461,7 @@ function GetSkillBookData(_tabs)
 		-- Additionally, we need to subtract 1 anyways because array index start at 0.
 		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
 		local tabindex	=	tab - 2;
-		local base		=	getBaseAddress(addresses.skillbook.base);
+		local base		=	getBaseAddress(addresses.skillbook.base) + addresses.skillbook.offset;
 		
 		-- 2nd class skills are stored on a separate section of memory
 		local book			=	1;

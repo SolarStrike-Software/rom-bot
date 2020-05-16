@@ -163,7 +163,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-        base = 0x663338,
+        base = 0x663338, --[[{hotkey_base}]]
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -209,11 +209,12 @@ addresses = {
 		type_flag9 = 0x274,
 	},
 	cooldowns = {
-		base = 0x602F78,
-		array_start = 0x1A2C,
+		base = 0x602f78, --[[{cooldowns_base}]]
+		array_start = 0x1a2c, --[[{cooldowns_array_start}]]
 	},
 	skillbook = {
-        base = 0x664870,
+        base = 0x664868, --[[{skillbook_base}]]
+		offset = 0x8,
 		book1_start = 0xc,
 		book1_end = 0x10,
 		book2_start = 0x1c,
