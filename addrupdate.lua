@@ -677,6 +677,29 @@ local updatables = {
 		]]),
 	},
 	
+	in_game = {
+		value_offset = 0x27,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			3B CB
+			C7 44 24 ?? ?? ?? ?? ??
+			89 9F ?? ?? ?? ??
+			74 0D
+			8B 01
+			8B 50 ??
+			FF D2
+			89 9F ?? ?? ?? ??
+			8B CF
+			E8 ?? ?? ?? ??
+			A1 ?? ?? ?? ??
+			83 E8 01
+			3B C3
+			A3 ?? ?? ?? ??
+			7F 34
+		]]),
+	},
+	
 	macro_base = {
 		value_offset = 0x1A,
 		value_size = 4,
@@ -807,8 +830,74 @@ local updatables = {
 			33 DB
 		]]),
 	},
+	
+	party_leader_base = {
+		value_offset = 0x8,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			83 3D ?? ?? ?? ?? 10
+			A1 ?? ?? ?? ??
+			73 05
+			B8 ?? ?? ?? ??
+		]]),
+	},
+	
+	party_member_list_base = {
+		value_offset = 0x18,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			FF D0
+			99
+			B9 ?? ?? ?? ??
+			F7 F9
+			81 C2 ?? ?? ?? ??
+			52
+			E8 ?? ?? ?? ??
+			8B 0D ?? ?? ?? ??
+			83 C4 ??
+			33 FF
+			89 44 24 ??
+			33 DB
+			8B 41 ??
+			85 C0
+		]]),
+		partners = {
+			party_member_list_offset = {
+				value_offset = 17; -- 17 bytes after macro_base
+				value_size = 1,
+			},
+		},
+	},
+	
+	party_icon_list_base = {
+		value_offset = 0x24,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			C1 F8 02
+			3B F8
+			72 0A
+			FF 15 ?? ?? ?? ??
+			8B 4C 24 ??
+			8B 34 B9
+			8B 46 ??
+			85 C0
+			7C 20
+			83 F8 ??
+			7D 1B
+			8B 16
+			8B 0D ?? ?? ?? ??
+			52
+			E8 ?? ?? ?? ??
+			50
+			56
+		]])
+	},
 };
 
+local startTime = getTime();
 local foundUpdates = {};
 local missingUpdates = 0;
 for i,v in pairs(updatables) do
@@ -866,6 +955,7 @@ for i,v in pairs(updatables) do
 		missingUpdates = missingUpdates + 1;
 	end
 end
+
 
 function save(filename, backup)
 	backup = backup or true;
@@ -947,3 +1037,6 @@ if( continue ) then
 else
 	print("Changed were not committed");
 end
+
+local endTime = getTime();
+printf("Took %0.2f seconds\n", deltaTime(endTime, startTime) / 1000.0);

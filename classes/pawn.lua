@@ -800,15 +800,15 @@ end
 
 function CPawn:GetPartyIcon()
 	self:updateGUID()
-	--[[
-	local listStart = memoryReadRepeat("uintptr", getProc(), addresses.partyIconList_base, addresses.partyIconList_offset)
+
+	local base = getBaseAddress(addresses.party.icon_list.base);
+	local listStart = memoryReadRepeat("uintptr", getProc(), base, addresses.party.icon_list.offset);
 	for i = 0, 7 do
 		local guid = memoryReadInt(getProc(), listStart + i * 12)
 		if guid == self.GUID then
 			return i + 1
 		end
 	end
-	--]]
 end
 
 function CPawn:countMobs(inrange, onlyaggro, idorname)

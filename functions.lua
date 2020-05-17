@@ -272,7 +272,7 @@ function selectGame(character)
 	    	if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
 	        	error("User quit");
 			end
-			yrest(200)
+			yrest(50)
 		end
 		yrest(200)
 	end
@@ -1685,7 +1685,7 @@ function GetPartyMemberName(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("uintptr", getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset )
+	local listAddress = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.party.member_list.base), addresses.party.member_list.offset);
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists

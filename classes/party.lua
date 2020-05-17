@@ -281,10 +281,11 @@ end
 
 function getPartyLeaderName()
 	local name
-	if memoryReadByte(getProc(), addresses.partyLeader_address + 0x14) == 0x1F then
-		name = memoryReadStringPtr(getProc(), addresses.partyLeader_address,0)
+	local base = getBaseAddress(addresses.party.leader.base)
+	if memoryReadByte(getProc(), base + 0x14) == 0x1F then
+		name = memoryReadStringPtr(getProc(), base, 0);
 	else
-		name = memoryReadString(getProc(), addresses.partyLeader_address)
+		name = memoryReadString(getProc(), base);
 	end
 	if( bot.ClientLanguage == "RU" ) then
 		name = utf82oem_russian(name);

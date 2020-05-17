@@ -7,17 +7,9 @@ addresses = {
 	castingBarPtr = 0xA61D20,
 	castingBar_offset = 0xC,
 	--===========================================================================================--
-
-	--== trying to fix the partyDPS (no success) ==--
-	partyIconList_base = 0xA63528,
-	partyIconList_offset = 0xC,
-	partyLeader_address = 0xA27240,
-	partyMemberList_address = 0xA647B0,
-	partyMemberList_offset = 0x68,
-	--=============================================--
 	
 	game_time = 0x602f70, --[[{game_time}]]
-	in_game = 0x65F608,
+	in_game = 0x65f608, --[[{in_game}]]
 	zone_id = 0x65a268, --[[{zone_id}]]
 	movement_speed = {
 		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
@@ -323,4 +315,27 @@ addresses = {
 		x_in_window = {0xC, 0x3B4},
 		y_in_window = {0xC, 0x3B8},
 	},
+	party = {
+		leader = {
+			base = 0x627240, --[[{party_leader_base}]]
+		},
+		member_list = {
+			base = 0x6647b0, --[[{party_member_list_base}]]
+			offset = 0x68, --[[{party_member_list_offset}]]
+		},
+		icon_list = {
+			base = 0x663528, --[[{party_icon_list_base}]]
+			offset = 0xc,
+		},
+	},
 }
+
+--[[
+	DEPRECATED; Please don't use these. Use the real addresses above instead
+	These are left here for compatibility reasons only.
+]]
+partyLeader_address = 0x400000 + (addresses.party.leader.base);
+addresses.partyIconList_base = 0x400000 + (addresses.party.icon_list.base);
+partyIconList_offset = addresses.party.icon_list.offset;
+partyMemberList_address = 0x400000 + (addresses.party.member_list.base);
+partyMemberList_offset = addresses.party.member_list.offset;
