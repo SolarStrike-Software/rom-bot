@@ -1,7 +1,7 @@
 
 local gitForWindowsUrl = 'https://git-scm.com/download/win';
 local url = 'https://github.com/SolarStrike-Software/rom-bot.git';
-local branch = 'version7.4.0.2897'; -- Leave as nil to use master, or specify another branch here.
+local branch = nil; -- Leave as nil to use master, or specify another branch here.
 
 local scriptName = fixSlashes(args[1]);
 
