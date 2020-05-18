@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints>
+<onload>
+	settings.profile.mobs = {100146,100156,100118}; -- Beetle, Bat, Spider
+</onload>
+	<!-- # 26 --><waypoint x="-1117" z="-6008" y="54">	</waypoint>
+	<!-- # 27 --><waypoint x="-1285" z="-6037" y="46">	</waypoint>
+	<!-- # 28 --><waypoint x="-1413" z="-6104" y="52">	</waypoint>
+	<!-- # 29 --><waypoint x="-1624" z="-6262" y="37">	</waypoint>
+	<!-- # 30 --><waypoint x="-1796" z="-6299" y="42">	</waypoint>
+	<!-- # 31 --><waypoint x="-1948" z="-6378" y="33">	</waypoint>
+	<!-- # 32 --><waypoint x="-2096" z="-6500" y="54">	</waypoint>
+	<!-- # 33 --><waypoint x="-2190" z="-6476" y="51">	</waypoint>
+	<!-- # 34 --><waypoint x="-2304" z="-6291" y="68">	</waypoint>
+	<!-- # 35 --><waypoint x="-2381" z="-6167" y="54">	</waypoint>
+	<!-- # 36 --><waypoint x="-2454" z="-6018" y="48">	</waypoint>
+	<!-- # 37 --><waypoint x="-2616" z="-6074" y="22">	</waypoint>
+	<!-- # 38 --><waypoint x="-2633" z="-5979" y="47">	</waypoint>
+	<!-- # 39 --><waypoint x="-2771" z="-6058" y="65">	</waypoint>
+	<!-- # 40 --><waypoint x="-2929" z="-6165" y="73" tag="Bat Spider">	</waypoint>
+	<!-- # 42 --><waypoint x="-3036" z="-6162" y="42">	</waypoint>
+	<!-- # 43 --><waypoint x="-3049" z="-6298" y="37">
+		if getQuestStatus(420068) ~= "incomplete" and -- A Bit Worrying
+		   getQuestStatus(420075) ~= "incomplete" then -- Gathering Spider Venom
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Beetles"))
+		end
+	</waypoint>
+	<!-- # 44 --><waypoint x="-3262" z="-6119" y="15">	</waypoint>
+	<!-- # 45 --><waypoint x="-3517" z="-6072" y="18">	</waypoint>
+	<!-- # 46 --><waypoint x="-3725" z="-6182" y="26">	</waypoint>
+	<!-- # 47 --><waypoint x="-3812" z="-6177" y="26">	</waypoint>
+	<!-- # 48 --><waypoint x="-3941" z="-6262" y="62">	</waypoint>
+	<!-- # 49 --><waypoint x="-4069" z="-6204" y="77">	</waypoint>
+	<!-- # 50 --><waypoint x="-3898" z="-6024" y="29">	</waypoint>
+	<!-- # 51 --><waypoint x="-3874" z="-5878" y="47">	</waypoint>
+	<!-- # 52 --><waypoint x="-3983" z="-5751" y="43">	</waypoint>
+	<!-- # 53 --><waypoint x="-3719" z="-5734" y="20">	</waypoint>
+	<!-- # 54 --><waypoint x="-3593" z="-5790" y="23">	</waypoint>
+	<!-- # 55 --><waypoint x="-3425" z="-5919" y="16">	</waypoint>
+	<!-- # 56 --><waypoint x="-3206" z="-5913" y="43">	</waypoint>
+	<!-- # 57 --><waypoint x="-3100" z="-6004" y="60">
+		if getQuestStatus(420068) == "incomplete" or -- A Bit Worrying
+		   getQuestStatus(420075) == "incomplete" then -- Gathering Spider Venom
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Bat Spider"))
+		end
+	</waypoint>
+	<!-- # 59 --><waypoint x="-2707" z="-6346" y="55" tag="Beetles">	</waypoint>
+	<!-- # 60 --><waypoint x="-2345" z="-6193" y="67">	</waypoint>
+	<!-- # 61 --><waypoint x="-2139" z="-6335" y="52">	</waypoint>
+	<!-- # 62 --><waypoint x="-1986" z="-6486" y="48">	</waypoint>
+	<!-- # 63 --><waypoint x="-1905" z="-6255" y="48">	</waypoint>
+	<!-- # 64 --><waypoint x="-1852" z="-6124" y="69">
+		if getQuestStatus(420093) == "incomplete" then -- Strange Request
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Beetles"))
+		else
+			loadPaths("1-10PioneersQuests/l6t_Logar")
+		end
+	</waypoint>
+</waypoints>

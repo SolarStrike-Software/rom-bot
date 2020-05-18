@@ -18,18 +18,19 @@ function CInventoryItem:update()
 	local oldBagId = self.BagId;
 
 	if self.SlotNumber > 60 then -- Is Bag Item
-		self.BagId = memoryReadUByte(getProc(), addresses.inventoryBagIds + self.SlotNumber - 1) + 1
+		self.BagId = memoryReadUByte(getProc(), getBaseAddress(addresses.inventory.bag_ids.base) + self.SlotNumber - 1) + 1
 	else
 		self.BagId = self.SlotNumber
 	end
 
 	if self.BagId ~= oldBagId then -- need new address
-		self.Address = addresses.staticInventory + ( ( self.BagId - 61 ) * 68 );
+		local base = getBaseAddress(addresses.inventory.base);
+		self.Address = base + ( ( self.BagId - 61 ) * 68 );
 	end
 
 	-- Check if not rented
 	if self.BagId > 120 then
-		self.Available = memoryReadUInt(getProc(), addresses.rentBagBase + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
@@ -41,10 +42,10 @@ function CInventoryItem:update()
 
 	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
-			printf( "BagID: %d is <EMPTY>.\n", self.BagId );
+			printf( "BagID: %d Slot: %d is <EMPTY>.\n", self.BagId, self.SlotNumber );
 		else
 			local _color = cli.white;
-			printf( "BagID: %d\tcontains: %d\t (%d) ", self.BagId, self.ItemCount, self.Id );
+			printf( "BagID: %d Slot: %d\tcontains: %d\t (%d) ", self.BagId, self.SlotNumber, self.ItemCount, self.Id );
 			if ( self.Quality == 1 ) then
 				_color = cli.lightgreen;
 			end;

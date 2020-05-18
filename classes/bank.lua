@@ -1,5 +1,7 @@
 include("memorytable.lua");
+include("memdatabase.lua");
 include("bankitem.lua");
+
 
 CBank = class(
 	function (self)

@@ -1271,22 +1271,22 @@ function settings.updateSkillsAvailability()
 
 	-- Then collect item set skills
 	for num = 1, 5 do -- 5 possible enabled item set skills
-		local id = memoryReadInt(getProc(), addresses.itemSetSkillsBase + (num - 1)*4)
+		local id = memoryReadInt(getProc(), getBaseAddress(addresses.itemset_skills.base) + (num - 1)*4)
 		if id ~= 0 then
 			local address = GetItemAddress(id)
 			local name = GetIdName(id)
 			if name ~= nil and name ~= "" and address ~= nil then
-				local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
+				local aslevel = 1;--local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
 
 				-- Get power and consumables
 				local baseAddress = GetItemAddress(id)
 				local mana, rage, focus, energy, consumable, consumablenumber, psi
 				for count = 0, 1 do
-					local uses = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset)
+					local uses = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.memdatabase.skill.uses)
 					if uses == 0 then
 						break
 					end
-					local usesnum = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+					local usesnum = memoryReadRepeat("int", getProc(), baseAddress + (8 * count) + addresses.memdatabase.skill.usesnum + 4)
 					if uses == SKILLUSES_MANA then
 						mana = usesnum
 					elseif uses == SKILLUSES_RAGE then
@@ -1330,7 +1330,7 @@ function settings.updateSkillsAvailability()
 	for _, skill in pairs(settings.profile.skills) do
 		-- Check Id
 		if skill.Id == 0 or skill.Id == nil then
-			if skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil then
+			if string.lower(skill.hotkey) == "macro" or skill.hotkey == "" or skill.hotkey == nil then
 				-- Skill unusable without id or hotkey
 				skill.Available = false
 			else
@@ -1367,8 +1367,8 @@ function settings.updateSkillsAvailability()
 				if tabData[realName].skillnum then database.skills[skill.Name].skillnum = tabData[realName].skillnum end
 
 				-- Check if available
-				if skill.skilltab == 3 then
-					if skill.aslevel > player.Level2  then
+				if( skill.skilltab == 3 and player.Class2 > 0 ) then
+					if skill.aslevel > player.Level2 then
 						skill.Available = false
 					else
 						skill.Available = true

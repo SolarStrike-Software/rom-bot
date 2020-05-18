@@ -155,7 +155,9 @@ function CSkill:canUse(_only_friendly, target)
 		target:updateId()
 	end
 
-	if( self.hotkey == 0 ) then return false; end; --hotkey must be set!
+	if( self.hotkey == 0 ) then
+		return false;
+	end; --hotkey must be set!
 
 	-- a local function to make it more easy to insert debuging lines
 	-- you have to insert the correspointing options into your profile
@@ -685,6 +687,7 @@ function CSkill:use()
 			   (skillName == GetIdName(493344) and pet.Name ~= GetIdName(102325)) or
 			   (skillName == GetIdName(493343) and pet.Name ~= GetIdName(102324)) or
 			   (skillName == GetIdName(494212) and pet.Name ~= GetIdName(102803)) then
+			   
 				RoMCode("CastSpellByName(\""..skillName.."\");");
 				repeat
 					yrest(1000)
@@ -696,11 +699,10 @@ function CSkill:use()
 		return
 	end
 	if(self.hotkey == "MACRO" or self.hotkey == "" or self.hotkey == nil ) then
-		-- Get skill name
-		local skillName = GetIdName(self.Id)
-
 		-- Cast skill
-		RoMCode("CastSpellByName(\""..skillName.."\");");
+		local cmd = sprintf("UseSkill(%d,%d)", self.skilltab, self.skillnum)
+		RoMCode(cmd);
+		
 		yrest(100)
 		-- Press the macro key a second time to make sure.
 		if not self.Toggleable then
@@ -763,14 +765,16 @@ end
 
 function CSkill:getRemainingCooldown()
 	if self.BaseItemAddress ~= 0 then
-		local offset = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skillRemainingCooldown_offset) or 0
-		if offset and offset ~= 0 then
-			local tmp = (memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase + (offset+1)*4) or 0)/10
+		local index = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.skill.remaining_cooldown) or 0
+		if index and index ~= 0 then
+			local addr = getBaseAddress(addresses.cooldowns.base + addresses.cooldowns.array_start) + (index*4);
+			local tmp = (memoryReadInt(getProc(), addr) or 0) / 10;
 			if tmp > 0 then
 				return tmp
 			end
 		end
 	end
+
 	return 0
 end
 

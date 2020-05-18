@@ -8,12 +8,15 @@ CObjectList = class(
 
 function CObjectList:update()
 	self.Objects = {}; -- Flush all objects.
-	local size = memoryReadInt(getProc(), addresses.staticTableSize);
+	local size = memoryReadInt(getProc(), getBaseAddress(addresses.object_list.size));
+	local start = memoryReadUInt(getProc(), getBaseAddress(addresses.object_list.base));
 
 	for i = 0,size do
-		local addr = memoryReadUIntPtr(getProc(), addresses.staticTablePtr, i*4);
+		local addr = memoryReadUInt(getProc(), start + i*4);
 		if( addr and addr > 0) then
-			self.Objects[i] = CObject(addr);
+			local newObj = CObject(addr);
+			--printf("object found at 0x%X - %s\n", addr, newObj.Name);
+			self.Objects[i] = newObj;
 		end
 	end
 end

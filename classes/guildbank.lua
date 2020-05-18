@@ -4,7 +4,7 @@ include("guildbankitem.lua");
 CGuildbank = class(
 	function (self)
 
-		self.PageListAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticGuildBankBase,0xC4);
+		self.PageListAddress = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.bank.guild.base),0xC4);
 		self.PageAddresses = {};
 		self.BagSlot = {};
 

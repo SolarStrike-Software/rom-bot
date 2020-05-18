@@ -119,7 +119,9 @@ CPlayer = class(CPawn,
 
 
 function CPlayer.new()
-	local playerAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
+	
 	local np = CPlayer(playerAddress);
 	np:initialize();
 	np:update();
@@ -132,23 +134,24 @@ function CPlayer:update()
 	-- Ensure that our address hasn't changed. If it has, fix it.
 
 	-- Read the address
-	local tmpAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 
 	-- Bad read, return
-	if tmpAddress == 0 then
+	if playerAddress == 0 then
 		return
 	end
 
 	-- Check that it's a valid address by checking the id
-	local tmpId = memoryReadRepeat("uint", getProc(), tmpAddress + addresses.pawnId_offset) or 0
+	local tmpId = memoryReadRepeat("uint", getProc(), playerAddress + addresses.game_root.pawn.id) or 0
 	if not tmpId or tmpId < PLAYERID_MIN or tmpId > PLAYERID_MAX then
 		-- invalid address
 		return
 	end
 
 	-- Else address good. If changed, update.
-	if( tmpAddress ~= self.Address) then
-		self.Address = tmpAddress;
+	if( playerAddress ~= self.Address) then
+		self.Address = playerAddress;
 		cprintf(cli.green, language[40], self.Address);
 		addressChanged = true
 		if self.Class1 == CLASS_WARDEN then
@@ -167,10 +170,15 @@ function CPlayer:update()
 		if addressChanged or classChanged or newLoad then
 			settings.loadSkillSet(self.Class1)
 			if newLoad then
-				-- Reset editbox false flag on start up
-				if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
+				local base = getBaseAddress(addresses.input_box.base);
+				local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
+				if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
+					-- Clear input box focus
+					memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0);
+					-- Clear the game menu and reset editbox focus
 					RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 				end
+
 			end
 			if classChanged and self.TargetPtr ~= 0 then
 				self:clearTarget()
@@ -181,7 +189,7 @@ function CPlayer:update()
 
 	-- If have 2nd class, look for 3rd class
 	-- Class1 and Class2 are done in the pawn class. Class3 only works for player.
-	if self.Class2 ~= -1 then
+	--[[if self.Class2 ~= -1 then
 		for i = 1, 8 do
 			local level = memoryReadInt(getProc(),addresses.charClassInfoBase + (addresses.charClassInfoSize * i) + addresses.charClassInfoLevel_offset)
 			if level > 0 and i ~= self.Class1 and i ~= self.Class2 then
@@ -190,26 +198,35 @@ function CPlayer:update()
 				break
 			end
 		end
+	end--]]
+
+	local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
+	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class1) or self.Class1;
+	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
+
+	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
+	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
+	
+	if( self.Class1 > CLASS_CHAMPION ) then
+		cprintf(cli.yellow, "[warn] Player class may be invalid (%d)\n", self.Class1);
 	end
-
-
-	self.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoLevel_offset) or self.Level
-	self.Level2 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class2 ) + addresses.charClassInfoLevel_offset) or self.Level2
-	self.Level3 = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class3 ) + addresses.charClassInfoLevel_offset) or self.Level3
-	self.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoXP_offset) or self.XP
-	self.TP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* self.Class1 ) + addresses.charClassInfoTP_offset) or self.TP
-
+	
+	if( self.Class2 > CLASS_CHAMPION ) then
+		cprintf(cli.yellow, "[warn] Player class 2 may be invalid (%d)\n", self.Class2);
+	end
+	
+	self.XP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
+	self.TP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
+	
+	
 	self:updateCasting()
 	self:updateBattling()
 	self:updateStance() -- Also updates Stance2
 	self:updateActualSpeed() -- Also updates Moving
 	self:updateNature()
 
-	if( self.Casting == nil or self.Battling == nil or self.Direction == nil ) then
-		error("Error reading memory in CPlayer:update()");
-	end
 
-	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnPetPtr_offset) or self.PetPtr
+	self.PetPtr = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.pet_ptr) or self.PetPtr
 	if( self.Pet == nil ) then
 		self.Pet = CPawn(self.PetPtr);
 	else
@@ -218,12 +235,13 @@ function CPlayer:update()
 			self.Pet:update();
 		end
 	end
+
 	self:updatePsi()
 	self:updateGlobalCooldown()
 end
 
 function CPlayer:exists()
-	local id = memoryReadRepeat("uint", getProc(), self.Address + addresses.pawnId_offset)
+	local id = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.id)
 	if id and id >= PLAYERID_MIN and PLAYERID_MAX >= id then
 		self.Id = id
 		return true
@@ -233,18 +251,23 @@ function CPlayer:exists()
 end
 
 function CPlayer:checkAddress()
-	local tmpAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset) or 0;
-	if( tmpAddress ~= self.Address and tmpAddress ~= 0 ) then
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
+
+	if( playerAddress ~= self.Address and playerAddress ~= 0 ) then
 		self:update()
 	end
 end
 
-function CPlayer:updateCasting()
-	self.Casting = (memoryReadRepeat("intptr", getProc(), addresses.castingBarPtr, addresses.castingBar_offset) ~= 0);
+
+function CPlayer:updateActualSpeed()
+	local base = getBaseAddress(addresses.game_root.base);
+	self.Speed = memoryReadFloatPtr(getProc(), base, addresses.game_root.player_actual_speed);
 end
 
 function CPlayer:updateBattling()
-	self.Battling = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charBattle_offset) == 1;
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	self.Battling = memoryReadBytePtr(getProc(), gameroot, addresses.game_root.combat_status) ~= 0;
 
 	-- remember aggro start time, used for timed ranged pull
 	if( self.Battling == true ) then
@@ -257,13 +280,9 @@ function CPlayer:updateBattling()
 end
 
 function CPlayer:updateStance()
-	self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
-	self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
-end
-
-function CPlayer:updateActualSpeed()
-	self.ActualSpeed = memoryReadFloatPtr(getProc(), addresses.staticbase_char, addresses.actualSpeed_offset) or self.ActualSpeed
-	self.Moving = (self.ActualSpeed > 0)
+	self.Stance = memoryReadByte(getProc(), self.Address + addresses.game_root.pawn.stance);
+	--self.Stance = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset) or self.Stance
+	--self.Stance2 = memoryReadRepeat("byteptr", getProc(), addresses.staticbase_char, addresses.charStance_offset + 2) or self.Stance2
 end
 
 function CPlayer:updateNature()
@@ -276,11 +295,12 @@ function CPlayer:updateNature()
 end
 
 function CPlayer:updatePsi()
-	self.Psi = memoryReadRepeat("uint",getProc(), addresses.psi)
+	self.Psi = memoryReadRepeat("uint", getProc(), getBaseAddress(addresses.psi));
 end
 
 function CPlayer:updateGlobalCooldown()
-	self.GlobalCooldown = memoryReadRepeat("int", getProc(), addresses.staticCooldownsBase)/10
+	local address = addresses.global_cooldown.base + addresses.global_cooldown.offset;
+	self.GlobalCooldown = memoryReadRepeat("int", getProc(), getBaseAddress(address))/10
 end
 
 -- Inserts a skill at the end of the queue.
@@ -558,12 +578,11 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 	for i = 0,objectList:size() do
 		obj = objectList:getObject(i);
 		if( obj ~= nil ) then
-			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.pawnAttackable_offset)
+			local inp = memoryReadRepeat("int", getProc(), obj.Address + addresses.game_root.pawn.attackable_flags)
 			if inp and not bitAnd(inp,0x4000000) then -- Invisible/attackable?
 				if( obj.Type == PT_MONSTER and (_id == obj.Id or _id == nil) and obj.Address ~= ignore) then
 					local dist = distance(self.X, self.Z, obj.X, obj.Z)
 					if dist < settings.profile.options.MAX_TARGET_DIST then
-
 						local pawn = CPawn.new(obj.Address);
 						pawn:updateTargetPtr()
 
@@ -587,7 +606,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 									bestEnemy = obj;
 									bestScore = currentScore;
 								end
-							end
+							end							
 						end
 					end
 				end
@@ -612,26 +631,29 @@ function CPlayer:target(pawnOrAddress)
 
 	if( address == nil ) then return false; end;
 
-	local addressId = memoryReadRepeat("uint", getProc(), address + addresses.pawnId_offset) or 0;
+	local addressId = memoryReadUInt(getProc(), address + addresses.game_root.pawn.id) or 0;
 
 	if addressId == 0 or addressId > 999999 then -- The pawn or object no longer exists
 		self.TargetPtr = 0
 		return false
 	end
 
-	local flags = memoryReadUInt(getProc(),address + addresses.pawnAttackable_offset)
+
+	local flags = memoryReadUInt(getProc(), address + addresses.game_root.pawn.attackable_flags);
 	if bitAnd(flags,0x10) and settings.options.TARGET_FRAME then -- Has bloodbar
-		local guid = memoryReadUInt(getProc(), address + addresses.pawnGUID_offset)
+		local guid = memoryReadUInt(getProc(), address + addresses.game_root.pawn.guid)
 		RoMCode("OBB_ChangeTraget("..tostring(guid)..")")
 	end
-	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, address);
-	self.TargetPtr = address
+
+	
+	memoryWriteInt(getProc(), self.Address + addresses.game_root.pawn.target, address);
+	self.TargetPtr = address;
 
 	return true
 end
 
 function CPlayer:initialize()
-	memoryWriteInt(getProc(), self.Address + addresses.pawnCasting_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.game_root.pawn.cast_full_time, 0);
 end
 
 -- Resets "toggled" combat skills to off & used counter to 0
@@ -676,6 +698,29 @@ local function RestWhileCheckingForWaypoint(_duration)
 		yrest(_duration)
 	end
 	return true
+end
+
+--[[
+	Take a movement mask and sets the players inputs to match that.
+	Add values together to combine movements
+	For example:
+		(MOVEMENT_TURN_RIGHT + MOVEMENT_FORWARD) = move forward while also turning right
+--]]
+MOVEMENT_STILL = 0;
+MOVEMENT_FORWARD = 1;
+MOVEMENT_BACKWARD = 2;
+MOVEMENT_RIGHT = 4;
+MOVEMENT_LEFT = 8;
+MOVEMENT_TURN_RIGHT = 16;
+MOVEMENT_TURN_LEFT = 32;
+function CPlayer:setMovement(movement)
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	memoryWriteBytePtr(getProc(), gameroot, addresses.game_root.input.movement, movement);
+end
+
+function CPlayer:getMovement()
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	return memoryReadBytePtr(getProc(), gameroot, addresses.game_root.input.movement) or 0;
 end
 
 -- Make sure you face the target
@@ -762,6 +807,7 @@ local function mobsInRangeOfLastClickToCast()
 			end
 		end
 	end
+
 end
 
 function CPlayer:cast(skill)
@@ -897,7 +943,7 @@ function CPlayer:cast(skill)
 
 				if not skill.Toggleable then
 					if(skill.hotkey == "MACRO" or skill.hotkey == "" or skill.hotkey == nil ) then
-						SlashCommand("/script CastSpellByName(\""..GetIdName(skill.Id).."\");");
+						skill:use();
 					else
 						keyboardPress(skill.hotkey, skill.modifier);
 					end
@@ -1006,7 +1052,8 @@ function CPlayer:cast(skill)
 		end
 
 		-- first part of 'casting ...'
-		printf(language[21], hf_temp, string.sub(skill.Name.."                      ", 1, 20));
+		-- skill.Name
+		printf(language[21], hf_temp, string.sub(skill.Name ..string.rep(' ', 40), 1, 40));
 
 		faceTarget()
 
@@ -1069,7 +1116,11 @@ function CPlayer:cast(skill)
 		end
 
 		target:updateHP()
-		printf("=>   "..target.Name.." ("..target.HP.."/"..target.MaxHP..")\n");	-- second part of 'casting ...'
+		local perHp = 0;
+		if( target.MaxHP > 0 ) then
+			perHp = math.floor(target.HP * 100.0 / target.MaxHP);
+		end
+		printf("=>%16s %d%%\n", target.Name, perHp);	-- second part of 'casting ...'
 
 		if( type(settings.profile.events.onSkillCast) == "function" ) then
 			arg1 = skill;
@@ -1747,6 +1798,9 @@ function CPlayer:fight()
 				if dist > suggestedRange then -- move closer
 					success, reason = self:moveTo(target, true, true, suggestedRange);
 				end
+				if( success ) then
+					timedAttack();
+				end
 			else 	-- normal melee
 				success, reason = self:moveTo(target, true, false, 50);
 				-- Start melee attacking
@@ -1970,7 +2024,8 @@ function CPlayer:loot()
 			keyboardRelease( settings.hotkeys.MOVE_FORWARD.key);
 			yrest(200)
 			self:updateSpeed()
-			local maxWaitTime = dist*1000/self.Speed -- more accurate calculation of how long it takes to walk there
+			local speed = math.max(25.0, self.Speed or 0);
+			local maxWaitTime = dist*1000/speed -- more accurate calculation of how long it takes to walk there
 			local startWait = getTime()
 
 			-- Move to loot
@@ -2319,7 +2374,7 @@ function evalTargetDefault(address, target)
 
 	-- Dead
 	target:updateHP()
-	if( target.HP < 1 ) then
+	if( target.HP <= 0 ) then
 		debug_target("target HP is less than 1")
 		return false;
 	end
@@ -2573,7 +2628,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		local target = CPawn.new(self.TargetPtr)
 		if target:exists() then -- Target exists
 			target:updateHP()
-			if( target.HP <= 1 ) then
+			if( target.HP <= 0 ) then
 				self:clearTarget();
 			end
 		end
@@ -2874,7 +2929,7 @@ function CPlayer:faceDirection(dir,diry)
 	if diry then
 		Vec3 = math.sin(diry);
 	else
-		Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.pawnDirYUVec_offset);
+		Vec3 = memoryReadRepeat("float", getProc(), self.Address + addresses.game_root.pawn.rotation_y);
 	end
 	local hypotenuse = (1 - Vec3^2)^.5
 	local Vec1 = math.cos(dir) * hypotenuse;
@@ -2883,16 +2938,16 @@ function CPlayer:faceDirection(dir,diry)
 	self.Direction = math.atan2(Vec2, Vec1);
 	self.DirectionY = math.atan2(Vec3, (Vec1^2 + Vec2^2)^.5 );
 
-	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.charPtrMounted_offset);
+	local tmpMountAddress = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.mount_ptr);
 	self:updateMounted()
 	if self.Mounted and tmpMountAddress and tmpMountAddress ~= 0 then
-		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirXUVec_offset, Vec1);
-		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirZUVec_offset, Vec2);
-		memoryWriteFloat(getProc(), tmpMountAddress + addresses.pawnDirYUVec_offset, Vec3);
+	    memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_x, Vec1);
+		memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_z, Vec2);
+		memoryWriteFloat(getProc(), tmpMountAddress + addresses.game_root.pawn.rotation_y, Vec3);
 	else
-		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirXUVec_offset, Vec1);
-		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirZUVec_offset, Vec2);
-		memoryWriteFloat(getProc(), self.Address + addresses.pawnDirYUVec_offset, Vec3);
+		memoryWriteFloat(getProc(), self.Address + addresses.game_root.pawn.rotation_x, Vec1);
+		memoryWriteFloat(getProc(), self.Address + addresses.game_root.pawn.rotation_z, Vec2);
+		memoryWriteFloat(getProc(), self.Address + addresses.game_root.pawn.rotation_y, Vec3);
 	end
 end
 
@@ -3017,7 +3072,7 @@ function CPlayer:haveTarget()
 	self:updateTargetPtr()
 	local target = CPawn.new(self.TargetPtr);
 	if target:exists() then
-		return evalTargetDefault(target.Address,target)
+		return evalTargetDefault(target.Address, target)
 	else
 		return false
 	end
@@ -3025,7 +3080,7 @@ end
 
 function CPlayer:clearTarget()
 	cprintf(cli.green, language[33]);
-	memoryWriteInt(getProc(), self.Address + addresses.pawnTargetPtr_offset, 0);
+	memoryWriteInt(getProc(), self.Address + addresses.game_root.pawn.target, 0);
 	self.TargetPtr = 0;
 	self.Cast_to_target = 0;
 
@@ -3450,7 +3505,7 @@ function CPlayer:scan_for_NPC(_npcname)
 				mouseSet(wx + mx, wy + my);
 				yrest(settings.profile.options.HARVEST_SCAN_YREST+3);
 				mousePawn = CPawn(memoryReadRepeat("uintptr", getProc(),
-				addresses.staticbase_char, addresses.mousePtr_offset));
+				getBaseAddress(addresses.game_root.base), addresses.game_root.mouseover_object_ptr));
 
 				-- id 110504 Waffenhersteller Dimar
 				-- id 110502 Dan (Gemischtwarenh�ndler
@@ -3814,7 +3869,8 @@ function CPlayer:mount(_dismount)
 	local mount
 
 	-- Find mount
-	if RoMScript("PartnerFrame_GetPartnerCount(2)") > 0 then
+	local partnerFrameCount = RoMScript("PartnerFrame_GetPartnerCount(2)") or 0;
+	if partnerFrameCount > 0 then
 		-- There is a mount in the partner bag. Assign the mountmethod.
 		mountMethod = "partner"
 	elseif inventory then -- Make sure inventory has been mapped.
@@ -3826,6 +3882,7 @@ function CPlayer:mount(_dismount)
 
 	-- Mount found?
 	if(not mountMethod ) then
+		print("Could not find usable mount");
 		return
 	end
 
@@ -3939,68 +3996,48 @@ function CPlayer:aimAt(target)
 	local ny = camera.YFocus + vec3
 
 	-- write camera coordinates
-	memoryWriteFloat(getProc(), camera.Address + addresses.camX_offset, nx);
-	memoryWriteFloat(getProc(), camera.Address + addresses.camZ_offset, nz);
-	memoryWriteFloat(getProc(), camera.Address + addresses.camY_offset, ny);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.x, nx);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.z, nz);
+	memoryWriteFloat(getProc(), camera.Address + addresses.game_root.camera.y, ny);
 end
 
 function CPlayer:clickToCast( onmouseover )
-	-- Freeze mouse function
-	local function nopmouse()
-		-- x axis
-		local addressX1 = addresses.functionMousePatchAddr
-		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
-		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
-		memoryWriteString(getProc(), addressX1, string.rep(string.char(0x90),#addresses.functionMouseX1Bytes)); -- left of window
-		memoryWriteString(getProc(), addressX2, string.rep(string.char(0x90),#addresses.functionMouseX2Bytes)); -- right of window
-		memoryWriteString(getProc(), addressX3, string.rep(string.char(0x90),#addresses.functionMouseX3Bytes)); -- over window
+	local codemodDetails = addresses.code_mod.freeze_mousepos;
+	local codemodDetails = addresses.code_mod.freeze_mousepos2;
+	local codemod = CCodeMod(codemodDetails.base, codemodDetails.original_code, codemodDetails.replace_code);
+	local codemod2 = CCodeMod(codemodDetails.base, codemodDetails.original_code, codemodDetails.replace_code);
 
-		-- y axis
-		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
-		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
-		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
-		memoryWriteString(getProc(), addressY1, string.rep(string.char(0x90),#addresses.functionMouseY1Bytes)); -- above window
-		memoryWriteString(getProc(), addressY2, string.rep(string.char(0x90),#addresses.functionMouseY2Bytes)); -- below window
-		memoryWriteString(getProc(), addressY3, string.rep(string.char(0x90),#addresses.functionMouseY3Bytes)); -- over window
-	end
-
-	-- Unfreeze mouse function
-	local function unnopmouse()
-		-- x axis
-		local addressX1 = addresses.functionMousePatchAddr
-		local addressX2 = addresses.functionMousePatchAddr + addresses.mousePatchX2_offset
-		local addressX3 = addresses.functionMousePatchAddr + addresses.mousePatchX3_offset
-		memoryWriteString(getProc(), addressX1, string.char(unpack(addresses.functionMouseX1Bytes)));
-		memoryWriteString(getProc(), addressX2, string.char(unpack(addresses.functionMouseX2Bytes)));
-		memoryWriteString(getProc(), addressX3, string.char(unpack(addresses.functionMouseX3Bytes)));
-
-		-- y axis
-		local addressY1 = addresses.functionMousePatchAddr + addresses.mousePatchY1_offset
-		local addressY2 = addresses.functionMousePatchAddr + addresses.mousePatchY2_offset
-		local addressY3 = addresses.functionMousePatchAddr + addresses.mousePatchY3_offset
-		memoryWriteString(getProc(), addressY1, string.char(unpack(addresses.functionMouseY1Bytes)));
-		memoryWriteString(getProc(), addressY2, string.char(unpack(addresses.functionMouseY2Bytes)));
-		memoryWriteString(getProc(), addressY3, string.char(unpack(addresses.functionMouseY3Bytes)));
-	end
-
-	local ww = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeX_offset)
-	local wh = memoryReadIntPtr(getProc(),addresses.staticbase_char,addresses.windowSizeY_offset)
+	local hf_x, hf_y, ww, wh = windowRect( getWin());
 	local clickX = math.ceil(ww/2)
 	local clickY = math.ceil(wh/2)
-	yrest(50)
-	nopmouse()
-	yrest(50)
-	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseX_offset,clickX)
-	memoryWriteIntPtr(getProc(),addresses.staticbase_char,addresses.mouseY_offset,clickY)
-	yrest(50)
-	if onmouseover then
-		RoMCode('SpellTargetUnit("mouseover")')
-	else
-		RoMCode("SpellTargetUnit()")
+	
+	-- Freeze mouse
+	local codemodInstalled = codemod:safeInstall();
+	local codemod2Installed = codemod:safeInstall();
+	
+	-- Ensure that an error here doesn't prevent us from uninstalling the code mod
+	pcall(function ()
+		rest(100);
+		local base = getBaseAddress(addresses.mouse.base);
+		memoryWriteIntPtr(getProc(), base, addresses.mouse.x_in_window, clickX);
+		memoryWriteIntPtr(getProc(), base, addresses.mouse.y_in_window, clickY);
+		rest(50);
+		
+		if onmouseover then
+			RoMCode('SpellTargetUnit("mouseover")')
+		else
+			RoMCode("SpellTargetUnit()")
+		end
+		rest(50)
+	end);
+	-- unfreeze
+	if( codemodInstalled ) then
+		codemod:uninstall();
 	end
-	yrest(50)
-	-- unfreeze TargetPtr
-	unnopmouse()
+	
+	if( codemod2Installed ) then
+		codemod2:uninstall();
+	end
 end
 
 function CPlayer:getCraftLevel(craft)
@@ -4020,8 +4057,7 @@ function CPlayer:getCraftLevel(craft)
 		return
 	end
 
-	local lvl = memoryReadFloat(getProc(),addresses.playerCraftLevelBase + addresses.playerCraftLevel_offset + craft*4)
-
+	local lvl = memoryReadFloat(getProc(), getBaseAddress(addresses.crafting.base) + craft * 4)
 	return lvl
 end
 

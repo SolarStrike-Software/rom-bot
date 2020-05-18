@@ -13,16 +13,15 @@ CEquipmentItem = class(CItem,
 );
 
 function CEquipmentItem:update()
-	self.Address = addresses.staticEquipBase + ( self.BagId * 68 );
-
+	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * 68 );
 	CItem.update(self)
 
 	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
-			printf( "Slot: %d <EMPTY>.\n", self.Slot );
+			printf( "Slot[%02d] <EMPTY>.\n", self.SlotNumber );
 		else
 			local _color = cli.white;
-			printf( "Slot: %d\tcontains: %d\t (%d) ", self.SlotNumber, self.ItemCount, self.Id );
+			printf( "Slot[%02d] contains: %4d (%08d) ", self.SlotNumber, self.ItemCount, self.Id );
 			if ( self.Quality == 1 ) then
 				_color = cli.lightgreen;
 			elseif ( self.Quality == 2 ) then
@@ -35,7 +34,7 @@ function CEquipmentItem:update()
 				_color = cli.forestgreen;
 			end;
 			cprintf(  _color, "[%s]", self.Name );
-			printf( "\tDura: %d\n", self.Durability );
+			printf( ", dur: %d\n", self.Durability );
 		end;
 	end;
 end

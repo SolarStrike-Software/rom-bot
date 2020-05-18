@@ -38,7 +38,7 @@ function getMacroUpdateOffset()
 	return macroUpdateOffset;
 end
 
-function checkExecutableCompatible()
+function checkExecutableCompatible()--[[
 	if( findPatternInProcess(getProc(), charUpdatePattern, charUpdateMask,
 	addresses.staticpattern_char, 1) == 0 ) then
 		return false;
@@ -49,6 +49,8 @@ function checkExecutableCompatible()
 		return false;
 	end
 
+	return true;
+	--]]
 	return true;
 end
 
@@ -65,6 +67,73 @@ function debugAssert(args)
 	end
 end
 
+function memoryReadRepeat(_type, proc, address, offset)
+	local readfunc;
+	local ptr = false;
+	local val;
+
+	if( type(proc) ~= "userdata" ) then
+		error("Invalid proc", 2);
+	end
+
+	if( type(address) ~= "number" ) then
+		error("Invalid address", 2);
+	end
+
+	if( _type == "int" ) then
+		readfunc = memoryReadInt;
+	elseif( _type == "uint" ) then
+		readfunc = memoryReadUInt;
+	elseif( _type == "float" ) then
+		readfunc = memoryReadFloat;
+	elseif( _type == "byte" ) then
+		readfunc = memoryReadByte;
+	elseif( _type == "string" ) then
+		readfunc = memoryReadString;
+	elseif( _type == "intptr" ) then
+		readfunc = memoryReadIntPtr;
+		ptr = true;
+	elseif( _type == "uintptr" ) then
+		readfunc = memoryReadUIntPtr;
+		ptr = true;
+	elseif( _type == "byteptr" ) then
+		readfunc = memoryReadBytePtr;
+		ptr = true;
+
+	else
+		return nil;
+	end
+
+	for i = 1, 10 do
+		if( ptr ) then
+			val = readfunc(proc, address, offset);
+		else
+			val = readfunc(proc, address);
+		end
+
+		if( val ~= nil ) then
+			return val;
+		end
+	end
+
+	if( settings.options.DEBUGGING ) then
+		printf("Error in memory reading: memoryread%s(proc,0x%X", _type, address)
+		if ptr then
+			if type(offset) == "number" then
+				printf(" ,0x%X)\n",offset)
+			elseif type(offset) == "table" then
+				printf(" ,{")
+				for k,v in pairs(offset) do
+					printf("0x%X,",v)
+				end
+				printf("})\n")
+			end
+		else
+			print(")")
+		end
+	end
+end
+
 -- Ask witch character does the user want to be, from the open windows.
 function selectGame(character)
 	if functionBeingLoaded then
@@ -73,7 +142,7 @@ function selectGame(character)
 	-- Get list of windows in an array
 	local windowList = {}
 	if findProcessByExeList then
-		local processList = findProcessByExeList("client.exe")
+		local processList = findProcessByExeList("Client.exe")
 		if( processList == nil or #processList == 0 ) then
 			error("You need to run rom first!", 0);
 			return 0;
@@ -104,25 +173,31 @@ function selectGame(character)
 	end
 
 	charToUse = {};
+	
 	for i = 1, #windowList, 1 do
 		local process, playerAddress, nameAddress;
 	    -- open first window
-		process = openProcess(findProcessByWindow(windowList[i]));
+		local procId = findProcessByWindow(windowList[i]);
+		process = openProcess(procId);
 		local ver = getGameVersion(process)
 		if ver ~= 0 then
 			ver = " - " .. ver
 		else
 			ver = ""
 		end
+		
 		-- read player address
 		showWarnings(false);
-		if addresses["staticbase_char"] and addresses["charPtr_offset"] and addresses["pawnName_offset"] then
-			playerAddress = memoryReadUIntPtr(process, addresses["staticbase_char"], addresses["charPtr_offset"]);
-			-- read player name
-			if( playerAddress ) then
-				nameAddress = memoryReadUInt(process, playerAddress + addresses["pawnName_offset"]);
-			end
+		local gameroot = getModuleAddress(procId, "Client.exe") + addresses.game_root.base;
+		local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base);
+		
+		-- read player name
+		if( playerAddress ) then
+			nameAddress = memoryReadUInt(process, playerAddress + addresses.game_root.pawn.name_ptr);
+		else
+			nameAddress = nil;
 		end
+		
 		-- store the player name, with window number
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
@@ -140,6 +215,7 @@ function selectGame(character)
 				charToUse[i] = tmp
 			end
 		end
+
 		showWarnings(true);
 		closeProcess(process);
 	end
@@ -196,7 +272,7 @@ function selectGame(character)
 	    	if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
 	        	error("User quit");
 			end
-			yrest(200)
+			yrest(50)
 		end
 		yrest(200)
 	end
@@ -312,10 +388,17 @@ function getWin(character)
 	return __WIN;
 end
 
+local _procId = nil;
+function getProcId()
+	_procId = _procId or findProcessByWindow(getWin())
+	
+	return _procId;
+end
+
 function getProc()
 	if( __PROC == nil or not windowValid(__WIN) ) then
 		if( __PROC ) then closeProcess(__PROC) end;
-		__PROC = openProcess( findProcessByWindow(getWin()) );
+		__PROC = openProcess( getProcId() );
 	end
 
 	return __PROC;
@@ -357,7 +440,8 @@ end
 -- Used in pause/exit callbacks. Just releases movement keys.
 function releaseKeys()
 	if windowValid(__WIN) and __PROC then
-		memoryWriteBytePtr(__PROC, addresses.staticbase_char ,addresses.moveKeysPressed_offset, 0 )
+		local gameroot = getBaseAddress(addresses.game_root.base);
+		memoryWriteBytePtr(getProc(), gameroot, addresses.game_root.input.movement, MOVEMENT_STILL);
 	end
 end
 
@@ -440,13 +524,15 @@ local LAST_PLAYER_Z = 0;
 function timedSetWindowName(profile)
 	-- Update our exp gain
 	if isInGame() and ( os.difftime(os.time(), player.LastExpUpdateTime) > player.ExpUpdateInterval ) then
-		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.pawnClass1_offset) or player.Class1;
-		player.Level = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoLevel_offset) or player.Level
-		player.XP = memoryReadRepeat("int", getProc(), addresses.charClassInfoBase + (addresses.charClassInfoSize* player.Class1 ) + addresses.charClassInfoXP_offset) or player.XP
+		local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
+		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
+		player.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level
+		player.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1))) or player.XP
+		
 		if player.XP == 0 or player.Level == 0 then return end
 
 		local newExp = player.XP or 0;
-		local maxExp = memoryReadRepeat("intptr", getProc(), addresses.charMaxExpTable_address, (player.Level-1) * 4) or 1;
+		local maxExp = memoryReadRepeat("intptr", getProc(), getBaseAddress(addresses.exp_table), (player.Level-1) * 8) or 1;
 
 		player.LastExpUpdateTime = os.time();					-- Reset timer
 
@@ -752,7 +838,7 @@ function RoMScript(script)
 	end
 
 	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), addresses.staticbase_macro);
+	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base));
 
 --	local scriptDef;
 
@@ -810,7 +896,7 @@ function RoMScript(script)
 				writeToMacro(commandMacro, text)
 
 				-- Write something on the first address, to see when its over written
-				memoryWriteByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset , 6);
+				memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6);
 
 				-- Execute it
 				if( settings.profile.hotkeys.MACRO ) then
@@ -825,16 +911,18 @@ function RoMScript(script)
 				-- A cheap version of a Mutex... wait till it is "released"
 				-- Use high-res timers to find out when to time-out
 				local startWaitTime = getTime();
-				while( memoryReadByte(getProc(), macro_address + addresses.macroSize *(resultMacro - 1) + addresses.macroBody_offset) == 6 ) do
+				while( memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6 ) do
 					if( deltaTime(getTime(), startWaitTime) > 800 ) then
 						if settings.options.DEBUGGING then
 							printf("0x%X\n", addresses.editBoxHasFocus_address)
 						end
-						if memoryReadUInt(getProc(), addresses.editBoxHasFocus_address) == 0 then
-							keyboardPress(settings.hotkeys.ESCAPE.key); rest(500)
+						local base = getBaseAddress(addresses.input_box.base);
+						local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
+						if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
+							-- Clear input box focus
+							memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0);
 							if RoMScript("GameMenuFrame:IsVisible()") then
 								-- Clear the game menu and reset editbox focus
-								keyboardPress(settings.hotkeys.ESCAPE.key); rest(300)
 								RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 							end
 						end
@@ -843,7 +931,7 @@ function RoMScript(script)
 						tryagain = true
 						break
 					end;
-					rest(5);
+					rest(10);
 				end
 			until tryagain == false
 		until #texts == 0
@@ -1005,7 +1093,9 @@ function utf8ToAscii_umlauts(_str)
 	-- key is the combined UTF8 code
 	local function replaceUtf8( _str, _key )
 		local tmp = database.utf8_ascii[_key];
-		_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		if( tmp ~= nil ) then
+			_str = string.gsub(_str, string.char(tmp.utf8_1, tmp.utf8_2), string.char(tmp.ascii) );
+		end
 		return _str
 	end
 
@@ -1465,7 +1555,8 @@ end
 
 -- Read the ping variable from the client
 function getPing()
-	return memoryReadIntPtr(getProc(), addresses.staticbase_char, addresses.ping_offset);
+	local base = getBaseAddress(addresses.game_root.base);
+	return memoryReadIntPtr(getProc(), base, addresses.game_root.ping);
 end
 
 -- Returns the proper SKILL_USE_PRIOR value (whether manual or auto, and adjusted)
@@ -1535,12 +1626,14 @@ function waitForLoadingScreen(_maxWaitTime)
 			return false
 		end
 		rest(1000)
-		local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
-	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) ~= 0
+		--local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
+		local base = getBaseAddress(addresses.game_root.base);--
+		newAddress = memoryReadRepeat("uintptr", getProc(), base, addresses.game_root.player.base);
+	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) ~= 0
 	-- wait until loading screen is gone
 	repeat
 		rest(1000)
-	until memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0
+	until memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) == 0
 	rest(2000)
 
 	-- Check if fully in game by checking if RoMScript works
@@ -1551,14 +1644,17 @@ function waitForLoadingScreen(_maxWaitTime)
 		until 1234 == RoMScript("1234")
 	end
 
+	MemDatabase:flush();
 	player:update()
 	return true
 end
 
 function isInGame()
-	-- Note: if not in game, addresses.isInGame + 0xBF4 is 1 when at the character selection screen.
-	if memoryReadBytePtr(getProc(),addresses.loadingScreenPtr, addresses.loadingScreen_offset) == 0 and
-	   memoryReadInt(getProc(), addresses.isInGame) == 1 then
+	-- At character select screen = 0
+	-- If in game, it is = 1
+	local loading = memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets);
+	local in_game = memoryReadInt(getProc(), getBaseAddress(addresses.in_game));
+	if( loading == 0 and in_game == 1 ) then
 		return true
 	else
 		return false
@@ -1589,7 +1685,7 @@ function GetPartyMemberName(_number)
 		return
 	end
 
-	local listAddress = memoryReadRepeat("uintptr", getProc(), addresses.partyMemberList_address, addresses.partyMemberList_offset )
+	local listAddress = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.party.member_list.base), addresses.party.member_list.offset);
 	local memberAddress = listAddress + (_number - 1) * 0x60
 
 	-- Check if that number exists
@@ -1731,7 +1827,7 @@ function Attack()
 		setupAttackKey()
 	end
 
-	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), player.Address + addresses.pawnTargetPtr_offset) or 0
+	local tmpTargetPtr = memoryReadRepeat("uint", getProc(), player.Address + addresses.game_root.pawn.target) or 0
 
 	if tmpTargetPtr == 0 and player.TargetPtr == 0 then
 		-- Nothing to attack
@@ -1753,15 +1849,22 @@ function Attack()
 		player:updateTargetPtr()
 		if player.TargetPtr ~= 0 then -- still valid target
 
-			if( memoryWriteString == nil ) then
-				error("Update your copy of MicroMacro to version 1.02!");
+			-- freeze TargetPtr
+			local codemod = CCodeMod(addresses.code_mod.freeze_target.base,
+				addresses.code_mod.freeze_target.original_code,
+				addresses.code_mod.freeze_target.replace_code
+			);
+			
+			local codemodInstalled = codemod:safeInstall();
+			
+			if( codemodInstalled ) then
+				print("installed code mod");
+			else
+				print("Codemod not installed");
 			end
 
-			-- freeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.rep(string.char(0x90),#addresses.functionTargetBytes));
-
 			-- Target it
-			memoryWriteInt(getProc(), player.Address + addresses.pawnTargetPtr_offset, player.TargetPtr);
+			memoryWriteInt(getProc(), player.Address + addresses.game_root.pawn.target, player.TargetPtr);
 
 			-- 'Click'
 			if settings.profile.hotkeys.AttackType == "macro" then
@@ -1772,20 +1875,24 @@ function Attack()
 			yrest(100)
 
 			-- unfreeze TargetPtr
-			memoryWriteString(getProc(), addresses.functionTargetPatchAddr, string.char(unpack(addresses.functionTargetBytes)));
+			if( codemodInstalled ) then
+				codemod:uninstall();
+			end
 
 		end
 	end
 end
 
 function getZoneId()
-	local zonechannel = memoryReadRepeat("int", getProc(), addresses.zoneId)
-	if zonechannel ~= nil then
+	local zoneId = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.zone_id))
+	local channelId = memoryReadIntPtr(getProc(), getBaseAddress(addresses.channel.base), addresses.channel.id);
+	return zoneId, channelId;
+	--[[if zonechannel ~= nil then
 		local zone = zonechannel%1000
 		return zone, (zonechannel-zone)/1000 + 1 -- zone and channel
 	else
 		printf("Failed to get zone id\n")
-	end
+	end--]]
 end
 
 function bankItemBySlot(SlotNumber)
@@ -2267,25 +2374,41 @@ function GetSkillBookData(_tabs)
 	end
 
 	local proc = getProc()
-	local skillsTableTabSize = 0x10
-	local skillSize = 0x4c
 
+	local tabInfoSize = addresses.skillbook.tabinfo_size;
+	local skillSize = addresses.skillbook.skill.size;
 	local function GetSkillInfo (address)
 		local tmp = {}
 		tmp.Address = address
-		tmp.Id = tonumber(memoryReadRepeat("int", proc, address))
-		tmp.Name = GetIdName(tmp.Id)
-		tmp.TPToLevel = memoryReadRepeat("int", proc, address + addresses.skillTPToLevel_offset)
-		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillLevel_offset)
-		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillAsLevel_offset)
-		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
+		tmp.Id = memoryReadRepeat("int", proc, address);
+		if( not tmp.Id ) then
+			return nil;
+		end
+		
+		-- name can either be a string or a pointer to a string
+		-- Try to read it as a string; if it contains unexpected
+		-- characters, try reading it as a pointer
+		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
+		if( not validName(tmp.Name, 24) ) then
+			tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
+			
+		end
+		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
+		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.level)
+		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.as_level)
+		
 		-- Get power and consumables
+		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
+		if( tmp.BaseItemAddress == nil ) then
+			return nil;
+		end
+		
 		for count = 0, 1 do
-			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset)
+			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
 			if uses == 0 then
 				break
 			end
-			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skillUsesBase_offset + 4)
+			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
 			if uses == SKILLUSES_MANA then
 				if tmp.Level > 49 then
 					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
@@ -2312,6 +2435,8 @@ function GetSkillBookData(_tabs)
 			elseif uses == SKILLUSES_PSI then
 				tmp.Psi = usesnum
 			elseif tmp.Name ~= "" and uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+				uses = uses or -1;
+				usesnum = usesnum or -1;
 				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n",tmp.Name, uses, usesnum)
 			end
 		end
@@ -2322,15 +2447,48 @@ function GetSkillBookData(_tabs)
 	-- Collect tab skill info
 	local tabData = {}
 
-	for __, tab in pairs(_tabs) do
-		local tabBaseAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabStartAddress_offset)
-		local tabEndAddress = memoryReadRepeat("uint", proc, addresses.skillsTableBase + skillsTableTabSize*(tab-1) + addresses.skillsTableTabEndAddress_offset)
-
+	local tabCount	=	3;
+	local hasClass2	=	false;
+	
+	if( type(player) ~= "nil" and player.Class2 > 0 ) then
+		tabCount	=	4;
+		hasClass2	=	true;
+	end
+	
+	for tab = 2,tabCount do
+		-- The first tab in skillbook isn't stored in this same way, so the 2nd tab is actually
+		-- the first in this memory structure.
+		-- Additionally, we need to subtract 1 anyways because array index start at 0.
+		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
+		local tabindex	=	tab - 2;
+		local base		=	getBaseAddress(addresses.skillbook.base) + addresses.skillbook.offset;
+		
+		-- 2nd class skills are stored on a separate section of memory
+		local book			=	1;
+		local tabStartOff	=	addresses.skillbook.book1_start;
+		local tabEndOff		=	addresses.skillbook.book1_end;
+		
+		if( tab == 3 and hasClass2 ) then
+			book		=	2;
+			tabindex	=	tab - 3; -- Switch books, so need to roll back more
+			tabStartOff	=	addresses.skillbook.book2_start;
+			tabEndOff	=	addresses.skillbook.book2_end;
+		end
+		
+		if( tab >= 4 ) then
+			tabindex = tab - 3;
+		end
+		
+		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff);
+		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabEndOff);
+		
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
 				local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
-				if tmpData.Name ~= nil and tmpData.Name ~= "" then
+				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
+					
+					cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
@@ -2401,7 +2559,8 @@ function keyboardHold(key)
 	end
 
 	-- Get current move keys pressed
-	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	--local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	local keyspressed = player:getMovement();
 
 	-- Set 'key' pressed
 	if keyspressed and not bitAnd(keyspressed, keybit) then
@@ -2413,7 +2572,8 @@ function keyboardHold(key)
 		end
 
 		-- Write result to memory
-		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		player:setMovement(keyspressed);
+		--memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
 	end
 end
 
@@ -2436,222 +2596,116 @@ function keyboardRelease(key)
 	end
 
 	-- Get current move keys pressed
-	local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	--local keyspressed = memoryReadBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset )
+	local keyspressed = player:getMovement();
 
 	-- Set 'key' released
 	if keyspressed and bitAnd(keyspressed, keybit) then
 		keyspressed = keyspressed - keybit
-		memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		--memoryWriteBytePtr(getProc(),addresses.staticbase_char ,addresses.moveKeysPressed_offset, keyspressed )
+		player:setMovement(keyspressed);
 	end
 end
 
 function getGameTime()
-	return memoryReadRepeat("uint",getProc(),addresses.gameTimeAddress)/1000
+	local address = getBaseAddress(addresses.game_time);
+	local gtime = memoryReadUInt(getProc(), address) or 0;
+	return gtime / 1000;
 end
 
 local getTEXTCache = {}
-function getTEXT(keystring)
-	if not keystring or type(keystring) ~= "string" then return end
-
-	-- Return cached value if it exists
-	if getTEXTCache[keystring] then
-		return getTEXTCache[keystring]
+local textCacheFilename = getExecutionPath() .. "/cache/texts.lua";
+function getTEXT(key)
+	if( #getTEXTCache == 0 ) then
+		if( not readCachedGameTexts() ) then
+			readAndCacheGameTexts();
+		end
 	end
+	return getTEXTCache[key];
+end
 
-	local function memoryGetTEXT(str)
-		local addressPtrsBase = memoryReadInt(getProc(), addresses.getTEXT)
-		local startloc = memoryReadInt(getProc(), addressPtrsBase + 0x268)
-		local endloc = memoryReadInt(getProc(), addressPtrsBase + 0x26C)
-		local quarter = math.floor((endloc-startloc) / 4)
-
-		-- Pattern doesn't work with first string so check that first
-		if str == "AC_ITEMTYPENAME_0" then
-			return memoryReadString(getProc(), startloc + 18)
-		end
-
-		local tmpStart = endloc
-		local tmpEnd = endloc
-		-- Find which quarter of memory holds string to speed up search
-		for count = 1,3 do
-			tmpStart = tmpStart - quarter
-			local found = findPatternInProcess(getProc(), string.char(0).."Sys", "xxx", tmpStart, tmpEnd);
-			local tmpText = memoryReadString(getProc(), found + 1)
-			if tmpText <= str then
-				startloc = tmpStart
-				break
-			else
-				endloc = tmpStart
+function readCachedGameTexts()
+	if( fileExists(textCacheFilename) ) then
+		local status,result = pcall(dofile, textCacheFilename);
+		if( status ) then
+			getTEXTCache = result;
+			if( getTEXTCache['GAME_VERSION'] ~= getGameVersion() ) then
+				getTEXTCache = {}; -- Unload
+				return false;
 			end
-		end
-
-		local searchlen = endloc - startloc
-		local pattern = string.char(0x00) .. str .. string.char(0x00)
-		local mask = string.rep("x", #pattern)
-		local offset = #pattern
-		local found = findPatternInProcess(getProc(), pattern, mask, startloc, searchlen);
-		if found ~= 0 then
-			return memoryReadString(getProc(), found + offset)
 		else
-			return str
+			return false;
+		end
+		
+		return true;
+	end
+	
+	return false;
+end
+
+function readAndCacheGameTexts()
+	print("Collecting and caching game texts... Please be patient.");
+	
+	local base = getBaseAddress(addresses.text.base);
+	local startAddress = memoryReadIntPtr(getProc(), base, addresses.text.start_addr);
+	local endAddress = memoryReadIntPtr(getProc(), base, addresses.text.end_addr);
+	local totalSize = endAddress - startAddress;
+	
+	local maxKeySize = 128;
+	local maxValueSize = 4096;
+	local currentAddress = startAddress;
+	
+	outFile = io.open(textCacheFilename, 'w');
+	outFile:write("return {\n");
+	outFile:write(sprintf("\t['GAME_VERSION'] = \"%s\",\n", getGameVersion()));
+	
+	local progressBarSize = 20;
+	local progressBarFmt = "\rProgress: [%-"..progressBarSize .. "s] %3d%%";
+	local percentage = 0;
+	local lastPercentage = percentage;
+	printf(progressBarFmt, "", percentage);
+	while(currentAddress < endAddress) do
+		local key = memoryReadString(getProc(), currentAddress, maxKeySize);
+		local value = memoryReadString(getProc(), currentAddress + #key + 1, maxValueSize);
+		currentAddress = currentAddress + #key + #value + 2;
+		
+		getTEXTCache[key] = value;
+		
+		
+		-- Do some character substitutions to ensure that we're formatting it correctly for Lua
+		key = key:gsub('\'', "\\'");
+		
+		value = value:gsub("\\", '\\\\');
+		value = value:gsub("\r", '\\r');
+		value = value:gsub("\n", '\\n');
+		value = value:gsub('"', '\\"');
+		value = value:gsub('\'', "\\'");
+		outFile:write(sprintf("\t['%s'] = \"%s\",\n", key, value));
+		
+		percentage = math.floor(((currentAddress - startAddress) / totalSize)*100 + 0.5);
+		if( percentage ~= lastPercentage ) then
+			printf(progressBarFmt, string.rep('=', percentage/100 * progressBarSize), percentage);
+			lastPercentage = percentage;
 		end
 	end
-
-	local resultTEXT = memoryGetTEXT(keystring)
-	local playerNameUsed = false
-
-	-- Replace known sub key strings
-	for subKeyString in string.gmatch(resultTEXT,"%[(.-)%]") do
-		local translatedSubTEXT
-		if subKeyString:sub(1,1) == "$" then -- variable. See if it's player.
-			if subKeyString == "$PLAYERNAME" or subKeyString == "$playername" then
-				translatedSubTEXT = player.Name
-				playerNameUsed = true
-			end
-		elseif tonumber(subKeyString) then -- Must be id
-			translatedSubTEXT = GetIdName(tonumber(subKeyString))
-		elseif subKeyString:find("|",1,true) then -- Id with a text override
-			translatedSubTEXT = subKeyString:match(".*|(.*)")
-		elseif subKeyString:sub(1,3) == "<S>" then -- Must be id plural
-			translatedSubTEXT = GetIdName(tonumber(subKeyString:sub(4,9)),true)
- 		elseif not string.find(subKeyString,"%%") then
-			translatedSubTEXT = getTEXT(subKeyString)
-		end
-		if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString then
-			resultTEXT = string.gsub(resultTEXT, "%["..subKeyString.."%]", translatedSubTEXT)
-		end
-	end
-
-	-- Remember result
-	if resultTEXT ~= keystring and not playerNameUsed then
-		getTEXTCache[keystring] = resultTEXT
-	end
-
-	return resultTEXT
+	outFile:write("}\n");
+	outFile:close();
+	
+	printf(progressBarFmt .. "\n", string.rep('=', progressBarSize), 100);
 end
 
 function getKeyStrings(text, returnfirst)
-	-- Heavily filtered to make the speed usable but should find most texts. If not found, use language converter tool.
-	-- Excludes key strings beginning with "Sys". They are for ids so you can use GetIdName instead.
-	local proc = getProc()
-	local addressPtrsBase = memoryReadInt(proc, addresses.getTEXT)
-	local startloc = memoryReadInt(proc, addressPtrsBase + 0x268)
-	local endloc = memoryReadInt(proc, addressPtrsBase + 0x26C)
-	local results = {}
-
-	-- Returns the key string of the text found at address 'address'. 'address' points to the 0 before the text.
-	local function getkeystr(address)
-		repeat
-			address = address -1
-		until memoryReadByte(proc, address) == 0
-		if address < startloc then
-			address = startloc
-		else
-			address = address + 1
-		end
-		return memoryReadString(proc, address)
-	end
-
-	-- Returns nil if no results and prints them if there are results. Only applies to result tables.
-	local function getResults()
-		if #results == 0 then
-			return
-		else
-			-- Prints results for user convenience.
-			for k,v in pairs(results) do
-				print("\t"..v)
-			end
-			return results
-		end
-	end
-
-	--== First search for an exact match with findPatternInProcess because it's so fast.
-
-	local rangestart = startloc
-	local found, tmpkey
-	repeat
-		found = findPatternInProcess(proc, string.char(0)..text..string.char(0), string.rep("x",#text+2), rangestart, endloc-rangestart);
-		if found ~= 0 then
-			tmpkey = getkeystr(found)
-			if returnfirst == true then
-				return tmpkey -- Return the first found result
-			else
-				table.insert(results, tmpkey) -- Add to results table
-			end
-			rangestart = found + #text+1 -- continue from here to find more matches
-			if rangestart >= endloc - 1 then break end
-		end
-	until found == 0
-
-	-- If results found, return them.
-	if #results > 0 then
-		return getResults()
-	end
-
-	--== Now search for text with substrings that match.
-
-	-- Get address ranges to skip "Sys" key strings
-	local addressrange = {
-				-- Range before "Sys"
-		[1]={	start = startloc,
-				finish = findPatternInProcess(proc, string.char(0).."Sys1", string.rep("x",5), startloc, endloc)+1},
-				-- Range after "Sys"
-		[2]={	start = findPatternInProcess(proc, string.char(0).."SYST", string.rep("x",5), startloc, endloc)+1,
-				finish = endloc},
-		}
-
-	local tmpkey, tmptext, tmpstrpat = "","",""
-	local translatedSubTEXT, finish
-	for k,v in pairs(addressrange) do
-		address = v.start
-		finish = v.finish
-		repeat repeat -- Second 'repeat' is break loop
-			-- Get key string and text
-			tmpkey = memoryReadString(proc, address) -- key string
-			address = address + #tmpkey + 1
-			tmptext = memoryReadString(proc, address) -- text
-			address = address + #tmptext + 1
-
-			-- only search key strings with valid substrings.
-			if not string.find(tmptext,"%[^%$]-%]") then break end
-
-			-- Skip text with %s or %d because they wont match anyway.
-			if string.find(tmptext,"%%[sd]") then break end
-
-			-- Create find pattern
-			tmpstrpat = string.gsub(tmptext,"[%(%)%-%+%*%?]","%%%1") -- prefix special characters with '%'
-			tmpstrpat = string.gsub(tmpstrpat,"%[.-%]",".*") -- change substrings to '.*'
-
-			if string.find(tmpstrpat,"%w") and string.find(text, tmpstrpat) then -- See if text matches without sub strings
-				-- Replace substrings with correct texts
-				for subKeyString in string.gmatch(tmptext,"%[([^%$].-)%]") do
-					if tonumber(subKeyString) then -- Must be id
-						translatedSubTEXT = GetIdName(tonumber(subKeyString))
-					else
-						translatedSubTEXT = getTEXT(subKeyString)
-					end
-					if translatedSubTEXT ~= nil and translatedSubTEXT ~= subKeyString and not string.find(translatedSubTEXT,"%%") then
-						tmptext = string.gsub(tmptext, "%["..subKeyString.."%]", translatedSubTEXT, 1)
-					end
-				end
-				-- Do final comparison
-				if tmptext == text then
-					if returnfirst == true then
-						return tmpkey -- Return the first found result
-					else
-						table.insert(results, tmpkey) -- Add to results table
-					end
-				end
-			end
-		until true until address >= finish-1
-	end
-
-	return getResults()
+	getTEXT(text);
 end
 
 function getGameVersion(proc)
 	-- Check 'proc'
 	if proc == nil then
 		proc = getProc()
+	end
+	
+	if( proc == nil ) then
+		error("Could not find game client; please make sure the game is running and IS NOT MINIMIZED.");
 	end
 
 	-- Look for pattern in 64 bit memory area first
@@ -2864,4 +2918,112 @@ end
 
 function dailyCount()
 	return memoryReadInt(getProc(), addresses.charClassInfoBase + addresses.dailyCount_offset)
+end
+
+local _clientExeAddress = nil;
+function getClientExeAddress()
+	if( _clientExeAddress == nil ) then
+		_clientExeAddress = getModuleAddress(getProcId(), "Client.exe");
+	end
+	return _clientExeAddress;
+end
+
+function getBaseAddress(offsetFromExe)
+	if( offsetFromExe == nil ) then
+		error("Cannot get base address of nil", 2);
+	end
+	return getClientExeAddress() + offsetFromExe;
+end
+
+function isGitInstalled()
+	if( io.popen == nil ) then
+		-- Can't check
+		return false;
+	end
+	
+	local response = io.popen('where git'):read('*a');
+	return response ~= "";
+end
+
+function isGitUpdateAvailable()
+	if( isGitInstalled() == false ) then
+		return false;
+	end
+	
+	local path = getExecutionPath();
+	local response = io.popen(sprintf('cd "%s" && git fetch origin && git status -uno', path)):read('*a');
+	if( response:find('Your branch is behind') ~= nil ) then
+		return true;
+	end
+	return false;
+end
+
+function getCurrentRevision()
+	if( isGitInstalled() == false ) then
+		return "unknown";
+	end
+	
+	local path = getExecutionPath();
+	local response = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
+	return response;
+end
+
+function setLastUpdateCheckedTime()
+	local path = getExecutionPath();
+	local file = io.open(path .. "/cache/updatecheck.txt", 'w');
+	file:write(os.time());
+	file:close();
+end
+
+function getLastUpdateCheckedTime()
+	local path = getExecutionPath();
+	local file = io.open(path .. "/cache/updatecheck.txt", 'r');
+	local checkedTime = 0;
+	if( file ) then
+		checkedTime = file:read('*n');
+	end
+	
+	return checkedTime;
+end
+
+function validName(name, maxlen)
+	if( type(name) ~= "string" ) then
+		return false;
+	end
+	
+	if( #name == 0 ) then
+		return false;
+	end
+	
+	if( maxlen and (#name > 24) ) then
+		return false;
+	end
+	
+	-- More in-depth character-by-character checking
+	for i = 1,#name do
+		local chrCode = string.byte(name:sub(i,i));
+		if( chrCode < 32 ) then -- non-printable / control characters
+			return false;
+		end
+		
+		if( chrCode == 127 ) then -- DEL
+			return false;
+		end
+		
+		if( (chrCode >= 34 and chrCode <= 38)
+			or (chrCode >= 91 and chrCode <= 93)
+			or (chrCode == 95)
+			or (chrCode >= 42 and chrCode <= 43)
+			or (chrCode == 47)
+			or (chrCode >= 58 and chrCode <= 62)
+		) then
+			return false; -- Non-name symbols
+		end
+		
+		if(chrCode >= 255) then
+			return false;
+		end
+	end
+	
+	return true;
 end

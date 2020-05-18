@@ -12,9 +12,9 @@ CCursor = class(
 );
 
 function CCursor:update()
-	self.Address = memoryReadUInt(getProc(), addresses.cursorBase)
+	self.Address = memoryReadUInt(getProc(), getBaseAddress(addresses.cursor.base));
 
-	self.ItemLocation = memoryReadInt(getProc(), self.Address + addresses.cursorItemLocation_offset)
+	self.ItemLocation = memoryReadInt(getProc(), self.Address + addresses.cursor.item.location)
 	if self.ItemLocation == 0 then
 		self.ItemLocationName = "<EMPTY>"
 	elseif self.ItemLocation == 1 then
@@ -35,13 +35,13 @@ function CCursor:update()
 		self.ItemLocationName = "other"
 	end
 
-	self.ItemId = memoryReadInt(getProc(), self.Address + addresses.cursorItemId_offset)
+	self.ItemId = memoryReadInt(getProc(), self.Address + addresses.cursor.item.id)
 	if self.ItemLocation == 12 then
-		self.DBID =  memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset)
-		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset+0x4) + 1
+		self.DBID =  memoryReadInt(getProc(), self.Address + addresses.cursor.item.bag_id)
+		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursor.item.bag_id+0x4) + 1
 	else
 		self.DBID = nil
-		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursorItemBagId_offset) + 1
+		self.ItemBagId = memoryReadInt(getProc(), self.Address + addresses.cursor.item.bag_id) + 1
 	end
 end
 

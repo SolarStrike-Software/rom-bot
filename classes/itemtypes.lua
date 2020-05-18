@@ -34,6 +34,7 @@ function LoadItemTypes_cached(filename)
 end
 
 function LoadItemTypes_memory()
+--[[
 --	local starttime = getTime()
 
 	cprintf(cli.yellow,"Getting item type names.\n")
@@ -76,9 +77,11 @@ function LoadItemTypes_memory()
 
 	itemtypes_language = string.sub(RoMScript("GetLanguage()"),1,2)
 --	print("time",deltaTime(getTime(), starttime))
+--]]
 end
 
 function CacheItemTypes()
+--[[
  	local outFile = io.open(CACHE_PATH .. "/itemtypestable.lua", "w");
 
 	if( not outFile ) then
@@ -134,6 +137,7 @@ function CacheItemTypes()
 	outFile:write("itemtypes_language = \"" .. itemtypes_language .. "\"\n")
 	outFile:write("itemtypes_version = " .. ITEMTYPESTABLE_VERSION .. "\n")
 	outFile:close()
+	--]]
 end
 
 function PrintItemTypes()

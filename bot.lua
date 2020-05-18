@@ -1,40 +1,7 @@
-BOT_VERSION = 3.29;
+BOT_VERSION = 4.0;
+BOT_REVISION = '<UNKNOWN>';
 
-local handle = io.popen("SubWCRev \""..getExecutionPath().."\"")
-local result = handle:read("*a")
-handle:close()
-BOT_REVISION = string.match(result,"Updated to revision (%d*)") or "<UNKNOWN>"
-
---[[
-BOT_REVISION = "<UNKNOWN>"
-
--- Check version 1.7 style svn folder.
-local fname = getExecutionPath() .. "/.svn/wc.db"
-if( fileExists(fname) ) then
-	local file, err = io.open(fname, "rb");
-	if file then
-		local string = file:read("*a")
-		for ver in string.gmatch(string,"%(svn:wc:ra_dav:version.url %d* %/svn%/!svn%/ver%/(%d*)%/trunk%/rom%)") do
-			if BOT_REVISION == "<UNKNOWN>" or ver > BOT_REVISION then
-				BOT_REVISION = ver
-			end
-		end
-		file:close();
-	end
-end
-
--- If not found, try version 1.6 style svn folder.
-if BOT_REVISION == "<UNKNOWN>" then
-	local fname = getExecutionPath() .. "/.svn/entries"
-	if( fileExists(fname) ) then
-		local dirfound = false
-		for line in io.lines(fname) do
-			if dirfound then BOT_REVISION = line break elseif line == "dir" then dirfound = true end
-		end
-	end
-end
-]]
-
+include('qword.lua');
 include("addresses.lua");
 include("database.lua");
 include("functions.lua");
@@ -56,8 +23,11 @@ include("classes/store.lua");
 include("classes/party.lua");
 include("classes/itemtypes.lua");
 include("classes/pet.lua");
+include("classes/memdatabase.lua");
+include("classes/codemod.lua");
 include("settings.lua");
 include("macros.lua");
+
 
 functionBeingLoaded = "romglobal/userfunctions.lua"
 if( fileExists(getExecutionPath().."/../romglobal/userfunctions.lua") ) then
@@ -131,12 +101,26 @@ setStopKey(settings.hotkeys.STOP_BOT.key);
 __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
+
+
+
+
+
 -- start message
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
-	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, BOT_REVISION);
+	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, getCurrentRevision());
 
 printPicture("logo", text, 4);
+
+
+if( (os.time() - getLastUpdateCheckedTime())  > 60*10 ) then
+	if( isGitUpdateAvailable() ) then
+		print("\nA new update is available. Please run `gitupdate.lua` to install");
+	end
+	setLastUpdateCheckedTime();
+end
+
 
 function main()
 	local forcedProfile = nil;
@@ -218,6 +202,7 @@ function main()
 
 	database.load();
 	attach(getWin(forcedCharacter));
+	getTEXT(); -- Ensure that we cache game text info now rather than later
 
 	if( not checkExecutableCompatible() ) then
 		printf("Addresses seem off, trying to update.\n")
@@ -229,7 +214,9 @@ function main()
 		end
 	end
 
-	local playerAddress = memoryReadUIntPtr(getProc(), addresses.staticbase_char, addresses.charPtr_offset);
+
+	local gameroot = getBaseAddress(addresses.game_root.base);
+	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
 	if( settings.options.DEBUGGING ) then
 		printf(language[44]);	-- Attempt to read playerAddress
 	end
@@ -238,8 +225,6 @@ function main()
 		local msg = sprintf(language[48], "playerAddress");	-- pls update to current version
 		error(msg, 0);
 	end;
-	logMessage(sprintf("Using static char address 0x%X, player address 0x%X",
-		tonumber(addresses.staticbase_char), tonumber(playerAddress)));
 
 	equipment = CEquipment()
 	player = CPlayer.new();
@@ -273,6 +258,7 @@ function main()
 	if( settings.options.DEBUGGING ) then
 		printf("[DEBUG] camAddress: 0x%X\n", camera.Address);
 	end
+	
 
 	if( settings.options.DEBUGGING ) then
 		-- Camera debugging info
@@ -733,6 +719,11 @@ function main()
 		end
 	end
 	registerTimer("ClientDetection", secondsToTimer(2), checkClientCrash);
+	
+	collectgarbage("collect");
+	registerTimer("collectgarbage", secondsToTimer(60), function ()
+		collectgarbage("collect");
+	end);
 
 	local distBreakCount = 0; -- If exceedes 3 in a row, unstick.
 	while(true) do
@@ -742,6 +733,10 @@ function main()
 		end
 		if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
 			error(language[114],1) -- No waypoints to go to
+		end
+		
+		if( not isInGame() ) then
+			MemDatabase:flush();
 		end
 
 		player:checkAddress()
