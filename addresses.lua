@@ -111,6 +111,7 @@ addresses = {
 			stance = 0x228,
 			cast_full_time = 0x260,
 			cast_time = 0x264,
+			cast_spell_id = 0x25c,
 			target = 0x278,
 			owner_ptr = 0x280,
 			pet_ptr = 0x284,

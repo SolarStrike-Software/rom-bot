@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: NalaMelody-pub.xml 554 2015-06-05 17:56:19Z dx $ -->
+<waypoints type="TRAVEL">
+	<!--
+		Doing the repeatable music festival event
+		
+		Note: you have to have Rock/DX's modified buf code
+		      check: http://solarstrike.net/phpBB3/viewtopic.php?p=61170#p61170
+	-->
+	<onLoad>
+		<![CDATA[
+			o_useTP		= 0						-- Pay with #num teleport stone(s)
+		
+			id_nala		= 120885				-- Nala Melody
+			id_device	= 120883				-- Musical Energy Collection Device
+			id_energy	= 120884				-- Energy collection points
+			id_gamerun	= 622723				-- Game is running buff
+			id_gotkey	= 622707				-- Collection Device Key buff
+			
+			-- Client API functions
+			api = {}
+
+			function safe_call(rom_function)
+				local result
+				if rom_function == nil or rom_function == "" then
+					error("Forgot argument to safe_call\n", 2)
+				end
+				repeat
+					result = {RoMScript(rom_function)}
+				until #result ~= 0
+				
+				return unpack(result)
+			end
+			
+			function api:TEXT(id)
+				local id = (type(id) == "number") and "Sys"..id.."_name" or id 
+				return safe_call("TEXT(\""..id.."\")")
+			end
+			
+			function api:GetExtraActionCooldown(slot)
+				return safe_call("GetExtraActionCooldown("..slot..")")
+			end
+			
+			function api:UseExtraAction(slotno)
+				return RoMScript("UseExtraAction("..slotno..");")
+			end
+			
+			-- Translations
+			t_initial	= api:TEXT('KORS_MUSICFES12_01')		-- "You're Talking... to me?"
+			t_havelook	= api:TEXT('KORS_MUSICFES12_07')		-- "Really? Please have a look."
+			t_usetprune	= api:TEXT('KORS_MUSICFES12_14')		-- "I happen to have 1 [202903], take it."
+			t_helpu 	= api:TEXT('KORS_MUSICFES12_03')		-- "Okay, I can help you."
+			
+			-- Process text due to imbedded tags
+			t_usetprune	= string.match(t_usetprune, "([^%[]+)")
+			
+			-- Map the skill cast to an extra action
+			castToAction = {
+				[850243] = {key = 1, buf = 622710},		-- Green
+				[850244] = {key = 2, buf = 622711},		-- Blue
+			}
+			
+			--[[
+				Run the game
+			--]]
+			function runGame()
+			
+				-- If no Key buff, return
+				if not player:hasBuff(id_gotkey) then
+					cprintf(cli.red, "Please register with %s for participation!\n", GetIdName(120885))
+					return
+				end
+				
+				-- Click on music device
+				local obj = player:findNearestNameOrId(id_device)
+				local dev = CPawn(obj.Address)
+				player:target(dev.Address)
+				Attack(); yrest(50); Attack()
+				
+				-- Wait for game start
+				while not player:hasBuff(id_gamerun) do
+					yrest(50)
+				end
+								
+				-- Loop until game over
+				local orbs = nil
+				cprintf(cli.red,"Starting game!\n")
+				player:updateBuffs()
+				
+				while player:hasBuff(id_gamerun) do
+					-- Find the two orbs (once only)
+					if not orbs or #orbs < 2 then
+						local found
+						found, orbs = player:findNearestNameOrId(id_energy, 0, function(addr, obj) return distance(obj, player) < 300; end)
+					end
+					
+					-- Check if orbs are casting
+					local skill, timeLeft = 0, 2
+					if orbs then
+						for k, obj in pairs(orbs) do
+							local orb = CPawn(obj.Address)
+							orb:updateCasting()
+							
+							if orb.Casting then
+								local remaining, total = orb:getRemainingCastTime()
+								if remaining < timeLeft and remaining > 0 then
+									timeLeft = remaining
+									skill = memoryReadRepeat("int", getProc(), orb.Address + addresses.game_root.pawn.cast_spell_id)
+								end
+							end
+						end
+					end
+					
+					-- If so and it doesnt have correct buff, do an ExtraAction with correct color
+					player:target(dev.Address)
+					if skill ~= 0 then
+						local action = castToAction[skill]
+						local duration, remaining = api:GetExtraActionCooldown(action.key)
+						if remaining == 0 and not dev:hasBuff{622710,622711} then
+							api:UseExtraAction(action.key)
+							yrest(150)
+						end
+					end
+	
+					yrest(50)
+				end
+				cprintf(cli.red,"Game done!\n")
+			end
+			
+			function getAvailableDevice()
+			
+				-- Find the devices
+				local found, devs = player:findNearestNameOrId(id_device)
+				if not found then
+					cprintf(cli.red,"We couold not find the devices!\n")
+					return
+				end
+				
+				-- Check if they are in use
+				for k,obj in pairs(devs) do
+					local device = CPawn(obj.Address)
+					local found, orbs = player:findNearestNameOrId(id_energy, 0, function(addr, obj) return distance(obj, device) < 200; end)
+					if not found then
+						return obj
+					end
+				end
+				
+				-- None found
+				return nil
+			end
+		]]>		
+	</onLoad>
+
+	<!--
+		At Nala Melody
+	-->	
+	<waypoint x="3263" z="256" y="45" tag="start">
+		<![CDATA[
+		
+			-- We completed a game?
+			player:target_NPC(id_nala)
+			ChoiceOptionByName(t_havelook)
+			
+			-- Initial dialoque
+			player:target_NPC(id_nala)
+			if ChoiceOptionByName(t_initial) then
+				ChoiceOptionByName(t_helpu)
+			
+			-- Were repeating event
+			elseif o_useTP > 0 then
+				ChoiceOptionByName(t_usetprune)
+				o_useTP = o_useTP - 1
+			end
+
+			-- We go again?
+			if player:hasBuff(id_gotkey) then
+			
+				-- Select an available device
+				local device
+				repeat
+					device = getAvailableDevice()
+					if not device then
+						yrest(secondsToTimer(10))
+					end
+				until device ~= nil
+				
+				-- Use device found
+				local wp = __WPL:getNearestWaypoint(device.X, device.Z, device.Y)				
+				__WPL:setWaypointIndex(wp)
+				
+			else
+				error("All done for now!")
+			end
+		]]>		
+	</waypoint>
+	
+	<!--
+		At Musical Energy Collection Device(s)
+	-->		
+	<waypoint x="3389" z="254" y="45" tag="left">
+		<![CDATA[
+			runGame()
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("start"))
+		]]>	
+	</waypoint>
+	
+	<waypoint x="3077" z="71" y="45" tag="right">
+		<![CDATA[
+			runGame()
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("start"))
+		]]>	
+	</waypoint>
+</waypoints>

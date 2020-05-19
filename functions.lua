@@ -2479,6 +2479,13 @@ function GetSkillBookData(_tabs)
 			tabindex = tab - 3;
 		end
 		
+		if( tab == 3 and not hasClass2 ) then
+			-- If we do *not* have a second class, and are on our last tab (tab3),
+			-- pretend that it is tab4 (as if we had a 2nd class) because this is
+			-- what we actually will need for using the skill
+			tab = 4;
+		end
+		
 		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff);
 		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabEndOff);
 		
