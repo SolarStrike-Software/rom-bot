@@ -828,7 +828,7 @@ function RoMScript(script)
 
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
-		return
+		return error('Cannot use RoMScript until after setupMacros()');
 	else -- check if still valid
 		local __, cName = readMacro(commandMacro)
 		local __, rName = readMacro(resultMacro)
@@ -2623,7 +2623,7 @@ end
 local getTEXTCache = {}
 local textCacheFilename = getExecutionPath() .. "/cache/texts.lua";
 function getTEXT(key)
-	if( #getTEXTCache == 0 ) then
+	if( getTEXTCache['GAME_VERSION'] == nil ) then
 		if( not readCachedGameTexts() ) then
 			readAndCacheGameTexts();
 		end
@@ -2633,6 +2633,7 @@ end
 
 function readCachedGameTexts()
 	if( fileExists(textCacheFilename) ) then
+		cprintf(cli.yellow, 'Loading text cache...\n');
 		local status,result = pcall(dofile, textCacheFilename);
 		if( status ) then
 			getTEXTCache = result;
@@ -2782,10 +2783,14 @@ function getCurrency(name)
 		group, index, memoffset = 2,1,1
 	elseif noSname == "proof" or noSname == "pom" or name == string.lower(getTEXT("SYS_MONEY_TYPE_13")) then
 		group, index, memoffset = 2,2,2
+	elseif noSname == "mirror_shard" then
+		group, index, memoffset = 2,3,6
+	elseif noSname == "mirrorworld_ticket" then
+		group, index, memoffset = 2,4,7
 	elseif noSname == "honor" or name == string.lower(getTEXT("SYS_MONEY_TYPE_4")) then
 		group, index, memoffset = 3,1
 	elseif noSname == "trial" or noSname == "bott" or name == string.lower(getTEXT("SYS_MONEY_TYPE_8")) then
-		group, index, memoffset = 3,2,0
+		group, index, memoffset = 3,2
 	elseif noSname == "warrior" or noSname == "botw" or name == string.lower(getTEXT("SYS_MONEY_TYPE_14")) then
 		group, index, memoffset = 3,3
 	else
@@ -2795,13 +2800,14 @@ function getCurrency(name)
 
 	local amount, limit
 	if not memoffset or not currencyMax[memoffset] then
-		amount, limit = RoMScript("GetPlayerPointInfo("..group..","..index..",\"\")")
+		local cmd = sprintf("GetPlayerPointInfo(%d,%d,'')", group, index);
+		amount, limit = RoMScript(cmd);
 		if memoffset then
 			currencyMax[memoffset] = limit
 		end
 	else
-		amount = memoryReadRepeat("uint", getProc(), addresses.charClassInfoBase + addresses.currencyBase_offset + memoffset*4)
-		limit = currencyMax[memoffset]
+		amount = memoryReadRepeat("uint", getProc(), getBaseAddress(addresses.currency.base) + memoffset*4)
+		limit = currencyMax[memoffset] or 0;
 	end
 
 	return amount, limit-amount

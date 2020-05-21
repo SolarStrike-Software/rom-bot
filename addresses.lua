@@ -25,6 +25,9 @@ addresses = {
 		level = 0x28,
 		tp = 0x10
 	},
+	currency = {
+		base = 0x622C68,
+	},
 	crafting = {
 		base = 0x603c0c,
 	},
