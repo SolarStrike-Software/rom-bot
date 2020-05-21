@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<waypoints>
+<onload>
+	-- V1.0 by BlubBlab
+	local When_Finished = ""
+	-- move the hammer to IS bag
+	local movehammer   = true	
+	
+	
+	
+  local tablesize = 0
+  local furniture = {}
+  local objectList = nil
+  local objSize = 0;
+	
+
+local function telelyliya()
+	 local lyliz;
+	repeat
+			lyliyz = player:findNearestNameOrId("Lyliya")
+	until lyliyz ~= nil
+	lylx = lyliyz.X
+	lyly = lyliyz.Y
+	lylz = lyliyz.Z
+	teleport(lylx,lylz,lyly+15)
+end
+local function movetoBag()
+	yrest(1000)
+	inventory:update()
+	item = inventory:findItem(201014,"bag")		
+	if(item)then
+		item:moveTo("itemshop")
+	end
+end
+local function faceit()
+
+		player:updateTargetPtr()
+		local target = CPawn.new(player.TargetPtr)
+		target:updateXYZ()
+		local angle = math.atan2(target.Z - player.Z, target.X - player.X);
+		local yangle = math.atan2(target.Y - player.Y, ((target.X - player.X)^2 + (target.Z - player.Z)^2)^.5 );
+		player:faceDirection(angle, yangle);
+		camera:setRotation(angle);
+end
+local proc = getProc()
+local function checkcoordinate(obj)
+	 for kb,vb in ipairs(furniture) do
+		if(vb.Name == obj.Name and (1 > math.abs(obj.X - vb.X)  and 1 > math.abs (obj.Z - vb.Z)))then
+			--if they have the same name and if their have the same coordinate from the original scan then skip it.
+			return false;
+		end
+	 end
+	 return true;
+end
+local function checkclicked(address)
+	local tmp = memoryReadRepeat("int", proc, address + addresses.game_root.pawn.attackable_flags) or 0;
+	if bitAnd(tmp,0x8) then
+		return true
+	else
+		return false
+	end
+end
+local function checkfading(address)
+	return memoryReadRepeat("float", getProc(), address + addresses.game_root.pawn.fading) == 0
+end
+
+local function newOne(ID)
+	local succesflag = false;
+	local objectListK = CObjectList();
+	objectListK:update();
+	local objSize = objectListK:size()
+	for i = 0,objSize do 
+		local obj = objectListK:getObject(i)
+		if(obj ~= nil)then
+			obj:update()
+			if (obj.Id == ID and checkclicked(obj.Address) and checkfading(obj.Address) ) then 
+				if(checkcoordinate(obj)== true) then
+					player:target(obj)
+					faceit()
+					RoMScript("UseExtraAction(1)")
+					yrest(1000)	
+					succesflag = true;
+				end
+			else
+				if (obj.Id == ID)then
+					return false;
+				end
+			end
+		
+			obj:update()
+		end
+	end
+	return succesflag;
+end
+local function localize(myObject)
+	print("Go to ".. myObject)
+	local targetObject;	
+	
+	--targetObject = player:findNearestNameOrId(myObject)
+	local objectListK = CObjectList();
+	objectListK:update();
+	local objSize = objectListK:size()
+	for i = 0,objSize do 
+		local obj = objectListK:getObject(i)
+		if(obj ~= nil)then
+			obj:update()
+			if (obj.Name == myObject ) then 
+				if(checkcoordinate(obj)== true) then
+					targetObject = obj;
+				end
+			end
+		end
+	end
+	
+	if targetObject then
+		targetObject:update();
+		player:update()
+		print("Object has coordinates :"..math.ceil(targetObject.X).." :"..math.ceil(targetObject.Z).." :"..math.ceil(targetObject.Y).."");
+		local slowteleport = false;
+		local x1 = targetObject.X - player.X
+		local z1 = targetObject.Z - player.Z
+		local y1 = targetObject.Y - player.Y
+		
+		local length = math.sqrt( math.pow(x1,2) + math.pow(z1,2))
+		local fraction = (length-5)/length
+		x1 = x1 * fraction
+		z1 = z1 * fraction
+		
+		local x2 = x1 + player.X
+		local z2 = z1 + player.Z
+	
+		if((targetObject.Y + 15) > (player.Y + 15))then
+			local m = 1;
+			while( distance(player.X, player.Z,player.Y, player.X, player.Z, targetObject.Y+15 ) > 2 ) do
+				teleport(player.X,player.Z,targetObject.Y+15)
+				if( m >= 3)then
+					break;
+				end
+				m = m + 1;
+				player:updateXYZ();
+			end
+			yrest(50)
+			slowteleport = true;
+		end
+		
+		local j = 1;
+		-- I think 10 step are enough
+		if( slowteleport == true)then
+			local parts = 10
+			local xpart = x1/parts;
+			local zpart = z1/parts;
+			local px = player.X
+			local pz = player.Z
+			local p = 1;
+			-- so much vector calculations
+			while ( (parts-1) > p) do
+				teleport(((xpart *p) + px),((zpart *p ) + pz),targetObject.Y+20)
+				yrest(150)
+				p = p + 1;
+				player:updateXYZ();
+			end
+		end
+		player:updateXYZ();
+		yrest(50)
+		while( distance(player.X, player.Z,player.Y, x2, z2, targetObject.Y+15 ) > 2 ) do
+			teleport(x2,z2,targetObject.Y+15)
+			j = j + 1;
+			if(j >= 5)then
+				break;
+			end
+			yrest(50)
+			player:updateXYZ();
+		end
+		if(distance(player.X, player.Z,player.Y, x2, z2, targetObject.Y+15 ) > 2)then
+			player:moveTo( CWaypoint(x2, z2, targetObject.Y+15), true);
+			if( distance(player.X, player.Z,player.Y, x2, z2, targetObject.Y+15 ) > 2)then
+				teleport(x2,z2,targetObject.Y+15)
+			end
+		end
+		player:updateXYZ();
+		if(distance(player.X, player.Z,player.Y, x2, z2, targetObject.Y+15 ) > 2)then
+			 print("Sorry object is too far away all efforts failed");
+		else
+			local z = 1;
+			local i = 1;
+			repeat
+				if(newOne(targetObject.Id)== false)then
+					i = i + 1;
+				end
+				if( i >= 3)then
+					break;
+				end
+				if( z >= 5)then
+					break;
+				end
+				z = z + 1;
+			until not player:findNearestNameOrId(targetObject.Id)
+		end
+		if(	slowteleport == true)then
+			teleport(nil,nil,targetObject.Y + 20)
+			teleport(lylx,lylz,targetObject.Y + 20)
+			yrest(50)
+		end
+		teleport(lylx,lylz,lyly + 15)
+		yrest(50)
+		player:updateXYZ();
+		if( distance(player.X, player.Z,player.Y, lylx, lylz, lyly +15 ) > 2)then
+			--we got stuck
+			local py = player.Y;
+			local counterb = 1;
+			while( 15 > counterb )do
+				teleport(nil, nil,py + counterb)
+				counterb = counterb + 1;
+			end
+		end
+		teleport(lylx,lylz,lyly +15)
+   else
+      print("not found!")
+   end
+end
+local function memorize()
+
+	repeat
+		objectList = CObjectList();
+		objectList:update();
+		objSize = objectList:size()
+	until objectList~=nil and objSize~=nil and objSize > 1
+      for i = 0,objSize do
+         local obj = objectList:getObject(i);
+         obj:update()
+         if obj.Name and obj.Name ~= "" and obj.Id ~= 120993 and obj.Id ~= 120992 and obj.Type == PT_NODE then
+            print(obj.Name .." "..obj.Type.." ".. math.ceil(obj.X) .. " " .. math.ceil(obj.Z) .. " " .. math.ceil(obj.Y))
+            table.insert(furniture, table.copy(obj))
+            tablesize = tablesize + 1
+         end
+         player:update();
+      end
+end
+local function takeaction()
+	local tablesize2 = 0
+	local furniture2 = {}
+	 fly()
+	repeat
+		objectList:update();
+		objSize = objectList:size()
+	until objectList~=nil and objSize~=nil and objSize > 1
+	
+	for i = 0,objSize do
+         local obj = objectList:getObject(i);
+         obj:update()
+         if obj.Name and obj.Name ~= "" and obj.Id ~= 120993 and obj.Id ~= 120992 and obj.Type == PT_NODE  then
+            print(obj.Name .. " "..obj.Type.." " .. math.ceil(obj.X) .. " " .. math.ceil(obj.Z) .. " " .. math.ceil(obj.Y))
+            table.insert(furniture2, table.copy(obj))
+            tablesize2 = tablesize2 + 1
+         end
+         player:update();
+	end
+	print("Action")
+	for ka,va in ipairs(furniture2) do
+        local cc = 0
+		local foundflag = false
+         for kb,vb in ipairs(furniture) do
+            cc=cc+1
+            if va.Name == vb.Name then
+               -- object was here and is here again
+               print(va.Name)
+               if 1 > math.abs(va.X - vb.X)  and 1 > math.abs (va.Z - vb.Z) then
+                  -- it is on same position as before
+				  foundflag = true
+               else
+					localize(va.Name)
+					foundflag = true
+                   break
+				end
+            end
+			   
+         end
+		if(   foundflag == false)then
+            localize(va.Name)
+        end
+		 
+	end
+	
+	tablesize = 0
+	tablesize2 = 0
+	furniture = {}
+	furniture2 = {}
+	
+end
+local function mainroutine()
+	while true do
+	
+		yrest(4500)
+		print("Memorize room")
+		memorize()
+    
+		repeat
+			yrest(100)
+		until RoMScript("TimeKeeperFrame:IsVisible()")
+		
+		yrest(1000)
+		print("compare room")
+		takeaction()
+	
+		repeat
+			yrest(100)
+		until not RoMScript("TimeKeeperFrame:IsVisible()")
+		
+		print("We go to lyliya")
+		yrest(100)
+		telelyliya()
+		yrest(500)
+		
+		repeat
+			yrest(100)
+		until player:target_NPC("Lyliya");
+		yrest(500)
+		if( RoMScript("GetNumSpeakOption()")> 2)then
+			yrest(500)
+			sendMacro("ChoiceOption(2);");
+		else
+			break;
+		end
+   end
+end
+	if getZoneId() == 2 then
+		repeat
+			yrest(100)
+		until player:target_NPC(120992) or  player:target_NPC("Lyliya") ;
+		if(RoMScript("GetNumSpeakOption()") > 2)then
+			sendMacro("ChoiceOption(2);");
+		else
+			sendMacro("ChoiceOption(1);");
+		end
+		waitForLoadingScreen(30);
+	end
+	if getZoneId() == 361  then
+		 local lyliya;
+		repeat
+			lyliya = player:findNearestNameOrId("Lyliya")
+		until lyliya ~= nil
+		lylx = lyliya.X
+		lyly = lyliya.Y
+		lylz = lyliya.Z
+		teleport(lylx,lylz,lyly+15)
+		yrest(500)
+		print("Start game")
+		repeat
+			yrest(100)
+		until player:target_NPC("Lyliya");
+		if(RoMScript("GetNumSpeakOption()")> 2)then
+			sendMacro("ChoiceOption(2);");
+			fly()
+			mainroutine()
+		else
+			flyoff()
+			
+		end
+	else
+		flyoff()
+		loadPaths(When_Finished)
+	end
+	
+	
+	flyoff()
+	
+	repeat
+		yrest(100)
+	until player:target_NPC(120993);
+	sendMacro("ChoiceOption(1);");
+	waitForLoadingScreen(30);
+	repeat
+		yrest(100)
+	until player:target_NPC(120992) or  player:target_NPC(120993);
+	if(movehammer)then
+		movetoBag()
+	end
+</onload>
+</waypoints>

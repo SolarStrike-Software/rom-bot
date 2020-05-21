@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="TRAVEL">
+<onLoad>
+	--=== Rock5's version ===--
+	--===  R5Version 2.74 ===--
+
+	--=== User Options ===--
+	When_Finished = "end"
+		-- "end" to end script, "relog" to log next character, "charlist" to log next in 'charlist' and "waypointfilename" to load that waypointfile.
+	Too_Many_Shells = "pause"
+		-- "pause" to wait for user to use some shells, "skip" to skip the game or "continue" to play the game anyway.
+	Bag_Space_Limit = 20
+		-- If bag space is less than this value then the 'Not_Enough_Bag_Space' action is triggered.
+	Not_Enough_Bag_Space = "pause"
+		-- "pause" to wait for user to clear some bag space, "skip" to skip the game or "continue" to play the game anyway.
+
+	CharList = {}
+		-- Character list to use when using the "charlist" option above. Requires my "userfunction_LoginNextChar" userfunction.
+		-- Find it here. http://www.solarstrike.net/phpBB3/viewtopic.php?p=10350
+		--		eg.
+		--		CharList = {
+		--			{account=4,chars={}},
+		--			{account=8,chars={1}},
+		--			{account=7,chars={1,2,5}},
+		--		}
+
+	AllowSkillCastTime = 2
+		-- Ignore skills with cast times longer than this value when attacking the 'trash' mobs at the beginning.
+	--====================--
+
+	aoeskills = {
+		"MAGE_PURGATORY_FIRE", -- Thunderstorm is better but this will be available first
+		"WARDEN_POWER_OF_THE_WOOD_SPIRIT", -- Best for warden since Frantic Briar changed
+		--"MAGE_DISCHARGE", -- Cooldown, not really viable.
+		--"WARRIOR_BLASTING_CYCLONE", -- Cooldown, not really viable.
+		--"WARRIOR_MOON_CLEAVE", -- Cooldown, not really viable.
+		--"WARRIOR_WHIRLWIND", -- Cooldown, not really viable.
+		--"KNIGHT_WHIRLWIND_SHIELD", -- Cooldown, not really viable.
+		"WARLOCK_WEAKENING_WEAVE_CURSE",
+	}
+
+	aoeskillsbig = {
+		--"WARDEN_FRANTIC_BRIAR", -- Cooldown, not really viable.
+		"MAGE_THUNDERSTORM", -- Best for mage.
+		"SCOUT_IGNITE", -- Best for scout/mage.
+	}
+
+	include("waypoints/"..getFilePath(__WPL.FileName).."/survivalR5onload.lua",true)
+
+</onLoad>
+	<!--    In the survival game    -->
+	<!-- #  1 --><waypoint x="2519" z="2593" y="9">
+		player:target_NPC(joker);
+		sendMacro("ChoiceOption(2);");
+	</waypoint>
+	<!-- #  2 --><waypoint x="2546" z="2681" y="9">	</waypoint>
+	<!-- #  3 --><waypoint x="2586" z="2789" y="9">	</waypoint>
+	<!-- #  4 --><waypoint x="2606" z="2843" y="9">
+		yrest(2000)
+		logentry = "Ran out of time" -- default
+		checkskills()
+		createTileTable() -- do it here as you can't see the pawns until you start the event.
+		local trash = player:findNearestNameOrId({bizarremechanism,guardianrockspirit},nil, function(addr) local pawn = CPawn(addr) return pawn.HP > 4 and (not pawn.Lootable) end) -- check for spawns
+		local tiles =  player:findNearestNameOrId(treasuretile, nil, clicktile) -- check if any tiles need opening
+
+		if trash then -- add in options for aoe and ranged here
+			trashmelee() -- clears trash
+		elseif trash == nil and spawns == nil and tiles ~= nil then
+			breaktiles() -- start breaking tiles
+		elseif tiles == nil then
+			chests() -- open chests
+		end
+
+		if 1 > player.HP or not player.Alive then
+			RoMScript("UseSelfRevive();");	-- first try self revive
+			yrest(500);
+			RoMScript("BrithRevive();");
+			if waitForLoadingScreen(30) then
+				-- Give chance to run back from rez point.
+				yrest(5000)
+				__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z, player.Y))
+				return
+			end
+		else
+			waitForLoadingScreen(10)
+		end
+
+		checkRelog()
+	</waypoint>
+
+	<!--    Return from res point    -->
+	<!-- #  1 --><waypoint x="2273" z="1801" y="53">	</waypoint>
+	<!-- #  2 --><waypoint x="2376" z="1697" y="33">	</waypoint>
+	<!-- #  3 --><waypoint x="2433" z="1618" y="19">	</waypoint>
+	<!-- #  4 --><waypoint x="2481" z="1524" y="0">	</waypoint>
+	<!-- #  5 --><waypoint x="2507" z="1432" y="-2">	</waypoint>
+	<!-- #  6 --><waypoint x="2535" z="1297" y="12">	</waypoint>
+	<!-- #  7 --><waypoint x="2582" z="1204" y="24">	</waypoint>
+	<!-- #  8 --><waypoint x="2674" z="1071" y="44">	</waypoint>
+	<!-- #  9 --><waypoint x="2762" z="970" y="53">
+		player:target_NPC("Lieve"); yrest(1000)
+		sendMacro("ChoiceOption(2);"); yrest(500)
+		sendMacro("ChoiceOption(2);");
+		waitForLoadingScreen(10)
+	</waypoint>
+	<!-- # 12 --><waypoint x="4765" z="-1955" y="115">	</waypoint>
+	<!-- # 13 --><waypoint x="4798" z="-1919" y="109">	</waypoint>
+	<!-- # 14 --><waypoint x="4857" z="-1914" y="109">
+		if logentry ~= nil then
+			checkRelog()
+			return
+		end
+
+		local Malatina = GetIdName(111813)
+		if 50 > player.Level and (player.Level2 >= 50 or player.Level3 >= 50) then
+			-- Wait for user to change class
+			cprintf(cli.yellow,"If you want to earn Phirius Shells, change to your 50+ class before continuing.\n")
+			player:sleep()
+		end
+		local shells, empty = getCurrency("shell")
+		if 30 > empty then
+			if Too_Many_Shells == "pause" then
+				-- Wait for user to use some shells.
+				cprintf(cli.yellow,"Reaching the maximum number of Phirius Shells ("..(shells+empty).."). Please spend some before continuing.\n")
+				player:sleep()
+				numshells = getCurrency("shell")
+			elseif Too_Many_Shells == "skip" then
+				print("Too many Phirius Shells.")
+				logentry = "Too many Phirius Shells."
+				checkRelog()
+				return
+			elseif Too_Many_Shells == "continue" then
+				-- Do nothing and continue.
+			else
+				error("Wrong value used for 'Too_Many_Shells' option.")
+			end
+		end
+		local empties = inventory:itemTotalCount(0)
+		local emptylimit = tonumber(Bag_Space_Limit) or 20
+
+		if emptylimit > empties then
+			if Not_Enough_Bag_Space == "pause" then
+				-- Wait for user to make some space in inventory.
+				cprintf(cli.yellow,"Not much space left in inventory. Are you sure you want to continue with only %d spaces left?\n",empties)
+				player:sleep()
+			elseif Not_Enough_Bag_Space == "skip" then
+				print("Not enough bag space.")
+				logentry = "Not enough bag space."
+				checkRelog()
+				return
+			elseif Not_Enough_Bag_Space == "continue" then
+				-- Do nothing and continue.
+			else
+				error("Wrong value used for 'Not_Enough_Bag_Space' option.")
+			end
+		end
+
+		if player.Class1 == CLASS_SCOUT and settings.profile.options.RELOAD_AMMUNITION == "arrow" then
+			local arrows = inventory:getAmmunitionCount()
+
+			local item
+			for slot = 1, 240 do
+				item = inventory.BagSlot[slot]
+				if item.Available and not item.Empty then
+					if item:isType("Arrows") then
+						arrows = arrows + item.ItemCount
+					elseif string.find(item.Name,"Quiver") then
+						arrows = arrows + 999
+					end
+				end;
+			end;
+
+			if 200 > arrows then
+				-- Wait for user to get more arrows
+				cprintf(cli.yellow,"Low on arrows. Only %d left?\n",arrows)
+				player:sleep()
+			end
+		end
+		if 30 > inventory:itemTotalCount(203038) then
+			print("Not enough Phirius Token Coins.")
+			logentry = "Not enough Phirius Token Coins."
+			checkRelog()
+			return
+		end
+
+		player:target_NPC(Malatina) yrest(1000)
+
+		if 2 > RoMScript("GetNumSpeakOption()") then -- try again
+			player:target_NPC(Malatina) yrest(1000)
+		end
+
+		sendMacro("ChoiceOption(1);");
+		yrest(2000)
+
+		if RoMScript("GetNumSpeakOption()") > 0 then -- enter game
+			sendMacro("ChoiceOption(1);");
+			if not waitForLoadingScreen(30) then
+				print("Failed to teleport into Survival")
+				logentry = "Failed to teleport into Survival."
+				checkRelog()
+			end
+		else
+			print("This character already did Survival.")
+			logentry = "Already did Survival."
+			checkRelog()
+		end
+	</waypoint>
+</waypoints>
