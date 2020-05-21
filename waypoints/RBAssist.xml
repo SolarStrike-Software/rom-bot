@@ -39,7 +39,7 @@
 			end
 			repeat
 				rest(1000)
-				local address = memoryReadRepeat("uintptr", getProc(), addresses.client_exe_module_start + addresses.game_root.base, addresses.game_root.player.base)
+				local address = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base)
 				local id = memoryReadRepeat("uint", getProc(), address + addresses.game_root.pawn.id)
 				local hp = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.hp)
 			until isInGame() and id and id >= PLAYERID_MIN and PLAYERID_MAX >= id and hp > 1
@@ -48,7 +48,7 @@
 			player:update()
 		end
 
-		local address = memoryReadRepeat("uintptr", getProc(), addresses.client_exe_module_start + addresses.game_root.base, addresses.game_root.player.base)
+		local address = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base)
 		local class1 = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.class1)
 		local class2 = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.class2)
 		if address ~= player.Address or class1 ~= player.Class1 or class2 ~= player.Class2 then
