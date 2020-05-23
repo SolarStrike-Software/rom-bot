@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<waypoints>
+	<onLoad>
+	<![CDATA[
+		-- V 1.5
+				--=== User Options ===--
+		local When_Finished = ""
+		-- "end" to end script, "relog" to log next character, "charlist" to log next in 'charlist' and "waypointfilename" to load that waypointfile.
+		local Too_Many_Shells = "skip"
+		-- "pause" to wait for user to use some shells, "skip" to skip the game or "continue" to play the game anyway.
+		local Bag_Space_Limit = 2
+		-- If bag space is less than this value then the 'Not_Enough_Bag_Space' action is triggered.
+		local Not_Enough_Bag_Space = "pause"
+		-- "pause" to wait for user to clear some bag space, "skip" to skip the game or "continue" to play the game anyway.
+		local ExchangeKeys     = true	
+		-- If you want to exchange keys for stuff
+		local MovetoItemBag    = true 
+		-- If you want to move the IS stuff from the keys to the IS bag
+		local autobalance = false
+		-- If you want to autobalance both modus
+		local requiredscore = 9000
+		-- If it is not enough and you want reach a higher scoring
+		-- higher scoring for survival game
+		local requiredscore2 = 9000
+		-- it will stop once this score is reached, bonuses will be added afterwards though 
+		-- so 4700 will probably be total score of 3100
+		-- alter to your local language, caps sensative, in english is "Go!!!", so "Go" is enough
+		local goMessage = "Go"
+		
+		CharList = {}
+		
+		-- Character list to use when using the "charlist" option above. Requires my "userfunction_LoginNextChar" userfunction.
+		-- Find it here. http://www.solarstrike.net/phpBB3/viewtopic.php?p=10350
+		--		eg.
+		--		CharList = {
+		--			{account=4,chars={}},
+		--			{account=8,chars={1}},
+		--			{account=7,chars={1,2,5}},
+		--		}
+		local numshells = getCurrency("shell")
+		local id_kate		= 121035
+		local id_magelly	= 120687
+		local check = false;
+		local logentry = "";
+	
+		local whichgame = 1;
+		local function movetoBag()
+			yrest(1000)
+			inventory:update()
+			for i = 61,240 do
+				local item = inventory.BagSlot[i]
+				if (not item.Empty) and item.Available and (item.Id == 202903 
+				or item.Id == 202904 
+				or item.Id == 202905 
+				or item.Id == 202435 
+				or item.Id == 202902 
+				or item.Id == 203784
+				or item.Id == 201139
+				or item.Id == 201141
+				or (item.Id >= 207743 and item.Id <= 207750)) then 
+					cprintf(cli.yellow,"Placing %s in the itemshop backpack.\n",item.Name)
+					item:moveTo("itemshop")
+					yrest(1000)
+				end
+			end
+		end
+		local function exchange()
+			inventory:update()
+			while(inventory:itemTotalCount(241648) > 0 and inventory:itemTotalCount(241647) > 0) do
+				repeat
+					yrest(100)
+				until player:target_NPC(id_kate)
+				sendMacro("ChoiceOption(2);");
+				yrest(500);
+				inventory:update()
+			end
+		end
+		local function exitroom()
+			local stime = os.time()
+			yrest(4000)
+			RoMScript("CloseWindows()");
+			repeat	
+				repeat
+					yrest(100)
+				until player:target_NPC(120687);
+				
+				sendMacro("ChoiceOption(1);");
+				yrest(500);
+				if(RoMScriptNoCheck ~= nil)then
+					local info = nil;
+					repeat
+						yrest(100);
+						info =  RoMScriptNoCheck("StaticPopup_OnClick(StaticPopup1, 1);");
+					until info == nil or info ~= -1
+				else
+					RoMScript("StaticPopup_OnClick(StaticPopup1, 1);")
+				end
+			until waitForLoadingScreen(30) or 120 < (os.time() - sttime)
+			yrest(500)
+		
+			if( ExchangeKeys == true)then
+				exchange()
+			end
+			if(MovetoItemBag == true)then
+				movetoBag();
+			end
+		end
+		local function checkRelog()
+			-- Log result
+			
+			local filename = getExecutionPath() .. "/logs/AndorTraining.log";
+			local file, err = io.open(filename, "a+");
+			if file then
+				file:write("Acc: "..RoMScript("GetAccountName()").."\tName: " ..string.format("%-10s",player.Name ).." \tDate: " .. os.date() ..
+				"\tCoins:"..inventory:itemTotalCount(203038).." \tShells gained/total: "..getCurrency("shell") - numshells.."/".. getCurrency("shell") .. "\t" ..logentry .. "\n")
+				file:close();
+			end
+
+
+			if When_Finished == "relog" then
+				exitroom()
+				ChangeChar()
+				waitForLoadingScreen();
+				yrest(3000)
+				loadProfile()
+				loadPaths(__WPL.FileName);
+			elseif When_Finished == "charlist" then
+				exitroom()
+				SetCharList(CharList)
+				LoginNextChar()
+				loadProfile()
+				loadPaths(__WPL.FileName);
+			elseif When_Finished == "end" then
+				exitroom()
+				error("Ending script",2)
+			else
+				player:update()
+				if(getZoneId() == 2) then
+					loadPaths(When_Finished)
+				else
+					exitroom()
+					loadPaths(When_Finished)
+				end
+			end
+		end
+		local shells, empty = getCurrency("shell")
+		if 30 > empty then
+			if Too_Many_Shells == "pause" then
+				-- Wait for user to use some shells.
+				cprintf(cli.yellow,"Reaching the maximum number of Phirius Shells ("..(shells+empty).."). Please spend some before continuing.\n")
+				player:sleep()
+				numshells = getCurrency("shell")
+			elseif Too_Many_Shells == "skip" then
+				print("Too many Phirius Shells.")
+				logentry = "Too many Phirius Shells."
+				checkRelog()
+				return
+			elseif Too_Many_Shells == "continue" then
+				-- Do nothing and continue.
+			else
+				error("Wrong value used for 'Too_Many_Shells' option.")
+			end
+		end
+		local empties = inventory:itemTotalCount(0)
+		local emptylimit = tonumber(Bag_Space_Limit) or 20
+
+		if emptylimit > empties then
+			if Not_Enough_Bag_Space == "pause" then
+				-- Wait for user to make some space in inventory.
+				cprintf(cli.yellow,"Not much space left in inventory. Are you sure you want to continue with only %d spaces left?\n",empties)
+				player:sleep()
+			elseif Not_Enough_Bag_Space == "skip" then
+				print("Not enough bag space.")
+				logentry = "Not enough bag space."
+				checkRelog()
+				return
+			elseif Not_Enough_Bag_Space == "continue" then
+				-- Do nothing and continue.
+			else
+				error("Wrong value used for 'Not_Enough_Bag_Space' option.")
+			end
+		end
+			--=== user options ===--
+			if(inventory:itemTotalCount(241648) > inventory:itemTotalCount(241647) or autobalance == false)then
+				whichgame = 1
+				
+			else
+				whichgame = 2
+				requiredscore = requiredscore2;
+			end
+				
+			-- Move to Kate Wesker and enter
+			if getZoneId() == 2 then
+				repeat
+					yrest(100)
+				until player:target_NPC(id_kate)
+			
+					ChoiceOptionByName(getTEXT("SKWERL_MOBIUS_24")) 
+				
+				yrest(1000)
+				waitForLoadingScreen()
+			end
+			-- Move to Magelly Basac
+			
+			repeat
+				yrest(100)
+			until player:target_NPC(id_magelly)
+			-- Check if we already completed
+			if RoMScript("GetNumSpeakOption()") > 1 then
+				if(whichgame == 1) then
+					ChoiceOptionByName(getTEXT("SKWERL_MOBIUS_14"))
+					yrest(1000)
+					ChoiceOptionByName(getTEXT("SKWERL_MOBIUS_25")) 
+					yrest(1000)
+					ChoiceOptionByName(getTEXT("SYS_OKAY")) 
+					yrest(1000) --(might be wrong)
+				else
+					sendMacro("ChoiceOption(2);");
+					yrest(1000)
+					sendMacro("ChoiceOption(1);");
+					yrest(1000)
+					ChoiceOptionByName(getTEXT("SYS_OKAY")) 
+				end	
+			
+				local round = 0
+				local score = 0
+			
+				function tort()
+					local proc = getProc()
+				
+					local function checkclicked(address)
+					local tmp = memoryReadRepeat("int", proc, address + addresses.game_root.pawn.attackable_flags) or 0;
+					if bitAnd(tmp,0x8) then
+						return true
+					else
+						return false
+					end
+				end
+
+				local function one(ID)
+					--print("targeting: "..ID)
+					local objectList = CObjectList();
+					objectList:update();
+					local objSize = objectList:size()
+					for i = 0,objSize do 
+						obj = objectList:getObject(i)
+						obj:update()
+						if (obj ~= nil and obj.Id == ID or ID == 106885) and checkclicked(obj.Address) then
+							player:target(obj)
+							RoMScript("UseExtraAction(1)")
+							player:target(obj)
+							RoMScript("UseExtraAction(1)")
+							if ID == 106883 then
+							--	yrest(10)
+								player:target(obj)
+								RoMScript("UseExtraAction(1)")	
+							end
+						end
+					end
+				end
+				if player:findNearestNameOrId(106881,106882,106883,106884) then
+					--== monitor chat
+					EventMonitorStart("Tortevent", "SYSTEM_MESSAGE");
+					local time, moreToCome, name, msg, _go 
+					repeat
+						time, moreToCome, name, msg = EventMonitorCheck("Tortevent",1)
+						yrest(10)
+						if name and string.find(name,goMessage) then
+							_go = true
+						end
+					until _go == true
+					EventMonitorStop("Tortevent")
+					round = round + 1
+					print("Wave: "..round..", Score: "..score)
+					repeat
+						one(106882)
+						one(106882)
+						one(106881)
+						one(106883)
+						one(106884)
+						
+					until not player:findNearestNameOrId(106881,106882,106883,106884,106885)
+				end
+			end
+			
+			repeat
+			yrest(100)
+			until  player:findNearestNameOrId(106881)
+			print("OK event has started")
+			repeat
+				tort()
+				player:update()
+				buffed = player:getBuff(622402)
+				if buffed then score = buffed.Level end
+			until not player:hasBuff(622402) or ( buffed and buffed.Level > requiredscore )
+			printf("Event finished, end score was "..score);
+			checkRelog();
+		else
+		repeat
+			sendMacro("ChoiceOption(1);");
+			if(RoMScriptNoCheck ~= nil)then
+					local info = nil;
+					repeat
+						yrest(100);
+						info =  RoMScriptNoCheck("StaticPopup_OnClick(StaticPopup1, 1);");
+					until info == nil or info ~= -1
+			else
+				RoMScript("StaticPopup_OnClick(StaticPopup1, 1);")
+			end
+			
+		until waitForLoadingScreen(30)
+			
+			loadPaths(When_Finished)
+		end
+		]]>
+	</onLoad>
+</waypoints>
