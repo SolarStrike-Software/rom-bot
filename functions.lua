@@ -793,7 +793,7 @@ end
 function SlashCommand(script)
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
-		return
+		return;
 	else -- check if still valid
 		local __, cName = readMacro(commandMacro)
 		local __, rName = readMacro(resultMacro)
@@ -828,7 +828,7 @@ function RoMScript(script)
 
 	if commandMacro == 0 then
 		-- setupMacros() hasn't run yet
-		return error('Cannot use RoMScript until after setupMacros()');
+		return error('Cannot use RoMScript until after setupMacros()', 2);
 	else -- check if still valid
 		local __, cName = readMacro(commandMacro)
 		local __, rName = readMacro(resultMacro)
@@ -1895,6 +1895,7 @@ function getZoneId()
 	end--]]
 end
 
+
 function bankItemBySlot(SlotNumber)
 	-- moneyPtr + 0x8 = bank Address = 0x9DDDCC in 4.0.4.2456
 	-- SlotNumber is 1 to 40
@@ -1906,7 +1907,7 @@ function bankItemBySlot(SlotNumber)
 		if ( Id ~= nil and Id ~= 0 ) then
 			local BaseItemAddress = GetItemAddress( Id );
 			if ( BaseItemAddress == nil or BaseItemAddress == 0 ) then
-				cprintf( cli.yellow, "Wrong value returned in update of item id: %d\n", Id );
+				cprintf( cli.yellow, "Wrong value returned in update of bank item id: %d\n", Id );
 				logMessage(sprintf("Wrong value returned in update of item id: %d", Id));
 				return;
 			end;
