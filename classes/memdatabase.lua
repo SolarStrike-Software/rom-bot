@@ -160,6 +160,24 @@ function CMemDatabase:isBranchDirty(branch)
 	return false;
 end
 
+function CMemDatabase:forceLoad(id)
+	if( commandMacro == 0 ) then
+		local res = SlashCommand("/script GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
+		yrest(50); -- Small delay to make sure the game has had time to process the command
+	else
+		RoMScript("GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
+	end
+	self.loadedIds[id] = res;
+end
+
+function CMemDatabase:forceLoadSkills()
+	SlashCommand("/script for t=2,4 do for i=1,35 do GetSkillDetail(t,i) end end");
+	
+	for name,skill in pairs(database.skills) do
+		self.loadedIds[skill.Id] = true;
+	end
+end
+
 -- Attempts to locate the address for any given ID
 function CMemDatabase:getAddress(id)
 	-- Return immediately if we already know about this
@@ -182,13 +200,7 @@ function CMemDatabase:getAddress(id)
 		or (id >= 490000 and id < 640000) )
 	then
 		if( self.loadedIds[id] == nil ) then
-			if( commandMacro == 0 ) then
-				local res = SlashCommand("/script GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
-				yrest(50); -- Small delay to make sure the game has had time to process the command
-			else
-				RoMScript("GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
-			end
-			self.loadedIds[id] = res;
+			self:forceLoad(id);
 		end
 	end
 	

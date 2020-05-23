@@ -2374,6 +2374,8 @@ function GetSkillBookData(_tabs)
 		_tabs = {1,2,3,4,5}
 	end
 
+	MemDatabase:forceLoadSkills();
+
 	local proc = getProc()
 
 	local tabInfoSize = addresses.skillbook.tabinfo_size;
@@ -2394,9 +2396,9 @@ function GetSkillBookData(_tabs)
 			tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
 			
 		end
-		tmp.TPToLevel = memoryReadRepeat("int", proc, addresses.skillbook.skill.tp_to_level)
-		tmp.Level = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.level)
-		tmp.aslevel = memoryReadRepeat("int", proc, address + addresses.skillbook.skill.as_level)
+		tmp.TPToLevel = memoryReadInt(proc, addresses.skillbook.skill.tp_to_level) or 0;
+		tmp.Level = memoryReadInt(proc, address + addresses.skillbook.skill.level) or player.Level or 0;
+		tmp.aslevel = memoryReadInt(proc, address + addresses.skillbook.skill.as_level) or tmp.Level or player.Level or 0;
 		
 		-- Get power and consumables
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
@@ -2496,7 +2498,10 @@ function GetSkillBookData(_tabs)
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
 					
-					cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
+					if( settings.profile.options.DEBUG_SKILLUSE or settings.options.DEBUGGING ) then
+						cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
+					end
+					
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
