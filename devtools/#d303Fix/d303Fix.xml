@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/..\..\WorldXML\UI.xsd">
+  <Script file="d303Fix.lua"/>
+  <Frame name="d303Fix_Listner" parent="UIParent">
+    <Scripts>
+      <OnLoad>d303Fix.OnLoad(this)</OnLoad>
+      <OnEvent>d303Fix.OnEvent(this, event, arg1)</OnEvent>
+      <OnUpdate>d303Fix.OnUpdate(this, elapsedTime)</OnUpdate>
+    </Scripts>
+  </Frame>
+</Ui>

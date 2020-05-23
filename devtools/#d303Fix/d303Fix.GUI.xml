@@ -1,0 +1,292 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/..\..\WorldXML\UI.xsd">
+  <Script file="d303Fix.GUI.lua"/>
+
+  <!-- Main Frame -->
+  <Frame name="d303Fix_GUI_Frame" parent="UIParent">
+    <Scripts>
+      <OnLoad>if d303Fix_GUI and d303Fix_GUI.OnLoad then d303Fix_GUI.OnLoad(this) end</OnLoad>
+      <OnEvent>if d303Fix_GUI and d303Fix_GUI.OnEvent then d303Fix_GUI.OnEvent(event, arg1) end</OnEvent>
+    </Scripts>
+  </Frame>
+
+  <!-- Main Config Frame -->
+  <Frame name="d303Fix_Config_Frame" parent="UIParent" inherits="UICommonFrameTemplate" movable="true" enableMouse="true">
+    <Scripts>
+      <OnMouseDown>d303Fix_Config_Frame:StartMoving()</OnMouseDown>
+      <OnMouseUp>d303Fix_Config_Frame:StopMovingOrSizing()</OnMouseUp>
+	  <OnShow>d303Fix_GUI.ConfigLabls() d303Fix_GUI.ConfigFill()</OnShow>
+    </Scripts>
+    <Size>
+      <AbsDimension x="400" y="250"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+
+    <Layers>
+      <Layer>
+        <!-- Item Shop Label -->
+        <FontString name="d303Fix_Config_ItemShop_Enable_Label" parent="d303Fix_Config_Frame" inherits="GameTitleFont" justifyH="LEFT" text="D303FIX_IS_ENABLE">
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="d303Fix_Config_Frame" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="40" y="45"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <FontHeight>
+            <AbsValue val="14"/>
+          </FontHeight>
+        </FontString>
+      </Layer>
+      <Layer>
+        <!-- Config Title Label -->
+        <FontString name="d303Fix_Config_Frame_Title" inherits="Font_FrameTitle">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="60" y="7" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+      <Layer>
+        <!-- Item Shop Offset Label -->
+        <FontString name="d303Fix_Config_ItemShop_Offset_Label" parent="d303Fix_Config_Frame" inherits="GameTitleFont" justifyH="LEFT" text="D303FIX_IS_OFFSET">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="d303Fix_Config_ItemShop_Enable_Label" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="15" y="30"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <FontHeight>
+            <AbsValue val="14"/>
+          </FontHeight>
+        </FontString>
+      </Layer>
+      <Layer>
+        <!-- Screen Shot Label -->
+        <FontString name="d303Fix_Config_ScreenShot_Enable_Label" parent="d303Fix_Config_Frame" inherits="GameTitleFont" justifyH="LEFT" text="D303FIX_SS_ENABLE">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="d303Fix_Config_ItemShop_Enable_Label" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="90"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <FontHeight>
+            <AbsValue val="14"/>
+          </FontHeight>
+        </FontString>
+      </Layer>
+      <Layer>
+        <!-- Screen Shot Auto Label -->
+        <FontString name="d303Fix_Config_ScreenShot_Enable_Auto_Label" parent="d303Fix_Config_Frame" inherits="GameTitleFont" justifyH="LEFT" text="D303FIX_SS_ENABLE_AUTO">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="d303Fix_Config_ItemShop_Enable_Label" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="15" y="120"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <FontHeight>
+            <AbsValue val="14"/>
+          </FontHeight>
+        </FontString>
+      </Layer>
+      <Layer>
+        <!-- Screen Shot On Fail Label -->
+        <FontString name="d303Fix_Config_ScreenShot_Enable_OnFail_Label" parent="d303Fix_Config_Frame" inherits="GameTitleFont" justifyH="LEFT" text="D303FIX_SS_ENABLE_ONFAIL">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="d303Fix_Config_ItemShop_Enable_Label" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="15" y="150"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <FontHeight>
+            <AbsValue val="14"/>
+          </FontHeight>
+        </FontString>
+      </Layer>
+    </Layers>
+
+    <Frames>
+      <!-- Item Shop Check box -->
+      <CheckButton name="d303Fix_Config_ItemShop_Enable" inherits="UIPanelCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="d303Fix_Config_ItemShop_Enable_Label" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-30" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+
+      <!-- Item Shop Offset slider -->
+      <Slider name="d303Fix_Config_ItemShop_Offset" orientation="HORIZONTAL">
+        <Size>
+          <AbsDimension x="300" y="10"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="d303Fix_Config_ItemShop_Offset_Label" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="5" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <Texture file="Interface\BagFrame\BagFrame-Slider-Border"/>
+          </Layer>
+          <Layer level="ARTWORK">
+            <FontString name="$parentLabel" inherits="GameFontHighlight">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP">
+                  <Offset>
+                    <AbsDimension x="0" y="-4"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="d303Fix_Config_ItemShop_Offset_Slider_Label" inherits="GameFontHighlight" text="0">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP"/>
+              </Anchors>
+            </FontString>
+            <FontString inherits="GameFontHighlight" text="-23">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+              </Anchors>
+            </FontString>
+            <FontString inherits="GameFontHighlight" text="0">
+              <Anchors>
+                <Anchor point="TOP" relativePoint="BOTTOM"/>
+              </Anchors>
+            </FontString>
+            <FontString inherits="GameFontHighlight" text="+23">
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <ThumbTexture file="Interface\BagFrame\BagFrame-Slider-Knob">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+        </ThumbTexture>
+        <Scripts>
+          <OnLoad>
+            this:SetValueStepMode("INT");
+            this:SetMinMaxValues(-23,23);
+          </OnLoad>
+          <OnShow>
+            d303Fix_Config_ItemShop_Offset_Slider_Label:SetText(this:GetValue());
+          </OnShow>
+          <OnValueChanged>
+            if (this:IsVisible()) then
+              d303Fix_Config_ItemShop_Offset_Slider_Label:SetText(this:GetValue());
+            end
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+
+      <!-- Screen Shot Check box -->
+      <CheckButton name="d303Fix_Config_ScreenShot_Enable" inherits="UIPanelCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="d303Fix_Config_ScreenShot_Enable_Label" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-30" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+
+      <!-- Screen Shot Auto Check box -->
+      <CheckButton name="d303Fix_Config_ScreenShot_Enable_Auto" inherits="UIPanelCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="d303Fix_Config_ScreenShot_Enable_Auto_Label" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-30" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+
+      <!-- Screen Shot OnFail Check box -->
+      <CheckButton name="d303Fix_Config_ScreenShot_Enable_OnFail" inherits="UIPanelCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="d303Fix_Config_ScreenShot_Enable_OnFail_Label" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-30" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+
+	  <!-- Reset button -->
+      <Button name="d303Fix_Config_Reset" inherits="UIPanelButtonTemplate" text="D303FIX_RESET">
+        <Scripts>
+          <OnEnter>d303Fix_GUI.OnEnter_Reset(this);</OnEnter>
+          <OnLeave>GameTooltip:Hide();</OnLeave>
+        </Scripts>
+        <Size>
+          <AbsDimension x="90" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="d303Fix_Config_Frame" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-30" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+		    d303Fix_GUI.Reset();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+	  <!-- Save button -->
+      <Button name="d303Fix_Config_Save" inherits="UIPanelButtonTemplate" text="D303FIX_SAVE">
+        <Scripts>
+          <OnEnter>d303Fix_GUI.OnEnter_Save(this);</OnEnter>
+          <OnLeave>GameTooltip:Hide();</OnLeave>
+        </Scripts>
+        <Size>
+          <AbsDimension x="90" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="d303Fix_Config_Reset" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+		    d303Fix_GUI.Save();
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+  </Frame>
+</Ui>
