@@ -4,6 +4,17 @@ local url = 'https://github.com/SolarStrike-Software/rom-bot.git';
 local branch = nil; -- Leave as nil to use master, or specify another branch here.
 
 local scriptName = fixSlashes(args[1]);
+local options = {
+	force = false;
+};
+
+for i = 2,#args do
+	local arg = string.lower(args[i]);
+	
+	if( arg == "-f" or arg == "--force" ) then
+		options.force = true;
+	end
+end
 
 function isGitInstalled()
 	local file = io.popen('where git');
@@ -82,7 +93,13 @@ function update()
 		system(cmd);
 	end
 	
-	cmd = sprintf('cd "%s" && git fetch origin && git pull', path);
+	local optionalForceCmd = "";
+	if( options.force ) then
+		cprintf_ex("|yellow|[!]|gray|Forcing hard git reset; uncommitted changes will be lost.");
+		optionalForceCmd = sprintf(" git reset --hard origin/%s &&", branch or 'master');
+	end
+	
+	cmd = sprintf('cd "%s" && git fetch origin &&%s git pull', path, optionalForceCmd);
 	result = io.popen(cmd):read('*a');
 	print(result);
 	if( result:find('Already up to date.') == nil ) then
