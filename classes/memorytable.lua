@@ -28,6 +28,17 @@ function GetIdName(itemId, plural)
 	local pluralOffset
 	if plural == true then pluralOffset = 4 else pluralOffset = 0 end
 
+	-- Instead of attempting to search the memdb, it might be quicker to just
+	-- parse the item link.
+	if( commandMacro ~= 0 and itemId >= 490000 and itemId < 540000 and MemDatabase.database[id] == nil ) then
+		local link = RoMScript(sprintf("GetItemLink(%d)", itemId));
+		local name = string.match(link, "%[([^%]]+)%]");
+		if( name ~= nil ) then
+			idNameMap[itemId] = name;
+			return name;
+		end
+	end
+
 	-- Get and check item address
 	local itemAddress = GetItemAddress(itemId)
 	if itemAddress == nil or itemAddress == 0 then

@@ -162,7 +162,7 @@ end
 
 function CMemDatabase:forceLoad(id)
 	if( commandMacro == 0 ) then
-		local res = SlashCommand("/script GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
+		local res = SlashCommand("/script GetCraftRequestItem(".. id ..",-1);GetItemLink(" .. id .. ")");
 		yrest(50); -- Small delay to make sure the game has had time to process the command
 	else
 		RoMScript("GetCraftRequestItem(".. id ..",-1);GetItemQuality(" .. id .. ")");
@@ -171,7 +171,7 @@ function CMemDatabase:forceLoad(id)
 end
 
 function CMemDatabase:forceLoadSkills()
-	SlashCommand("/script for t=2,4 do for i=1,35 do GetSkillDetail(t,i) end end");
+	SlashCommand("/script for t=2,4 do for i=1,35 do if(GetSkillDetail(t,i)==nil) then break end end end");
 	
 	for name,skill in pairs(database.skills) do
 		self.loadedIds[skill.Id] = true;
