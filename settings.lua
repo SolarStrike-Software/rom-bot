@@ -1028,7 +1028,7 @@ function settings.loadProfile(_name)
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
 	settings.options.DEBUGGING_MACRO = true;
-	print("Testing 'ingamefunctions' macro. If it gets stuck here, please update the 'ingamefunctions' by copying the 'ingamefunctions' folder from 'rom/devtools' to the games 'interface/addons' folder.")
+	print("Testing 'ingamefunctions' macro. If it gets stuck here, please update the 'ingamefunctions' by copying the 'ingamefunctions' folder from 'rom/devtools' to the game's 'interface/addons' folder.")
 	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
 	if( hf_return ~= 1234 ) then	-- return values not found
 --		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
@@ -1047,6 +1047,16 @@ function settings.loadProfile(_name)
 		cprintf(cli.green, "MACRO Test: ok\n" );
 		RoMCode("ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
 	end
+	
+	local d3d_check = RoMScript("type(d303Fix)");
+	if( d3d_check == 'nil' ) then
+		cprintf_ex("|yellow|[!]|lightgray| d303Fix is not installed; some waypoints might not work correctly.\n"
+		.. "You can fix this by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.");
+	elseif( RoMScript("d303Fix.NumVer") < 10 ) then
+		cprintf_ex("|yellow|[!]|lightgray| d303Fix is out of date.\nPlease update it by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.\n");
+	end
+	
+	
 	settings.options.DEBUGGING_MACRO = false;
 
 

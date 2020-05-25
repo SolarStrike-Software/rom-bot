@@ -323,7 +323,7 @@ function main()
 	printf("[DEBUG] CPU Frequency %s\n", bot.GetTimeFrequency);
 
 	-- Force bank items to be loaded into memory before instantiating bank
-	RoMScript(sprintf('/script for i=1,200 do GetBankItemInfo(i) end'));
+	RoMScript(sprintf('/script for i=1,240 do GetBankItemInfo(i) end'));
 	--yrest(50);
 
 	inventory = CInventory();		-- register inventory (needs profile loaded because of maxslot)
