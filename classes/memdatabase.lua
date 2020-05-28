@@ -1,7 +1,7 @@
 local LOWEST_BRANCH = 0x6c; -- The lowest useful branch (real start is at 0)
 local HIGHEST_BRANCH = 0x348; -- The highest branch
 local BRANCH_OLD_SECONDS = 60; -- How long ago a branch was loaded before it is considered out-of-date
-local INITIALIZE_ITEM_DELAY = 0.25; -- How much to wait when spamming the in-game command
+local INITIALIZE_ITEM_DELAY = 1/60.0; -- How much to wait when spamming the in-game command
 
 local foundPredictedBranches		= {}; -- Branch predictions found at runtime
 local foundPredictedBranchBlockSize = 1000;
