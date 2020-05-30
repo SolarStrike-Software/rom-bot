@@ -895,6 +895,43 @@ local updatables = {
 			56
 		]])
 	},
+	
+	newbie_eggpet_base = {
+		value_offset = 0x0b,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			FF 15 ?? ?? ?? ??
+			83 C4 ??
+			83 2D ?? ?? ?? ?? 04
+			8B 35 ?? ?? ?? ??
+			3B 35 ?? ?? ?? ??
+			76 02
+			FF D7
+			B8 ?? ?? ?? ??
+			8B D8
+			EB 0B
+			8D A4 24 00 00 00 00
+		]])
+	},
+	
+	newbie_eggpet_offset = {
+		value_offset = 0x1e,
+		value_size = 1,
+		value_raw = true,
+		pattern = byteArrayToPattern([[
+			89 7E ??
+			E8 ?? ?? ?? ??
+			89 46 ??
+			33 C9
+			B8 01 00 00 00
+			BA 04 00 00 00
+			F7 E2
+			0F 90 C1
+			89 7E ??
+			C7 86 80 00 00 00 01 00 00 00
+		]])
+	},
 };
 
 local startTime = getTime();

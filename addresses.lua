@@ -332,6 +332,36 @@ addresses = {
 			offset = 0xc,
 		},
 	},
+	newbie_eggpet = {
+		base = 0x626f74, --[[{newbie_eggpet_base}]]
+		offset = 0x7c, --[[{newbie_eggpet_offset}]]
+	},
+	eggpet = {
+		base = 0x61F9a8,
+		size = 0x348,
+		max_slots = 6,
+		name = 0x0,
+		id = 0x20,
+		pet_id = 0x28,
+		level = 0x2c,
+		summon_state = 0x38,
+		tp = 0x44,
+		max_tp = 0x48,
+		loyalty = 0x4c,
+		nourishment = 0x50,
+		aptitude = 0x54,
+		training = 0x58,
+		exp = 0x5c,
+		strength = 0x60,
+		stamina = 0x64,
+		dexterity = 0x68,
+		intelligence = 0x6c,
+		wisdom = 0x70,
+		element = 0x74, -- 0=earth,1=water, 2=fire, 3=wind, 4=light, 5=dark
+		mining = 0xd0,
+		woodworking = 0xd4,
+		herbalism = 0xd8
+	},
 }
 
 --[[

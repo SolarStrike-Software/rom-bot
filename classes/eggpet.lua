@@ -65,40 +65,41 @@ CEggPet = class(
 
 function CEggPet:update()
 	if self.EggSlot and self.EggSlot > 0 then
-		eggPetAddress = addresses.eggPetBaseAddress + 0x348 * (self.EggSlot - 1)
+		eggPetAddress = getBaseAddress(addresses.eggpet.base) + addresses.eggpet.size * (self.EggSlot - 1)
 	else
 		printf("Egg pet not updated. Invalid EggSlot specified.\n")
 		return
 	end
 
 	if self.EggSlot > 2 then
-		self.Available = memoryReadUInt(getProc(), addresses.rentEggSlotBase + (self.EggSlot - 3) * 4) ~= 0xFFFFFFFF
+		-- TODO: Fix rentEggSlotBase
+		-- self.Available = memoryReadUInt(getProc(), addresses.rentEggSlotBase + (self.EggSlot - 3) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
 
-	self.EggId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetEggId_offset)
+	self.EggId = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.id)
 	if self.EggId ~= nil and self.EggId > 0 and self.Available then -- There is an egg pet
-		self.PetId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetPetId_offset)
-		self.Name = memoryReadString(getProc(), eggPetAddress)
+		self.PetId = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.pet_id)
+		self.Name = memoryReadString(getProc(), eggPetAddress + addresses.eggpet.name)
 		if self.Name == "" then self.Name = GetIdName(self.PetId) end
-		self.Level = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetLevel_offset)
-		self.Summoned = (memoryReadInt(getProc(), eggPetAddress + addresses.eggPetSummoned_offset) == 2)
-		self.Exp = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetExp_offset)
-		self.MaxExp = memoryReadIntPtr(getProc(), addresses.eggPetMaxExpTablePtr, 0x4 * self.Level)
-		self.TP = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetTP_offset)
-		self.MaxTP = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetMaxTP_offset)
-		self.Loyalty = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetLoyalty_offset)
-		self.Nourishment = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetNourishment_offset)
-		self.Aptitude = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetAptitude_offset)
-		self.Training = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetTraining_offset)
-		self.Str = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetStr_offset)
-		self.Sta = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetSta_offset)
-		self.Dex = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetDex_offset)
-		self.Int = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetInt_offset)
-		self.Wis = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetWis_offset)
+		self.Level = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.level)
+		self.Summoned = (memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.summon_state) == 2)
+		self.Exp = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.exp)
+		--self.MaxExp = memoryReadIntPtr(getProc(), addresses.eggPetMaxExpTablePtr, 0x4 * self.Level)
+		self.TP = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.tp)
+		self.MaxTP = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.max_tp)
+		self.Loyalty = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.loyalty)
+		self.Nourishment = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.nourishment)
+		self.Aptitude = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.aptitude)
+		self.Training = memoryReadInt(getProc(), eggPetAddress + addresses.eggpet.training)
+		self.Str = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.strength)
+		self.Sta = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.stamina)
+		self.Dex = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.dexterity)
+		self.Int = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.intelligence)
+		self.Wis = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.wisdom)
 		self.Skills = {}
-		local skillBase = eggPetAddress + addresses.eggPetSkills_offset
+		--[[local skillBase = eggPetAddress + addresses.eggPetSkills_offset
 		for i = 0, 7 do
 			local id = memoryReadInt(getProc(), skillBase + 0x8 * i)
 			if id and id > 0 then
@@ -107,21 +108,21 @@ function CEggPet:update()
 				self.Skills[i+1].Name = GetIdName(id)
 				self.Skills[i+1].Level = memoryReadInt(getProc(), skillBase + 0x8 * i + 0x4) + 1
 			end
-		end
-		self.Mining = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetMining_offset)
-		self.Woodworking = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetWoodworking_offset)
-		self.Herbalism = memoryReadFloat(getProc(), eggPetAddress + addresses.eggPetHerbalism_offset)
+		end--]]
+		self.Mining = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.mining)
+		self.Woodworking = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.woodworking)
+		self.Herbalism = memoryReadFloat(getProc(), eggPetAddress + addresses.eggpet.herbalism)
 		self.Tool = {}
-		local toolId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetToolId_offset)
+		--[[local toolId = memoryReadInt(getProc(), eggPetAddress + addresses.eggPetToolId_offset)
 		if toolId ~= nil and toolId > 0 then
 			self.Tool.Id = toolId
 			self.Tool.Name = GetIdName (toolId)
 			self.Crafting = (memoryReadInt(getProc(), eggPetAddress + addresses.eggPetCrafting_offset) == 10)
 		else
 			self.Crafting = false
-		end
+		end]]
 		self.Products = {}
-		local productsBase = eggPetAddress + addresses.eggPetProducts_offset
+		--[[local productsBase = eggPetAddress + addresses.eggPetProducts_offset
 		for i = 0, 3 do
 			local id = memoryReadInt(getProc(), productsBase + 0x44 * i)
 			if id and id > 0 then
@@ -130,7 +131,7 @@ function CEggPet:update()
 				self.Products[i+1].Name = GetIdName(id)
 				self.Products[i+1].ItemCount = memoryReadInt(getProc(), productsBase + 0x44 * i + 0x10)
 			end
-		end
+		end--]]
 	else
 		self.Name = ""
 		self.EggId = 0
