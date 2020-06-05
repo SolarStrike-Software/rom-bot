@@ -223,7 +223,7 @@ function checkparty(_dist)
 		player:updateXYZ()
 		for i = 1,#partymemberpawn do
 			partyX = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.game_root.pawn.x) or partymemberpawn[i].X
-			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses..game_root.pawn.z) or partymemberpawn[i].Z
+			partyZ = memoryReadRepeat("float", proc, partymemberpawn[i].Address + addresses.game_root.pawn.z) or partymemberpawn[i].Z
 			if partyX ~= nil then
 				if distance(partyX,partyZ,player.X,player.Z) > _dist then
 					_go = false

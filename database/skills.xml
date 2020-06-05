@@ -270,14 +270,14 @@
 
 	<!-- Rogue skills -->
 	<!-- General -->
-	<skill name="ROGUE_SHADOWSTAB" 						id="490306" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
+	<skill name="ROGUE_SHADOWSTAB" 						id="490306" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" 	nobuffname="620313" nobufftarget="target"/>
 	<skill name="ROGUE_THROW" 							id="490309" range="150"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="ROGUE_BLIND_STAB" 						id="490317" range="50"	type="damage"		casttime="0"	cooldown="10"	target="enemy" />
 	<skill name="ROGUE_SHADOW_STEP" 					id="490344" range="100"	type="damage"		casttime="0"	cooldown="20"	target="enemy" />
 	<!-- Primary -->
 	<skill name="ROGUE_ASSASSINS_RAGE" 					id="490506" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self"		inbattle="true" />
-	<skill name="ROGUE_LOW_BLOW" 						id="490323" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
-	<skill name="ROGUE_WOUND_ATTACK" 					id="490313" range="50"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
+	<skill name="ROGUE_LOW_BLOW" 						id="490323" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" reqbuffname="620313" reqbufftarget="target" />
+	<skill name="ROGUE_WOUND_ATTACK" 					id="490313" range="50"	type="damage"		casttime="0"	cooldown="6"	target="enemy" reqbuffname="620314" reqbufftarget="target" />
 	<skill name="ROGUE_BLIND_SPOT" 						id="490311" range="50"	type="damage"		casttime="0"	cooldown="6"	target="enemy" />
 	<skill name="ROGUE_NUMBING_DAGGER" 					id="490347" range="150"	type="damage"		casttime="1"	cooldown="0"	target="enemy"		reqbuffname="500715" reqbufftarget="player" buffname="501494" /> <!-- First Buff ID Verified -->
 	<skill name="ROGUE_POISON" 							id="490329" range="0"	type="buff"			casttime="1"	cooldown="0"	target="self"		buffname="500715" /> <!-- Requires Poison Bottle (200762) --> <!-- Buff ID Verified -->
