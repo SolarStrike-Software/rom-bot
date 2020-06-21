@@ -8,18 +8,18 @@ addresses = {
 	castingBar_offset = 0xC,
 	--===========================================================================================--
 	
-	game_time = 0x602f70, --[[{game_time}]]
-	in_game = 0x65f608, --[[{in_game}]]
-	zone_id = 0x65a268, --[[{zone_id}]]
+	game_time = 0x607000, --[[{game_time}]]
+	in_game = 0x6694b0, --[[{in_game}]]
+	zone_id = 0x664110, --[[{zone_id}]]
 	movement_speed = {
 		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
 	},
 	channel = {
-		base = 0x6621a0, --[[{channel_base}]]
+		base = 0x66c048, --[[{channel_base}]]
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x607b50, --[[{class_info_base}]]
+		base = 0x60bbf8, --[[{class_info_base}]]
 		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
@@ -33,48 +33,48 @@ addresses = {
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x4973e1, --[[{freeze_target_codemod}]]
+			base = 0x49a931, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		
 		freeze_mousepos = {
-			base = 0x230594, --[[{freeze_mousepos_codemod}]]
+			base = 0x2304a4, --[[{freeze_mousepos_codemod}]]
 			original_code = string.char(0x89, 0x8E, 0xB4, 0x03, 0x00, 0x00, 0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		freeze_mousepos2 = {
-			base = 0x22fdea, --[[{freeze_mousepos2_codemod}]]
+			base = 0x22fcfa, --[[{freeze_mousepos2_codemod}]]
 			original_code = string.char(0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		swimhack = {
-			base = 0x4d519, --[[{swimhack_codemod}]]
+			base = 0x4d7e9, --[[{swimhack_codemod}]]
 			original_code = string.char(0xC7, 0x83, 0xB4, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 	},
-	exp_table = 0x65a324, --[[{exp_table}]]
-	psi = 0x607b18, --[[{psi}]]
+	exp_table = 0x6641cc, --[[{exp_table}]]
+	psi = 0x60bbc0, --[[{psi}]]
 	global_cooldown = {
-		base = 0x602f78, --[[{global_cooldown_base}]]
+		base = 0x608A38, --[[{global_cooldown_base}]]
 		offset = 0x1a28, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
-		base = 0x661c24, --[[{actionbar_base}]]
+		base = 0x66bacc, --[[{actionbar_base}]]
 		slot = {
 			size = 0x14,
 			type = 0x0,
 			id = 0x4,
 		},
-		bar1_start = 0x384c
+		bar1_start = 0x12cc
 	},
 	gold = {
-		base = 0x607b50, --[[{gold_base}]]
+		base = 0x60bbf8, --[[{gold_base}]]
 		offset = 0x82fc, --[[{gold_offset}]]
 	},
 	game_root = {
-		base = 0x6019b4, --[[{game_root_base}]]
+		base = 0x605a44, --[[{game_root_base}]]
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
 		ping = 0x7c0,
@@ -151,7 +151,7 @@ addresses = {
 		},
 	},
 	macro = {
-		base = 0x66348c, --[[{macro_base}]]
+		base = 0x66d334, --[[{macro_base}]]
 		size = 0x508, --[[{macro_size}]]
 		id = 0x10,
 		icon = 0x14,
@@ -159,7 +159,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-        base = 0x663338, --[[{hotkey_base}]]
+        base = 0x66d1e0, --[[{hotkey_base}]]
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -168,7 +168,7 @@ addresses = {
 		modifier2 = 0x5a
 	},
 	loading = {
-		base = 0x663448, --[[{loading_base}]]
+		base = 0x66d2f0, --[[{loading_base}]]
 		offsets = {0x18, 0x1C},
 	},
 	skill = {
@@ -205,11 +205,11 @@ addresses = {
 		type_flag9 = 0x274,
 	},
 	cooldowns = {
-		base = 0x602f78, --[[{cooldowns_base}]]
+		base = 0x607010, --[[{cooldowns_base}]]
 		array_start = 0x1a2c, --[[{cooldowns_array_start}]]
 	},
 	skillbook = {
-        base = 0x664868, --[[{skillbook_base}]]
+        base = 0x66e710, --[[{skillbook_base}]]
 		offset = 0x8,
 		book1_start = 0xc,
 		book1_end = 0x10,
@@ -300,8 +300,8 @@ addresses = {
 		},
 	},
 	object_list = {
-		base = 0x664dec, --[[{object_list_base}]]
-		size = 0x664de8, --[[{object_list_size}]]
+		base = 0x66eca4, --[[{object_list_base}]]
+		size = 0x66eca0, --[[{object_list_size}]]
 	},
 	input_box = {
 		base = 0x661B18, -- fixes UMM
@@ -321,19 +321,19 @@ addresses = {
 	},
 	party = {
 		leader = {
-			base = 0x627240, --[[{party_leader_base}]]
+			base = 0x62e1c8, --[[{party_leader_base}]]
 		},
 		member_list = {
-			base = 0x6647b0, --[[{party_member_list_base}]]
+			base = 0x66e658, --[[{party_member_list_base}]]
 			offset = 0x68, --[[{party_member_list_offset}]]
 		},
 		icon_list = {
-			base = 0x663528, --[[{party_icon_list_base}]]
+			base = 0x66d3d0, --[[{party_icon_list_base}]]
 			offset = 0xc,
 		},
 	},
 	newbie_eggpet = {
-		base = 0x626f74, --[[{newbie_eggpet_base}]]
+		base = 0x62defc, --[[{newbie_eggpet_base}]]
 		offset = 0x7c, --[[{newbie_eggpet_offset}]]
 	},
 	eggpet = {
