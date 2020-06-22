@@ -308,9 +308,9 @@ addresses = {
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x625B14,
-		start_addr = 0x268,
-		end_addr = 0x26C,
+		base = 0x62Ca9c,
+		start_addr = 0x264,
+		end_addr = 0x268,
 	},
 	mouse = {
 		base = 0x62B9BC,
