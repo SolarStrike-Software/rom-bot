@@ -45,6 +45,10 @@ function CInventoryItem:update()
 
 	-- Check if not rented
 	if self.BagId > 120 then
+		--[[
+			RoM stores the number of minutes (from now) that each bag (starting at 3) will expire
+			A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
+		--]]
 		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true

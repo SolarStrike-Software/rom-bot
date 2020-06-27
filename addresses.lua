@@ -283,11 +283,8 @@ addresses = {
 	},
 	inventory = {
 		base = 0x6155A8,
-		bag_ids = {
-			base = 0x616598,
-		},
 		rent = {
-			base = 0x61CF6C,
+			base = 0x621014,
 		},
 	},
 	cursor = {
