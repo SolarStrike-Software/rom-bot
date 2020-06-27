@@ -299,7 +299,7 @@ function CPlayer:updatePsi()
 end
 
 function CPlayer:updateGlobalCooldown()
-	local address = addresses.global_cooldown.base + addresses.global_cooldown.offset;
+	local address = addresses.global_cooldown.base;
 	self.GlobalCooldown = memoryReadRepeat("int", getProc(), getBaseAddress(address))/10
 end
 

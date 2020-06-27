@@ -58,7 +58,6 @@ addresses = {
 	psi = 0x60bbc0, --[[{psi}]]
 	global_cooldown = {
 		base = 0x608A38, --[[{global_cooldown_base}]]
-		offset = 0x1a28, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
 		base = 0x66bacc, --[[{actionbar_base}]]

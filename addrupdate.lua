@@ -422,28 +422,6 @@ local updatables = {
 		]])
 	},
 	
-	global_cooldown_offset = {
-		value_offset = 0x0A,
-		value_size = 4,
-		value_raw = true,
-		pattern = byteArrayToPattern([[
-			8B 44 24 10
-			85 C0
-			74 4B
-			89 81 ?? ?? ?? ??
-			8B 91 ?? ?? ?? ??
-			33 C0
-			85 D2
-			76 1F
-			8D 9B 00 00 00 00
-			66 83 BC 41 ?? ?? ?? ?? 00
-			74 09
-			83 C0 01
-			3B C2
-			72 EE
-		]])
-	},
-	
 	global_cooldown_base = {
 		value_offset = 0x26,
 		value_size = 4,
