@@ -229,7 +229,7 @@ addresses = {
 		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x629b3c,
+		base = 0x630ADC,
 		offset = 0xD4,
 		branch = {
 			itemset_id = 0x4,
@@ -264,10 +264,9 @@ addresses = {
 		flags = 0x28,
 		real_id = 0x98,
 		cooldown = 0x8E,
-		
 	},
 	equipment = {
-		base = 0x6035F0, --(scout skills are fixed)
+		base = 0x6035F0,
 	},
 	bank = {
 		base = 0x6154D0,
@@ -283,9 +282,9 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x6124f0,
+		base = 0x6155A8,
 		bag_ids = {
-			base = 0x61C3C4,
+			base = 0x616598,
 		},
 		rent = {
 			base = 0x61CF6C,

@@ -15,22 +15,37 @@ CInventoryItem = class(CItem,
 );
 
 function CInventoryItem:update()
+	--print("Begin CInventoryItem update");
 	local oldBagId = self.BagId;
 
-	if self.SlotNumber > 60 then -- Is Bag Item
-		self.BagId = memoryReadUByte(getProc(), getBaseAddress(addresses.inventory.bag_ids.base) + self.SlotNumber - 1) + 1
-	else
-		self.BagId = self.SlotNumber
-	end
+	self.BagId = self.SlotNumber
 
 	if self.BagId ~= oldBagId then -- need new address
-		local base = getBaseAddress(addresses.inventory.base);
-		self.Address = base + ( ( self.BagId - 61 ) * 68 );
+		local base= getBaseAddress(addresses.inventory.base);
+		local inventory_address = base + ((self.SlotNumber-1) * 0x44);
+		
+		id = memoryReadInt(getProc(), inventory_address);
+		if( (id>=200000 and id<=240000) or (id>=490000 and id<=640000)) then
+			self.Id = id;
+			self.Address = inventory_address;
+			if self.Id == 221732 then
+				CItem.update(self);
+			end
+		else
+			self.BaseItemAddress = 0;
+			self.Available = false;
+			return;
+		end
+	end
+	
+	if( self.Id == 0 ) then
+		self.Available = false;
+		return;
 	end
 
 	-- Check if not rented
 	if self.BagId > 120 then
-		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+		self.Available = false;--memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
@@ -64,6 +79,7 @@ function CInventoryItem:update()
 			cprintf(  _color, "[%s]\n", self.Name );
 		end;
 	end;
+	--print("End");
 end
 
 function CInventoryItem:use()
