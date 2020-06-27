@@ -266,7 +266,7 @@ addresses = {
 		cooldown = 0x8E,
 	},
 	equipment = {
-		base = 0x6035F0,
+		base = 0x607688,
 	},
 	bank = {
 		base = 0x6154D0,
@@ -291,7 +291,7 @@ addresses = {
 		},
 	},
 	cursor = {
-		base = 0x663314,
+		base = 0x66d1bc,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,

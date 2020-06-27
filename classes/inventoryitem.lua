@@ -45,7 +45,7 @@ function CInventoryItem:update()
 
 	-- Check if not rented
 	if self.BagId > 120 then
-		self.Available = false;--memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
