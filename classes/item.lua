@@ -64,7 +64,13 @@ CItem = class(
 function CItem:update()
 	local nameAddress;
 	local oldId = self.Id;
-	self.Id = memoryReadInt( getProc(), self.Address ) or 0;
+	if( self.Address ~= nil ) then
+		self.Id = memoryReadInt( getProc(), self.Address ) or 0;
+	else
+		self.Id = 0;
+		self.Address = nil;
+	end
+	
 	self.Available = (self.Available ~= false)
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then

@@ -15,22 +15,39 @@ CInventoryItem = class(CItem,
 );
 
 function CInventoryItem:update()
-	--print("Begin CInventoryItem update");
 	local oldBagId = self.BagId;
 
 	self.BagId = self.SlotNumber
 
 	if self.BagId ~= oldBagId then -- need new address
-		local base= getBaseAddress(addresses.inventory.base);
+		--[[ Inventory is stored as a static array of basic inventory item structs.
+			At +0x0 will be the Item ID, and the struct size is 0x44 bytes.
+			These structs define inventory contents starting with the item shop backpack,
+			and will be ordered left-to-right, top-to-bottom. Arcane Transmutor follows
+			and is also ordered (center, top-left, top-right, bottom-left, bottom-right),
+			and then inventory bags which may appear randomly ordered.
+			
+			Bags are random ordered as the in-game sorting mechanism shuffles the
+			slot IDs around for efficiency rather than a memcpy the each struct.
+			
+			Array index		Bag ID		Description
+			0-49			1-50		Item Shop Backpack
+			50-54			51-55		Arcane Transmutor
+			55-59			56-60		Invisible Arcane Transmutor slots
+			60-89			61-90		Bag I (random order)
+			90-119			91-120		Bag II (random order)
+			120-149			121-150		Bag III (random order)
+			150-179			151-180		Bag IV (random order)
+			180-209			181-210		Bag V (random order)
+			210-239			211-240		Bag V (random order)
+		--]]
+		local base = getBaseAddress(addresses.inventory.base);
 		local inventory_address = base + ((self.SlotNumber-1) * 0x44);
 		
 		id = memoryReadInt(getProc(), inventory_address);
 		if( (id>=200000 and id<=240000) or (id>=490000 and id<=640000)) then
 			self.Id = id;
 			self.Address = inventory_address;
-			if self.Id == 221732 then
-				CItem.update(self);
-			end
 		else
 			self.BaseItemAddress = 0;
 			self.Available = false;
@@ -39,7 +56,6 @@ function CInventoryItem:update()
 	end
 	
 	if( self.Id == 0 ) then
-		self.Available = false;
 		return;
 	end
 
