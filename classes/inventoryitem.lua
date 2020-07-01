@@ -51,21 +51,17 @@ function CInventoryItem:update()
 		else
 			self.BaseItemAddress = 0;
 			self.Available = false;
-			return;
 		end
-	end
-	
-	if( self.Id == 0 ) then
-		return;
 	end
 
 	-- Check if not rented
-	if self.BagId > 120 then
+	if self.SlotNumber > 120 then
 		--[[
 			RoM stores the number of minutes (from now) that each bag (starting at 3) will expire
 			A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
 		--]]
-		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + math.floor((self.BagId - 121)/30) * 4) ~= 0xFFFFFFFF
+		index = math.floor((self.SlotNumber - 121)/30);
+		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + index * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end
@@ -73,7 +69,9 @@ function CInventoryItem:update()
 	-- Don't waste time updating if not available.
 	if not self.Available then return end
 
-	CItem.update(self)
+	if( self.Id > 0 ) then
+		CItem.update(self)
+	end
 
 	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
@@ -99,7 +97,6 @@ function CInventoryItem:update()
 			cprintf(  _color, "[%s]\n", self.Name );
 		end;
 	end;
-	--print("End");
 end
 
 function CInventoryItem:use()
