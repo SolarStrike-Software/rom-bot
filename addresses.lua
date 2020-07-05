@@ -11,6 +11,7 @@ addresses = {
 	game_time = 0x607000, --[[{game_time}]]
 	in_game = 0x6694b0, --[[{in_game}]]
 	zone_id = 0x664110, --[[{zone_id}]]
+	casting_bar = 0x6169B0,
 	movement_speed = {
 		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
 	},
