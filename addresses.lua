@@ -30,7 +30,7 @@ addresses = {
 		base = 0x622C68,
 	},
 	crafting = {
-		base = 0x603c0c,
+		base = 0x606FBC,
 	},
 	code_mod = {
 		freeze_target = {
