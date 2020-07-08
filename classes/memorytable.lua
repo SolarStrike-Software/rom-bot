@@ -33,8 +33,9 @@ function GetIdName(itemId, plural)
 	if( commandMacro ~= 0 and itemId >= 490000 and itemId < 540000 and MemDatabase.database[id] == nil ) then
 		local link = RoMScript(sprintf("GetItemLink(%d)", itemId));
 		local name = string.match(link, "%[([^%]]+)%]");
+		print("DId lookiup");
 		if( name ~= nil ) then
-			idNameMap[itemId] = name;
+			idNameMap[itemId] = {single = name, plural = name};
 			return name;
 		end
 	end
@@ -85,7 +86,7 @@ function GetIdName(itemId, plural)
 		cacheType = 'plural';
 	end
 	
-	if( idNameMap[itemId] == nil ) then
+	if( idNameMap[itemId] == nil or type(idNameMap[itemId]) ~= "table" ) then
 		idNameMap[itemId] = {};
 	end
 	idNameMap[itemId][cacheType] = result;
