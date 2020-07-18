@@ -20,13 +20,13 @@ CInventory = class(
 		RoMCode("ToggleBackpack() BagFrame:Hide()"); -- Make sure the client loads the tables first.
 		RoMCode("GoodsFrame:Show() GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
 
-		self.MaxSlots = 240;
+		self.MaxSlots = 239;
 		self.BagSlot = {};
 		self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
 
 		local timeStart = getTime();
 
-		for slotNumber = 1, self.MaxSlots, 1 do
+		for slotNumber = 0, self.MaxSlots, 1 do
 			self.BagSlot[slotNumber] = CInventoryItem( slotNumber );
 		end
 
@@ -44,7 +44,7 @@ function CInventory:update( _maxslot )
 
 	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
 
-	for slotNumber = 1, _maxslot, 1 do
+	for slotNumber = 0, _maxslot, 1 do
 		self.BagSlot[slotNumber]:update();
 	end
 
@@ -157,11 +157,11 @@ function CInventory:itemTotalCount(itemNameOrId, range)
 	if first == nil then
 		-- Default values - 1-240 for items, 61-240 for empties.
 		if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then
-			first = 61
+			first = 60
 		else
-			first = 1
+			first = 0
 		end
-		last = 240 -- default, search only bags
+		last = self.MaxSlots -- default, search only bags
 	end
 
 	local item
@@ -197,7 +197,7 @@ function CInventory:findItem (itemNameOrIdOrPattern, range, usePattern)
 	end
 
 	if first == nil then
-		first , last = 1, 240 -- default, search all
+		first , last = 0, self.MaxSlots -- default, search all
 	end
 
 	for slot = first, last do
@@ -231,7 +231,7 @@ function CInventory:useItem(itemNameOrId)
 end;
 
 -- Make a full update
--- or update slot 1 to _maxslot
+-- or update slot 0 to _maxslot
 -- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
 	local bestLevel = 0;		-- required player level of a potion
@@ -573,7 +573,7 @@ function CInventory:autoSell(evalfunc)
 	local sellstring = sellstartstring
 	local hf_wesell = false;
 	-- check the given slot numbers to autosell
-	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 60, settings.profile.options.INV_AUTOSELL_TOSLOT + 60, 1 do
+	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 59, settings.profile.options.INV_AUTOSELL_TOSLOT + 59, 1 do
 		local slotitem = self.BagSlot[slotNumber];
 
 		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
@@ -704,6 +704,7 @@ function CInventory:getMount()
 	505113,
 	};
 
+
  	for slot,item in pairs(self.BagSlot) do
 		if item.Available then
 			for i, mount in ipairs(mounts) do
@@ -729,25 +730,25 @@ function getInventoryRange(range)
 	end
 	local rangeLower = string.lower(range)
 	if rangeLower == "all" then
-		return 1, 240, "inventory"
+		return 0, self.MaxSlots, "inventory"
 	elseif rangeLower == "itemshop" then
-		return 1, 50, "inventory"
+		return 0, 49, "inventory"
 	elseif rangeLower == "magicbox" then
-		return 51, 60, "inventory"
+		return 50, 59, "inventory"
 	elseif rangeLower == "bag1" then
-		return 61, 90, "inventory"
+		return 60, 89, "inventory"
 	elseif rangeLower == "bag2" then
-		return 91, 120, "inventory"
+		return 90, 119, "inventory"
 	elseif rangeLower == "bag3" then
-		return 121, 150, "inventory"
+		return 120, 149, "inventory"
 	elseif rangeLower == "bag4" then
-		return 151, 180, "inventory"
+		return 150, 179, "inventory"
 	elseif rangeLower == "bag5" then
-		return 181, 210, "inventory"
+		return 180, 209, "inventory"
 	elseif rangeLower == "bag6" then
-		return 211, 240, "inventory"
+		return 210, self.MaxSlots, "inventory"
 	elseif rangeLower == "bag" or rangeLower == "bags" then
-		return 61, 240, "inventory"
+		return 60, self.MaxSlots, "inventory"
 
 	elseif rangeLower == "bank1" then
 		return 1, 40, "bank"

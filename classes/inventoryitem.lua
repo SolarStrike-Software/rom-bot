@@ -6,9 +6,9 @@ CInventoryItem = class(CItem,
 		self.Available = false; -- If slot is in unrented bag then = false
 
 		self.SlotNumber = slotnumber
-		self.BagId = 0
+		self.BagId = nil;
 
-		if self.SlotNumber ~= 0 and self.SlotNumber ~= nil then
+		if self.SlotNumber ~= nil and self.SlotNumber >= 0 then
 			self:update()
 		end
 	end
@@ -17,7 +17,11 @@ CInventoryItem = class(CItem,
 function CInventoryItem:update()
 	local oldBagId = self.BagId;
 
-	self.BagId = self.SlotNumber
+	if( self.SlotNumber == nil ) then
+		return;
+	end
+	
+	self.BagId = self.SlotNumber + 1;
 
 	if self.BagId ~= oldBagId then -- need new address
 		--[[ Inventory is stored as a static array of basic inventory item structs.
@@ -42,10 +46,10 @@ function CInventoryItem:update()
 			210-239			211-240		Bag V (random order)
 		--]]
 		local base = getBaseAddress(addresses.inventory.base);
-		local inventory_address = base + ((self.SlotNumber-1) * 0x44);
+		local inventory_address = base + ((self.SlotNumber) * 0x44);
 		
 		id = memoryReadInt(getProc(), inventory_address);
-		if( (id>=200000 and id<=240000) or (id>=490000 and id<=640000)) then
+		if( (id > 100000 and id < 900000) ) then
 			self.Id = id;
 			self.Address = inventory_address;
 		else
