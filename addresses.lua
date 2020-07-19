@@ -11,7 +11,6 @@ addresses = {
 	game_time = 0x607000, --[[{game_time}]]
 	in_game = 0x6694b0, --[[{in_game}]]
 	zone_id = 0x664110, --[[{zone_id}]]
-	casting_bar = 0x6169B0,
 	movement_speed = {
 		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
 	},
@@ -81,6 +80,7 @@ addresses = {
 		input = {
 			movement = 0xAAC,
 		},
+		mounting = 0xAE4,
 		camera = {
 			base = 0x47C,
 			distance = 0x2e8,
@@ -248,7 +248,7 @@ addresses = {
 		recipe_id = 0xF0,
 		name = 0xC,
 		count = 0x10,
-		max_stack = 0x1C,
+		max_stack = 0x00, -- Wrong
 		max_durability = 0x15,
 		durability = 0x18,
 		in_use = 0x1c,
@@ -264,6 +264,7 @@ addresses = {
 		flags = 0x28,
 		real_id = 0x98,
 		cooldown = 0x8E,
+		casting = 0x1c
 	},
 	equipment = {
 		base = 0x607688,

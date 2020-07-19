@@ -3945,15 +3945,17 @@ function CPlayer:mount(_dismount)
 		end
 	end
 	yrest(500)
+
 end
 
 function CPlayer:updateCasting()
 	CPawn.updateCasting(self);
 	
-	-- Also check casting bar
+	-- Also check mount cast bar
 	if( not self.Casting ) then
-		local castingBar = memoryReadInt(getProc(), getBaseAddress(addresses.casting_bar));
-		if( castingBar ~= nil and castingBar > 0 ) then
+		local castingMount = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.mounting);
+		-- 0 if not casting mount, 1 if casting
+		if( castingMount ~= nil and castingMount ~= 0 ) then
 			self.Casting = true;
 		end
 	end
