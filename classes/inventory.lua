@@ -15,12 +15,14 @@ ITEM_TOOLTIP_DURABILITY = {
 	ENAR 	= "Durability",
 };
 
+local INV_MAX_SLOTS = 239; -- Range 0-239; 240 slots total
+
 CInventory = class(
 	function (self)
 		RoMCode("ToggleBackpack() BagFrame:Hide()"); -- Make sure the client loads the tables first.
 		RoMCode("GoodsFrame:Show() GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
 
-		self.MaxSlots = 239;
+		self.MaxSlots = INV_MAX_SLOTS;
 		self.BagSlot = {};
 		self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
 
@@ -730,7 +732,7 @@ function getInventoryRange(range)
 	end
 	local rangeLower = string.lower(range)
 	if rangeLower == "all" then
-		return 0, self.MaxSlots, "inventory"
+		return 0, INV_MAX_SLOTS, "inventory"
 	elseif rangeLower == "itemshop" then
 		return 0, 49, "inventory"
 	elseif rangeLower == "magicbox" then
@@ -746,9 +748,9 @@ function getInventoryRange(range)
 	elseif rangeLower == "bag5" then
 		return 180, 209, "inventory"
 	elseif rangeLower == "bag6" then
-		return 210, self.MaxSlots, "inventory"
+		return 210, INV_MAX_SLOTS, "inventory"
 	elseif rangeLower == "bag" or rangeLower == "bags" then
-		return 60, self.MaxSlots, "inventory"
+		return 60, INV_MAX_SLOTS, "inventory"
 
 	elseif rangeLower == "bank1" then
 		return 1, 40, "bank"
