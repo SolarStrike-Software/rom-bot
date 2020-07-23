@@ -422,27 +422,6 @@ local updatables = {
 		]])
 	},
 	
-	global_cooldown_base = {
-		value_offset = 0x26,
-		value_size = 4,
-		value_raw = false,
-		pattern = byteArrayToPattern([[
-			0F 85 ?? ?? ?? ??
-			A1 ?? ?? ?? ??
-			50
-			E8 ?? ?? ?? ??
-			83 C4 ??
-			85 C0
-			74 0C
-			39 A8 ?? ?? ?? ??
-			0F 84 ?? ?? ?? ??
-			55
-			B9 ?? ?? ?? ??
-			E8 ?? ?? ?? ??
-			84 C0
-		]])
-	},
-	
 	channel_base = {
 		value_offset = 0x36,
 		value_size = 4,
@@ -522,7 +501,7 @@ local updatables = {
 			74 78
 			8B 0A
 			83 C1 FD
-			83 F9 06
+			83 F9 ??
 			77 6E
 		]]),
 	},
@@ -625,6 +604,30 @@ local updatables = {
 			DD 05 ?? ?? ?? ??
 			DC C1
 			D9 C9
+		]]),
+		partners = {
+			global_cooldown_base = {
+				add_value = 0x10;-- + 0x1a28,
+			},
+		},
+	},
+	
+	global_cooldown_offset = {
+		value_offset = 0x08,
+		value_size = 4,
+		value_raw = true,
+		pattern = byteArrayToPattern([[
+			D8 C9
+			D9 5C 24 ??
+			DA 8F ?? ?? ?? ??
+			D9 5C 24 ??
+			D9 44 24 ??
+			D9 44 24 ??
+			DF F1
+			DD D8
+			76 1F
+			F3 0F 2A 81 ?? ?? ?? ??
+			5E
 		]]),
 	},
 	
@@ -1046,12 +1049,11 @@ if( missingUpdates > 0 ) then
 	end
 end
 
-
+local endTime = getTime();
 if( continue ) then
 	save('addresses.lua', true);
 else
 	print("Changed were not committed");
 end
 
-local endTime = getTime();
 printf("Took %0.2f seconds\n", deltaTime(endTime, startTime) / 1000.0);

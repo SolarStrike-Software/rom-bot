@@ -33,23 +33,23 @@ addresses = {
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x49a931, --[[{freeze_target_codemod}]]
+			base = 0x49aaa1, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		
 		freeze_mousepos = {
-			base = 0x2304a4, --[[{freeze_mousepos_codemod}]]
+			base = 0x231234, --[[{freeze_mousepos_codemod}]]
 			original_code = string.char(0x89, 0x8E, 0xB4, 0x03, 0x00, 0x00, 0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		freeze_mousepos2 = {
-			base = 0x22fcfa, --[[{freeze_mousepos2_codemod}]]
+			base = 0x230a8a, --[[{freeze_mousepos2_codemod}]]
 			original_code = string.char(0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		swimhack = {
-			base = 0x4d7e9, --[[{swimhack_codemod}]]
+			base = 0x4dac9, --[[{swimhack_codemod}]]
 			original_code = string.char(0xC7, 0x83, 0xB4, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
@@ -57,7 +57,8 @@ addresses = {
 	exp_table = 0x6641cc, --[[{exp_table}]]
 	psi = 0x60bbc0, --[[{psi}]]
 	global_cooldown = {
-		base = 0x608A38, --[[{global_cooldown_base}]]
+		base = 0x607010, --[[{global_cooldown_base}]]
+		offset = 0x1a28, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
 		base = 0x66bacc, --[[{actionbar_base}]]
@@ -66,7 +67,8 @@ addresses = {
 			type = 0x0,
 			id = 0x4,
 		},
-		bar1_start = 0x12cc
+		size_per_class = 0x640,
+		offset = 0xc,
 	},
 	gold = {
 		base = 0x60bbf8, --[[{gold_base}]]

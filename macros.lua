@@ -208,10 +208,8 @@ end
 -- Action Key functions
 function getActionKeyInfo(actionKey)
 	-- Not sure what this was for. Does not appear to be relevant to the current game, but keeping it just in case.
-	-- local actionBar_offset = 0x640 * player.Class1
-	
 	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
-	local bar1 = base + addresses.actionbar.bar1_start;
+	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset;
 	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
 	local id = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id);
 	local type = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.type);
@@ -220,7 +218,7 @@ end
 
 function setActionKeyToId(actionkey, id)
 	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
-	local bar1 = base + addresses.actionbar.bar1_start;
+	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset;
 	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
 
 	-- write id
