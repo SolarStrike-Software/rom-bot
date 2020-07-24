@@ -4,7 +4,7 @@ addresses = {
 	--===========================================================--
 
 	--== fixed the casting bar but i'm not sure, that the "player.casting" is completely fixed ==--
-	castingBarPtr = 0xA61D20,
+	castingBarPtr = 0xA6BBC8,
 	castingBar_offset = 0xC,
 	--===========================================================================================--
 	
@@ -12,7 +12,7 @@ addresses = {
 	in_game = 0x6694b0, --[[{in_game}]]
 	zone_id = 0x664110, --[[{zone_id}]]
 	movement_speed = {
-		base = 0x606C48, -- Float; Normal, expected movement speed, whether mounted or not
+		base = 0x60ACF0, -- Float; Normal, expected movement speed, whether mounted or not
 	},
 	channel = {
 		base = 0x66c048, --[[{channel_base}]]
@@ -303,7 +303,7 @@ addresses = {
 		size = 0x66eca0, --[[{object_list_size}]]
 	},
 	input_box = {
-		base = 0x661B18, -- fixes UMM
+		base = 0x66B9C0,
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
