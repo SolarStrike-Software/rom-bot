@@ -12,7 +12,8 @@ addresses = {
 	in_game = 0x6694b0, --[[{in_game}]]
 	zone_id = 0x664110, --[[{zone_id}]]
 	movement_speed = {
-		base = 0x60ACF0, -- Float; Normal, expected movement speed, whether mounted or not
+		base = 0x609858, --[[{movement_speed_base}]]
+		offset = 0x1498, --[[{movement_speed_offset}]]
 	},
 	channel = {
 		base = 0x66c048, --[[{channel_base}]]
@@ -29,7 +30,7 @@ addresses = {
 		base = 0x622C68,
 	},
 	crafting = {
-		base = 0x606FBC,
+		base = 0x606fbc, --[[{crafting_base}]]
 	},
 	code_mod = {
 		freeze_target = {
@@ -287,7 +288,8 @@ addresses = {
 	inventory = {
 		base = 0x6155A8,
 		rent = {
-			base = 0x621014,
+			base = 0x60bbf8, --[[{inventory_rent_base}]]
+			offset = 0xfda4, --[[{inventory_rent_offset}]]
 		},
 	},
 	cursor = {
@@ -303,7 +305,7 @@ addresses = {
 		size = 0x66eca0, --[[{object_list_size}]]
 	},
 	input_box = {
-		base = 0x66B9C0,
+		base = 0x66b9c0, --[[{input_box_base}]]
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
@@ -312,11 +314,9 @@ addresses = {
 		end_addr = 0x268,
 	},
 	mouse = {
-		base = 0x62B9BC,
-		x = 0x8C,
-		y = 0x90,
-		x_in_window = {0xC, 0x3B4},
-		y_in_window = {0xC, 0x3B8},
+		base = 0x62cd08, --[[{mouse_base}]]
+		x_in_window = {0x3B4},
+		y_in_window = {0x3B8},
 	},
 	party = {
 		leader = {

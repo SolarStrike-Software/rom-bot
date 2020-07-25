@@ -65,7 +65,7 @@ function CInventoryItem:update()
 			A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
 		--]]
 		index = math.floor((self.SlotNumber - 121)/30);
-		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.inventory.rent.base) + index * 4) ~= 0xFFFFFFFF
+		self.Available = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.inventory.rent.base), addresses.inventory.rent.offset + index * 4) ~= 0xFFFFFFFF
 	else
 		self.Available = true
 	end

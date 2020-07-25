@@ -166,7 +166,12 @@ local updatables = {
 			5B
 			81 C4 B0 00 00 00
 			C2 18 00
-			]])
+			]]),
+		partners = {
+			crafting_base = {
+				add_value = 0x1578; -- Assumed; not referenced in code
+			},
+		},
 	},
 	
 	player_base = {
@@ -911,6 +916,101 @@ local updatables = {
 			0F 90 C1
 			89 7E ??
 			C7 86 80 00 00 00 01 00 00 00
+		]])
+	},
+	
+	movement_speed_base = {
+		value_offset = 0x15,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			83 F8 01
+			74 ??
+			83 F8 ??
+			0F 85 ?? ?? ?? ??
+			D9 05 ?? ?? ?? ??
+			B9 ?? ?? ?? ??
+			DD 5C 24 ??
+			E8 ?? ?? ?? ??
+			DD 05 ?? ?? ?? ??
+			D9 C0
+			DE E2
+		]])
+	},
+	
+	movement_speed_offset = {
+		value_offset = 0x29,
+		value_size = 4,
+		value_raw = true,
+		pattern = byteArrayToPattern([[
+			8B CE
+			D9 9E ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			D9 9E ?? ?? ?? ??
+			8B CE
+			E8 ?? ?? ?? ??
+			D9 9E ?? ?? ?? ??
+			8B CE
+			E8 ?? ?? ?? ??
+			D9 9E ?? ?? ?? ??
+			8B CE
+		]])
+	},
+	
+	inventory_rent_base = {
+		value_offset = 0x7,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			56
+			E8 ?? ?? ?? ??
+			A1 ?? ?? ?? ??
+			DB 80 ?? ?? ?? ??
+			DD 1C 24
+			56
+			E8 ?? ?? ?? ??
+			83 C4 ??
+			B8 02 00 00 00
+			5E
+			C3
+			6A 01
+		]]),
+		partners = {
+			inventory_rent_offset = {
+				value_offset = 6; -- 6 bytes after inventory_rent_base
+				value_size = 4,
+			},
+		},
+	},
+	
+	input_box_base = {
+		value_offset = 0x15,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			52
+			E8 ?? ?? ?? ??
+			F3 0F 10 00
+			83 C4 ??
+			F3 0F 11 44 24 ??
+			8B 0D ?? ?? ?? ??
+			D9 81 ?? ?? ?? ??
+			D9 5c 24 ??
+			D9 44 24 ??
+			D9 44 24 ??
+			D9 C0
+		]])
+	},
+	
+	mouse_base = {
+		value_offset = 0x2,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			8B 0D ?? ?? ?? ??
+			8B 01
+			8B 40 ??
+			FF E0
 		]])
 	},
 };

@@ -13,7 +13,8 @@ maintain_speed			= true		-- Keeps checking speed and keep at optimal.
 
 
 function isSpeedFast()
-	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.movement_speed.base));
+	--Float; Normal, expected movement speed, whether mounted or not
+	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.movement_speed.base) + addresses.movement_speed.offset);
 	return getSpeed() > baseSpeed;
 end
 
@@ -26,7 +27,7 @@ end
 
 function speed(_speed)
 	-- Current base speed, includes buff effects.
-	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.movement_speed.base));
+	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.movement_speed.base) + addresses.movement_speed.offset);
 	local playerAddress = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.player.base) or 0;
 	
 	if( playerAddress ~= 0 ) then
