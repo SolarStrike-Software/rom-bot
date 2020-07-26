@@ -119,7 +119,7 @@ settings_default = {
 			DEBUG_SKILLUSE = false,			-- debug skill use issues
 
 			-- expert inventar
-			INV_UPDATE_INTERVAL = 300,	 	-- full inventory update every x seconds (only used indirect atm)
+			INV_UPDATE_INTERVAL = 60,	 	-- full inventory update every x seconds (only used indirect atm)
 			INV_AUTOSELL_ENABLE = false,	-- autosell items at merchant true|false
 			INV_AUTOSELL_FROMSLOT = 0,		-- autosell from slot #
 			INV_AUTOSELL_TOSLOT = 0,		-- autosell to slot #

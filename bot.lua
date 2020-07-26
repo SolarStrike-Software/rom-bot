@@ -781,10 +781,10 @@ function main()
 
 
 		-- trigger timed inventory update
-		--if( os.difftime(os.time(), player.InventoryLastUpdate) >
-			--settings.profile.options.INV_UPDATE_INTERVAL ) then
-			--player.InventoryDoUpdate = true;
-		--end
+		if( os.difftime(os.time(), player.InventoryLastUpdate) >
+			settings.profile.options.INV_UPDATE_INTERVAL ) then
+			player.InventoryDoUpdate = true;
+		end
 
 		-- update inventory if update flag is set
 		-- TODO: rolling update while resting?
