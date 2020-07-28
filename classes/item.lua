@@ -72,6 +72,12 @@ function CItem:update()
 	end
 	
 	self.Available = (self.Available ~= false)
+	
+	if( self.Id == nil or self.Id <= 0 ) then
+		self.Empty = true;
+	else
+		self.Empty = false;
+	end
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then
 		self.BaseItemAddress = GetItemAddress( self.Id );
@@ -82,7 +88,6 @@ function CItem:update()
 			return;
 		end;
 		self.Name = "";
-		self.Empty = false;
 		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
 		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability );
 		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability );
