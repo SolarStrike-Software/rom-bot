@@ -72,6 +72,16 @@ function checkout()
 	logMessage(msg);
 end
 
+function configure()
+	local path = getExecutionPath();
+	local user = io.popen(sprintf('cd "%s" && git config user.name', path)):read('*a');
+	user = trim(user);
+	if( #user == 0 ) then
+		print("No Git user configred; using defaults");
+		io.popen(sprintf('cd "%s" && git config user.name "User" && git config user.email "user@no-reply.com"', path));
+	end
+end
+
 function trim(str)
 	return str:gsub("^%s*(.-)%s*$", "%1");
 end
@@ -135,6 +145,8 @@ function main()
 		os.exit();
 		return;
 	end
+
+	configure()
 	
 	if( not getDirectory(getExecutionPath() .. "/.git") ) then
 		warning("Git has not been configured for this path yet. Doing project checkout now.");
