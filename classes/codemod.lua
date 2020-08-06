@@ -37,11 +37,8 @@ function CCodeMod:checkModified()
 		local expectedByte = string.byte(self.origCode:sub(i, i + 1));
 		
 		if( v ~= expectedByte ) then
-			modified = false;
-			--printf("0x%X <> 0x%X = false\n", expectedByte, v);
+			modified = true;
 			break;
-		else
-			--printf("0x%X <> 0x%X = true\n", expectedByte, v);
 		end
 	end
 	

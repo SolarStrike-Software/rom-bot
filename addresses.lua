@@ -34,7 +34,7 @@ addresses = {
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x49aaa1, --[[{freeze_target_codemod}]]
+			base = 0x49aae1, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
