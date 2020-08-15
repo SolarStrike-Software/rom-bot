@@ -4,6 +4,7 @@
 		function getBag()
 			if getQuestStatus(420064) == "incomplete" then -- The Lost Supplies
 				player:target_Object({110080,110433}) -- Full Grain Bag
+				yrest(2000);
 			elseif getQuestStatus(420531) == "incomplete" then -- Strong Boars
 				__WPL:setForcedWaypointType("NORMAL")
 			else

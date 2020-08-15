@@ -8,19 +8,19 @@ addresses = {
 	castingBar_offset = 0xC,
 	--===========================================================================================--
 	
-	game_time = 0x607000, --[[{game_time}]]
-	in_game = 0x6694b0, --[[{in_game}]]
-	zone_id = 0x664110, --[[{zone_id}]]
+	game_time = 0x607050, --[[{game_time}]]
+	in_game = 0x669540, --[[{in_game}]]
+	zone_id = 0x6641a0, --[[{zone_id}]]
 	movement_speed = {
-		base = 0x609858, --[[{movement_speed_base}]]
+		base = 0x6098a8, --[[{movement_speed_base}]]
 		offset = 0x1498, --[[{movement_speed_offset}]]
 	},
 	channel = {
-		base = 0x66c048, --[[{channel_base}]]
+		base = 0x66c0d8, --[[{channel_base}]]
 		id = 0x4c4,
 	},
 	class_info = {
-		base = 0x60bbf8, --[[{class_info_base}]]
+		base = 0x60bc48, --[[{class_info_base}]]
 		offset = 0x438,
 		size = 0x430,
 		level = 0x28,
@@ -30,39 +30,39 @@ addresses = {
 		base = 0x622C68,
 	},
 	crafting = {
-		base = 0x606fbc, --[[{crafting_base}]]
+		base = 0x60700c, --[[{crafting_base}]]
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x49aae1, --[[{freeze_target_codemod}]]
+			base = 0x49ad51, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		
 		freeze_mousepos = {
-			base = 0x231234, --[[{freeze_mousepos_codemod}]]
+			base = 0x230244, --[[{freeze_mousepos_codemod}]]
 			original_code = string.char(0x89, 0x8E, 0xB4, 0x03, 0x00, 0x00, 0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		freeze_mousepos2 = {
-			base = 0x230a8a, --[[{freeze_mousepos2_codemod}]]
+			base = 0x22fa9a, --[[{freeze_mousepos2_codemod}]]
 			original_code = string.char(0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 		swimhack = {
-			base = 0x4dac9, --[[{swimhack_codemod}]]
+			base = 0x4dd59, --[[{swimhack_codemod}]]
 			original_code = string.char(0xC7, 0x83, 0xB4, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 	},
-	exp_table = 0x6641cc, --[[{exp_table}]]
-	psi = 0x60bbc0, --[[{psi}]]
+	exp_table = 0x66425c, --[[{exp_table}]]
+	psi = 0x60bc10, --[[{psi}]]
 	global_cooldown = {
-		base = 0x607010, --[[{global_cooldown_base}]]
+		base = 0x607060, --[[{global_cooldown_base}]]
 		offset = 0x1a28, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
-		base = 0x66bacc, --[[{actionbar_base}]]
+		base = 0x66bb5c, --[[{actionbar_base}]]
 		slot = {
 			size = 0x14,
 			type = 0x0,
@@ -72,11 +72,11 @@ addresses = {
 		offset = 0xc,
 	},
 	gold = {
-		base = 0x60bbf8, --[[{gold_base}]]
+		base = 0x60bc48, --[[{gold_base}]]
 		offset = 0x82fc, --[[{gold_offset}]]
 	},
 	game_root = {
-		base = 0x605a44, --[[{game_root_base}]]
+		base = 0x605a94, --[[{game_root_base}]]
 		mouseover_object_ptr = 0x75c,
 		player_actual_speed = 0x790,
 		ping = 0x7c0,
@@ -154,7 +154,7 @@ addresses = {
 		},
 	},
 	macro = {
-		base = 0x66d334, --[[{macro_base}]]
+		base = 0x66d3c4, --[[{macro_base}]]
 		size = 0x508, --[[{macro_size}]]
 		id = 0x10,
 		icon = 0x14,
@@ -162,7 +162,7 @@ addresses = {
 		content = 0x118
 	},
 	hotkey = {
-        base = 0x66d1e0, --[[{hotkey_base}]]
+        base = 0x66d270, --[[{hotkey_base}]]
 		list = 0x28,
 		name = 0x4,
 		hotkey1 = 0x54,
@@ -171,7 +171,7 @@ addresses = {
 		modifier2 = 0x5a
 	},
 	loading = {
-		base = 0x66d2f0, --[[{loading_base}]]
+		base = 0x66d380, --[[{loading_base}]]
 		offsets = {0x18, 0x1C},
 	},
 	skill = {
@@ -208,11 +208,11 @@ addresses = {
 		type_flag9 = 0x274,
 	},
 	cooldowns = {
-		base = 0x607010, --[[{cooldowns_base}]]
+		base = 0x607060, --[[{cooldowns_base}]]
 		array_start = 0x1a2c, --[[{cooldowns_array_start}]]
 	},
 	skillbook = {
-        base = 0x66e710, --[[{skillbook_base}]]
+        base = 0x66e7a0, --[[{skillbook_base}]]
 		offset = 0x8,
 		book1_start = 0xc,
 		book1_end = 0x10,
@@ -232,7 +232,7 @@ addresses = {
 		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x630ADC,
+		base = 0x630b2C,
 		offset = 0xD4,
 		branch = {
 			itemset_id = 0x4,
@@ -273,27 +273,28 @@ addresses = {
 		base = 0x607688,
 	},
 	bank = {
-		base = 0x6154D0,
+		base = 0x615520,
 		open = {
-            base = 0x661C64,
+            base = 0x661Cb4,
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x61CF94,
+			base = 0x61CFe4,
 		},
 		guild = {
-			base = 0x664A2C,
+			base = 0x664A7C,
 		},
 	},
 	inventory = {
-		base = 0x6155A8,
+		base = 0x6155f8,
 		rent = {
-			base = 0x60bbf8, --[[{inventory_rent_base}]]
+			base = 0x60bc48, --[[{inventory_rent_base}]]
 			offset = 0xfda4, --[[{inventory_rent_offset}]]
 		},
 	},
 	cursor = {
-		base = 0x66d1bc,
+		base = 0x66d12c,
+		offset = 0x240,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,
@@ -301,38 +302,38 @@ addresses = {
 		},
 	},
 	object_list = {
-		base = 0x66eca4, --[[{object_list_base}]]
-		size = 0x66eca0, --[[{object_list_size}]]
+		base = 0x66ed34, --[[{object_list_base}]]
+		size = 0x66ed30, --[[{object_list_size}]]
 	},
 	input_box = {
-		base = 0x66b9c0, --[[{input_box_base}]]
+		base = 0x66ba50, --[[{input_box_base}]]
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x62Ca9c,
+		base = 0x62Caec,
 		start_addr = 0x264,
 		end_addr = 0x268,
 	},
 	mouse = {
-		base = 0x62cd08, --[[{mouse_base}]]
+		base = 0x62cd58, --[[{mouse_base}]]
 		x_in_window = {0x3B4},
 		y_in_window = {0x3B8},
 	},
 	party = {
 		leader = {
-			base = 0x62e1c8, --[[{party_leader_base}]]
+			base = 0x62e218, --[[{party_leader_base}]]
 		},
 		member_list = {
-			base = 0x66e658, --[[{party_member_list_base}]]
+			base = 0x66e6e8, --[[{party_member_list_base}]]
 			offset = 0x68, --[[{party_member_list_offset}]]
 		},
 		icon_list = {
-			base = 0x66d3d0, --[[{party_icon_list_base}]]
+			base = 0x66d460, --[[{party_icon_list_base}]]
 			offset = 0xc,
 		},
 	},
 	newbie_eggpet = {
-		base = 0x62defc, --[[{newbie_eggpet_base}]]
+		base = 0x62df40, --[[{newbie_eggpet_base}]]
 		offset = 0x7c, --[[{newbie_eggpet_offset}]]
 	},
 	eggpet = {

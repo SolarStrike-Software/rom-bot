@@ -12,7 +12,7 @@ CCursor = class(
 );
 
 function CCursor:update()
-	self.Address = memoryReadUInt(getProc(), getBaseAddress(addresses.cursor.base));
+	self.Address = memoryReadUInt(getProc(), getBaseAddress(addresses.cursor.base)) + addresses.cursor.offset;
 
 	self.ItemLocation = memoryReadInt(getProc(), self.Address + addresses.cursor.item.location)
 	if self.ItemLocation == 0 then
