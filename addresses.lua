@@ -270,7 +270,7 @@ addresses = {
 		casting = 0x1c
 	},
 	equipment = {
-		base = 0x607694,
+		base = 0x6076d8,
 	},
 	bank = {
 		base = 0x615520,
