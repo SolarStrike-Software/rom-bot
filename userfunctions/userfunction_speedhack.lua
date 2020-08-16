@@ -30,7 +30,7 @@ function speed(_speed)
 	-- Current base speed, includes buff effects.
 	local baseSpeedAddress = getBaseAddress(addresses.movement_speed.base) + addresses.movement_speed.offset
 	local baseSpeed = memoryReadFloat(getProc(), getBaseAddress(addresses.movement_speed.base) + addresses.movement_speed.offset);
-	baseSpeed = -10;
+
 	function reportAbnormality(highOrLow)
 		highOrLow = highOrLow or "high";
 		cprintf(cli.yellow, "[Speedhack] baseSpeed seems abnormally %s. Value is: %0.2f, address: 0x%X\n", highOrLow, baseSpeed, baseSpeedAddress);
