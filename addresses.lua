@@ -247,7 +247,7 @@ addresses = {
 		},
 	},
 	item = {
-		card_or_npc_id = 0x368,
+		card_or_npc_id = 0x36c,
 		recipe_id = 0xF0,
 		name = 0xC,
 		count = 0x10,

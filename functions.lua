@@ -2498,7 +2498,7 @@ function GetSkillBookData(_tabs)
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
 					
-					if( settings.profile.options.DEBUG_SKILLUSE or settings.options.DEBUGGING ) then
+					if( settings.profile.options.DEBUG_SKILLDISCOVER or settings.options.DEBUGGING ) then
 						cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
 					end
 					

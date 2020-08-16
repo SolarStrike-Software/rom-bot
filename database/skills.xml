@@ -18,7 +18,7 @@
 	<skill name="MAGE_ELECTRIC_EXPLOSION"				id="491170" range="200" type="damage"		casttime="2"	cooldown="0"	target="enemy"		reqbuffname="502270" reqbufftarget="player" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_STATIC_FIELD"						id="491172" range="150" type="damage"		casttime="1"  	cooldown="0"	target="enemy"		buffname="501555" reqbuffname="501554" reqbufftarget="player" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_ELECTRIC_COMPRESSION"				id="491171" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501554" reqbuffname="502270" reqbufftarget="player" /> <!-- Buff IDs Verified -->
-	<skill name="MAGE_PURGATORY_FIRE"					id="491153" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		aoecenter="player" />
+	<skill name="MAGE_PURGATORY_FIRE"					id="491153" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="player" />
 	<skill name="MAGE_ENERGY_INFLUX"					id="490218" range="0"	type="buff"			casttime="0"	cooldown="120"  target="self"		buffname="500296" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_ENERGY_WELL"						id="490251" range="0"	type="buff"			casttime="0"	cooldown="120"  target="self"		buffname="500369" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_ELEMENTAL_WEAKNESS"				id="490247" range="250" type="damage" 		casttime="0"	cooldown="0"	target="enemy"		buffname="620189" /> <!-- Buff ID Verified -->

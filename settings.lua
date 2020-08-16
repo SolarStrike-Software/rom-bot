@@ -117,6 +117,7 @@ settings_default = {
 			DEBUG_WAYPOINT = false, 		-- debug waypoint issues
 			DEBUG_AUTOSELL = false, 		-- debug autosell issues
 			DEBUG_SKILLUSE = false,			-- debug skill use issues
+			DEBUG_SKILLDISCOVER = false,	-- debug skill discovery
 
 			-- expert inventar
 			INV_UPDATE_INTERVAL = 60,	 	-- full inventory update every x seconds (only used indirect atm)
