@@ -195,7 +195,7 @@ function CItem:update()
 		end
 
 		-- Get base item flag values
-		local flags = memoryReadInt(getProc(),self.BaseItemAddress + addresses.item.flags)
+		local flags = memoryReadRepeat("int", getProc(),self.BaseItemAddress + addresses.item.flags) or 0;
 		self.ItemShopItem = bitAnd(flags,ITEMFLAGs_ITEMSHOPITEM_MASK)
 		self.CanBeSold = bitAnd(flags,ITEMFLAGs_CANBESOLD_MASK)
 
