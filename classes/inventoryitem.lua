@@ -49,7 +49,7 @@ function CInventoryItem:update()
 	
 	id = memoryReadInt(getProc(), inventory_address) or 0;
 	if( (id > 100000 and id < 900000) ) then
-		self.Id = id;
+		--self.Id = id;
 		self.Address = inventory_address;
 	else
 		self.BaseItemAddress = 0;
@@ -71,7 +71,7 @@ function CInventoryItem:update()
 	-- Don't waste time updating if not available.
 	if not self.Available then return end
 
-	if( self.Id > 0 ) then
+	if( self.Address and self.Address > 0 ) then
 		CItem.update(self)
 	end
 
