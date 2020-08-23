@@ -1,0 +1,468 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+
+	<Frame name="UMMComposeConfirm" inherits="UMMPopUpDialogTemplate" hidden="true" />
+
+  <Frame name="UMMComposeMailTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="330" y="450" />
+    </Size>
+    <Frames>
+      <!-- Header frame containing sender and subject -->
+      <Frame name="$parentHeader" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="330" y="60" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" />
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentAuthorLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="15"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentSubjectLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="35"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <EditBox name="$parentAuthor" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
+            <Size>
+              <AbsDimension x="150" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentAuthorLabel" relativePoint="LEFT">
+                <Offset>
+                  <AbsDimension x="60" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+              <OnTabPressed>
+                this:ClearFocus();
+              </OnTabPressed>
+              <OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus();
+              </OnTextChanged>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="4" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="GameEditFont" spacing="1"/>
+          </EditBox>
+          <EditBox name="$parentSubject" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
+            <Size>
+              <AbsDimension x="245" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentSubjectLabel" relativePoint="LEFT">
+                <Offset>
+                  <AbsDimension x="60" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+              <OnTabPressed>
+                this:ClearFocus();
+              </OnTabPressed>
+              <OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus();
+              </OnTextChanged>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="4" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="GameEditFont" spacing="1"/>
+          </EditBox>
+        </Frames>
+      </Frame>
+
+      <!-- Action buttons for this mail -->
+      <Button name="$parentReset" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="2" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            UMMComposeMailTemplateButton_OnClick(this, "Reset");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parentHeader" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            UMMComposeMailTemplateButton_OnClick(this, "Send");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <!-- Body panel displaying the mail contents -->
+      <Frame name="$parentBodyFrame" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="330" y="300" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="25" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000" >
+            <Size>
+              <AbsDimension x="295" y="280"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="4" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="GameEditFont" spacing="1"/>
+          </EditBox>
+        </Frames>
+      </Frame>
+      <!-- Footer frame for attachments -->
+      <Frame name="$parentFooter" inherits="UMMBackdropTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="330" y="85" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentBodyFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentAttachmentLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="10"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Button name="$parentAttachment" inherits="ItemButtonTemplate">
+            <Anchors>
+        	    <Anchor point="TOPLEFT">
+        	      <Offset>
+        	        <AbsDimension x="15" y="35"/>
+        	      </Offset>
+        	    </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:RegisterForClicks("LeftButton", "RightButton");
+              </OnLoad>
+              <OnEnter>
+                this:GetParent():GetParent():AttachEnter();
+              </OnEnter>
+              <OnLeave>
+                this:GetParent():GetParent():AttachLeave();
+              </OnLeave>
+              <OnReceiveDrag>
+                this:GetParent():GetParent():AttachItem(arg1);
+              </OnReceiveDrag>
+              <OnMouseUp>
+                if (key == "LBUTTON") then
+                  this:GetParent():GetParent():AttachItem(arg1);
+                else
+                  this:GetParent():GetParent():RemoveAttachment();
+                end
+              </OnMouseUp>
+            </Scripts>
+          </Button>
+
+          <CheckButton name="$parentOptionMoney" inherits="UIPanelRadioButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="100" y="35"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="ARTWORK">
+                <FontString name="$parentLabel" inherits="GameFontNormal" text="">
+                  <Anchors>
+              	    <Anchor point="LEFT" relativePoint="RIGHT">
+              	      <Offset>
+              	        <AbsDimension x="10" y="0"/>
+              	      </Offset>
+              	    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnClick>
+                this:GetParent():GetParent():SetOption("money");
+              </OnClick>
+            </Scripts>
+          </CheckButton>
+          <EditBox name="$parentMoney" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true">
+            <Size>
+              <AbsDimension x="90" y="30"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="210" y="28"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="ARTWORK">
+                <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+                  <Size>
+                    <AbsDimension x="16" y="16" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="2" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                  <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+                </Texture>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+              <OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus();
+              </OnTextChanged>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="8" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="NumberFontNormal" spacing="1"/>
+          </EditBox>
+
+          <CheckButton name="$parentOptionCOD" inherits="UIPanelRadioButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="100" y="55"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="ARTWORK">
+                <FontString name="$parentLabel" inherits="GameFontNormal" text="">
+                  <Anchors>
+              	    <Anchor point="LEFT" relativePoint="RIGHT">
+              	      <Offset>
+              	        <AbsDimension x="10" y="0"/>
+              	      </Offset>
+              	    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnClick>
+                this:GetParent():GetParent():SetOption("cod");
+              </OnClick>
+            </Scripts>
+          </CheckButton>
+          <EditBox name="$parentCOD" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true">
+            <Size>
+              <AbsDimension x="90" y="30"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="210" y="48"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="ARTWORK">
+                <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+                  <Size>
+                    <AbsDimension x="16" y="16" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="2" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                  <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+                </Texture>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+              <OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus();
+              </OnTextChanged>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="8" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="NumberFontNormal" spacing="1"/>
+          </EditBox>
+
+        </Frames>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMComposeMailTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMComposeMailTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMComposeMailTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMComposeTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="780" y="440" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Frame name="$parentComposer" inherits="UMMComposeMailTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="5" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="$parentViewer" inherits="UMMMailViewerTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-10" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+
+      <Frame name="$parentOwn" inherits="UMMRecipientListTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="340" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
+            this:SetupList("own");
+          </OnShow>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentFriends" inherits="UMMRecipientListTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentOwn" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
+            this:SetupList("friend");
+          </OnShow>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentGuildies" inherits="UMMRecipientListTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentFriends" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
+            this:SetupList("guild");
+          </OnShow>
+        </Scripts>
+      </Frame>
+
+    </Frames>
+    <Scripts>
+      <OnShow>
+        UMMComposeTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMComposeTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+</Ui>

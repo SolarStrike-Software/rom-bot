@@ -1,0 +1,32 @@
+## Interface 20000
+## Title: Ultimate Mail Mod
+## Author: Shardea of Siochain[EN]
+## Version: 1.6.5.1676
+## X-eMail: shardea@azureorder.dk
+## X-Website: www.azureorder.dk
+## X-Curse-Packaged-Version: 1.6.5.1676
+## X-Curse-Project-Name: UltimateMailMod
+Library/Colors.lua
+Library/Tools.lua
+Library/Config.lua
+Library/Templates.lua
+Library/Templates.xml
+Library/ItemDB.lua
+Library/BagManager.lua
+Library/MailManager.lua
+Library/PopUpDialog.lua
+Library/PopUpDialog.xml
+Recipient/Characters.lua
+Recipient/Recipient.lua
+Recipient/Recipient.xml
+Inbox/MailViewer.lua
+Inbox/MailViewer.xml
+Inbox/Inbox.lua
+Inbox/Inbox.xml
+Compose/Compose.lua
+Compose/Compose.xml
+MassSendItems/MassSendItems.lua
+MassSendItems/MassSendItems.xml
+Menu/Menu.lua
+Menu/Menu.xml
+UltimateMailMod.xml

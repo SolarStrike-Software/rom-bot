@@ -1,0 +1,668 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+
+  <!-- Inbox Templates -->
+
+  <Button name="UMMInboxButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="410" y="25" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentHover" inherits="UMMListHoverTemplate" hidden="true">
+          <Size>
+            <AbsDimension x="410" y="25" />
+          </Size>
+        </Texture>
+        <Texture name="$parentTagged" inherits="UMMListTaggedTemplate" hidden="true">
+          <Size>
+            <AbsDimension x="410" y="25" />
+          </Size>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString name="$parentAuthor" inherits="GameTitleFont" text="">
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="30" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubject" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="235" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="130" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentDaysLeft" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="RIGHT">
+      	      <Offset>
+      	        <AbsDimension x="-3" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSmallSubject" inherits="GameFontNormal" text="" justifyH="LEFT" justifyV="TOP" hidden="true">
+          <Size>
+            <AbsDimension x="235" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="130" y="2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="4" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentNormal" file="Interface/Buttons/QuickSlot-Normal">
+              <Size><AbsDimension x="40" y="40"/></Size>
+              <Anchors><Anchor point="CENTER"/></Anchors>
+            </Texture>
+          </Layer>
+          <Layer level="BORDER">
+            <Texture name="$parentIcon">
+              <Size><AbsDimension x="20" y="20"/></Size>
+              <Anchors><Anchor point="CENTER"/></Anchors>
+            </Texture>
+          </Layer>
+          <Layer level="OVERLAY">
+            <FontString name="$parentCount" inherits="NumberFontNormal" weight="BOLD" justifyH="RIGHT" hidden="true">
+              <Anchors>
+                <Anchor point="BOTTOMRIGHT">
+                  <Offset><AbsDimension x="-4" y="-2"/></Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentStock" inherits="NumberFontNormal" weight="BOLD" justifyH="LEFT" hidden="true">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset><AbsDimension x="2" y="2"/></Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+          <Layer level="ARTWORK">
+            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+          </Layer>
+        </Layers>
+        <PushedTexture name="$parentPushed" file="Interface/Buttons/QuickSlot-Depress">
+          <Size><AbsDimension x="40" y="40"/></Size>
+          <Anchors><Anchor point="CENTER"/></Anchors>
+        </PushedTexture>
+        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD"/>
+        <Scripts>
+          <OnEnter>
+            UMMInboxTOCButtonTemplate_OnEnter(this:GetParent());
+          </OnEnter>
+          <OnClick>
+            UMMInboxTOCButtonTemplate_OnClick(this:GetParent());
+          </OnClick>
+          <OnLeave>
+            UMMInboxTOCButtonTemplate_OnLeave(this:GetParent());
+          </OnLeave>
+        </Scripts>
+      </Button>
+      <Frame name="$parentAttachedMoney" inherits="UMMSmallRightAlignedMoneyFrameTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-58" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="$parentAttachedDiamonds" inherits="UMMSmallRightAlignedDiamondFrameTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-58" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMListTemplate_Init(this, "Hover");
+        UMMListTemplate_Init(this, "Tagged");
+      </OnLoad>
+      <OnEnter>
+        UMMInboxTOCButtonTemplate_OnEnter(this);
+      </OnEnter>
+      <OnClick>
+        UMMInboxTOCButtonTemplate_OnClick(this);
+      </OnClick>
+      <OnLeave>
+        UMMInboxTOCButtonTemplate_OnLeave(this);
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+  <CheckButton name="UMMInboxOptionButtonTemplate" inherits="UIPanelRadioButtonTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="LEFT" relativePoint="RIGHT">
+      	      <Offset>
+      	        <AbsDimension x="10" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        this:GetParent():SetOption(this:GetID());
+      </OnClick>
+    </Scripts>
+  </CheckButton>
+
+  <Frame name="UMMInboxToolsTemplate" inherits="UIPanelBackdropFrame" virtual="true">
+    <Size>
+      <AbsDimension x="330" y="450" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-5" y="5"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentHelpLabel1" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="10" y="10"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentHelpLabel2" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel1" relativePoint="BOTTOMLEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentHelpLabel3" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel2" relativePoint="BOTTOMLEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentHelpLabel4" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel3" relativePoint="BOTTOMLEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentHelpLabel5" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel4" relativePoint="BOTTOMLEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+
+        <FontString name="$parentMassTagLabel" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="10" y="220"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+
+        <FontString name="$parentTotalMoneyLabel" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="10" y="400"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentTotalDiamondsLabel" inherits="GameFontNormal" text="">
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="10" y="420"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+
+      </Layer>
+    </Layers>
+    <Frames>
+
+      <Button name="$parentButtonTake" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="100"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("take");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <CheckButton name="$parentOption1" id="1" inherits="UMMInboxOptionButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentButtonTake" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="$parentOption2" id="2" inherits="UMMInboxOptionButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentOption1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="$parentOption3" id="3" inherits="UMMInboxOptionButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentOption2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="$parentOption4" id="4" inherits="UMMInboxOptionButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentOption3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="$parentCheckTakeDeleteEmpty" inherits="UIPanelCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="22" y="22" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentOption4" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-3" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" text="">
+              <Size>
+                <AbsDimension x="210" y="45" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="5" y="6"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </CheckButton>
+
+      <Button name="$parentButtonTagChars" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentMassTagLabel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("tagchars");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonTagFriends" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentButtonTagChars" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("tagfriends");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonTagGuildies" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentButtonTagFriends" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("tagguildies");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonTagOther" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentButtonTagGuildies" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("tagother");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonTagEmpty" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentButtonTagChars" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("tagempty");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonReturn" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="320"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" text="">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="5" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("return");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButtonDelete" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="350"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" text="">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="5" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("delete");
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Frame name="$parentTotalMoney" inherits="UMMSmallRightAlignedMoneyFrameTemplate" hidden="false">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentTotalMoneyLabel" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-20" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="$parentTotalDiamonds" inherits="UMMSmallRightAlignedDiamondFrameTemplate" hidden="false">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentTotalDiamondsLabel" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-20" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
+        UMMInboxToolsTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMInboxTOCTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="425" y="410" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="5" y="5"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Button name="$parentMail1" inherits="UMMInboxButtonTemplate" id="1" hidden="true" />
+      <Button name="$parentMail2" inherits="UMMInboxButtonTemplate" id="2" hidden="true" />
+      <Button name="$parentMail3" inherits="UMMInboxButtonTemplate" id="3" hidden="true" />
+      <Button name="$parentMail4" inherits="UMMInboxButtonTemplate" id="4" hidden="true" />
+      <Button name="$parentMail5" inherits="UMMInboxButtonTemplate" id="5" hidden="true" />
+      <Button name="$parentMail6" inherits="UMMInboxButtonTemplate" id="6" hidden="true" />
+      <Button name="$parentMail7" inherits="UMMInboxButtonTemplate" id="7" hidden="true" />
+      <Button name="$parentMail8" inherits="UMMInboxButtonTemplate" id="8" hidden="true" />
+      <Button name="$parentMail9" inherits="UMMInboxButtonTemplate" id="9" hidden="true" />
+      <Button name="$parentMail10" inherits="UMMInboxButtonTemplate" id="10" hidden="true" />
+      <Button name="$parentMail11" inherits="UMMInboxButtonTemplate" id="11" hidden="true" />
+      <Button name="$parentMail12" inherits="UMMInboxButtonTemplate" id="12" hidden="true" />
+      <Button name="$parentMail13" inherits="UMMInboxButtonTemplate" id="13" hidden="true" />
+      <Button name="$parentMail14" inherits="UMMInboxButtonTemplate" id="14" hidden="true" />
+      <Button name="$parentMail15" inherits="UMMInboxButtonTemplate" id="15" hidden="true" />
+      <Button name="$parentMail16" inherits="UMMInboxButtonTemplate" id="16" hidden="true" />
+      <Button name="$parentMail17" inherits="UMMInboxButtonTemplate" id="17" hidden="true" />
+      <Button name="$parentMail18" inherits="UMMInboxButtonTemplate" id="18" hidden="true" />
+
+      <Slider name="$parentScroll" inherits="UIPanelScrollBarTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="415" y="20"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="415" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetValueStepMode("INT");
+          </OnLoad>
+          <OnValueChanged>
+            UIPanelScrollBar_OnValueChanged(this, arg1);
+            this:GetParent():ScrollChanged();
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+	  <Frame name="$parentMailCount">
+		<Anchors>
+		  <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+			<Offset>
+			  <AbsDimension x="335" y="-25"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontNormal" text="">
+				  <Anchors>
+					<Anchor point="TOPRIGHT">
+					  <Offset>
+						<AbsDimension x="0" y="0"/>
+					  </Offset>
+					</Anchor>
+				  </Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	  </Frame>
+
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMInboxTOCTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMInboxTOCTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMInboxTOCTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMInboxTemplate" virtual="true" hidden="false">
+    <Size>
+      <AbsDimension x="775" y="520" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentInfoLabel" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="">
+          <Anchors>
+            <Anchor point="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" />
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentTOC" inherits="UMMInboxTOCTemplate" />
+      <Frame name="$parentTools" inherits="UMMInboxToolsTemplate" hidden="true" />
+      <Frame name="$parentViewer" inherits="UMMMailViewerTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+    </Frames>
+  </Frame>
+
+</Ui>

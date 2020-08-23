@@ -1,0 +1,122 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+	<Script file="TooltipIds.lua"/>
+
+	<Frame name="TooltipIdsUpdateFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				TooltipIds:OnUpdate(this);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<CheckButton name="TooltipIdsCheckboxTemplate" inherits="CommonOptionsCheckButtonTemplate" virtual="true">
+		<Size><AbsDimension x="25" y="25" /></Size>
+		<Scripts>
+			<OnClick>
+				TooltipIds:Checkbox_OnClick(this)
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<Button name="TooltipIdsMiniButton" hidden="true" inherits="UIPanelButtonTemplate" parent="AddonManagerMiniFrame">
+		<Size>
+			<AbsDimension y="24" x="24" />
+		</Size>
+		<Scripts>
+			<OnClick>
+				AddonManager.MiniButton_OnClick(this)
+			</OnClick>
+			<OnEnter>
+				AddonManager.MiniButton_OnEnter(this)
+			</OnEnter>
+			<OnLeave>
+				AddonManager.MiniButton_OnLeave(this)
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\ItemMall\IM_Help-Normal">
+			<TexCoords left="0" right="0.6875" top="0" bottom="0.6875"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\ItemMall\IM_Help-pushed">
+			<TexCoords left="0" right="0.6875" top="0" bottom="0.6875"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\PanelSmallButtonHighlight" alphaMode="ADD" />
+	</Button>
+
+	<Frame name="TooltipIdsFrame" parent="UIParent" enableMouse="true" hidden="true" inherits="UICommonFrameTemplate">
+		<Size><AbsDimension x="220" y="300" /></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+		<Frames>
+			<Frame name="$parentColorPicker">
+				<Size>
+					<AbsDimension x="164" y="24"/>
+				</Size>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlight" justifyH="LEFT" >
+							<Size>
+								<AbsDimension x="400" y="16"/>
+							</Size>
+							<FontHeight>
+								<AbsValue val="12"/>
+							</FontHeight>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="24" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentButton">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Common\UIColorBorder"/>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlock" file="Interface\Common\Block-Fill"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySoundByPath("sound\\interface\\ui_navbar_open.mp3")
+								ColorPickerFrame:SetFrameStrata("DIALOG");
+								TooltipIds:OpenColorPicker(this)
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<CheckButton name="$parentOption1" inherits="TooltipIdsCheckboxTemplate" id="1"></CheckButton>
+			<CheckButton name="$parentOption2" inherits="TooltipIdsCheckboxTemplate" id="2"></CheckButton>
+			<CheckButton name="$parentOption3" inherits="TooltipIdsCheckboxTemplate" id="3"></CheckButton>
+			<CheckButton name="$parentOption4" inherits="TooltipIdsCheckboxTemplate" id="4"></CheckButton>
+			<CheckButton name="$parentOption5" inherits="TooltipIdsCheckboxTemplate" id="5"></CheckButton>
+			<CheckButton name="$parentOption6" inherits="TooltipIdsCheckboxTemplate" id="6"></CheckButton>
+			<CheckButton name="$parentOption7" inherits="TooltipIdsCheckboxTemplate" id="7"></CheckButton>
+			<CheckButton name="$parentOption8" inherits="TooltipIdsCheckboxTemplate" id="8"></CheckButton>
+			<CheckButton name="$parentOption9" inherits="TooltipIdsCheckboxTemplate" id="9"></CheckButton>
+		</Frames>
+
+        <Scripts>
+			<OnLoad>
+				TooltipIds:OnLoad(this)
+			</OnLoad>
+			<OnEvent>
+				TooltipIds:OnEvent(this, event, arg1, arg2);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,131 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  
+  <Button name="UMMMenuTabTemplate" inherits="UIPanelTopTabTemplate" virtual="true">
+    <Layers>
+      <Layer level="HIGHLIGHT">
+        <Texture name="$parentTexture">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMenuTabTemplate_OnLoad(this);
+      </OnLoad>
+      <OnClick>
+        UMMMenuTabTemplate_OnClick(this);
+      </OnClick>
+    </Scripts>
+  </Button>
+	
+  <Frame name="UMMFrame" parent="UIParent" inherits="UICommonFrameTemplate" frameStrata="MEDIUM" hidden="true" enableMouse="true">
+    <Layer level="BACKGROUND">
+    </Layer>
+    <Size>
+      <AbsDimension x="805" y="580" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="110"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentStatus" inherits="GameTitleFont" text="" justifyH="CENTER" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="800" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="BOTTOM">
+      	      <Offset>
+      	        <AbsDimension x="0" y="-5"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentModVersion" inherits="GameFontNormal" justifyH="RIGHT" justifyV="MIDDLE" text="MOD_VERSION">
+          <Size>
+            <AbsDimension x="800" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="BOTTOMRIGHT">
+      	      <Offset>
+      	        <AbsDimension x="-25" y="-2"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentBody" inherits="UMMBackdropTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="785" y="500" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="UMMFrame">
+            <Offset>
+              <AbsDimension x="10" y="54" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="UMMFrameTab1" parent="$parentBody" inherits="UMMInboxTemplate" hidden="true" />
+      <Frame name="UMMFrameTab2" parent="$parentBody" inherits="UMMComposeTemplate" hidden="true" />
+      <Frame name="UMMFrameTab3" parent="$parentBody" inherits="UMMMassSendItemsTemplate" hidden="true" />
+      <Button name="UMMFrameTab1Button" parent="UMMFrame" inherits="UMMMenuTabTemplate" id="1" text="" />
+      <Button name="UMMFrameTab2Button" parent="UMMFrame" inherits="UMMMenuTabTemplate" id="2" text="" />
+      <Button name="UMMFrameTab3Button" parent="UMMFrame" inherits="UMMMenuTabTemplate" id="3" text="" />
+      <CheckButton name="$parentSettingAudioAlert" inherits="UIPanelCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="25" y="25" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="20" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" text="">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            this:GetParent():CheckSetting(this, "AudioWarning");
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        UMMFrame_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMFrame_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+</Ui>

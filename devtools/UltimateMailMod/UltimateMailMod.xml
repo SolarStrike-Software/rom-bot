@@ -1,0 +1,77 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  <Script file="UltimateMailMod.lua" />
+  
+  <!-- Master Frame -->
+  
+  <Button name="UMMNewMailButton" parent="UIParent" inherits="MinimapButtonTemplate" hidden="true">
+    <Size>
+      <AbsDimension x="30" y="30" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="MinimapViewFrame" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="-40" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentFlash" file="Interface/Minimap/minimapbutton_flash" alphaMode="ADD" hidden="true">
+          <Size>
+            <AbsDimension x="40" y="40" />
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER" />
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture file="Interface/AddOns/UltimateMailMod/Textures/NewMail">
+          <Anchors>
+            <Anchor point="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" />
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMNewMailButton_OnLoad(this);
+      </OnLoad>
+      <OnEnter>
+        this:Enter();
+      </OnEnter>
+      <OnLeave>
+        this:Leave();
+      </OnLeave>
+      <OnUpdate>
+        this:Update(this, elapsedTime);
+      </OnUpdate>
+    </Scripts>
+  </Button>
+
+  <Frame name="UMMMasterFrame" parent="UIParent">
+    <Size>
+      <AbsDimension x="0" y="0" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="1" y="1" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>
+        UMMMasterFrame_OnLoad(this);
+      </OnLoad>
+      <OnEvent>
+        UMMMasterFrame_OnEvent(event, arg1, arg2, arg3, arg4);
+      </OnEvent>
+      <OnUpdate>
+        UMMMasterFrame_OnUpdate(this, elapsedTime);
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+
+</Ui>

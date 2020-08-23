@@ -1,0 +1,162 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  
+  <!-- Recipient Name Selector -->
+  
+  <Button name="UMMRecipientNameSelectorTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="120" y="15" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentHover" inherits="UMMListHoverTemplate">
+          <Size>
+            <AbsDimension x="120" y="15" />
+          </Size>
+        </Texture>
+        <Texture name="$parentTagged" inherits="UMMListTaggedTemplate">
+          <Size>
+            <AbsDimension x="120" y="15" />
+          </Size>
+        </Texture>
+      </Layer>			
+      <Layer level="ARTWORK">
+        <FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="">
+          <Size>
+            <AbsDimension x="116" y="15" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="2" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMListTemplate_Init(this, "Hover");
+        UMMListTemplate_Init(this, "Tagged");
+      </OnLoad>
+      <OnEnter>
+        UMMRecipientNameSelectorTemplate_OnEnter(this);
+      </OnEnter>
+      <OnClick>
+        UMMRecipientNameSelectorTemplate_OnClick(this);
+      </OnClick>
+      <OnLeave>
+        UMMRecipientNameSelectorTemplate_OnLeave(this);
+      </OnLeave>
+    </Scripts>
+  </Button>
+  
+  <Frame name="UMMRecipientListTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="140" y="440" />
+    </Size>
+    <Frames>
+      <Frame name="$parentHeader" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="140" y="30" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentTitle" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE" text="TITLE">
+              <Size>
+                <AbsDimension x="140" y="30" />
+              </Size>
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="0" y="0"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+
+      <Frame name="$parentList" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="140" y="440" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Button name="$parentName1" id="1" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName2" id="2" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName3" id="3" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName4" id="4" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName5" id="5" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName6" id="6" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName7" id="7" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName8" id="8" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName9" id="9" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName10" id="10" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName11" id="11" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName12" id="12" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName13" id="13" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName14" id="14" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName15" id="15" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName16" id="16" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName17" id="17" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName18" id="18" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName19" id="19" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName20" id="20" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName21" id="21" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName22" id="22" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName23" id="23" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName24" id="24" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName25" id="25" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName26" id="26" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName27" id="27" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          <Button name="$parentName28" id="28" inherits="UMMRecipientNameSelectorTemplate" hidden="true" />
+          
+          <Slider name="$parentScroll" inherits="UIPanelScrollBarTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPRIGHT" relativeTo="$parent">
+                <Offset>
+                  <AbsDimension x="4" y="27"/>
+                </Offset>
+              </Anchor>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$parent">
+                <Offset>
+                  <AbsDimension x="4" y="-26"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:SetValueStepMode("INT");
+              </OnLoad>
+              <OnValueChanged>
+                UIPanelScrollBar_OnValueChanged(this, arg1);
+                this:GetParent():GetParent():ScrollChanged(this);
+              </OnValueChanged>
+            </Scripts>
+          </Slider>
+        </Frames>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMRecipientListTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+	
+</Ui>

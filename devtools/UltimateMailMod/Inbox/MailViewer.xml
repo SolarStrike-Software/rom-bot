@@ -1,0 +1,282 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  
+  <Button name="UMMMailViewerAttachmentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        this:RegisterForClicks("LeftButton");
+      </OnLoad>
+      <OnEnter>
+        this:GetParent():GetParent():AttachmentOnEnter(this);
+      </OnEnter>
+      <OnClick>
+        this:GetParent():GetParent():AttachmentOnClick(this);
+      </OnClick>
+      <OnLeave>
+        this:GetParent():GetParent():AttachmentOnLeave(this);
+      </OnLeave>
+    </Scripts>
+  </Button>
+  
+  <Frame name="UMMMailViewerTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="330" y="450" />
+    </Size>
+    <Frames>
+      <!-- Header frame containing sender and subject -->
+      <Frame name="$parentHeader" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="330" y="50" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" />
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentAuthorLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="10"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentAuthor" inherits="GameTitleFont" justifyH="LEFT" justifyV="MIDDLE" text="">
+              <Size>
+                <AbsDimension x="240" y="15" />
+              </Size>
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="70" y="10"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentSubjectLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="25"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentSubject" inherits="GameTitleFont" justifyH="LEFT" justifyV="MIDDLE" text="">
+              <Size>
+                <AbsDimension x="240" y="15" />
+              </Size>
+              <Anchors>
+          	    <Anchor point="TOPLEFT">
+          	      <Offset>
+          	        <AbsDimension x="70" y="25"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <!-- Action buttons for this mail -->
+      <Button name="$parentReply" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="2" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("Reply");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentReturn" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentReply" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("Return");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentDelete" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentReturn" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("Delete");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentClose" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parentHeader" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick("Close");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <!-- Body panel displaying the mail contents -->
+      <Frame name="$parentBodyFrame" inherits="UMMBackdropTemplate">
+        <Size>
+          <AbsDimension x="330" y="300" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="25" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000" >
+            <Size>
+              <AbsDimension x="295" y="280"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnEscapePressed>
+                this:ClearFocus();
+              </OnEscapePressed>
+            </Scripts>
+            <TextInsets>
+              <AbsInset top="4" left="4" bottom="0" right="4"/>
+            </TextInsets>
+            <FontString inherits="GameEditFont" spacing="1"/>
+          </EditBox>
+        </Frames>
+      </Frame>
+      <!-- Footer frame for attachments -->
+      <Frame name="$parentFooter" inherits="UMMBackdropTemplate" hidden="true">
+        <Size>
+          <AbsDimension x="330" y="70" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentBodyFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="5" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <FontString name="$parentAttachmentLabel" inherits="GameTitleFont" text="">
+              <Anchors>
+          	    <Anchor point="LEFT">
+          	      <Offset>
+          	        <AbsDimension x="10" y="0"/>
+          	      </Offset>
+          	    </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Button name="$parentAttachment1" id="1" inherits="UMMMailViewerAttachmentButtonTemplate">
+            <Anchors>
+              <Anchor point="LEFT">
+                <Offset>
+                  <AbsDimension x="100" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentAttachment2" id="2" inherits="UMMMailViewerAttachmentButtonTemplate">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentAttachment1" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="5" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <CheckButton name="$parentAcceptCODCheck" inherits="UIPanelCheckButtonTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="140" y="10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer>
+                <FontString name="$parentLabel" text="" inherits="GameFontNormal" justifyH="LEFT">
+                  <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="0" y="0"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </CheckButton>
+          <Frame name="$parentMoneyFrame" inherits="UMMMoneyFrameTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="LEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentDiamondFrame" inherits="UMMDiamondFrameTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="LEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMailViewerTemplate_OnLoad(this);
+      </OnLoad>
+      <OnHide>
+        UMMMailViewerTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+	
+</Ui>

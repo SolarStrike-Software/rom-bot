@@ -1,0 +1,137 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  
+	<Frame name="UMMPopUpDialogTemplate" frameStrata="DIALOG" virtual="true">
+    <Size>
+      <AbsDimension x="310" y="200" />
+    </Size>
+    <Backdrop bgFile="Interface/Tooltips/tooltip-background" edgeFile="Interface/Tooltips/tooltip-border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="3" right="3" top="3" bottom="3"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="16"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="16"/>
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentLabel1" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel2" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel3" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel4" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel5" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel6" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel7" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel8" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel9" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+        <FontString name="$parentLabel10" inherits="GameTitleFont" justifyH="CENTER" justifyV="MIDDLE" text="" hidden="true">
+          <Size>
+            <AbsDimension x="290" y="15" />
+          </Size>
+        </FontString>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString name="$parentAmount" text="" inherits="GameTitleFont" hidden="true">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga" hidden="true">
+          <Size>
+            <AbsDimension x="16" y="16" />
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentAmount" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="2" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+
+      <Button name="$parentButton1" id="1" inherits="UIPanelButtonTemplate" text="" hidden="true">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick(this:GetID());
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentButton2" id="2" inherits="UIPanelButtonTemplate" text="" hidden="true">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick(this:GetID());
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentButton3" id="3" inherits="UIPanelButtonTemplate" text="" hidden="true">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Scripts>
+          <OnClick>
+            this:GetParent():ButtonClick(this:GetID());
+          </OnClick>
+        </Scripts>
+      </Button>
+      
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMPopUpDialogTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+	</Frame>
+	
+</Ui>

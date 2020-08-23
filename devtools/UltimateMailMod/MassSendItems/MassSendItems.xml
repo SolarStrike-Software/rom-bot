@@ -1,0 +1,702 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+
+  <!-- Mass Send Items Templates -->
+
+  <Button name="UMMMassSendItemsSlotTemplate" virtual="true" inherits="ItemButtonTemplate">
+    <Layers>
+      <Layer level="BORDER">
+        <Texture name="$parentQualityBorder" file="Interface/AddOns/UltimateMailMod/Textures/ItemTaggedBorder" alphaMode="BLEND" hidden="true">
+          <Size>
+            <AbsDimension x="43" y="43"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture name="$parentInvalid" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture name="$parentMarkBorder" file="Interface/AddOns/UltimateMailMod/Textures/ItemTaggedBorder" alphaMode="BLEND" hidden="true">
+          <Size>
+            <AbsDimension x="43" y="43"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        this:RegisterForClicks("LeftButton");
+      </OnLoad>
+      <OnEnter>
+        UMMMassSendItemsSlotTemplate_OnEnter(this);
+      </OnEnter>
+      <OnClick>
+        UMMMassSendItemsSlotTemplate_OnClick(this);
+      </OnClick>
+      <OnLeave>
+        UMMMassSendItemsSlotTemplate_OnLeave(this);
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+  <Frame name="UMMMassSendItemsBagTemplate" inherits="UIPanelBackdropFrame" virtual="true">
+    <Size>
+      <AbsDimension x="255" y="215" />
+    </Size>
+    <Frames>
+      <Button name="$parentSlot1" inherits="UMMMassSendItemsSlotTemplate" id="1" />
+      <Button name="$parentSlot2" inherits="UMMMassSendItemsSlotTemplate" id="2" />
+      <Button name="$parentSlot3" inherits="UMMMassSendItemsSlotTemplate" id="3" />
+      <Button name="$parentSlot4" inherits="UMMMassSendItemsSlotTemplate" id="4" />
+      <Button name="$parentSlot5" inherits="UMMMassSendItemsSlotTemplate" id="5" />
+      <Button name="$parentSlot6" inherits="UMMMassSendItemsSlotTemplate" id="6" />
+      <Button name="$parentSlot7" inherits="UMMMassSendItemsSlotTemplate" id="7" />
+      <Button name="$parentSlot8" inherits="UMMMassSendItemsSlotTemplate" id="8" />
+      <Button name="$parentSlot9" inherits="UMMMassSendItemsSlotTemplate" id="9" />
+      <Button name="$parentSlot10" inherits="UMMMassSendItemsSlotTemplate" id="10" />
+      <Button name="$parentSlot11" inherits="UMMMassSendItemsSlotTemplate" id="11" />
+      <Button name="$parentSlot12" inherits="UMMMassSendItemsSlotTemplate" id="12" />
+      <Button name="$parentSlot13" inherits="UMMMassSendItemsSlotTemplate" id="13" />
+      <Button name="$parentSlot14" inherits="UMMMassSendItemsSlotTemplate" id="14" />
+      <Button name="$parentSlot15" inherits="UMMMassSendItemsSlotTemplate" id="15" />
+      <Button name="$parentSlot16" inherits="UMMMassSendItemsSlotTemplate" id="16" />
+      <Button name="$parentSlot17" inherits="UMMMassSendItemsSlotTemplate" id="17" />
+      <Button name="$parentSlot18" inherits="UMMMassSendItemsSlotTemplate" id="18" />
+      <Button name="$parentSlot19" inherits="UMMMassSendItemsSlotTemplate" id="19" />
+      <Button name="$parentSlot20" inherits="UMMMassSendItemsSlotTemplate" id="20" />
+      <Button name="$parentSlot21" inherits="UMMMassSendItemsSlotTemplate" id="21" />
+      <Button name="$parentSlot22" inherits="UMMMassSendItemsSlotTemplate" id="22" />
+      <Button name="$parentSlot23" inherits="UMMMassSendItemsSlotTemplate" id="23" />
+      <Button name="$parentSlot24" inherits="UMMMassSendItemsSlotTemplate" id="24" />
+      <Button name="$parentSlot25" inherits="UMMMassSendItemsSlotTemplate" id="25" />
+      <Button name="$parentSlot26" inherits="UMMMassSendItemsSlotTemplate" id="26" />
+      <Button name="$parentSlot27" inherits="UMMMassSendItemsSlotTemplate" id="27" />
+      <Button name="$parentSlot28" inherits="UMMMassSendItemsSlotTemplate" id="28" />
+      <Button name="$parentSlot29" inherits="UMMMassSendItemsSlotTemplate" id="29" />
+      <Button name="$parentSlot30" inherits="UMMMassSendItemsSlotTemplate" id="30" />
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
+        UMMMassSendItemsBagTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <!-- Mass Mail Items Bags Template -->
+
+  <Frame name="UMMMassSendItemsBagsTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="780" y="440" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="25" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Frame name="$parentBag1" id="1" inherits="UMMMassSendItemsBagTemplate" />
+      <Frame name="$parentBag2" id="2" inherits="UMMMassSendItemsBagTemplate" />
+      <Frame name="$parentBag3" id="3" inherits="UMMMassSendItemsBagTemplate" />
+      <Frame name="$parentBag4" id="4" inherits="UMMMassSendItemsBagTemplate" />
+      <Frame name="$parentBag5" id="5" inherits="UMMMassSendItemsBagTemplate" />
+      <Frame name="$parentBag6" id="6" inherits="UMMMassSendItemsBagTemplate" />
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsBagsTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMMassSendItemsBagsTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMMassSendItemsBagsTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <!-- Send status template -->
+
+  <Button name="UMMMassSendItemsStatusItemTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="520" y="25" />
+    </Size>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentRecipient" inherits="GameTitleFont" text="">
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="30" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubject" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="235" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="130" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentStatus" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE" hidden="true">
+          <Size>
+            <AbsDimension x="80" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="375" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="4" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentNormal" file="Interface/Buttons/QuickSlot-Normal">
+              <Size><AbsDimension x="40" y="40"/></Size>
+              <Anchors><Anchor point="CENTER"/></Anchors>
+            </Texture>
+          </Layer>
+          <Layer level="BORDER">
+            <Texture name="$parentIcon">
+              <Size><AbsDimension x="20" y="20"/></Size>
+              <Anchors><Anchor point="CENTER"/></Anchors>
+            </Texture>
+          </Layer>
+          <Layer level="OVERLAY">
+            <FontString name="$parentCount" inherits="NumberFontNormal" weight="BOLD" justifyH="RIGHT" hidden="true">
+              <Anchors>
+                <Anchor point="BOTTOMRIGHT">
+                  <Offset><AbsDimension x="-4" y="-2"/></Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentStock" inherits="NumberFontNormal" weight="BOLD" justifyH="LEFT" hidden="true">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset><AbsDimension x="2" y="2"/></Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+          <Layer level="ARTWORK">
+            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+          </Layer>
+        </Layers>
+        <PushedTexture name="$parentPushed" file="Interface/Buttons/QuickSlot-Depress">
+          <Size><AbsDimension x="40" y="40"/></Size>
+          <Anchors><Anchor point="CENTER"/></Anchors>
+        </PushedTexture>
+        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD"/>
+      </Button>
+
+      <EditBox name="$parentCOD" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true" hidden="true">
+        <Size>
+          <AbsDimension x="90" y="30"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="375" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+              <Size>
+                <AbsDimension x="16" y="16" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnEscapePressed>
+            this:ClearFocus();
+          </OnEscapePressed>
+          <OnTextChanged>
+            this:GetParent():GetParent():DefineCOD(this:GetParent():GetID(), this:GetText());
+          </OnTextChanged>
+        </Scripts>
+        <TextInsets>
+          <AbsInset top="8" left="4" bottom="0" right="4"/>
+        </TextInsets>
+        <FontString inherits="NumberFontNormal" spacing="1"/>
+      </EditBox>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsStatusItemTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Button>
+
+  <!-- Send Status / Edit Frame -->
+
+  <Frame name="UMMMassSendItemsStatusTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="780" y="440" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="5" y="5" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentRecipient" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="100" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="35" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubject" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="235" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="135" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentStatus" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="80" y="25" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="TOPLEFT">
+      	      <Offset>
+      	        <AbsDimension x="380" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+
+      <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-15" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():StartSending();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentSend" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():CancelCOD();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentMail1" id="1" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail2" id="2" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail3" id="3" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail4" id="4" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail5" id="5" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail6" id="6" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail7" id="7" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail8" id="8" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail9" id="9" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail10" id="10" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail11" id="11" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail12" id="12" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail13" id="13" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail14" id="14" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail15" id="15" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail16" id="16" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail17" id="17" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+      <Button name="$parentMail18" id="18" inherits="UMMMassSendItemsStatusItemTemplate" hidden="true" />
+
+      <Slider name="$parentScroll" inherits="UIPanelScrollBarTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="510" y="40"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="510" y="6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetValueStepMode("INT");
+          </OnLoad>
+          <OnValueChanged>
+            UIPanelScrollBar_OnValueChanged(this, arg1);
+            this:GetParent():ScrollChanged(this);
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsStatusTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMMassSendItemsStatusTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMMassSendItemsStatusTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <!-- Top Action Frame -->
+
+  <Frame name="UMMMassSendItemsActionTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="460" y="30" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-10" y="3" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameTitleFont" text="">
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():Send();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentCOD" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="70" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentSend" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():COD();
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsActionTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMMassSendItemsActionTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMMassSendItemsActionTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <!-- Recipient Top Panel -->
+
+  <Frame name="UMMMassSendItemsRecipientTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="290" y="30" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+        <Offset>
+          <AbsDimension x="7" y="3" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Button name="$parentFind" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="60" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():FindRecipient();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <EditBox name="$parentRecipient" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
+        <Size>
+          <AbsDimension x="150" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT"  relativeTo="$parentFind" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnEscapePressed>
+            this:ClearFocus();
+          </OnEscapePressed>
+          <OnTextChanged>
+            this:GetParent():CheckSendStatus();
+          </OnTextChanged>
+        </Scripts>
+        <TextInsets>
+          <AbsInset top="4" left="4" bottom="0" right="4"/>
+        </TextInsets>
+        <FontString inherits="GameEditFont" spacing="1"/>
+      </EditBox>
+
+      <Button name="$parentReset" inherits="UIPanelButtonTemplate" text="">
+        <Size>
+          <AbsDimension x="60" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentRecipient" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="6" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            this:GetParent():Reset();
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsRecipientTemplate_OnLoad(this);
+      </OnLoad>
+      <OnShow>
+        UMMMassSendItemsRecipientTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMMassSendItemsRecipientTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+  <!-- People Selection -->
+
+  <Frame name="UMMMassSendItemsPeopleTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="430" y="440" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-15" y="10" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Frame name="$parentOwn" inherits="UMMRecipientListTemplate" hidden="true" />
+      <Frame name="$parentFriends" inherits="UMMRecipientListTemplate" hidden="true" />
+      <Frame name="$parentGuildies" inherits="UMMRecipientListTemplate" hidden="true" />
+    </Frames>
+    <Scripts>
+      <OnShow>
+        UMMMassSendItemsPeopleTemplate_OnShow(this);
+      </OnShow>
+    </Scripts>
+  </Frame>
+
+  <!-- Item Mark Buttons -->
+
+  <Button name="UMMMassSendItemsMarkButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="65" y="24"/>
+    </Size>
+    <Scripts>
+      <OnEnter>
+        this:GetParent():ButtonEnter(this);
+      </OnEnter>
+      <OnClick>
+        this:GetParent():ButtonClick(this:GetID());
+      </OnClick>
+      <OnLeave>
+        this:GetParent():ButtonLeave();
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+  <Frame name="UMMMassSendItemsMarkButtonsTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="780" y="30" />
+    </Size>
+    <Anchors>
+      <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+        <Offset>
+          <AbsDimension x="5" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameTitleFont" text="" justifyH="LEFT" justifyV="MIDDLE">
+          <Size>
+            <AbsDimension x="45" y="30" />
+          </Size>
+          <Anchors>
+      	    <Anchor point="LEFT">
+      	      <Offset>
+      	        <AbsDimension x="0" y="0"/>
+      	      </Offset>
+      	    </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentButton1" id="1" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton2" id="2" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton3" id="3" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton4" id="4" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton5" id="5" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton6" id="6" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton7" id="7" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton8" id="8" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton9" id="9" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton10" id="10" inherits="UMMMassSendItemsMarkButtonTemplate" />
+      <Button name="$parentButton11" id="11" inherits="UMMMassSendItemsMarkButtonTemplate" />
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        UMMMassSendItemsMarkButtonsTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <!-- Main Mass Send Items Template -->
+
+  <Frame name="UMMMassSendItemsTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="780" y="490" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Frame name="$parentAction" inherits="UMMMassSendItemsActionTemplate" hidden="true" />
+      <Frame name="$parentRecipient" inherits="UMMMassSendItemsRecipientTemplate" hidden="true" />
+      <Frame name="$parentBags" inherits="UMMMassSendItemsBagsTemplate" hidden="true" />
+      <Frame name="$parentPeople" inherits="UMMMassSendItemsPeopleTemplate" hidden="true" />
+      <Frame name="$parentMark" inherits="UMMMassSendItemsMarkButtonsTemplate" hidden="true" />
+      <Frame name="$parentStatus" inherits="UMMMassSendItemsStatusTemplate" hidden="true" />
+    </Frames>
+    <Scripts>
+      <OnShow>
+        UMMMassSendItemsTemplate_OnShow(this);
+      </OnShow>
+      <OnHide>
+        UMMMassSendItemsTemplate_OnHide(this);
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+</Ui>

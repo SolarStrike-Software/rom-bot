@@ -1,0 +1,203 @@
+<Ui xmlns="http://www.runewaker.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.runewaker.com/UI.xsd">
+  
+  <!-- General Purpose Templates -->
+  
+  <GameTooltip name="UMMTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true">
+    <Anchors>
+      <Anchor point="TOPLEFT" />
+    </Anchors>
+  </GameTooltip>
+  
+  <Frame name="UMMBackdropTemplate" inherits="UIPanelBackdropFrame" virtual="true">
+    <Scripts>
+      <OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Texture name="UMMListHoverTemplate" file="interface/Buttons/listitemhighlight" alphaMode="BLEND" virtual="true">
+    <Anchors>
+      <Anchor point="TOPLEFT"></Anchor>
+    </Anchors>
+    <TexCoords top="0" left="0" bottom="1" right="1"></TexCoords>
+  </Texture>
+
+  <Texture name="UMMListTaggedTemplate" file="interface/transportbook/tb_highlight-02" alphaMode="BLEND" virtual="true">
+    <Anchors>
+      <Anchor point="TOPLEFT"></Anchor>
+    </Anchors>
+    <TexCoords top="0" left="0" bottom="1" right="1"></TexCoords>
+  </Texture>
+
+  <Frame name="UMMMoneyFrameTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentAmount" text="" inherits="GameTitleFont">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+          <Size>
+            <AbsDimension x="16" y="16" />
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentAmount" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="2" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMDiamondFrameTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentAmount" text="" inherits="GameTitleFont">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parentDiamond" file="interface/moneyframe/moneyicons.tga">
+          <Size>
+            <AbsDimension x="16" y="16" />
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentAmount" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="2" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0.03125" bottom="1" right="0.0625"></TexCoords>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMSmallMoneyFrameTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentAmount" text="" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+          <Size>
+            <AbsDimension x="12" y="12" />
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentAmount" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="2" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+	
+  <Frame name="UMMSmallRightAlignedMoneyFrameTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentGoldCoin" file="interface/moneyframe/moneyicons.tga">
+          <Size>
+            <AbsDimension x="12" y="12" />
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0" bottom="1" right="0.03125"></TexCoords>
+        </Texture>
+        <FontString name="$parentAmount" text="" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parentGoldCoin" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="-2" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Frame name="UMMSmallRightAlignedDiamondFrameTemplate" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentDiamond" file="interface/moneyframe/moneyicons.tga">
+          <Size>
+            <AbsDimension x="12" y="12" />
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords top="0" left="0.03125" bottom="1" right="0.0625"></TexCoords>
+        </Texture>
+        <FontString name="$parentAmount" text="" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parentDiamond" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="-2" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+</Ui>
