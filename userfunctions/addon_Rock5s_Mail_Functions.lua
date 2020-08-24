@@ -7,8 +7,8 @@
 --==<<                                                    >>==--
 --==<<  www.solarstrike.net/phpBB3/viewtopic.php?p=12952  >>==--
 
-local UMM_FromSlot = 61 -- Default 61, first slot
-local UMM_ToSlot = 240 -- Default 240, last slot of bag 6
+local UMM_FromSlot = 60 -- Default 60, first slot
+local UMM_ToSlot = 239 -- Default 239, last slot of bag 6
 
 local use1UseMailbox
 local recipientMailFullString
@@ -48,12 +48,12 @@ function UMM_SetOneUseMailboxRelog(boolean)
 end
 
 local function markToSend(_slotnumber)
-	local item = inventory.BagSlot[_slotnumber + 60]
+	local item = inventory.BagSlot[_slotnumber]
 	item:update()
 	if item.Empty then return end
-
-	local bagid = math.floor((_slotnumber-1)/30+1)
-	local slotid = _slotnumber - (bagid * 30 - 30)
+	
+	local bagid, slotid = item:getInventoryIndex()
+	
 	RoMScript("UMMMassSendItemsSlotTemplate_OnClick(_G['UMMFrameTab3BagsBag"..bagid.."Slot"..slotid.."'])")
 end
 
@@ -517,7 +517,7 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 	local sendlist = {}
 	for item = UMM_FromSlot, UMM_ToSlot, 1 do -- for each inventory
 		local slotitem = inventory.BagSlot[item];
-		local slotNumber = slotitem.SlotNumber - 60
+		local slotNumber = slotitem.SlotNumber
 
 		if passesFilter(slotitem) then
 			-- Check if split is necessary
@@ -589,7 +589,7 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 		numberLeft = 0
 		inventory:update()
 		for __, slotNumber in pairs(sendlist) do
-			if not inventory.BagSlot[slotNumber + 60].Empty then
+			if not inventory.BagSlot[slotNumber].Empty then
 				numberLeft = numberLeft + 1
 			end
 		end
@@ -607,9 +607,9 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 				end
 			until os.clock()-stt > 2 -- 2s maximum
 
-			if tryRelog() == false then
+			--[[if tryRelog() == false then
 				break
-			end
+			end--]]
 		end
 	until numberLeft == 0
 
@@ -655,17 +655,17 @@ function UMM_SendInventoryItem(_recipient, _itemTable)
 		for num, item in pairs(_itemTable) do
 			if type(item) == "table" then
 				slotitem = item
-				slotNumber = item.SlotNumber - 60
+				slotNumber = item.SlotNumber
 			else
 				local itemslot = tonumber(item)
 				if type(itemslot) == "nil"  then
 					error("UMM_SendInventoryItem() invalid item value, "..item or "nil")
 				end
-				slotNumber = itemslot - 60
+				slotNumber = itemslot
 				slotitem = inventory.BagSlot[item]
 			end
-			if slotNumber < 1 or slotNumber > 180 then
-				error("UMM_SendInventoryItem() can only send items from the bags, from slot 61 to 240."..
+			if slotNumber < 0 or slotNumber > 239 then
+				error("UMM_SendInventoryItem() can only send items from the bags, from slot 0 to 239."..
 						" If using 'inventory:findItem' make sure you use the second argument \"bags\" "..
 						"to restrict the search to the 'bags' and exclude the itemshop bag and magicbox.")
 			end
@@ -706,12 +706,12 @@ function UMM_SendInventoryItem(_recipient, _itemTable)
 		inventory:update()
 		for __, slotNumber in pairs(_itemTable) do
 			if type(slotNumber) == "table" then slotNumber = slotNumber.SlotNumber end
-			if not inventory.BagSlot[slotNumber + 60].Empty then
+			if not inventory.BagSlot[slotNumber].Empty then
 				numberLeft = numberLeft + 1
 			end
 		end
 
-		if numberLeft ~= 0 and tryRelog() == false then
+		if numberLeft ~= 0 --[[and tryRelog() == false--]] then
 			break
 		end
 	until numberLeft == 0

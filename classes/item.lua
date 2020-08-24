@@ -598,3 +598,32 @@ function CItem:getRemainingCooldown()
 	end
 	return 0, false
 end
+
+--[[
+	Returns the bag tab and inventory index for the item.
+	In this context, an inventory index is what a human would
+	expect, rather than the seemingly random slot number used
+	internally by the game.
+	
+	That is, an inventory index ranges from 1-30, where the
+	top-left corner is 1 and bottom right corner is 30.
+--]]
+function CItem:getInventoryIndex()
+	for bag = 1,6 do
+		local startIndex = (bag - 1)*30 + 1;
+		local endIndex = startIndex + 30;
+		local cmd = sprintf("}str='' for i=%d,%d do str=str..GetBagItemInfo(i)..',' end a={str} b={", startIndex, endIndex);
+		local result = RoMScript(cmd);
+		local inventoryIndexes = explode(result, ',');
+		
+		for i,v in pairs(inventoryIndexes) do
+			local bagIndex = self.SlotNumber + 1;
+			v = tonumber(v) or -1;
+
+			if v == bagIndex then
+				local value = i;
+				return bag, value;
+			end
+		end
+	end
+end
