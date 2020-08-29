@@ -611,7 +611,7 @@ end
 function CItem:getInventoryIndex()
 	for bag = 1,6 do
 		local startIndex = (bag - 1)*30 + 1;
-		local endIndex = startIndex + 30;
+		local endIndex = startIndex + 29;
 		local cmd = sprintf("}str='' for i=%d,%d do str=str..GetBagItemInfo(i)..',' end a={str} b={", startIndex, endIndex);
 		local result = RoMScript(cmd);
 		local inventoryIndexes = explode(result, ',');
