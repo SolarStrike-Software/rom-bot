@@ -3820,7 +3820,8 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 				repeat
 					yrest(100);
 					self:updateBattling();
-					while( self.Battling ) do
+					self:updateCasting();
+					while( self.Battling or self.Casting ) do
 						if self:target(self:findEnemy(true, nil, evalTargetDefault)) then
 							self:fight();
 							interrupted = true
@@ -3828,6 +3829,7 @@ function CPlayer:target_Object(_objname, _waittime, _harvestall, _donotignore, e
 							break
 						end
 						self:updateBattling();
+						self:updateCasting();
 					end
 					self:updateCasting()
 				until interrupted or (deltaTime(getTime(),timeStart) > _waittime and self.Casting == false)
@@ -3951,14 +3953,23 @@ end
 function CPlayer:updateCasting()
 	CPawn.updateCasting(self);
 	
+	if( self.Casting ) then
+		return;
+	end
+	
 	-- Also check mount cast bar
 	if( not self.Casting ) then
 		local castingMount = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.mounting);
 		-- 0 if not casting mount, 1 if casting
 		if( castingMount ~= nil and castingMount ~= 0 ) then
 			self.Casting = true;
+			return;
 		end
 	end
+	
+	-- Finally check harvesting statement
+	-- 1 = harvesting, 0 = not harvesting
+	self.Casting = memoryReadInt(getProc(), getBaseAddress(addresses.player_is_harvesting)) > 0;
 end
 
 function CPlayer:dismount()
