@@ -71,11 +71,11 @@ end
 function CCamera:setRotation(angle)
 	self:update();
 	
-	local originalDistance = self.Distance;
+	local distance2d = distance(self.X, self.Z, self.XFocus, self.ZFocus);
 	
 	-- Position camera behind player along this new angle.
-	local nx = player.X + math.cos(angle + math.pi)*originalDistance;
-	local nz = player.Z + math.sin(angle + math.pi)*originalDistance;
+	local nx = player.X + math.cos(angle + math.pi)*distance2d;
+	local nz = player.Z + math.sin(angle + math.pi)*distance2d;
 	
 	self:setPosition(nx, nil, nz);
 end
