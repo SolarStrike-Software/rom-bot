@@ -11,10 +11,14 @@ addresses = {
 	game_time = 0x607050, --[[{game_time}]]
 	in_game = 0x669540, --[[{in_game}]]
 	zone_id = 0x6641a0, --[[{zone_id}]]
-	player_is_harvesting = 0x62e50c,
 	movement_speed = {
 		base = 0x6098a8, --[[{movement_speed_base}]]
 		offset = 0x1498, --[[{movement_speed_offset}]]
+	},
+	collecting = {
+		base = 0x66bc58,
+		type = 0xc,
+		name = 0x14,
 	},
 	channel = {
 		base = 0x66c0d8, --[[{channel_base}]]

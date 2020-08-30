@@ -3967,9 +3967,15 @@ function CPlayer:updateCasting()
 		end
 	end
 	
-	-- Finally check harvesting statement
-	-- 1 = harvesting, 0 = not harvesting
-	self.Casting = memoryReadInt(getProc(), getBaseAddress(addresses.player_is_harvesting)) > 0;
+	-- Is the player collecting something?
+	-- 0 = not collecting anything
+	-- 1 = quest item
+	-- 3 = harvestable item
+	local collectingType = memoryReadIntPtr(getProc(), getBaseAddress(addresses.collecting.base), addresses.collecting.type) or 0;
+	if( collectingType > 0 ) then
+		self.Casting = true;
+		return;
+	end
 end
 
 function CPlayer:dismount()
