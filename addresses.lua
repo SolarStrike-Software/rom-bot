@@ -16,7 +16,7 @@ addresses = {
 		offset = 0x1498, --[[{movement_speed_offset}]]
 	},
 	collecting = {
-		base = 0x66bc58,
+		base = 0x66CC80,
 		type = 0xc,
 		name = 0x14,
 	},
