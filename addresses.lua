@@ -237,7 +237,7 @@ addresses = {
 		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x630b2C,
+		base = 0x00631b48,
 		offset = 0xD4,
 		branch = {
 			itemset_id = 0x4,
@@ -275,23 +275,23 @@ addresses = {
 		casting = 0x1c
 	},
 	equipment = {
-		base = 0x6076d8,
+		base = 0x6086d8,
 	},
 	bank = {
-		base = 0x615520,
+		base = 0x616548,
 		open = {
-            base = 0x661Cb4,
+            base = 0x662CDC,
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x61CFe4,
+			base = 0x61E00C,
 		},
 		guild = {
-			base = 0x664A7C,
+			base = 0x665AA4,
 		},
 	},
 	inventory = {
-		base = 0x6155f8,
+		base = 0x6165f8,
 		rent = {
 			base = 0x60cc48, --[[{inventory_rent_base}]]
 			offset = 0xfda4, --[[{inventory_rent_offset}]]
@@ -315,7 +315,7 @@ addresses = {
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x62Caec,
+		base = 0x0062DAFC,
 		start_addr = 0x264,
 		end_addr = 0x268,
 	},
