@@ -298,7 +298,7 @@ addresses = {
 		},
 	},
 	cursor = {
-		base = 0x66d12c,
+		base = 0x0066E154,
 		offset = 0x240,
 		item = {
 			id = 0x10,
