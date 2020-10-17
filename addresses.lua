@@ -278,7 +278,7 @@ addresses = {
 		base = 0x6086d8,
 	},
 	bank = {
-		base = 0x61A5C5,
+		base = 0x61A5C4,
 		open = {
             base = 0x662CDC,
 			offset = 0x10,
