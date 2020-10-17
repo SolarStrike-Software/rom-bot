@@ -1018,6 +1018,29 @@ local updatables = {
 local startTime = getTime();
 local foundUpdates = {};
 local missingUpdates = 0;
+
+-- Use MDBrute to find memdatabase
+mdbrutePath = getExecutionPath() .. "/bin/";
+if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
+	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address... This may take some time.\n\n\n");
+	local cmd = sprintf('cd "%s" && mdbrute.exe --first-only', mdbrutePath);
+	local mdbruteResults = io.popen(cmd):read('*a');
+	local addr = string.match(mdbruteResults, "Found address 0x([0-9a-fA-F]+)");
+	
+	if( addr ~= nil ) then
+		addr = tonumber(addr, 16);
+		foundUpdates['memdatabase_base'] = addr;
+		cprintf_ex("|green|Found |pink|{memdatabase_base}|green| at |yellow|0x%X\n", addr);
+	else
+		cprintf_ex("|red|Could not locate {memdatabase_base}\n");
+	end
+else
+	print("MDBrute not installed; could not scan for memdatabase");
+	printf("If you would like to use this feature, ownload, extract, and place mdbrute.exe into:\n%s\n\n", mdbrutePath);
+	print("Download at: https://github.com/SolarStrike-Software/mdbrute/releases\n\n\n");
+end
+
+
 for i,v in pairs(updatables) do
 	local found = findPattern(v.pattern);
 	if( found ) then
@@ -1075,6 +1098,7 @@ for i,v in pairs(updatables) do
 end
 
 
+
 function save(filename, backup)
 	backup = backup or true;
 	
@@ -1125,6 +1149,7 @@ function save(filename, backup)
 	newHandle:write(addressFile);
 end
 
+
 local continue = true;
 if( missingUpdates > 0 ) then
 	cprintf_ex("\n\n|yellow|Not all updatable addresses could be found.\n"
@@ -1155,5 +1180,7 @@ if( continue ) then
 else
 	print("Changed were not committed");
 end
+
+
 
 printf("Took %0.2f seconds\n", deltaTime(endTime, startTime) / 1000.0);

@@ -237,7 +237,7 @@ addresses = {
 		base = 0x621560,
 	},
 	memdatabase = {
-		base = 0x00631b48,
+		base = 0x631b44, --[[{memdatabase_base}]]
 		offset = 0xD4,
 		branch = {
 			itemset_id = 0x4,
