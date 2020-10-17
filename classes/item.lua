@@ -83,8 +83,10 @@ function CItem:update()
 		self.BaseItemAddress = GetItemAddress( self.Id );
 		
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
-			cprintf( cli.yellow, "Wrong value returned in update of CItem id: %d\n", self.Id );
-			logMessage(sprintf("Wrong value returned in update of item id: %d", self.Id));
+			local msg = sprintf("Wrong value returned in update of CItem id: %d\n%s\n", self.Id, debug.traceback())
+			cprintf( cli.yellow, msg);
+			
+			logMessage(msg);
 			return;
 		end;
 		self.Name = "";

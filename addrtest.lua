@@ -198,3 +198,17 @@ end
 if( found == 0 ) then
 	print("No items were found in this inventory")
 end
+
+print("\n")
+printHeader("Bank", ' ');
+bank = CBank()
+found = 0
+for i,v in pairs(bank.BagSlot) do
+	if( v and not v.Empty ) then
+		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
+		found = found + 1
+	end
+end
+if( found == 0 ) then
+	print("No items were found in the bank")
+end
