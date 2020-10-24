@@ -2629,7 +2629,7 @@ end
 local getTEXTCache = {}
 local textCacheFilename = getExecutionPath() .. "/cache/texts.lua";
 function getTEXT(key)
-	if( getTEXTCache['GAME_VERSION'] == nil ) then
+	if( getTEXTCache['GAME_VERSION'] == nil or getTEXTCache['AC_INSTRUCTION_01'] == nil ) then
 		if( not readCachedGameTexts() ) then
 			readAndCacheGameTexts();
 		end
