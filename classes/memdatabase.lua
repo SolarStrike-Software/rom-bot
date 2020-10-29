@@ -176,6 +176,7 @@ function CMemDatabase:forceLoadSkills()
 	for name,skill in pairs(database.skills) do
 		self.loadedIds[skill.Id] = true;
 	end
+	yrest(200);
 end
 
 -- Attempts to locate the address for any given ID
