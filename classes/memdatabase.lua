@@ -181,6 +181,11 @@ end
 
 -- Attempts to locate the address for any given ID
 function CMemDatabase:getAddress(id)
+	if( id == nil ) then
+		cprintf_ex(cli.red, debug.traceback());
+		logMessage(debug.traceback() .. "\nCMemDatabase:getAddress() received nil.");
+		error("id passed to CMemDatabase:getAddress() cannot be nil", 2);
+	end
 	-- Return immediately if we already know about this
 	if( self.database[id] ~= nil ) then
 		return self.database[id].address;

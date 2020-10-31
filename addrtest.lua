@@ -216,11 +216,12 @@ end
 
 
 printHeader("Object List");
-local olist = CObjectList() olist:update()
+local olist = CObjectList();
+olist:update()
 local displayCount = math.min(10, #olist.Objects)
 printLine(colWidth, "Objects found:", #olist.Objects);
 printLine(colWidth, sprintf("Top %d items", displayCount));
-for i = 1, math.min(10, #olist.Objects) do
+for i = 1, displayCount do
 	v = olist.Objects[i];
-	printLine(colWidth, i, sprintf("ID: %-8d Name: %s", v.Id or 0, v.Name or ""));
+	printLine(colWidth, i, sprintf("ID: %-8d Address: 0x%08x Type: %d Name: %s", v.Id or 0, v.Address or 0, v.Type or -1, v.Name or ""));
 end
