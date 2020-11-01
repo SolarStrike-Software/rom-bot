@@ -215,10 +215,6 @@ function CPlayer:update()
 	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
 	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
 
-	if( self.Level < 1 or self.Level > 20 ) then
-		error("Player.level fail", player.Level, sprintf("0x%X", player.Address))
-	end
-
 	if( self.Level == nil or self.Level < 1 or self.Level > 300 ) then
 		self.Level = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.level) or self.Level;
 	end
