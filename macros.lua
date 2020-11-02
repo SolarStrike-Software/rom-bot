@@ -143,7 +143,7 @@ function readMacro(macroNum)
 
 	--- Get macros base address
 	local address = getBaseAddress(addresses.macro.base);
-	local macro_address = memoryReadUInt(getProc(), address);
+	local macro_address = memoryReadRepeat("uint", getProc(), address);
 
 	--- Read the macro body
 	local body = "";
@@ -170,11 +170,9 @@ function readMacro(macroNum)
 	end
 
 	-- Read the macro icon
-	--local icon = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroIcon_offset);
 	local icon = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.icon);
 
 	-- Read the macro id
-	--local id = memoryReadUInt(getProc(), macro_address + addresses.macroSize *(macroNum - 1) + addresses.macroId_offset);
 	local id = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.id);
 
 	return body, name, icon, id
