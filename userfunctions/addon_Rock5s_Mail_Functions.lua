@@ -753,7 +753,7 @@ function UMM_SendByRange(_recipient, _from, _to)
 	local marked = false
 	for slot = _from, _to do
 		local slotitem = inventory.BagSlot[slot]
-		local slotNumber = slot - 60
+		local slotNumber = slot
 
 		if slotitem.Available and not slotitem.Empty and bitAnd(slotitem.BoundStatus, 1) then
 			markToSend(slotNumber)
