@@ -170,6 +170,7 @@ settings.loadProfile("Default")
 inventory = CInventory();
 inventory:update()
 
+print("")
 printHeader("Inventory");
 print("")
 printHeader("Item Shop Backpack", ' ');
@@ -188,7 +189,7 @@ end
 print("\n")
 printHeader("Backpack(s)", ' ');
 found = 0
-for i = 50,239 do
+for i = 60,239 do
 	v = inventory.BagSlot[i]
 	if( v and not v.Empty ) then
 		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
@@ -214,7 +215,7 @@ if( found == 0 ) then
 end
 
 
-
+print("")
 printHeader("Object List");
 local olist = CObjectList();
 olist:update()
@@ -224,4 +225,40 @@ printLine(colWidth, sprintf("Top %d items", displayCount));
 for i = 1, displayCount do
 	v = olist.Objects[i];
 	printLine(colWidth, i, sprintf("ID: %-8d Address: 0x%08x Type: %d Name: %s", v.Id or 0, v.Address or 0, v.Type or -1, v.Name or ""));
+end
+
+
+print("")
+printHeader("Code Mods");
+printHeader("Check Code In Memory", ' ');
+local installableCodemods = {}
+for i,v in pairs(addresses.code_mod) do
+	local codemod = CCodeMod(v.base,
+		v.original_code,
+		v.replace_code
+	);
+	
+	if( codemod:checkModified() == false ) then
+		cprintf_ex("%s|green|[+]|white| %s looks good\n", string.rep(" ", 12), i);
+		installableCodemods[i] = codemod;
+	else
+		cprintf_ex("%s|red|[x]|white| %s appears malformed/modified\n", string.rep(" ", 12), i);
+	end
+end
+
+print("");
+printHeader("Test if installable", ' ');
+for i,codemod in pairs(installableCodemods) do
+	local success = codemod:safeInstall();
+	if( success ) then
+		yrest(1000);
+		success = codemod:safeUninstall();
+		yrest(200);
+	end
+	
+	if( success ) then
+		cprintf_ex("%s|green|[+]|white| %s OK!\n", string.rep(" ", 12), i);
+	else
+		cprintf_ex("%s|red|[x]|white| Failed\n", string.rep(" ", 12), i);
+	end
 end
