@@ -925,7 +925,10 @@ function main()
 						-- execute the action from the skiped wp
 						if( currentWp.Action and type(currentWp.Action) == "string" ) then
 							local actionchunk = loadstring(currentWp.Action);
-							assert( actionchunk,  sprintf(language[150], WPLorRPL.CurrentWaypoint) );
+							if( not actionchunk ) then
+								cprintf(cli.yellow, sprintf(language[150], WPLorRPL.CurrentWaypoint) .. "\n")
+								handleLoadstringFailure(currentWp.Action, errmsg, filename)
+							end
 							actionchunk();
 						end
 						__WPL:updateResume()
@@ -993,7 +996,10 @@ function main()
 					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
 						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
 						local actionchunk = loadstring(wp.Action);
-						assert( actionchunk,  sprintf(language[150], __RPL.CurrentWaypoint) );
+						if( not actionchunk ) then
+							cprintf(cli.yellow, sprintf(language[150], __RPL.CurrentWaypoint) .. "\n")
+							handleLoadstringFailure(wp.Action, errmsg, filename)
+						end
 						actionchunk();
 					end
 				else
@@ -1002,7 +1008,10 @@ function main()
 					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
 						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
 						local actionchunk = loadstring(wp.Action);
-						assert( actionchunk,  sprintf(language[150], __WPL.CurrentWaypoint) );
+						if( not actionchunk ) then
+							cprintf(cli.yellow, sprintf(language[150], __WPL.CurrentWaypoint) .. "\n")
+							handleLoadstringFailure(wp.Action, errmsg, filename)
+						end
 						actionchunk();
 					end
 				end

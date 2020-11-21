@@ -3046,3 +3046,44 @@ function validName(name, maxlen)
 	
 	return true;
 end
+
+function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesafter)
+	filename = filename or ""
+	linesbefore = linesbefore or 5
+	linesafter = linesafter or 5
+	
+	-- Try to information from errmsg
+	linenumber = tonumber(string.match(errmsg, "%[string \"%.%.%.\"%]:(%d+):") or -1)
+	
+	startline = 0
+	endline = 0
+	if linenumber > 0 then
+		startline = math.max(0, linenumber - linesbefore)
+		endline = linenumber + linesafter
+	end
+	
+	-- Output code sample
+	if( filename ~= "" ) then
+		print("File: ", filename .. "\n")
+	end
+	
+	lc = 0
+	for line in string.gmatch(luacode, "(.-)\r?\n") do
+		lc = lc + 1
+		
+		if endline > 0 and lc > endline then
+			break;
+		end
+		
+		if lc >= startline and lc <= endline then
+			if( lc == linenumber ) then
+				cprintf(cli.lightred, sprintf("%6d >>", lc) ..line .. "\n")
+			else
+				print(sprintf("%6d   ", lc) .. line)
+			end
+		end
+	end
+	
+	print("")
+	error(errmsg, 2)
+end
