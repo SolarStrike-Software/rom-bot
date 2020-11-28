@@ -152,7 +152,7 @@ function selectGame(character)
 				local parent = getWindowParent(j)
 				if getWindowClassName(j) == "IME" and parent then
 				   local x,y,w,h = windowRect(parent)
-				   if h ~= 0 then
+				   if x > 0 and y > 0 and w >= 640 and  h >= 480 and w <= 10240 and h <= 10240 then
 						table.insert(windowList, parent)
 				   end
 				end
