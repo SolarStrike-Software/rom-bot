@@ -149,11 +149,17 @@ function selectGame(character)
 		end
 		for k,v in pairs(processList) do
 			for i,j in pairs( getWindowsFromProcess(v) ) do
+				if( getWindowClassName(j) == "Radiant Arcana" ) then
+					table.insert(windowList, j)
+					break;
+				end
+
 				local parent = getWindowParent(j)
 				if getWindowClassName(j) == "IME" and parent then
 				   local x,y,w,h = windowRect(parent)
-				   if x > 0 and y > 0 and w >= 640 and  h >= 480 and w <= 10240 and h <= 10240 then
+				   if w > 1 and  h > 1 then
 						table.insert(windowList, parent)
+						break;
 				   end
 				end
 			end
