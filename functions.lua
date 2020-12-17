@@ -2967,6 +2967,10 @@ function isGitInstalled()
 	end
 	
 	local response = io.popen('where git'):read('*a');
+	if( string.sub(response, 0, 5) == 'INFO:' ) then
+		return false;
+	end
+
 	return response ~= "";
 end
 
@@ -2983,9 +2987,30 @@ function isGitUpdateAvailable()
 	return false;
 end
 
+local function getRevisionFromFile()
+	local path = getExecutionPath() .. "/.git/refs/heads/master";
+	if( not fileExists(path) ) then
+		return nil;
+	end
+
+	local file = io.open(path, 'r');
+	if( not file ) then
+		return nil;
+	end
+
+	local hash = file:read('*a');
+	file:close();
+	return string.sub(hash, 0, 7);
+end
+
 function getCurrentRevision()
 	if( isGitInstalled() == false ) then
-		return "unknown";
+		local hash = getRevisionFromFile();
+		if( hash == nil ) then
+			return "unknown";
+		else
+			return hash;
+		end
 	end
 	
 	local path = getExecutionPath();

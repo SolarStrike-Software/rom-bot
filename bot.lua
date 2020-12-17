@@ -107,9 +107,10 @@ __RPL = nil;	-- Return Point List
 
 
 -- start message
+local gitRevision = getCurrentRevision();
 text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
 	"Welcome to rom bot! press END to quit\n" ..
-	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, getCurrentRevision());
+	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, gitRevision);
 
 printPicture("logo", text, 4);
 
@@ -258,7 +259,7 @@ function main()
 	if( settings.options.DEBUGGING ) then
 		printf("[DEBUG] camAddress: 0x%X\n", camera.Address);
 	end
-	
+
 
 	if( settings.options.DEBUGGING ) then
 		-- Camera debugging info
@@ -723,7 +724,7 @@ function main()
 		end
 	end
 	registerTimer("ClientDetection", secondsToTimer(2), checkClientCrash);
-	
+
 	collectgarbage("collect");
 	registerTimer("collectgarbage", secondsToTimer(60), function ()
 		collectgarbage("collect");
@@ -738,7 +739,7 @@ function main()
 		if __WPL.Mode == "waypoints" and #__WPL.Waypoints == 0 then -- Can't got to 'waypoints' with no waypoints
 			error(language[114],1) -- No waypoints to go to
 		end
-		
+
 		if( not isInGame() ) then
 			MemDatabase:flush();
 		end
