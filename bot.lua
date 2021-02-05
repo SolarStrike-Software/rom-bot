@@ -1,5 +1,11 @@
 BOT_VERSION = 4.0;
 BOT_REVISION = '<UNKNOWN>';
+;
+if( type(getVersion) ~= 'function' or (getVersion() / 100) >= 1.06 ) then
+		error("The RoM-Bot scripts are not compatible with your MicroMacro version.\n"
+		.. "Please download and install version 1.05:\n\n"
+		.. "http://solarstrike.net/project/download/44", 0);
+end
 
 include('qword.lua');
 include("addresses.lua");
