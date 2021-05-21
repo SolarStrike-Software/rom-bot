@@ -1,0 +1,17 @@
+<waypoints>
+    <onLoad>
+        local lastTargetAddr = nil;
+        cprintf(cli.turquoise, "\n\nObject dumper is ready. Target some enemies!\n");
+
+        while( true ) do
+            if( player ) then
+                local target = player:getTarget();
+                if( target ~= nil and target.Address > 0 and target.Id ~= -1 and target.Address ~= lastTargetAddr ) then
+                    lastTargetAddr = target.Address;
+                    objectDump(target);
+                    print("Saved object dump for " .. (target.Name or 'unknown'));
+                end
+            end
+        end
+    </onLoad>
+</waypoints>
