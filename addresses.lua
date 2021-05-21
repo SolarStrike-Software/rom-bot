@@ -291,15 +291,15 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x6165f8,
+		base = 0x616608,
 		rent = {
 			base = 0x60cc58, --[[{inventory_rent_base}]]
 			offset = 0xfda4, --[[{inventory_rent_offset}]]
 		},
 	},
 	cursor = {
-		base = 0x0066E154,
-		offset = 0x240,
+		base = 0x00670AFC,
+		offset = 0x294,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,
