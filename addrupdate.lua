@@ -12,11 +12,11 @@ function getAutoClientPath()
 	local response = io.popen(regQuery):read('*a');
 	local pattern = "InstallLocation%s+REG_SZ%s+([^\n]+)";
 	local parsed = string.match(response, pattern);
-	
+
 	if( parsed == nil ) then
 		return nil;
 	end
-	
+
 	return appendSlashesIfNeeded(parsed);
 end
 
@@ -38,7 +38,7 @@ end
 function getClientHandle()
 	local exePath = getAutoClientPath();
 	local fullPath = "";
-	
+
 	if( not exePath or not fileExists(exePath .. exeName) ) then
 		printf("\aPlease select the Runes of Magic %s\n", exeName);
 		rest(1000);
@@ -47,11 +47,11 @@ function getClientHandle()
 	else
 		fullPath = exePath .. exeName;
 	end
-	
+
 	if( not fileExists(fullPath) ) then
 		error("Could not locate Runes of Magic client");
 	end
-	
+
 	local handle = io.open(fullPath, 'rb');
 	return handle;
 end
@@ -74,7 +74,7 @@ printf("File size: %d bytes\n", #fileContents);
 -- Example: byteArrayToPattern("41 42 43 ?? ");
 function byteArrayToPattern(bytes)
 	local str = "";
-	
+
 	for match in bytes:gmatch("([%x?][%x?])%s*") do
 		if( match == "??" ) then
 			-- Match anything
@@ -82,12 +82,12 @@ function byteArrayToPattern(bytes)
 		else
 			-- Match exact
 			local chr = string.char(tonumber("0x"..match));
-			
+
 			if( string.find(chr, "[^a-zA-Z0-9]") ) then
 				-- escape it
 				chr = "%" .. chr;
 			end
-			
+
 			str = str .. chr;
 		end
 	end
@@ -99,14 +99,14 @@ function findPattern(pattern)
 	if( found ) then
 		found = found - 1;
 	end
-	
+
 	return found;
 end
 
 function getInt(loc, bytes)
 	bytes = bytes or 4;
 	local result = 0;
-	
+
 	for i = 1,bytes do
 		local byte = string.byte(fileContents:sub(loc + i, loc + i + 1));
 		if( i > 1 ) then
@@ -115,7 +115,7 @@ function getInt(loc, bytes)
 			result = result + byte;
 		end
 	end
-	
+
 	return tonumber(result);
 end
 
@@ -173,7 +173,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	player_base = {
 		value_offset = 0x46,
 		value_size = 4,
@@ -216,7 +216,7 @@ local updatables = {
 			8B 06
 		]])
 	},
-	
+
 	zone_id = {
 		value_offset = 0x42,
 		value_size = 4,
@@ -247,7 +247,7 @@ local updatables = {
 			74 17
 		]])
 	},
-	
+
 	class_info_base = {
 		value_offset = 0x40,
 		value_size = 4,
@@ -276,7 +276,7 @@ local updatables = {
 			69 D2
 		]])
 	},
-	
+
 	freeze_target_codemod = {
 		value_offset = 0x11,
 		value_size = 4,
@@ -303,7 +303,7 @@ local updatables = {
 		75 12
 		]])
 	},
-	
+
 	freeze_mousepos_codemod = {
 		value_offset = 0x1F,
 		value_size = 4,
@@ -337,7 +337,7 @@ local updatables = {
 		F7 C5 00 00 00 20
 		]])
 	},
-	
+
 	freeze_mousepos2_codemod = {
 		value_offset = 0x5F,
 		value_size = 4,
@@ -378,7 +378,7 @@ local updatables = {
 		85 C9
 		]])
 	},
-	
+
 	swimhack_codemod = {
 		value_offset = 0x36,
 		value_size = 4,
@@ -426,37 +426,7 @@ local updatables = {
 			75 04
 		]])
 	},
-	
-	channel_base = {
-		value_offset = 0x36,
-		value_size = 4,
-		value_raw = false,
-		pattern = byteArrayToPattern([[
-			8B 0D ?? ?? ?? ??
-			8B 01
-			8B 90 ?? ?? ?? ??
-			FF D2
-			8B 0D ?? ?? ?? ??
-			8B 44 24 04
-			89 81 ?? ?? ?? ??
-			8B 0D ?? ?? ?? ??
-			83 C0 01
-			50
-			68 ?? ?? ?? ??
-			E8 ?? ?? ?? ??
-			8B 15 ?? ?? ?? ??
-			50
-			68 ?? ?? ?? ??
-			68 ?? ?? ?? ??
-			52
-			E8 ?? ?? ?? ??
-			8B 0D ?? ?? ?? ??
-			83 C4 14
-			C7 44 24 04 ?? ?? ?? ??
-			E9 ?? ?? ?? ??
-		]]),
-	},
-	
+
 	psi = {
 		value_offset = 0x23,
 		value_size = 4,
@@ -484,7 +454,7 @@ local updatables = {
 			8B CE
 		]]),
 	},
-	
+
 	actionbar_base = {
 		value_offset = 0x0F,
 		value_size = 4,
@@ -510,7 +480,7 @@ local updatables = {
 			77 6E
 		]]),
 	},
-	
+
 	gold_base = {
 		value_offset = 0x30,
 		value_size = 4,
@@ -531,7 +501,7 @@ local updatables = {
 			51
 		]]),
 	},
-	
+
 	gold_offset = {
 		value_offset = 0x0D,
 		value_size = 4,
@@ -548,7 +518,7 @@ local updatables = {
 			85 F6
 		]]),
 	},
-	
+
 	object_list_base = {
 		value_offset = 0x4C,
 		value_size = 4,
@@ -583,7 +553,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	game_time = {
 		value_offset = 0x24,
 		value_size = 4,
@@ -616,7 +586,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	global_cooldown_offset = {
 		value_offset = 0x08,
 		value_size = 4,
@@ -635,7 +605,7 @@ local updatables = {
 			5E
 		]]),
 	},
-	
+
 	loading_base = {
 		value_offset = 0x32,
 		value_size = 4,
@@ -662,7 +632,7 @@ local updatables = {
 			84 C0
 		]]),
 	},
-	
+
 	in_game = {
 		value_offset = 0x27,
 		value_size = 4,
@@ -685,7 +655,7 @@ local updatables = {
 			7F 34
 		]]),
 	},
-	
+
 	macro_base = {
 		value_offset = 0x1A,
 		value_size = 4,
@@ -716,7 +686,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	hotkey_base = {
 		value_offset = 0x2B,
 		value_size = 4,
@@ -743,7 +713,7 @@ local updatables = {
 			FF D0
 		]]),
 	},
-	
+
 	cooldowns_base = {
 		value_offset = 0x11,
 		value_size = 4,
@@ -765,7 +735,7 @@ local updatables = {
 			8B 0D ?? ?? ?? ??
 		]]),
 	},
-	
+
 	cooldowns_array_start = {
 		value_offset = 0x32,
 		value_size = 4,
@@ -792,7 +762,7 @@ local updatables = {
 			DD D8
 		]]),
 	},
-	
+
 	skillbook_base = {
 		value_offset = 0x11,
 		value_size = 4,
@@ -816,7 +786,7 @@ local updatables = {
 			33 DB
 		]]),
 	},
-	
+
 	party_leader_base = {
 		value_offset = 0x8,
 		value_size = 4,
@@ -828,7 +798,7 @@ local updatables = {
 			B8 ?? ?? ?? ??
 		]]),
 	},
-	
+
 	party_member_list_base = {
 		value_offset = 0x18,
 		value_size = 4,
@@ -856,7 +826,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	party_icon_list_base = {
 		value_offset = 0x24,
 		value_size = 4,
@@ -881,7 +851,7 @@ local updatables = {
 			56
 		]])
 	},
-	
+
 	newbie_eggpet_base = {
 		value_offset = 0x0b,
 		value_size = 4,
@@ -900,7 +870,7 @@ local updatables = {
 			8D A4 24 00 00 00 00
 		]])
 	},
-	
+
 	newbie_eggpet_offset = {
 		value_offset = 0x1e,
 		value_size = 1,
@@ -918,7 +888,7 @@ local updatables = {
 			C7 86 80 00 00 00 01 00 00 00
 		]])
 	},
-	
+
 	movement_speed_base = {
 		value_offset = 0x15,
 		value_size = 4,
@@ -937,7 +907,7 @@ local updatables = {
 			DE E2
 		]])
 	},
-	
+
 	movement_speed_offset = {
 		value_offset = 0x29,
 		value_size = 4,
@@ -956,7 +926,7 @@ local updatables = {
 			8B CE
 		]])
 	},
-	
+
 	inventory_rent_base = {
 		value_offset = 0x7,
 		value_size = 4,
@@ -982,7 +952,7 @@ local updatables = {
 			},
 		},
 	},
-	
+
 	input_box_base = {
 		value_offset = 0x15,
 		value_size = 4,
@@ -1001,7 +971,7 @@ local updatables = {
 			D9 C0
 		]])
 	},
-	
+
 	mouse_base = {
 		value_offset = 0x2,
 		value_size = 4,
@@ -1013,6 +983,70 @@ local updatables = {
 			FF E0
 		]])
 	},
+
+	cursor_base = {
+		value_offset = 0xF,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			55
+			8B EC
+			83 E4 F8
+			83 EC 0C
+			53
+			56
+			8B F1
+			8B 0D ?? ?? ?? ??
+			85 C9
+			57
+			0F 84
+		]])
+	},
+
+	text_base = {
+		value_offset = 0x25,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			D9 E8
+			DC C1
+			D9 C9
+			DD 15 ?? ?? ?? ??
+			DC 6C 24 04
+			DF F1
+			DD D8
+			77 D3
+			D9 44 24 ??
+			51
+			D9 1C 24
+			E8 ?? ?? ?? ??
+			8B 0D ?? ?? ?? ??
+			83 C4 04
+			E9 ?? ?? ?? ??
+		]])
+	},
+
+	channel_base = {
+		value_offset = 0x2,
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			51
+			A1 ?? ?? ?? ??
+			8B 88 ?? ?? ?? ??
+			8B 54 24 08
+			83 C1 01
+			89 0C 24
+			DB 04 24
+			83 EC 08
+			DD 1C 24
+			52
+			E8 ?? ?? ?? ??
+			B8 01 00 00 00
+			83 C4 ??
+			C3
+		]])
+	},
 };
 
 local startTime = getTime();
@@ -1021,12 +1055,12 @@ local missingUpdates = 0;
 
 -- Use MDBrute to find memdatabase
 mdbrutePath = getExecutionPath() .. "/bin/";
-if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
+if( false and fileExists(mdbrutePath .. "mdbrute.exe") ) then
 	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address... This may take some time.\n\n\n");
 	local cmd = sprintf('cd "%s" && mdbrute.exe --first-only', mdbrutePath);
 	local mdbruteResults = io.popen(cmd):read('*a');
 	local addr = string.match(mdbruteResults, "Found address 0x([0-9a-fA-F]+)");
-	
+
 	if( addr ~= nil ) then
 		addr = tonumber(addr, 16);
 		foundUpdates['memdatabase_base'] = addr;
@@ -1057,16 +1091,16 @@ for i,v in pairs(updatables) do
 				end
 			end
 		end
-	
+
 		cprintf_ex("|green|Found pattern for |pink|{%s}|green| at |yellow|0x%X|green|, new value: |yellow|0x%X\n",
 		i, found + v.value_offset, val);
 		foundUpdates[i] = val;
-		
+
 		if( v.partners ~= nil ) then
 			for j,k in pairs(v.partners) do
 				local moddesc = "+0";
 				local value_size = k.value_size or 4;
-				
+
 				if( k.add_value ~= nil ) then
 					val = val + k.add_value;
 					if( k.add_value >= 0 ) then
@@ -1101,23 +1135,23 @@ end
 
 function save(filename, backup)
 	backup = backup or true;
-	
+
 	local handle = io.open(getExecutionPath() .. '/' .. filename, 'r');
 	if( not handle ) then
 		error("Could not open " .. filename .. " for reading.");
 	end
-	
+
 	local addressFile = handle:read('*a');
-	
+
 	if( backup ) then
 		local backupFilename = 'backup-' .. filename;
 		printf("Backuping up to %s\n", backupFilename);
-		
+
 		local outhandle = io.open(getExecutionPath() .. '/' .. backupFilename, 'w');
 		outhandle:write(addressFile);
 		outhandle:close();
 	end
-	
+
 	-- Do replacements as requested
 	printf("Replacing addresses...\n");
 	for key,value in pairs(foundUpdates) do
@@ -1131,7 +1165,7 @@ function save(filename, backup)
 				end
 				return sprintf("=%s0x%x%s--[[%s{%s}%s]]%s", ws1, value, ws2, ws3, key, ws4, ws5);
 			end);
-		
+
 		if( skip or changed ~= addressFile ) then
 			cprintf_ex("|green|[+]|white| Successfully patched |pink|{%s}\n", key);
 		else
@@ -1143,7 +1177,7 @@ function save(filename, backup)
 		end
 		addressFile = changed;
 	end
-	
+
 	printf("Writing new addresses to %s\n", filename);
 	local newHandle = io.open(getExecutionPath() .. "/" .. filename, 'w');
 	newHandle:write(addressFile);
@@ -1168,7 +1202,7 @@ if( missingUpdates > 0 ) then
 			else
 				continue = false;
 			end
-			
+
 			break;
 		end
 	end

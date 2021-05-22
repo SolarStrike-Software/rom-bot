@@ -21,7 +21,7 @@ addresses = {
 		name = 0x14,
 	},
 	channel = {
-		base = 0x006709C0, --[[{channel_base}]]
+		base = 0x6709c0, --[[{channel_base}]]
 		id = 0xe4,
 	},
 	class_info = {
@@ -298,7 +298,7 @@ addresses = {
 		},
 	},
 	cursor = {
-		base = 0x6721AC,
+		base = 0x6721ac, --[[{cursor_base}]]
 		offset = 0x0,
 		item = {
 			id = 0x10,
@@ -315,7 +315,7 @@ addresses = {
 		offsets = {0xc, 0x9a4},
 	},
 	text = {
-		base = 0x0062FA84,
+		base = 0x62fa84, --[[{text_base}]]
 		start_addr = 0x270,
 		end_addr = 0x274,
 	},
