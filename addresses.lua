@@ -16,13 +16,13 @@ addresses = {
 		offset = 0x1498, --[[{movement_speed_offset}]]
 	},
 	collecting = {
-		base = 0x66CC80,
+		base = 0x670BB8,
 		type = 0xc,
 		name = 0x14,
 	},
 	channel = {
-		base = 0x671038, --[[{channel_base}]]
-		id = 0x4c4,
+		base = 0x006709C0, --[[{channel_base}]]
+		id = 0xe4,
 	},
 	class_info = {
 		base = 0x60cc58, --[[{class_info_base}]]
@@ -298,8 +298,8 @@ addresses = {
 		},
 	},
 	cursor = {
-		base = 0x00670AFC,
-		offset = 0x294,
+		base = 0x6721AC,
+		offset = 0x0,
 		item = {
 			id = 0x10,
 			bag_id = 0x14,

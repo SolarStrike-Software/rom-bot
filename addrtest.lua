@@ -31,7 +31,7 @@ function printHeader(name, padchar)
 	local midpoint = math.ceil((width + #name)/2);
 	local left = width - midpoint;
 	local right = width - #name - left;
-	
+
 	print(string.rep(padchar, left) .. name .. string.rep(padchar, right));
 end
 
@@ -44,7 +44,7 @@ function getClassName(classId)
 	if( classId == nil ) then
 		return "Nil";
 	end
-	
+
 	if( classId == CLASS_NONE ) then
 		return "none";
 	elseif( classId == CLASS_GM ) then
@@ -159,7 +159,7 @@ end
 print("");
 printHeader("Texts");
 for i,key in pairs({'AC_INSTRUCTION_01', 'AC_INSTRUCTION_02', 'ZONE955_JOLIN_S1'}) do
-	printLine(colWidth, key, getTEXT(key));	
+	printLine(colWidth, key, getTEXT(key));
 end
 
 print("\nLoading data for additional testing...");
@@ -229,6 +229,14 @@ end
 
 
 print("")
+printHeader("Cursor Item");
+local cursor = CCursor();
+cursor:update()
+printLine(colWidth, "Cursor item ID:", cursor.ItemId or '<invalid>');
+printLine(colWidth, "Cursor item Bag ID:", cursor.ItemBagId or '<invalid>');
+
+
+print("")
 printHeader("Code Mods");
 printHeader("Check Code In Memory", ' ');
 local installableCodemods = {}
@@ -237,7 +245,7 @@ for i,v in pairs(addresses.code_mod) do
 		v.original_code,
 		v.replace_code
 	);
-	
+
 	if( codemod:checkModified() == false ) then
 		cprintf_ex("%s|green|[+]|white| %s looks good\n", string.rep(" ", 12), i);
 		installableCodemods[i] = codemod;
@@ -255,7 +263,7 @@ for i,codemod in pairs(installableCodemods) do
 		success = codemod:safeUninstall();
 		yrest(200);
 	end
-	
+
 	if( success ) then
 		cprintf_ex("%s|green|[+]|white| %s OK!\n", string.rep(" ", 12), i);
 	else
