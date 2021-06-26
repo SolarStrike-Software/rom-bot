@@ -20,19 +20,19 @@ function CInventoryItem:update()
 	if( self.SlotNumber == nil ) then
 		return;
 	end
-	
+
 	self.BagId = self.SlotNumber + 1;
 
 	--[[ Inventory is stored as a static array of basic inventory item structs.
-		At +0x0 will be the Item ID, and the struct size is 0x44 bytes.
+		At +0x0 will be the Item ID, and the struct size is 0x48 bytes.
 		These structs define inventory contents starting with the item shop backpack,
 		and will be ordered left-to-right, top-to-bottom. Arcane Transmutor follows
 		and is also ordered (center, top-left, top-right, bottom-left, bottom-right),
 		and then inventory bags which may appear randomly ordered.
-		
+
 		Bags are random ordered as the in-game sorting mechanism shuffles the
 		slot IDs around for efficiency rather than a memcpy the each struct.
-		
+
 		Array index		Bag ID		Description
 		0-49			1-50		Item Shop Backpack
 		50-54			51-55		Arcane Transmutor
@@ -45,8 +45,8 @@ function CInventoryItem:update()
 		210-239			211-240		Bag V (random order)
 	--]]
 	local base = getBaseAddress(addresses.inventory.base);
-	local inventory_address = base + ((self.SlotNumber) * 0x44);
-	
+	local inventory_address = base + ((self.SlotNumber) * addresses.inventory.item.size);
+
 	id = memoryReadInt(getProc(), inventory_address) or 0;
 	if( (id > 100000 and id < 900000) ) then
 		--self.Id = id;
@@ -141,4 +141,3 @@ function CInventoryItem:use()
 
 	return self.ItemCount;
 end
-

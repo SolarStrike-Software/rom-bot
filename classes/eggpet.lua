@@ -124,12 +124,12 @@ function CEggPet:update()
 		self.Products = {}
 		--[[local productsBase = eggPetAddress + addresses.eggPetProducts_offset
 		for i = 0, 3 do
-			local id = memoryReadInt(getProc(), productsBase + 0x44 * i)
+			local id = memoryReadInt(getProc(), productsBase + addresses.inventory.item.size * i)
 			if id and id > 0 then
 				self.Products[i+1] = {}
 				self.Products[i+1].Id = id
 				self.Products[i+1].Name = GetIdName(id)
-				self.Products[i+1].ItemCount = memoryReadInt(getProc(), productsBase + 0x44 * i + 0x10)
+				self.Products[i+1].ItemCount = memoryReadInt(getProc(), productsBase + addresses.inventory.item.size * i + 0x10)
 			end
 		end--]]
 	else

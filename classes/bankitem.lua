@@ -14,7 +14,7 @@ CBankItem = class(CItem,
 );
 
 function CBankItem:update()
-	self.Address = getBaseAddress(addresses.bank.base) + ( (self.BagId - 1) * 68 );
+	self.Address = getBaseAddress(addresses.bank.base) + ( (self.BagId - 1) * addresses.inventory.item.size );
 
 	-- Check if available
 	if self.BagId > 40 and self.BagId <= 200 then

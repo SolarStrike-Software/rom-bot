@@ -275,10 +275,10 @@ addresses = {
 		casting = 0x1c
 	},
 	equipment = {
-		base = 0x6086e8,
+		base = 0x60B86C,
 	},
 	bank = {
-		base = 0x61A5C4,
+		base = 0x61DB94,
 		open = {
             base = 0x662CDC,
 			offset = 0x10,
@@ -292,6 +292,9 @@ addresses = {
 	},
 	inventory = {
 		base = 0x619808,
+		item = {
+			size = 0x48
+		},
 		rent = {
 			base = 0x60fe30, --[[{inventory_rent_base}]]
 			offset = 0x107cc, --[[{inventory_rent_offset}]]

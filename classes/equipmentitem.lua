@@ -13,7 +13,7 @@ CEquipmentItem = class(CItem,
 );
 
 function CEquipmentItem:update()
-	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * 0x44 );
+	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * addresses.inventory.item.size );
 	CItem.update(self)
 
 	if( settings.profile.options.DEBUG_INV ) then
