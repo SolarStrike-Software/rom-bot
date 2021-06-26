@@ -179,7 +179,7 @@ function selectGame(character)
 	end
 
 	charToUse = {};
-	
+
 	for i = 1, #windowList, 1 do
 		local process, playerAddress, nameAddress;
 	    -- open first window
@@ -191,19 +191,19 @@ function selectGame(character)
 		else
 			ver = ""
 		end
-		
+
 		-- read player address
 		showWarnings(false);
 		local gameroot = getModuleAddress(procId, "Client.exe") + addresses.game_root.base;
 		local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base);
-		
+
 		-- read player name
 		if( playerAddress ) then
 			nameAddress = memoryReadUInt(process, playerAddress + addresses.game_root.pawn.name_ptr);
 		else
 			nameAddress = nil;
 		end
-		
+
 		-- store the player name, with window number
 		if nameAddress == nil then
 		    charToUse[i] = "(RoM window "..i..")" .. ver;
@@ -287,95 +287,6 @@ function selectGame(character)
 end
 
 
-function printPicture(pic, text, textColor)
-	if not textColor then
-	    textColor = 0;
-	end
-
-	local readfile = io.open(getExecutionPath() .. "/database/img/"..pic..".bmp", "r");
-	if not readfile then
-	    print(pic);
-	    return 0;
-	end
-
-	file = readfile:read("*all");
-	local height = string.byte(file, 23);
-	local width = string.byte(file, 19);
-	-- color data starts from 118 ends in -4
-	--for i = 0, 200,1 do
-	    --printf(i..":");
-		--print(string.byte(file, i));
-		--printf("\n");
-	--end
-	colorData = string.sub(file, 119, -4);
-	dataLength = string.len(colorData);
-	--colorData = string.reverse(colorData);
-	color = {};
-	for i = 1, dataLength, 1 do
-		data = string.byte(colorData, i);
-		first = math.floor(data/16);
-		second = data - (first*16);
-
-		position = (dataLength * 2) - (i * 2);
-		color[position] = second;
-		color[position + 1] = first;
-	end
-	i = 0;
-	a = 1;
-	newline = false;
-	for y = 1, height, 1 do
-		for x = 1, width, 1 do
-		    nextchar = "¤";
-		    if not newline and not (a > string.len(text)) then
-		    	nextchar = string.char(string.byte(text, a));
-				a = a + 1;
-			end
-
-		    if nextchar == "\n" then
-		        nextchar = "¤";
-		        newline = true;
-			end
-
-			pixel = i+width-x;
-			col = color[pixel];
-
-			-- repair colors from an unknown bug
-			if col == 9 then
-			    col = 12
-      		elseif col == 12 then
-      		    col = 9
-      		elseif col == 1 then
-      		    col = 4
-      		elseif col == 4 then
-      		    col = 1
-      		elseif col == 3 then
-      		    col = 6
-      		elseif col == 6 then
-      		    col = 3
-      		elseif col == 7 then
-      		    col = 8
-      		elseif col == 8 then
-      		    col = 7
-      		elseif col == 11 then
-      		    col = 14
-      		elseif col == 14 then
-      		    col = 11
-			end
-
-			if nextchar == "¤" then
-				cprintf(col*16+col, nextchar);
-				--cprintf(col*16, col);
-   			else
-				cprintf(col*16+textColor, nextchar);
-			end
-			--printf(color[i]);
-		end
-		newline = false;
-		i = i + 6 + width;
-		printf("\n")
-	end
-end
-
 -- get current directory (theres gotho be an easier way)
 function currDir()
   os.execute("cd > cd.tmp")
@@ -397,7 +308,7 @@ end
 local _procId = nil;
 function getProcId()
 	_procId = _procId or findProcessByWindow(getWin())
-	
+
 	return _procId;
 end
 
@@ -534,7 +445,7 @@ function timedSetWindowName(profile)
 		player.Class1 = memoryReadRepeat("int", getProc(), player.Address + addresses.game_root.pawn.class1) or player.Class1;
 		player.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (player.Class1 - 1)) + addresses.class_info.level) or player.Level
 		player.XP = memoryReadRepeat("int", getProc(), getBaseAddress(addresses.class_info.base) + (addresses.class_info.size * (player.Class1 - 1))) or player.XP
-		
+
 		if player.XP == 0 or player.Level == 0 then return end
 
 		local newExp = player.XP or 0;
@@ -1105,13 +1016,13 @@ function utf8ToAscii_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceUtf8(_str, 195164);		-- ä
-	_str = replaceUtf8(_str, 195132);		-- Ä
-	_str = replaceUtf8(_str, 195182);		-- ö
-	_str = replaceUtf8(_str, 195150);		-- Ö
-	_str = replaceUtf8(_str, 195188);		-- ü
-	_str = replaceUtf8(_str, 195156);		-- Ü
-	_str = replaceUtf8(_str, 195159);		-- ß
+	_str = replaceUtf8(_str, 195164);		-- ï¿½
+	_str = replaceUtf8(_str, 195132);		-- ï¿½
+	_str = replaceUtf8(_str, 195182);		-- ï¿½
+	_str = replaceUtf8(_str, 195150);		-- ï¿½
+	_str = replaceUtf8(_str, 195188);		-- ï¿½
+	_str = replaceUtf8(_str, 195156);		-- ï¿½
+	_str = replaceUtf8(_str, 195159);		-- ï¿½
 	return _str;
 end
 
@@ -1128,13 +1039,13 @@ function asciiToUtf8_umlauts(_str)
 		return _str
 	end
 
-	_str = replaceAscii(_str, 195164);		-- ä
-	_str = replaceAscii(_str, 195132);		-- Ä
-	_str = replaceAscii(_str, 195182);		-- ö
-	_str = replaceAscii(_str, 195150);		-- Ö
-	_str = replaceAscii(_str, 195188);		-- ü
-	_str = replaceAscii(_str, 195156);		-- Ü
-	_str = replaceAscii(_str, 195159);		-- ß
+	_str = replaceAscii(_str, 195164);		-- ï¿½
+	_str = replaceAscii(_str, 195132);		-- ï¿½
+	_str = replaceAscii(_str, 195182);		-- ï¿½
+	_str = replaceAscii(_str, 195150);		-- ï¿½
+	_str = replaceAscii(_str, 195188);		-- ï¿½
+	_str = replaceAscii(_str, 195156);		-- ï¿½
+	_str = replaceAscii(_str, 195159);		-- ï¿½
 	return _str;
 end
 
@@ -1444,7 +1355,7 @@ function convertProfileName(_profilename)
 	-- convert player/profile name from UTF-8 to ASCII
 	load_profile_name = convert_utf8_ascii(_profilename);
 
-	-- replace special ASCII characters like öüäú / hence open.XML() can't handle them
+	-- replace special ASCII characters like ï¿½ï¿½ï¿½ï¿½ / hence open.XML() can't handle them
 	new_profile_name , hf_convert = replace_special_ascii(load_profile_name);	-- replace characters
 
 	if( hf_convert ) then		-- we replace some special characters
@@ -1860,9 +1771,9 @@ function Attack()
 				addresses.code_mod.freeze_target.original_code,
 				addresses.code_mod.freeze_target.replace_code
 			);
-			
+
 			local codemodInstalled = codemod:safeInstall();
-			
+
 			if( codemodInstalled ) then
 				print("installed code mod");
 			else
@@ -2393,25 +2304,25 @@ function GetSkillBookData(_tabs)
 		if( not tmp.Id ) then
 			return nil;
 		end
-		
+
 		-- name can either be a string or a pointer to a string
 		-- Try to read it as a string; if it contains unexpected
 		-- characters, try reading it as a pointer
 		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
 		if( not validName(tmp.Name, 24) ) then
 			tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
-			
+
 		end
 		tmp.TPToLevel = memoryReadInt(proc, addresses.skillbook.skill.tp_to_level) or 0;
 		tmp.Level = memoryReadInt(proc, address + addresses.skillbook.skill.level) or player.Level or 0;
 		tmp.aslevel = memoryReadInt(proc, address + addresses.skillbook.skill.as_level) or tmp.Level or player.Level or 0;
-		
+
 		-- Get power and consumables
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
 		if( tmp.BaseItemAddress == nil ) then
 			return nil;
 		end
-		
+
 		for count = 0, 1 do
 			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
 			if uses == 0 then
@@ -2458,12 +2369,12 @@ function GetSkillBookData(_tabs)
 
 	local tabCount	=	3;
 	local hasClass2	=	false;
-	
+
 	if( type(player) ~= "nil" and player.Class2 > 0 ) then
 		tabCount	=	4;
 		hasClass2	=	true;
 	end
-	
+
 	for tab = 2,tabCount do
 		-- The first tab in skillbook isn't stored in this same way, so the 2nd tab is actually
 		-- the first in this memory structure.
@@ -2471,43 +2382,43 @@ function GetSkillBookData(_tabs)
 		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
 		local tabindex	=	tab - 2;
 		local base		=	getBaseAddress(addresses.skillbook.base) + addresses.skillbook.offset;
-		
+
 		-- 2nd class skills are stored on a separate section of memory
 		local book			=	1;
 		local tabStartOff	=	addresses.skillbook.book1_start;
 		local tabEndOff		=	addresses.skillbook.book1_end;
-		
+
 		if( tab == 3 and hasClass2 ) then
 			book		=	2;
 			tabindex	=	tab - 3; -- Switch books, so need to roll back more
 			tabStartOff	=	addresses.skillbook.book2_start;
 			tabEndOff	=	addresses.skillbook.book2_end;
 		end
-		
+
 		if( tab >= 4 ) then
 			tabindex = tab - 3;
 		end
-		
+
 		if( tab == 3 and not hasClass2 ) then
 			-- If we do *not* have a second class, and are on our last tab (tab3),
 			-- pretend that it is tab4 (as if we had a 2nd class) because this is
 			-- what we actually will need for using the skill
 			tab = 4;
 		end
-		
+
 		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff);
 		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabEndOff);
-		
+
 		if tabBaseAddress ~= 0 and tabEndAddress ~= 0 then
 			for num = 1, (tabEndAddress - tabBaseAddress) / skillSize do
 				local skilladdress = tabBaseAddress + (num - 1) * skillSize
 				tmpData = GetSkillInfo(skilladdress)
 				if tmpData ~= nil and tmpData.Name ~= nil and tmpData.Name ~= "" then
-					
+
 					if( settings.profile.options.DEBUG_SKILLDISCOVER or settings.options.DEBUGGING ) then
 						cprintf(cli.green, "Found skill 0x%X ID(%d) Tab(%d-%d) \"%s\"\n", tmpData.Address, tmpData.Id or -1, tab, num, tmpData.Name or "<no name>");
 					end
-					
+
 					tabData[tmpData.Name] = {
 						Address = tmpData.Address,
 						Id = tmpData.Id,
@@ -2656,29 +2567,29 @@ function readCachedGameTexts()
 		else
 			return false;
 		end
-		
+
 		return true;
 	end
-	
+
 	return false;
 end
 
 function readAndCacheGameTexts()
 	print("Collecting and caching game texts... Please be patient.");
-	
+
 	local base = getBaseAddress(addresses.text.base);
 	local startAddress = memoryReadIntPtr(getProc(), base, addresses.text.start_addr);
 	local endAddress = memoryReadIntPtr(getProc(), base, addresses.text.end_addr);
 	local totalSize = endAddress - startAddress;
-	
+
 	local maxKeySize = 128;
 	local maxValueSize = 4096;
 	local currentAddress = startAddress;
-	
+
 	outFile = io.open(textCacheFilename, 'w');
 	outFile:write("return {\n");
 	outFile:write(sprintf("\t['GAME_VERSION'] = \"%s\",\n", getGameVersion()));
-	
+
 	local progressBarSize = 20;
 	local progressBarFmt = "\rProgress: [%-"..progressBarSize .. "s] %3d%%";
 	local percentage = 0;
@@ -2688,20 +2599,20 @@ function readAndCacheGameTexts()
 		local key = memoryReadString(getProc(), currentAddress, maxKeySize);
 		local value = memoryReadString(getProc(), currentAddress + #key + 1, maxValueSize);
 		currentAddress = currentAddress + #key + #value + 2;
-		
+
 		getTEXTCache[key] = value;
-		
-		
+
+
 		-- Do some character substitutions to ensure that we're formatting it correctly for Lua
 		key = key:gsub('\'', "\\'");
-		
+
 		value = value:gsub("\\", '\\\\');
 		value = value:gsub("\r", '\\r');
 		value = value:gsub("\n", '\\n');
 		value = value:gsub('"', '\\"');
 		value = value:gsub('\'', "\\'");
 		outFile:write(sprintf("\t['%s'] = \"%s\",\n", key, value));
-		
+
 		percentage = math.floor(((currentAddress - startAddress) / totalSize)*100 + 0.5);
 		if( percentage ~= lastPercentage ) then
 			printf(progressBarFmt, string.rep('=', percentage/100 * progressBarSize), percentage);
@@ -2710,7 +2621,7 @@ function readAndCacheGameTexts()
 	end
 	outFile:write("}\n");
 	outFile:close();
-	
+
 	printf(progressBarFmt .. "\n", string.rep('=', progressBarSize), 100);
 end
 
@@ -2723,7 +2634,7 @@ function getGameVersion(proc)
 	if proc == nil then
 		proc = getProc()
 	end
-	
+
 	if( proc == nil ) then
 		error("Could not find game client; please make sure the game is running and IS NOT MINIMIZED.");
 	end
@@ -2965,7 +2876,7 @@ function isGitInstalled()
 		-- Can't check
 		return false;
 	end
-	
+
 	local response = io.popen('where git'):read('*a');
 	if( string.sub(response, 0, 5) == 'INFO:' ) then
 		return false;
@@ -2978,7 +2889,7 @@ function isGitUpdateAvailable()
 	if( isGitInstalled() == false ) then
 		return false;
 	end
-	
+
 	local path = getExecutionPath();
 	local response = io.popen(sprintf('cd "%s" && git fetch origin && git status -uno', path)):read('*a');
 	if( response:find('Your branch is behind') ~= nil ) then
@@ -3012,9 +2923,15 @@ function getCurrentRevision()
 			return hash;
 		end
 	end
-	
+
 	local path = getExecutionPath();
 	local response = io.popen(sprintf('cd "%s" && git rev-parse --short HEAD', path)):read('*a');
+
+	-- Remove trailing \n if it is there
+	if( response:sub(-1) == "\n" ) then
+		response = response:sub(0, #response-1)
+	end
+
 	return response;
 end
 
@@ -3032,7 +2949,7 @@ function getLastUpdateCheckedTime()
 	if( file ) then
 		checkedTime = file:read('*n');
 	end
-	
+
 	return checkedTime;
 end
 
@@ -3040,26 +2957,26 @@ function validName(name, maxlen)
 	if( type(name) ~= "string" ) then
 		return false;
 	end
-	
+
 	if( #name == 0 ) then
 		return false;
 	end
-	
+
 	if( maxlen and (#name > 24) ) then
 		return false;
 	end
-	
+
 	-- More in-depth character-by-character checking
 	for i = 1,#name do
 		local chrCode = string.byte(name:sub(i,i));
 		if( chrCode < 32 ) then -- non-printable / control characters
 			return false;
 		end
-		
+
 		if( chrCode == 127 ) then -- DEL
 			return false;
 		end
-		
+
 		if( (chrCode >= 34 and chrCode <= 38)
 			or (chrCode >= 91 and chrCode <= 93)
 			or (chrCode == 95)
@@ -3069,12 +2986,12 @@ function validName(name, maxlen)
 		) then
 			return false; -- Non-name symbols
 		end
-		
+
 		if(chrCode >= 255) then
 			return false;
 		end
 	end
-	
+
 	return true;
 end
 
@@ -3082,30 +2999,30 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 	filename = filename or ""
 	linesbefore = linesbefore or 5
 	linesafter = linesafter or 5
-	
+
 	-- Try to information from errmsg
 	linenumber = tonumber(string.match(errmsg, "%[string \"%.%.%.\"%]:(%d+):") or -1)
-	
+
 	startline = 0
 	endline = 0
 	if linenumber > 0 then
 		startline = math.max(0, linenumber - linesbefore)
 		endline = linenumber + linesafter
 	end
-	
+
 	-- Output code sample
 	if( filename ~= "" ) then
 		print("File: ", filename .. "\n")
 	end
-	
+
 	lc = 0
 	for line in string.gmatch(luacode, "(.-)\r?\n") do
 		lc = lc + 1
-		
+
 		if endline > 0 and lc > endline then
 			break;
 		end
-		
+
 		if lc >= startline and lc <= endline then
 			if( lc == linenumber ) then
 				cprintf(cli.lightred, sprintf("%6d >>", lc) ..line .. "\n")
@@ -3114,7 +3031,7 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 			end
 		end
 	end
-	
+
 	print("")
 	error(errmsg, 2)
 end

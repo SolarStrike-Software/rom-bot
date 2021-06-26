@@ -1,4 +1,4 @@
-BOT_VERSION = 4.0;
+BOT_VERSION = 4.1;
 BOT_REVISION = '<UNKNOWN>';
 ;
 if( type(getVersion) ~= 'function' or (getVersion() / 100) >= 1.06 ) then
@@ -108,17 +108,20 @@ __WPL = nil;	-- Way Point List
 __RPL = nil;	-- Return Point List
 
 
-
-
-
-
 -- start message
-local gitRevision = getCurrentRevision();
-text = sprintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" ..
-	"Welcome to rom bot! press END to quit\n" ..
-	"RoM Bot Version %0.2f, Revision %s\n", BOT_VERSION, gitRevision);
+print("\n")
+cprintf(cli.red,         [=[        ██████╗  ██████╗ ███╗   ███╗    ██████╗  ██████╗ ████████╗%s]=], "\n");
+cprintf(cli.lightred,    [=[        ██╔══██╗██╔═══██╗████╗ ████║    ██╔══██╗██╔═══██╗╚══██╔══╝%s]=], "\n");
+cprintf(cli.yellow,      [=[        ██████╔╝██║   ██║██╔████╔██║    ██████╔╝██║   ██║   ██║%s]=], "\n");
+cprintf(cli.lightgreen,  [=[        ██╔══██╗██║   ██║██║╚██╔╝██║    ██╔══██╗██║   ██║   ██║%s]=], "\n");
+cprintf(cli.blue,        [=[        ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ██████╔╝╚██████╔╝   ██║%s]=], "\n");
+cprintf(cli.purple,      [=[        ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝    ╚═════╝  ╚═════╝    ╚═╝%s]=], "\n");
 
-printPicture("logo", text, 4);
+local gitRevision = getCurrentRevision();
+local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
+print();
+cprintf(cli.turquoise, "        RoM Bot Version %0.2f            Revision %s\n", BOT_VERSION, gitRevision);
+cprintf(cli.turquoise, "        Game Version %10s         Window (%d, %d, %d, %d)\n\n\n", getGameVersion(), hf_x, hf_y, hf_wide, hf_high);
 
 
 if( (os.time() - getLastUpdateCheckedTime())  > 60*10 ) then
@@ -127,6 +130,7 @@ if( (os.time() - getLastUpdateCheckedTime())  > 60*10 ) then
 	end
 	setLastUpdateCheckedTime();
 end
+
 
 
 function main()
@@ -272,10 +276,6 @@ function main()
 		printf("[DEBUG] Cam X: %0.2f, Y: %0.2f, Z: %0.2f\n", camera.X, camera.Y, camera.Z);
 		printf("[DEBUG] Cam XU: %0.2f, YU: %0.2f, ZU: %0.2f\n", camera.XUVec, camera.YUVec, camera.ZUVec);
 	end
-
-	cprintf(cli.turquoise, "Game Version is %s\n", getGameVersion())
-	local hf_x, hf_y, hf_wide, hf_high = windowRect( getWin());
-	cprintf(cli.turquoise, language[42], hf_wide, hf_high, hf_x, hf_y );	-- RoM windows size
 
 	-- convert player name to profile name and check if profile exist
 	local load_profile_name;	-- name of profile to load
