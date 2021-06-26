@@ -1055,7 +1055,7 @@ local missingUpdates = 0;
 
 -- Use MDBrute to find memdatabase
 mdbrutePath = getExecutionPath() .. "/bin/";
-if( false and fileExists(mdbrutePath .. "mdbrute.exe") ) then
+if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
 	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address... This may take some time.\n\n\n");
 	local cmd = sprintf('cd "%s" && mdbrute.exe --first-only', mdbrutePath);
 	local mdbruteResults = io.popen(cmd):read('*a');
@@ -1070,7 +1070,7 @@ if( false and fileExists(mdbrutePath .. "mdbrute.exe") ) then
 	end
 else
 	print("MDBrute not installed; could not scan for memdatabase");
-	printf("If you would like to use this feature, ownload, extract, and place mdbrute.exe into:\n%s\n\n", mdbrutePath);
+	printf("If you would like to use this feature, download, extract, and place mdbrute.exe into:\n%s\n\n", mdbrutePath);
 	print("Download at: https://github.com/SolarStrike-Software/mdbrute/releases\n\n\n");
 end
 

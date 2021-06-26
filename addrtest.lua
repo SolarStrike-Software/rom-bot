@@ -130,6 +130,7 @@ player = CPlayer.new();
 printLine(colWidth, "Name:", player.Name);
 printLine(colWidth, "Class 1:", getClassName(player.Class1) .. " lvl " .. player.Level);
 printLine(colWidth, "Class 2:", getClassName(player.Class2) .. " lvl " .. player.Level2);
+printLine(colWidth, "HP:", player.HP .. "/" .. player.MaxHP);
 printLine(colWidth, "MP:", player.MP .. "/" .. player.MaxMP);
 printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
 print("");
@@ -158,8 +159,13 @@ end
 
 print("");
 printHeader("Texts");
+local expectations = {
+	['AC_INSTRUCTION_01'] = 'AC command (Zone 81)',
+	['AC_INSTRUCTION_02'] = 'Set season',
+	['ZONE955_JOLIN_S1'] = 'Only I can sing on my stage!'
+}
 for i,key in pairs({'AC_INSTRUCTION_01', 'AC_INSTRUCTION_02', 'ZONE955_JOLIN_S1'}) do
-	printLine(colWidth, key, getTEXT(key));
+	printLine(colWidth, key, sprintf("%-25s", getTEXT(key)), sprintf("%-25s", expectations[key]));
 end
 
 print("\nLoading data for additional testing...");
