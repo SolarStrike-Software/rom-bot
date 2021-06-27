@@ -35,7 +35,7 @@ addresses = {
 		base = 0x622C68,
 	},
 	crafting = {
-		base = 0x60b0fc, --[[{crafting_base}]]
+		base = 0x60B19C, --[[{crafting_base}]]
 	},
 	code_mod = {
 		freeze_target = {

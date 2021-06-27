@@ -135,6 +135,19 @@ printLine(colWidth, "MP:", player.MP .. "/" .. player.MaxMP);
 printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
 print("");
 
+printHeader("Craft Levels");
+local colWidth = 20;
+printLine(colWidth, "Blacksmithing:", player:getCraftLevel(CRAFT_BLACKSMITHING));
+printLine(colWidth, "Carpentry:", player:getCraftLevel(CRAFT_CARPENTRY));
+printLine(colWidth, "Armorcrafting:", player:getCraftLevel(CRAFT_ARMORCRAFTING));
+printLine(colWidth, "Tailoring:", player:getCraftLevel(CRAFT_TAILORING));
+printLine(colWidth, "Cooking:", player:getCraftLevel(CRAFT_COOKING));
+printLine(colWidth, "Alchemy:", player:getCraftLevel(CRAFT_ALCHEMY));
+printLine(colWidth, "Mining:", player:getCraftLevel(CRAFT_MINING));
+printLine(colWidth, "Woodcutting:", player:getCraftLevel(CRAFT_WOODCUTTING));
+printLine(colWidth, "Herbalism:", player:getCraftLevel(CRAFT_HERBALISM));
+print("");
+
 printHeader("Equipment Info");
 equipment = CEquipment();
 
