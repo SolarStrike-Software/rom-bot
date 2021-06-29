@@ -3035,3 +3035,19 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 	print("")
 	error(errmsg, 2)
 end
+
+function printIntro()
+	print("\n")
+	cprintf(cli.red,         [=[        ██████╗  ██████╗ ███╗   ███╗    ██████╗  ██████╗ ████████╗%s]=], "\n");
+	cprintf(cli.lightred,    [=[        ██╔══██╗██╔═══██╗████╗ ████║    ██╔══██╗██╔═══██╗╚══██╔══╝%s]=], "\n");
+	cprintf(cli.yellow,      [=[        ██████╔╝██║   ██║██╔████╔██║    ██████╔╝██║   ██║   ██║%s]=], "\n");
+	cprintf(cli.lightgreen,  [=[        ██╔══██╗██║   ██║██║╚██╔╝██║    ██╔══██╗██║   ██║   ██║%s]=], "\n");
+	cprintf(cli.blue,        [=[        ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ██████╔╝╚██████╔╝   ██║%s]=], "\n");
+	cprintf(cli.purple,      [=[        ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝    ╚═════╝  ╚═════╝    ╚═╝%s]=], "\n");
+
+	local gitRevision = getCurrentRevision();
+	local hf_x, hf_y, hf_wide, hf_high = windowRect(getWin());
+	print();
+	cprintf(cli.turquoise, "        RoM Bot Version %0.2f            Revision %s\n", BOT_VERSION, gitRevision);
+	cprintf(cli.turquoise, "        Game Version %10s         Window (%d, %d, %d, %d)\n\n\n", getGameVersion(), hf_x, hf_y, hf_wide, hf_high);
+end
