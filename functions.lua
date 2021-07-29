@@ -3041,17 +3041,37 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 end
 
 function printIntro()
+	local expectedCodePage = 65001;
+	local utf8Enabled = io.popen(sprintf('chcp %d', expectedCodePage)):read('*a'):find(expectedCodePage) ~= nil --Try to use UTF-8 codepage
+
 	print("\n")
-	cprintf(cli.red,         [=[        ██████╗  ██████╗ ███╗   ███╗    ██████╗  ██████╗ ████████╗%s]=], "\n");
-	cprintf(cli.lightred,    [=[        ██╔══██╗██╔═══██╗████╗ ████║    ██╔══██╗██╔═══██╗╚══██╔══╝%s]=], "\n");
-	cprintf(cli.yellow,      [=[        ██████╔╝██║   ██║██╔████╔██║    ██████╔╝██║   ██║   ██║%s]=], "\n");
-	cprintf(cli.lightgreen,  [=[        ██╔══██╗██║   ██║██║╚██╔╝██║    ██╔══██╗██║   ██║   ██║%s]=], "\n");
-	cprintf(cli.blue,        [=[        ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ██████╔╝╚██████╔╝   ██║%s]=], "\n");
-	cprintf(cli.purple,      [=[        ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝    ╚═════╝  ╚═════╝    ╚═╝%s]=], "\n");
+	if( utf8Enabled ) then
+		printUtf8Logo();
+	else
+		printFallbackLogo()
+	end
 
 	local gitRevision = getCurrentRevision();
 	local hf_x, hf_y, hf_wide, hf_high = windowRect(getWin());
 	print();
 	cprintf(cli.turquoise, "        RoM Bot Version %0.2f            Revision %s\n", BOT_VERSION, gitRevision);
 	cprintf(cli.turquoise, "        Game Version %10s         Window (%d, %d, %d, %d)\n\n\n", getGameVersion(), hf_x, hf_y, hf_wide, hf_high);
+end
+
+function printUtf8Logo()
+	cprintf(cli.red,         [=[        ██████╗  ██████╗ ███╗   ███╗    ██████╗  ██████╗ ████████╗%s]=], "\n");
+	cprintf(cli.lightred,    [=[        ██╔══██╗██╔═══██╗████╗ ████║    ██╔══██╗██╔═══██╗╚══██╔══╝%s]=], "\n");
+	cprintf(cli.yellow,      [=[        ██████╔╝██║   ██║██╔████╔██║    ██████╔╝██║   ██║   ██║%s]=], "\n");
+	cprintf(cli.lightgreen,  [=[        ██╔══██╗██║   ██║██║╚██╔╝██║    ██╔══██╗██║   ██║   ██║%s]=], "\n");
+	cprintf(cli.blue,        [=[        ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ██████╔╝╚██████╔╝   ██║%s]=], "\n");
+	cprintf(cli.purple,      [=[        ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝    ╚═════╝  ╚═════╝    ╚═╝%s]=], "\n");
+end
+
+function printFallbackLogo()
+	cprintf(cli.red,         [=[         _____       __  __   ____        _   %s]=], "\n");
+	cprintf(cli.lightred,    [=[        |  __ \     |  \/  | |  _ \      | |  %s]=], "\n");
+	cprintf(cli.yellow,      [=[        | |__) |___ | \  / | | |_) | ___ | |_ %s]=], "\n");
+	cprintf(cli.lightgreen,  [=[        |  _  // _ \| |\/| | |  _ < / _ \| __|%s]=], "\n");
+	cprintf(cli.blue,        [=[        | | \ \ (_) | |  | | | |_) | (_) | |_ %s]=], "\n");
+	cprintf(cli.purple,      [=[        |_|  \_\___/|_|  |_| |____/ \___/ \__|%s]=], "\n");
 end
