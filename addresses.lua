@@ -381,3 +381,6 @@ addresses.partyIconList_base = 0x400000 + (addresses.party.icon_list.base);
 partyIconList_offset = addresses.party.icon_list.offset;
 partyMemberList_address = 0x400000 + (addresses.party.member_list.base);
 partyMemberList_offset = addresses.party.member_list.offset;
+
+addresses.loadingScreenPtr = 0x400000 + addresses.loading.base;
+addresses.loadingScreen_offset = addresses.loading.offsets;

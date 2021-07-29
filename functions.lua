@@ -1546,11 +1546,11 @@ function waitForLoadingScreen(_maxWaitTime)
 		--local newAddress = memoryReadRepeat("uintptr", getProc(), addresses.staticbase_char, addresses.charPtr_offset)
 		local base = getBaseAddress(addresses.game_root.base);--
 		newAddress = memoryReadRepeat("uintptr", getProc(), base, addresses.game_root.player.base);
-	until (newAddress ~= oldAddress and newAddress ~= 0) or memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) ~= 0
+	until (newAddress ~= oldAddress and newAddress ~= 0) or isLoading()
 	-- wait until loading screen is gone
 	repeat
 		rest(1000)
-	until memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) == 0
+	until not isLoading()
 	rest(2000)
 
 	-- Check if fully in game by checking if RoMScript works
@@ -1569,13 +1569,17 @@ end
 function isInGame()
 	-- At character select screen = 0
 	-- If in game, it is = 1
-	local loading = memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets);
-	local in_game = memoryReadInt(getProc(), getBaseAddress(addresses.in_game));
-	if( loading == 0 and in_game == 1 ) then
+	local loading = isLoading()
+	local in_game = memoryReadInt(getProc(), getBaseAddress(addresses.in_game)) == 1;
+	if( not loading and in_game ) then
 		return true
 	else
 		return false
 	end
+end
+
+function isLoading()
+	return memoryReadBytePtr(getProc(), getBaseAddress(addresses.loading.base), addresses.loading.offsets) == 1
 end
 
 -- Parse from |Hitem:33BF1|h|cff0000ff[eeppine ase]|r|h

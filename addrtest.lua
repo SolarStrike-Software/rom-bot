@@ -148,6 +148,12 @@ printLine(colWidth, "Woodcutting:", player:getCraftLevel(CRAFT_WOODCUTTING));
 printLine(colWidth, "Herbalism:", player:getCraftLevel(CRAFT_HERBALISM));
 print("");
 
+
+printHeader("Game/Loading Check");
+printLine(colWidth, "In-Game:", isInGame())
+printLine(colWidth, "Loading:", isLoading())
+
+
 printHeader("Equipment Info");
 equipment = CEquipment();
 
