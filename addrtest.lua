@@ -195,7 +195,7 @@ settings.loadProfile("Default")
 inventory = CInventory();
 inventory:update()
 
-print("")
+print("\n")
 printHeader("Inventory");
 print("")
 printHeader("Item Shop Backpack", ' ');
@@ -249,7 +249,8 @@ printLine(colWidth, "Objects found:", #olist.Objects);
 printLine(colWidth, sprintf("Top %d items", displayCount));
 for i = 1, displayCount do
 	v = olist.Objects[i];
-	printLine(colWidth, i, sprintf("ID: %-8d Address: 0x%08x Type: %d Name: %s", v.Id or 0, v.Address or 0, v.Type or -1, v.Name or ""));
+	local lootable = memoryReadRepeat("byte", getProc(), v.Address + addresses.game_root.pawn.lootable_flags) or -1;
+	printLine(colWidth, i, sprintf("ID: %-8d Address: 0x%08x Type: %d Name: %s, Lootable: %d", v.Id or 0, v.Address or 0, v.Type or -1, v.Name or "", lootable));
 end
 
 

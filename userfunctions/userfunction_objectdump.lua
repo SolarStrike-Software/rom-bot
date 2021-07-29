@@ -17,21 +17,23 @@ function objectDump(object, filename)
         filename = sprintf("%s%d-%s.dat", path, id, name);
     end
 
-    local size = 0x400;
+    local size = 0x1000;
     local outfile = io.open(filename, 'w');
 
-    for i = 0,size do
+    outfile:write(sprintf("Dump of 0x%X\n", object.Address))
+
+    for i = 0, size-1 do
         local addr = object.Address + i;
         local value = memoryReadUByte(getProc(), addr);
 
-        if( (i % 16) == 1 ) then
-            outfile:write(sprintf("%08x:\t", i - 1));
+        if( i == 0 or (i % 16) == 0 ) then
+            outfile:write(sprintf("\n%08x:\t", i));
         end
         outfile:write(sprintf("%02x", value));
 
-        if( (i > 0 and i % 16 == 0) or i == size ) then
+        if( i == size ) then
             outfile:write("\n");
-        else
+        elseif( (i % 16) < 15 ) then
             outfile:write(" ");
         end
     end

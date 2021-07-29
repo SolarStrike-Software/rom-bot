@@ -1,17 +1,37 @@
 <waypoints>
     <onLoad>
         local lastTargetAddr = nil;
+        local foundIds = {};
+        local olist = CObjectList();
         cprintf(cli.turquoise, "\n\nObject dumper is ready. Target some enemies!\n");
+
+        record = function (target)
+            objectDump(target);
+            printf("Saved object dump for %s (ID: %d)\n", (target.Name or 'unknown'), target.Id or -1);
+            foundIds[target.Id] = true;
+        end
+
+        validTarget = function (target)
+            return target ~= nil and target.Address > 0 and target.Id ~= -1 and target.Id ~= 0;
+        end
 
         while( true ) do
             if( player ) then
                 local target = player:getTarget();
-                if( target ~= nil and target.Address > 0 and target.Id ~= -1 and target.Address ~= lastTargetAddr ) then
+                if( validTarget(target) and target.Address ~= lastTargetAddr ) then
                     lastTargetAddr = target.Address;
-                    objectDump(target);
-                    print("Saved object dump for " .. (target.Name or 'unknown'));
+                    record(target);
                 end
             end
+
+            olist:update()
+            for i,v in pairs(olist.Objects) do
+                if( validTarget(v) and foundIds[v.Id] == nil ) then
+                    record(v)
+                end
+            end
+
+            yrest(10)
         end
     </onLoad>
 </waypoints>
