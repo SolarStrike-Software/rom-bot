@@ -6,3 +6,4 @@ logs/*
 backup-addresses.lua
 gitupdate-backup/
 .tags*
+.tmp/

@@ -1,12 +1,32 @@
 local path = getExecutionPath();
-local dir = getFilePath(path .. "/../");
+local dev = false;
 
-if( string.sub(path, 1, #dir) == dir ) then
-	local loc = #dir + 1;
-	if( string.sub(path, loc, loc) == "/" ) then
-		loc = loc + 1;
-	end
-	path = string.sub(path, loc);
+local tag = nil;
+for i,arg in pairs(args) do
+    if( arg == "--dev" ) then
+        tag = "latest";
+    end
 end
 
-error(sprintf("Update script is deprecated\nUse %s/addrupdate instead.", path));
+
+-- Try to get the latest release version
+if( tag == nil ) then
+    local cmd = sprintf('cd "%s" && bin\\rombot_updater.exe check', path);
+    local results = io.popen(cmd):read('*a');
+    local releases = results:gmatch("[^\r\n]+")
+    releases() -- discard first results ("Recent releases:" string)
+    tag = releases()
+end
+
+
+cprintf_ex("|white|Installing RoM-bot `|turquoise|%s|white|`... ", tag)
+
+local cmd = sprintf('cd "%s" && bin\\rombot_updater.exe update', path);
+local results = io.popen(cmd):read('*a');
+
+if( string.find(results, "status 200") ) then
+    cprintf_ex("|lightgreen|OK|white|!\n")
+else
+    cprintf(cli.red, "Failed!\n");
+    print(results)
+end
