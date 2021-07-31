@@ -152,6 +152,16 @@ print("");
 printHeader("Game/Loading Check");
 printLine(colWidth, "In-Game:", isInGame())
 printLine(colWidth, "Loading:", isLoading())
+print("")
+
+printHeader("Casting")
+CPawn.updateCasting(player)
+printLine(colWidth, "Casting (Pawn):", player.Casting);
+player:updateCasting()
+printLine(colWidth, "Casting (Player):", player.Casting);
+printLine(colWidth, "Harvesting:", player.Harvesting);
+printLine(colWidth, "Collecting Type", player:getCollectingType());
+print("")
 
 
 printHeader("Equipment Info");

@@ -121,7 +121,7 @@ CPlayer = class(CPawn,
 function CPlayer.new()
 	local gameroot = getBaseAddress(addresses.game_root.base);
 	local playerAddress = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
-	
+
 	local np = CPlayer(playerAddress);
 	np:initialize();
 	np:update();
@@ -203,32 +203,32 @@ function CPlayer:update()
 	local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
 	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class1) or self.Class1;
 	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
-	
+
 	if( self.Class1 > CLASS_CHAMPION ) then
 		cprintf(cli.yellow, "[warn] Player class may be invalid (%d)\n", self.Class1);
 	end
-	
+
 	if( self.Class2 > CLASS_CHAMPION ) then
 		cprintf(cli.yellow, "[warn] Player class 2 may be invalid (%d)\n", self.Class2);
 	end
-	
+
 	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
 	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
 
 	if( self.Level == nil or self.Level < 1 or self.Level > 300 ) then
 		self.Level = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.level) or self.Level;
 	end
-	
+
 	if( self.Level2 == nil or self.Level2 < 1 or self.Level2 > 300 ) then
 		self.Level2 = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.level2) or self.Level2;
 	end
-	
 
-	
+
+
 	self.XP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1))) or self.XP
 	self.TP = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.tp) or self.TP
-	
-	
+
+
 	self:updateCasting()
 	self:updateBattling()
 	self:updateStance() -- Also updates Stance2
@@ -616,7 +616,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 									bestEnemy = obj;
 									bestScore = currentScore;
 								end
-							end							
+							end
 						end
 					end
 				end
@@ -655,7 +655,7 @@ function CPlayer:target(pawnOrAddress)
 		RoMCode("OBB_ChangeTraget("..tostring(guid)..")")
 	end
 
-	
+
 	memoryWriteInt(getProc(), self.Address + addresses.game_root.pawn.target, address);
 	self.TargetPtr = address;
 
@@ -3962,11 +3962,11 @@ end
 
 function CPlayer:updateCasting()
 	CPawn.updateCasting(self);
-	
+
 	if( self.Casting ) then
 		return;
 	end
-	
+
 	-- Also check mount cast bar
 	if( not self.Casting ) then
 		local castingMount = memoryReadIntPtr(getProc(), getBaseAddress(addresses.game_root.base), addresses.game_root.mounting);
@@ -3976,16 +3976,20 @@ function CPlayer:updateCasting()
 			return;
 		end
 	end
-	
+
+	local collectingType = self:getCollectingType()
+	if( collectingType ~= nil and collectingType > 0 ) then
+		self.Casting = true;
+		return;
+	end
+end
+
+function CPlayer:getCollectingType()
 	-- Is the player collecting something?
 	-- 0 = not collecting anything
 	-- 1 = quest item
 	-- 3 = harvestable item
-	local collectingType = memoryReadIntPtr(getProc(), getBaseAddress(addresses.collecting.base), addresses.collecting.type) or 0;
-	if( collectingType > 0 ) then
-		self.Casting = true;
-		return;
-	end
+	return memoryReadIntPtr(getProc(), getBaseAddress(addresses.collecting.base), addresses.collecting.type) or nil;
 end
 
 function CPlayer:dismount()
@@ -4051,11 +4055,11 @@ function CPlayer:clickToCast( onmouseover )
 	local hf_x, hf_y, ww, wh = windowRect( getWin());
 	local clickX = math.ceil(ww/2)
 	local clickY = math.ceil(wh/2)
-	
+
 	-- Freeze mouse
 	local codemodInstalled = codemod:safeInstall();
 	local codemod2Installed = codemod:safeInstall();
-	
+
 	-- Ensure that an error here doesn't prevent us from uninstalling the code mod
 	pcall(function ()
 		rest(100);
@@ -4063,7 +4067,7 @@ function CPlayer:clickToCast( onmouseover )
 		memoryWriteIntPtr(getProc(), base, addresses.mouse.x_in_window, clickX);
 		memoryWriteIntPtr(getProc(), base, addresses.mouse.y_in_window, clickY);
 		rest(50);
-		
+
 		if onmouseover then
 			RoMCode('SpellTargetUnit("mouseover")')
 		else
@@ -4075,7 +4079,7 @@ function CPlayer:clickToCast( onmouseover )
 	if( codemodInstalled ) then
 		codemod:uninstall();
 	end
-	
+
 	if( codemod2Installed ) then
 		codemod2:uninstall();
 	end
