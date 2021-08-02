@@ -29,7 +29,11 @@ function objectDump(object, filename)
         if( i == 0 or (i % 16) == 0 ) then
             outfile:write(sprintf("\n%08x:\t", i));
         end
-        outfile:write(sprintf("%02x", value));
+        if( value ~= nil ) then
+            outfile:write(sprintf("%02x", value));
+        else
+            outfile:write("--");
+        end
 
         if( i == size ) then
             outfile:write("\n");

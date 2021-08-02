@@ -163,7 +163,7 @@ end
 
 --=== look for indicator that the chest has loot ===--
 function clickchest(address)
-	local chest = memoryReadRepeat("byte", getProc(), address + addresses.game_root.pawn.lootable_flags--[[0x2F0]]) or 0
+	local chest = memoryReadRepeat("byte", getProc(), address + addresses.game_root.pawn.lootable_flags + 0x07) or 0
 	if chest ~= 0 then
 		return true
 	else
