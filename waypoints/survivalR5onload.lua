@@ -334,6 +334,8 @@ function breaktiles()
 			until clicktile(tile.Address) == false
 			LastTileDug = i
 
+			yrest(500);
+
 			-- see what's there
 			local starttime = os.clock()
 			repeat
@@ -375,6 +377,7 @@ function breaktiles()
 								yrest(50)
 								player:update()
 							until player.Casting == false
+							yrest(100);
 						until clickchest(result.Address) ~= true
 					end
 					break

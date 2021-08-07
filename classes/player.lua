@@ -3877,22 +3877,8 @@ function CPlayer:mount(_dismount)
 		return
 	end
 
-	local mountMethod = false
-	local mount
-
-	-- Find mount
-	local partnerFrameCount = RoMScript("PartnerFrame_GetPartnerCount(2)") or 0;
-	if partnerFrameCount > 0 then
-		-- There is a mount in the partner bag. Assign the mountmethod.
-		mountMethod = "partner"
-	elseif inventory then -- Make sure inventory has been mapped.
-		mount = inventory:getMount();
-		if mount then
-			mountMethod = "inventory"
-		end
-	end
-
 	-- Mount found?
+	local mount, mountMethod = self:getMount();
 	if(not mountMethod ) then
 		print("Could not find usable mount");
 		return
@@ -3915,7 +3901,7 @@ function CPlayer:mount(_dismount)
 	if _dismount and mountMethod == "inventory" then
 		self:updateBuffs()
 		for index, buff in pairs(self.Buffs) do
-			if string.find(mount.Name,buff.Name,1, true) then
+			if string.find(mount.Name,buff.Name,1, true) == 1 then
 				sendMacro("CancelPlayerBuff("..index..");")
 				return
 			end
@@ -3957,7 +3943,21 @@ function CPlayer:mount(_dismount)
 		end
 	end
 	yrest(500)
+end
 
+function CPlayer:getMount()
+	local partnerFrameCount = RoMScript("PartnerFrame_GetPartnerCount(2)") or 0;
+	if partnerFrameCount > 0 then
+		-- There is a mount in the partner bag. Assign the mountmethod.
+		return nil, "partner"
+	elseif inventory then -- Make sure inventory has been mapped.
+		mount = inventory:getMount();
+		if mount then
+			return mount, "inventory"
+		end
+	end
+
+	return nil, nil
 end
 
 function CPlayer:updateCasting()

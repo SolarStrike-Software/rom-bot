@@ -443,6 +443,7 @@ function CPawn:updateBuffs()
 		return
 	end
 
+	local buffIndex = 1;
 	for i = buffStart, buffEnd - 4, BuffSize do
 		local tmp = {}
 		tmp.Id = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.id);
@@ -452,8 +453,9 @@ function CPawn:updateBuffs()
 			tmp.Name, tmp.Count = parseBuffName(name)
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
-			
-			table.insert(self.Buffs,tmp)
+
+			table.insert(self.Buffs, buffIndex, tmp);
+			buffIndex = buffIndex + 1;
 		end
 	end
 	

@@ -273,6 +273,28 @@ printLine(colWidth, "Cursor item Bag ID:", cursor.ItemBagId or '<invalid>');
 
 
 print("")
+printHeader("Mount test");
+local mount, mountMethod = player:getMount();
+if( mount ~= nil ) then
+	print("Mounting...");
+	player:mount()
+	local start = os.time();
+	repeat
+		yrest(500);
+		player:updateCasting()
+		if( os.time() - start > 5 ) then
+			player.Casting = false;
+			print("Took too long.")
+		end
+	until player.Casting == false
+
+	print("Dismounting...");
+	player:mount(true)
+else
+	print("Could not find mount for player; skipping mount test.")
+end
+
+print("")
 printHeader("Code Mods");
 printHeader("Check Code In Memory", ' ');
 local installableCodemods = {}
