@@ -96,5 +96,7 @@ mountIds = {
     502562, -- Black Warhorse
     622122, -- Flame Beast
     621666, -- Infernal Wolf Spider
-    505063,  -- Dark Shadow Ferret
+    505063, -- Dark Shadow Ferret
+    506989, -- Roaring War Bear
+    626923, -- Oriental Dragon
 }
