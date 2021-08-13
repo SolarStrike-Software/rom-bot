@@ -2999,6 +2999,64 @@ function validName(name, maxlen)
 	return true;
 end
 
+function waitForObjects(objects, timeout)
+	if( type(objects) ~= "table" ) then
+		error("waitForobjects() expects a table of object names/IDs.", 2);
+	end
+
+	local objMap = {};
+	local resetMap = function ()
+		for i,v in pairs(objects) do
+			objMap[v] = false;
+		end
+	end
+
+	local allObjectsFound = function ()
+		for i,v in pairs(objMap) do
+			if( v == false ) then
+				return false;
+			end
+		end
+
+		return true;
+	end
+
+	local start = os.time();
+	local objList = CObjectList();
+	while( true ) do
+		objList:update();
+		resetMap();
+
+		-- Iterate over nearby objects and map any objects we find
+		if( player ~= nil and objMap[player.Name] == false ) then
+			objMap[player.Name] = true;
+		end
+
+		for i,v in pairs(objList.Objects) do
+			if( v.Id ~= nil and v.Id > 0 ) then
+				if( objMap[v.Id] == false ) then
+					objMap[v.Id] = true;
+				end
+
+				if( objMap[v.Name or ""] == false ) then
+					objMap[v.Name] = true;
+				end
+			end
+		end
+
+		if( allObjectsFound() ) then
+			break;
+		end
+
+		if( timeout ~= nil and (os.time() - start > timeout) ) then
+			print("Took too long to find objects; timing out.");
+			break;
+		end
+
+		yrest(100);
+	end
+end
+
 function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesafter)
 	filename = filename or ""
 	linesbefore = linesbefore or 5
