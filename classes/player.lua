@@ -4048,9 +4048,9 @@ end
 
 function CPlayer:clickToCast( onmouseover )
 	local codemodDetails = addresses.code_mod.freeze_mousepos;
-	local codemodDetails = addresses.code_mod.freeze_mousepos2;
+	local codemodDetails2 = addresses.code_mod.freeze_clicktocast_mouseoffscreen;
 	local codemod = CCodeMod(codemodDetails.base, codemodDetails.original_code, codemodDetails.replace_code);
-	local codemod2 = CCodeMod(codemodDetails.base, codemodDetails.original_code, codemodDetails.replace_code);
+	local codemod2 = CCodeMod(codemodDetails2.base, codemodDetails2.original_code, codemodDetails2.replace_code)
 
 	local hf_x, hf_y, ww, wh = windowRect( getWin());
 	local clickX = math.ceil(ww/2)
@@ -4058,7 +4058,9 @@ function CPlayer:clickToCast( onmouseover )
 
 	-- Freeze mouse
 	local codemodInstalled = codemod:safeInstall();
-	local codemod2Installed = codemod:safeInstall();
+	local codemod2Installed = codemod2:safeInstall();
+
+	-- 74 5C      je 00630AC0
 
 	-- Ensure that an error here doesn't prevent us from uninstalling the code mod
 	pcall(function ()
@@ -4075,6 +4077,7 @@ function CPlayer:clickToCast( onmouseover )
 		end
 		rest(50)
 	end);
+
 	-- unfreeze
 	if( codemodInstalled ) then
 		codemod:uninstall();

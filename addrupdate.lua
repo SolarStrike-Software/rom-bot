@@ -338,44 +338,35 @@ local updatables = {
 		]])
 	},
 
-	freeze_mousepos2_codemod = {
-		value_offset = 0x5F,
+	--[[
+		Can by found by breakpointing what accesses mouse X in window, then
+		moving the cursor off the RoM window (to the left and below the windows
+		seems to work best). Should see MOV [ESI+3B4], 0
+
+		Browse memory region on that -- above that should be a jump-if-not-equal
+		(NJL), and above this a few instructions should be calls to
+		USER32.GetCursorPos and USER32.ScreenToClient
+
+		Swapping the JNL for a JMP will jump over the code that triggers
+		when the mouse cursor is not over the game window.
+	]]
+	freeze_clicktocast_mouseoffscreen = {
+		value_offset = 0x1B,
 		value_size = 4,
 		value_raw = false,
 		value_type = "address",
 		pattern = byteArrayToPattern([[
-		83 C4 0C
-		80 7E ?? 00
-		74 5C
-		8D 4C 24 08
-		51
-		FF 15 ?? ?? ?? ??
-		8B 46 ??
-		8D 54 24 ??
-		52
-		50
-		FF 15 ?? ?? ?? ??
-		8B 4C 24 ??
-		85 C9
-		7D 0C
-		C7 86 ?? ?? ?? ?? ?? ?? ?? ??
-		EB 0D
-		8B 46 ??
-		3B C8
-		7E 06
-		89 86 ?? ?? ?? ??
-		8B 4C ?? ??
-		85 C9
-		7D 0C
-		C7 86 ?? ?? ?? ?? ?? ?? ?? ??
-		EB 0D
-		8B 46 ??
-		3B C8
-		7E 06
-		89 86 ?? ?? ?? ??
-		DB 86 ?? ?? ?? ??
-		8B 4E ??
-		85 C9
+			FF 15 ?? ?? ?? ??
+			8B 46 28
+			8D 54 24 08
+			52
+			50
+			FF 15 ?? ?? ?? ??
+			8B 4C 24 08
+			85 C9
+			7D 0C
+			C7 86 B4 03 00 00 00 00 00 00
+			EB 0D
 		]])
 	},
 
