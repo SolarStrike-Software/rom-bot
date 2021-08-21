@@ -2940,8 +2940,12 @@ function getCurrentRevision()
 end
 
 function setLastUpdateCheckedTime()
-	local path = getExecutionPath();
-	local file = io.open(path .. "/cache/updatecheck.txt", 'w');
+	local path = getExecutionPath() .. "/cache/";
+	if( not getDirectory(path) ) then
+		io.popen(sprintf('mkdir "%s"', path));
+		yrest(50);
+	end
+	local file = io.open(path .. "updatecheck.txt", 'w');
 	file:write(os.time());
 	file:close();
 end
