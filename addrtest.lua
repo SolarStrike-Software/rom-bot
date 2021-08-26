@@ -227,7 +227,7 @@ found = 0
 for i = 60,239 do
 	v = inventory.BagSlot[i]
 	if( v and not v.Empty ) then
-		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
+		printLine(colWidth, i, sprintf("ID: %-8d Bound: %d Count: %-5d %s", v.Id or 0, v.Bound and 1 or 0, v.ItemCount or 0, v.Name or ""));
 		found = found + 1
 	end
 end
