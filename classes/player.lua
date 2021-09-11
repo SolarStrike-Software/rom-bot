@@ -4060,8 +4060,6 @@ function CPlayer:clickToCast( onmouseover )
 	local codemodInstalled = codemod:safeInstall();
 	local codemod2Installed = codemod2:safeInstall();
 
-	-- 74 5C      je 00630AC0
-
 	-- Ensure that an error here doesn't prevent us from uninstalling the code mod
 	pcall(function ()
 		rest(100);

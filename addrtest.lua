@@ -223,10 +223,15 @@ end
 
 print("\n")
 printHeader("Backpack(s)", ' ');
-found = 0
+found = 0;
+local foundItem = nil;
 for i = 60,239 do
 	v = inventory.BagSlot[i]
 	if( v and not v.Empty ) then
+		if( foundItem == nil and v.Id == 200663) then
+			-- We'll dump more details on this item later
+			foundItem = v;
+		end
 		printLine(colWidth, i, sprintf("ID: %-8d Bound: %d Count: %-5d %s", v.Id or 0, v.Bound and 1 or 0, v.ItemCount or 0, v.Name or ""));
 		found = found + 1
 	end
@@ -249,6 +254,27 @@ if( found == 0 ) then
 	print("No items were found in the bank")
 end
 
+if( foundItem ) then
+	print("\n")
+	printHeader("Item details", ' ');
+
+	printLine(colWidth, 'Address', sprintf("0x%X", foundItem.Address));
+	printLine(colWidth, 'ID', foundItem.Id);
+	printLine(colWidth, 'Name', foundItem.Name);
+	printLine(colWidth, 'Empty', foundItem.Empty);
+	printLine(colWidth, 'Location', foundItem.Location);
+	printLine(colWidth, 'SlotNumber', foundItem.SlotNumber);
+	printLine(colWidth, 'BagId', foundItem.BagId);
+	printLine(colWidth, 'Available', foundItem.Available);
+	printLine(colWidth, 'Quality', foundItem.Quality);
+	printLine(colWidth, 'Color', sprintf("0x%X", foundItem.Color));
+	printLine(colWidth, 'BoundStatus', foundItem.BoundStatus);
+	printLine(colWidth, 'Bound', foundItem.Bound);
+	printLine(colWidth, 'InUse', foundItem.InUse);
+	printLine(colWidth, 'CoolDownTime', foundItem.CoolDownTime);
+	printLine(colWidth, 'ItemCount', foundItem.ItemCount);
+	printLine(colWidth, 'RequiredLvl', foundItem.RequiredLvl);
+end
 
 print("")
 printHeader("Object List");
