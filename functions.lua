@@ -1562,7 +1562,9 @@ function waitForLoadingScreen(_maxWaitTime)
 	end
 
 	MemDatabase:flush();
-	player:update()
+	player = CPlayer.new();
+	player:update();
+	settings.loadSkillSet(player.Class1);
 	return true
 end
 
