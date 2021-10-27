@@ -70,9 +70,9 @@ function CItem:update()
 		self.Id = 0;
 		self.Address = nil;
 	end
-	
+
 	self.Available = (self.Available ~= false)
-	
+
 	if( self.Id == nil or self.Id <= 0 ) then
 		self.Empty = true;
 	else
@@ -81,18 +81,27 @@ function CItem:update()
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then
 		self.BaseItemAddress = GetItemAddress( self.Id );
-		
+
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
 			local msg = sprintf("Wrong value returned in update of CItem id: %d\n%s\n", self.Id, debug.traceback())
 			cprintf( cli.yellow, msg);
-			
+
 			logMessage(msg);
 			return;
 		end;
 		self.Name = "";
 		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
-		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability );
-		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability );
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability ) or 1000;
+		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability ) or 80;
+		--[[
+			Some items do not seem to have their durability set on the item itself. Those items always seem to have
+			a durability of 80; how the game determines when to use 80, or use the value set on the item, is unknown.
+			For now, we can assume 80 for any durability that seems way out of range, though this isn't always accurate.
+		]]
+		if( self.MaxDurability < 60 or self.MaxDurability > 140 or self.MaxDurability < (self.Durability/100.0) ) then
+			self.MaxDurability = 80;
+		end
+
 		if ( self.Durability > 0 ) then
 			self.Durability = self.Durability / 100;
 		end;
@@ -606,7 +615,7 @@ end
 	In this context, an inventory index is what a human would
 	expect, rather than the seemingly random slot number used
 	internally by the game.
-	
+
 	That is, an inventory index ranges from 1-30, where the
 	top-left corner is 1 and bottom right corner is 30.
 --]]
@@ -617,7 +626,7 @@ function CItem:getInventoryIndex()
 		local cmd = sprintf("}str='' for i=%d,%d do str=str..GetBagItemInfo(i)..',' end a={str} b={", startIndex, endIndex);
 		local result = RoMScript(cmd);
 		local inventoryIndexes = explode(result, ',');
-		
+
 		for i,v in pairs(inventoryIndexes) do
 			local bagIndex = self.SlotNumber + 1;
 			v = tonumber(v) or -1;

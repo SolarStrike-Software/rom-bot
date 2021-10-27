@@ -38,19 +38,19 @@ addresses = {
 	},
 	code_mod = {
 		freeze_target = {
-			base = 0x49d8f1, --[[{freeze_target_codemod}]]
+			base = 0x49dcc1, --[[{freeze_target_codemod}]]
 			original_code = string.char(0x89, 0x86, 0x78, 0x02, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 
 		freeze_mousepos = {
-			base = 0x231434, --[[{freeze_mousepos_codemod}]]
+			base = 0x232204, --[[{freeze_mousepos_codemod}]]
 			original_code = string.char(0x89, 0x8E, 0xB4, 0x03, 0x00, 0x00, 0x89, 0x86, 0xB8, 0x03, 0x00, 0x00),
 			replace_code = string.char(0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90),
 		},
 
 		freeze_clicktocast_mouseoffscreen = {
-			base = 0x230c54, --[[{freeze_clicktocast_mouseoffscreen}]]
+			base = 0x231a24, --[[{freeze_clicktocast_mouseoffscreen}]]
 			original_code = string.char(0x7D, 0x0C),
 			replace_code = string.char(0xEB, 0x40),
 		},
@@ -258,8 +258,8 @@ addresses = {
 		name = 0xC,
 		count = 0x10,
 		max_stack = 0x00, -- Wrong
-		max_durability = 0x15,
-		durability = 0x18,
+		max_durability = 0x18,
+		durability = 0x1C,
 		in_use = 0x20,
 		bound_status = 0x44,
 		value = 0x34,
