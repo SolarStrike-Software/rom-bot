@@ -1562,10 +1562,23 @@ function waitForLoadingScreen(_maxWaitTime)
 	end
 
 	MemDatabase:flush();
-	player = CPlayer.new();
-	player:update();
-	settings.loadSkillSet(player.Class1);
-	return true
+	yrest(500);
+	local success = false;
+	local errmsg = '';
+	repeat
+		success, errmsg = pcall(function ()
+			local gameroot = getBaseAddress(addresses.game_root.base);
+			player.Address = memoryReadRepeat("uintptr", getProc(), gameroot, addresses.game_root.player.base);
+			player:update();
+			settings.loadSkillSet(player.Class1);
+			return true;
+		end)
+
+		if( not success ) then
+			print('[WARN] ' .. errmsg);
+		end
+	until (success ~= false)
+	return true;
 end
 
 function isInGame()
