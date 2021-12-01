@@ -2327,10 +2327,9 @@ function GetSkillBookData(_tabs)
 		-- name can either be a string or a pointer to a string
 		-- Try to read it as a string; if it contains unexpected
 		-- characters, try reading it as a pointer
-		tmp.Name = memoryReadString(proc, address + addresses.skillbook.skill.name);
+		tmp.Name = GetIdName(tmp.Id) or memoryReadString(proc, address + addresses.skillbook.skill.name);
 		if( not validName(tmp.Name, 24) ) then
 			tmp.Name = memoryReadStringPtr(proc, address + addresses.skillbook.skill.name, 0);
-
 		end
 		tmp.TPToLevel = memoryReadInt(proc, addresses.skillbook.skill.tp_to_level) or 0;
 		tmp.Level = memoryReadInt(proc, address + addresses.skillbook.skill.level) or player.Level or 0;

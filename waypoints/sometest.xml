@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="TRAVEL">
+<onLoad>
+	sendMacro("}LoginNextToon=true;a={")
+		sendMacro("Logout();");
+		waitForLoadingScreen();
+		settings.load();
+		settings.loadProfile("buttstuff"); -- Profile name
+		settings.loadSkillSet(player.Class1);
+</onLoad>
+	<!-- #  1 --><waypoint x="2519" z="2593" y="9">
+		player:target_NPC(joker);
+		sendMacro("ChoiceOption(2);");
+	</waypoint>
+</waypoints>
