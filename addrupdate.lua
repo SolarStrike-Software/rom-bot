@@ -169,7 +169,7 @@ local updatables = {
 			]]),
 		partners = {
 			crafting_base = {
-				add_value = 0x1578; -- Assumed; not referenced in code
+				add_value = 0x1618; -- Assumed; not referenced in code
 			},
 		},
 	},
