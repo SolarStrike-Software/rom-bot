@@ -231,7 +231,7 @@ addresses = {
 			name = 0x24,
 			tp_to_level = 0x8,
 			level = 0xc,
-			as_level = 0x18,
+			as_level = 0xc,
 		},
 	},
 	itemset_skills = {
