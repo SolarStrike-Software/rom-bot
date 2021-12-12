@@ -320,6 +320,48 @@ else
 	print("Could not find mount for player; skipping mount test.")
 end
 
+print("");
+printHeader("Skills", ' ');
+settings.loadSkillSet(player.Class1)
+
+getResourceName = function (skill)
+	if skill.Mana > 0 then
+		return "Mana";
+	end
+
+	if skill.Rage > 0 then
+		return "Rage";
+	end
+
+	if skill.Energy > 0 then
+		return "Energy";
+	end
+
+	if skill.Focus > 0 then
+		return "Focus";
+	end
+
+	if skill.Nature > 0 then
+		return "Nature";
+	end
+
+	if skill.Psi > 0 then
+		return "Psi";
+	end
+end
+
+print("\n")
+printf(" %-8s %-26s %-6s %-4s %-12s %-10s\n", "ID", "Name", "Level", "As", "Resource", "Hotkey");
+for i,v in pairs(settings.profile.skills) do
+	local resource = getResourceName(v)
+	local amount = v[resource] or 0
+	local resourceDesc = '---';
+	if resource then
+		resourceDesc = sprintf("%d %s", amount, resource or '--')
+	end
+	printf(" %-8d %-26s %-6d %-4d %-12s %-10s\n", v.Id, v.Name, v.Level, v.aslevel, resourceDesc, v.hotkey);
+end
+
 print("")
 printHeader("Code Mods");
 printHeader("Check Code In Memory", ' ');
