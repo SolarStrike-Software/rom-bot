@@ -7,3 +7,4 @@ backup-addresses.lua
 gitupdate-backup/
 .tags*
 .tmp/
+addrtest-debug.txt
