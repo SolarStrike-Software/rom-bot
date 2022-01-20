@@ -11,7 +11,7 @@ end
 
 -- Try to get the latest release version
 if( tag == nil ) then
-    local cmd = sprintf('cd "%s" && bin\\rombot_updater.exe check', path);
+    local cmd = sprintf('cd "%s" && rombot_updater.exe check', path);
     local results = io.popen(cmd):read('*a');
     local releases = results:gmatch("[^\r\n]+")
     releases() -- discard first results ("Recent releases:" string)
@@ -21,7 +21,7 @@ end
 
 cprintf_ex("|white|Installing RoM-bot `|turquoise|%s|white|`... ", tag)
 
-local cmd = sprintf('cd "%s" && bin\\rombot_updater.exe update', path);
+local cmd = sprintf('cd "%s" && .\\rombot_updater.exe update', path);
 local results = io.popen(cmd):read('*a');
 
 if( string.find(results, "status 200") ) then
