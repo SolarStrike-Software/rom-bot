@@ -25,6 +25,24 @@ include("classes/codemod.lua");
 include("settings.lua");
 include("macros.lua");
 
+local logfile = io.open(getExecutionPath() .. '/addrtest-debug.txt', 'w')
+function tee(...)
+	log_debug(...)
+	print(...)
+end
+
+function log_debug(...)
+	for i,v in pairs(unpack2(...)) do
+		local str = tostring(v):gsub("\\r", "");
+		if( player ~= nil ) then
+			-- Hide player's name from output
+			str = str:gsub(player.Name, "<redacted>");
+		end
+		logfile:write(str);
+	end
+	logfile:write("\n")
+end
+
 function printHeader(name, padchar)
 	local width = 79;
 	local padchar = padchar or '=';
@@ -32,12 +50,12 @@ function printHeader(name, padchar)
 	local left = width - midpoint;
 	local right = width - #name - left;
 
-	print(string.rep(padchar, left) .. name .. string.rep(padchar, right));
+	tee(string.rep(padchar, left) .. name .. string.rep(padchar, right));
 end
 
 function printLine(headWidth, header, ...)
 	header = sprintf("%" .. headWidth .. "s", header)
-	print(header, ...);
+	tee(header, ...);
 end
 
 function getClassName(classId)
@@ -124,16 +142,24 @@ function getEquipSlotName(slotId)
 	end
 end
 
-printHeader("Player Info");
 local colWidth = 20;
+
+
+printHeader("State info")
+printLine(colWidth, "Game version:", getGameVersion());
+printLine(colWidth, "Git revison:", getCurrentRevision());
+tee("");
+
+printHeader("Player Info");
 player = CPlayer.new();
 printLine(colWidth, "Name:", player.Name);
+--print(sprintf("%" .. colWidth .. "s", "Name:"), player.Name);
 printLine(colWidth, "Class 1:", getClassName(player.Class1) .. " lvl " .. player.Level);
 printLine(colWidth, "Class 2:", getClassName(player.Class2) .. " lvl " .. player.Level2);
 printLine(colWidth, "HP:", player.HP .. "/" .. player.MaxHP);
 printLine(colWidth, "MP:", player.MP .. "/" .. player.MaxMP);
 printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
-print("");
+tee("");
 
 printHeader("Craft Levels");
 local colWidth = 20;
@@ -146,13 +172,13 @@ printLine(colWidth, "Alchemy:", player:getCraftLevel(CRAFT_ALCHEMY));
 printLine(colWidth, "Mining:", player:getCraftLevel(CRAFT_MINING));
 printLine(colWidth, "Woodcutting:", player:getCraftLevel(CRAFT_WOODCUTTING));
 printLine(colWidth, "Herbalism:", player:getCraftLevel(CRAFT_HERBALISM));
-print("");
+tee("");
 
 
 printHeader("Game/Loading Check");
 printLine(colWidth, "In-Game:", isInGame())
 printLine(colWidth, "Loading:", isLoading())
-print("")
+tee("")
 
 printHeader("Casting")
 CPawn.updateCasting(player)
@@ -161,7 +187,7 @@ player:updateCasting()
 printLine(colWidth, "Casting (Player):", player.Casting);
 printLine(colWidth, "Harvesting:", player.Harvesting);
 printLine(colWidth, "Collecting Type", player:getCollectingType());
-print("")
+tee("")
 
 
 printHeader("Equipment Info");
@@ -173,7 +199,7 @@ for i = 0,#equipment.BagSlot do
 end
 
 
-print("");
+tee("");
 printHeader("Memdatabase");
 attackId = 540000
 attackAddress = GetItemAddress(attackId)
@@ -186,7 +212,7 @@ if( attackAddress ~= nil and attackAddress > 0 ) then
 	printLine(colWidth, "Skill Name:", skill.Name);
 end
 
-print("");
+tee("");
 printHeader("Texts");
 local expectations = {
 	['AC_INSTRUCTION_01'] = 'AC command (Zone 81)',
@@ -197,7 +223,7 @@ for i,key in pairs({'AC_INSTRUCTION_01', 'AC_INSTRUCTION_02', 'ZONE955_JOLIN_S1'
 	printLine(colWidth, key, sprintf("%-25s", getTEXT(key)), sprintf("%-25s", expectations[key]));
 end
 
-print("\nLoading data for additional testing...");
+tee("\nLoading data for additional testing...");
 attach(getWin(player.Name));
 include("/language/english.lua")
 database.load();
@@ -205,9 +231,9 @@ settings.loadProfile("Default")
 inventory = CInventory();
 inventory:update()
 
-print("\n")
+tee("\n")
 printHeader("Inventory");
-print("")
+tee("")
 printHeader("Item Shop Backpack", ' ');
 found = 0
 for i = 0,49 do
@@ -218,10 +244,10 @@ for i = 0,49 do
 	end
 end
 if( found == 0 ) then
-	print("No items were found in this inventory")
+	tee("No items were found in this inventory")
 end
 
-print("\n")
+tee("\n")
 printHeader("Backpack(s)", ' ');
 found = 0;
 local foundItem = nil;
@@ -237,10 +263,10 @@ for i = 60,239 do
 	end
 end
 if( found == 0 ) then
-	print("No items were found in this inventory")
+	tee("No items were found in this inventory")
 end
 
-print("\n")
+tee("\n")
 printHeader("Bank", ' ');
 bank = CBank()
 found = 0
@@ -251,11 +277,11 @@ for i,v in pairs(bank.BagSlot) do
 	end
 end
 if( found == 0 ) then
-	print("No items were found in the bank")
+	tee("No items were found in the bank")
 end
 
 if( foundItem ) then
-	print("\n")
+	tee("\n")
 	printHeader("Item details", ' ');
 
 	printLine(colWidth, 'Address', sprintf("0x%X", foundItem.Address));
@@ -276,7 +302,7 @@ if( foundItem ) then
 	printLine(colWidth, 'RequiredLvl', foundItem.RequiredLvl);
 end
 
-print("")
+tee("")
 printHeader("Object List");
 local olist = CObjectList();
 olist:update()
@@ -290,7 +316,7 @@ for i = 1, displayCount do
 end
 
 
-print("")
+tee("")
 printHeader("Cursor Item");
 local cursor = CCursor();
 cursor:update()
@@ -298,11 +324,11 @@ printLine(colWidth, "Cursor item ID:", cursor.ItemId or '<invalid>');
 printLine(colWidth, "Cursor item Bag ID:", cursor.ItemBagId or '<invalid>');
 
 
-print("")
+tee("")
 printHeader("Mount test");
 local mount, mountMethod = player:getMount();
 if( mount ~= nil ) then
-	print("Mounting...");
+	tee("Mounting...");
 	player:mount()
 	local start = os.time();
 	repeat
@@ -310,17 +336,17 @@ if( mount ~= nil ) then
 		player:updateCasting()
 		if( os.time() - start > 5 ) then
 			player.Casting = false;
-			print("Took too long.")
+			tee("Took too long.")
 		end
 	until player.Casting == false
 
-	print("Dismounting...");
+	tee("Dismounting...");
 	player:mount(true)
 else
-	print("Could not find mount for player; skipping mount test.")
+	tee("Could not find mount for player; skipping mount test.")
 end
 
-print("");
+tee("");
 printHeader("Skills", ' ');
 settings.loadSkillSet(player.Class1)
 
@@ -350,7 +376,7 @@ getResourceName = function (skill)
 	end
 end
 
-print("\n")
+tee("\n")
 printf(" %-8s %-26s %-6s %-4s %-12s %-10s\n", "ID", "Name", "Level", "As", "Resource", "Hotkey");
 for i,v in pairs(settings.profile.skills) do
 	local resource = getResourceName(v)
@@ -362,7 +388,7 @@ for i,v in pairs(settings.profile.skills) do
 	printf(" %-8d %-26s %-6d %-4d %-12s %-10s\n", v.Id, v.Name, v.Level, v.aslevel, resourceDesc, v.hotkey);
 end
 
-print("")
+tee("")
 printHeader("Code Mods");
 printHeader("Check Code In Memory", ' ');
 local installableCodemods = {}
@@ -374,13 +400,15 @@ for i,v in pairs(addresses.code_mod) do
 
 	if( codemod:checkModified() == false ) then
 		cprintf_ex("%s|green|[+]|white| %s looks good\n", string.rep(" ", 12), i);
+		log_debug(sprintf("%s looks good", i))
 		installableCodemods[i] = codemod;
 	else
 		cprintf_ex("%s|red|[x]|white| %s appears malformed/modified\n", string.rep(" ", 12), i);
+		log_debug(sprintf("%s appears malformed/modified", i))
 	end
 end
 
-print("");
+tee("");
 printHeader("Test if installable", ' ');
 for i,codemod in pairs(installableCodemods) do
 	local success = codemod:safeInstall();
@@ -392,7 +420,9 @@ for i,codemod in pairs(installableCodemods) do
 
 	if( success ) then
 		cprintf_ex("%s|green|[+]|white| %s OK!\n", string.rep(" ", 12), i);
+		log_debug(sprintf("%s OK!", i))
 	else
 		cprintf_ex("%s|red|[x]|white| Failed\n", string.rep(" ", 12), i);
+		log_debug(sprintf("%s Failed", i))
 	end
 end
