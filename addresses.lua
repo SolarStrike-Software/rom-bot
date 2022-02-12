@@ -230,7 +230,7 @@ addresses = {
 			tp_to_level = 0x8,
 			level = 0xc,
 			as_level = 0xc,
-			required_level = 0x18, --unused
+			required_level = 0x18,
 			name = 0x24,
 			size = 0x48,
 		},
