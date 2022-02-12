@@ -96,7 +96,7 @@
 	<!-- General -->
 	<skill name="PRIEST_RISING_TIDE" 					id="490256" range="217"	type="damage"		casttime="2"	cooldown="0"	target="enemy" />
 	<skill name="PRIEST_URGENT_HEAL" 					id="491147" range="250"	type="heal"			casttime="1"	cooldown="0"	target="friendly" />
-	<skill name="PRIEST_REGENERATE" 					id="490269" range="180" type="hot"			casttime="0"	cooldown="0"	target="friendly"	buffname="500469" /> <!-- Buff ID Verified -->
+	<skill name="PRIEST_REGENERATE" 					id="490269" range="180" type="hot"			casttime="0"	cooldown="0"	target="friendly"	buffname="500469,500469" /> <!-- Buff ID Verified -->
 	<skill name="PRIEST_HOLY_AURA" 						id="490300" range="0"	type="buff"			casttime="0"	cooldown="120"  target="self"		inbattle="true" maxhpper="30" />
 	<skill name="PRIEST_MAGIC_BARRIER" 					id="491166" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="500548,501877" /> <!-- First Buff ID Verified -->
 	<skill name="PRIEST_BLESSED_SPRING_WATER" 			id="490298" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="500536" /> <!-- Buff ID Verified -->
@@ -563,12 +563,12 @@
 	<skill name="DRUID_HEALING_WIND" 					id="494365"	range="0"	type="heal"			casttime="0"	cooldown="5"	target="self"		buffname="506051" />
 	<skill name="DRUID_NOURISH" 						id="494930"	range="200"	type="buff"			casttime="0"	cooldown="180"	target="friendly" 	buffname="505704" />
 
-	
+
 	<!-- Warden skills -->
 	<!-- General -->
 	<skill name="WARDEN_CHARGED_CHOP" 					id="493395" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		globalcooldown="false" />
 	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="1"	cooldown="15"	target="enemy" />
-	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958" />
+	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958,623126" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false"/>
 	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		maxhpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" 					id="493406" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		inbattle="true" />

@@ -141,7 +141,13 @@ function database.load()
 		if(skilltab) then tmp.skilltab = skilltab; end;
 		if(skillnum) then tmp.skillnum = skillnum; end;
 
-		if(buffname ~= "") then tmp.BuffName = buffname; end;
+		if(buffname ~= "") then
+			if( string.find(buffname, ',') ~= nil ) then
+				tmp.BuffName = explode(buffname, ',');
+			else
+				tmp.BuffName = buffname;
+			end
+		end;
 		if(reqbuffcount > 0 ) then tmp.ReqBuffCount = reqbuffcount; end;
 		if(reqbufftarget ~= "") then tmp.ReqBuffTarget = reqbufftarget; end;
 		if(reqbuffname ~= "") then tmp.ReqBuffName = reqbuffname; end;
