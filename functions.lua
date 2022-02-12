@@ -2334,7 +2334,9 @@ function GetSkillBookData(_tabs)
 		end
 		tmp.TPToLevel = memoryReadInt(proc, addresses.skillbook.skill.tp_to_level) or 0;
 		tmp.Level = memoryReadInt(proc, address + addresses.skillbook.skill.level) or player.Level or 0;
-		tmp.aslevel = memoryReadInt(proc, address + addresses.skillbook.skill.as_level) or tmp.Level or player.Level or 0;
+		local as_level = math.min(player.Level or 0, tmp.Level);
+		local required_level = memoryReadInt(proc, address + addresses.skillbook.skill.required_level) or tmp.Level;
+		tmp.aslevel = math.max(required_level, as_level);
 
 		-- Get power and consumables
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
