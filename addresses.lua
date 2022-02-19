@@ -232,7 +232,7 @@ addresses = {
 			as_level = 0xc,
 			required_level = 0x18,
 			name = 0x24,
-			size = 0x48,
+			size = 0x4C,
 		},
 	},
 	itemset_skills = {
