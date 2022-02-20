@@ -161,6 +161,13 @@ printLine(colWidth, "MP:", player.MP .. "/" .. player.MaxMP);
 printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
 tee("");
 
+printHeader("Player Buffs");
+player:updateBuffs()
+for i,v in pairs(player.Buffs) do
+	tee(i, v.Id, v.Name)
+end
+tee("");
+
 printHeader("Craft Levels");
 local colWidth = 20;
 printLine(colWidth, "Blacksmithing:", player:getCraftLevel(CRAFT_BLACKSMITHING));

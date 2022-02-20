@@ -227,7 +227,7 @@
 	<skill name="WARRIOR_THUNDER_SWORD" 				id="491332" range="150" type="damage"		casttime="2"	cooldown="6"	target="enemy"		globalcooldown="true" />
 	<skill name="WARRIOR_ELECTRIC_ATTACK" 				id="492618" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="502886" nobuffname="503163" nobufftarget="self" />
 	<skill name="WARRIOR_LAVA_WEAPON" 					id="492913" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self" 		buffname="503163" nobuffname="502886" nobufftarget="self" />
-	<skill name="WARRIOR_LIGHTNING_BURN_WEAPON" 		id="499990" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="622996" />
+	<skill name="WARRIOR_LIGHTNING_BURN_WEAPON" 		id="490062" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="622996" />
 	<!-- Warrior/Priest -->
 	<skill name="WARRIOR_DEFENDERS_ROAR" 				id="491466" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" /> <!-- (501872) Buff removed. 2 min effect, 3 min cooldown -->
 	<skill name="WARRIOR_INTERRUPTING_STRIKE" 			id="491469" range="0"	type="damage"		casttime="0"	cooldown="10"	target="enemy" />
