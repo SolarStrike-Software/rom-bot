@@ -280,7 +280,7 @@ addresses = {
 		base = 0x60B878,
 	},
 	bank = {
-		base = 0x61DB94,
+		base = 0x61DB9C,
 		open = {
             base = 0x662CDC,
 			offset = 0x10,
@@ -293,7 +293,7 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x619808,
+		base = 0x619810,
 		item = {
 			size = 0x48
 		},
