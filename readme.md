@@ -12,7 +12,10 @@ dig into the code and configure things rather than simply click some buttons.
 3. Create a copy of `profiles/Default.xml`. Name it after your character instead of 'Default'
     - Example: If your character is named "Bob", name this file `Bob.xml` and place it in the `profiles` folder.
 4. Modify your character profile -- modify the options to your liking, add skills, etc.
-5. Open `micromacro.exe` and try entering this command: `rom-bot/bot`
+5. Copy the folders in `micromacro/scripts/rom-bot/devtools/` to `.../RunesOfMagic/interface/addons/`
+    - If the `interface` or `addons` directories don't exist, you may have to create them.
+    - Use whichever folder you installed ROM to. Example: `C:\Program Files (x86)\GameforgeClient\Games\RunesOfMagic\interface\addons`
+6. Open `micromacro.exe` and try entering this command: `rom-bot/bot`
     - If all is set up correctly, the bot should start up and prompt you for more details
 
 # Updating
