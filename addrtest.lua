@@ -159,6 +159,7 @@ printLine(colWidth, "Class 2:", getClassName(player.Class2) .. " lvl " .. player
 printLine(colWidth, "HP:", player.HP .. "/" .. player.MaxHP);
 printLine(colWidth, "MP:", player.MP .. "/" .. player.MaxMP);
 printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
+printLine(colWidth, "Target:", sprintf('0x%X', player.TargetPtr or 0) .. ' (' .. (player:getTarget().Id or 0) .. ')');
 tee("");
 
 printHeader("Player Buffs");
@@ -167,6 +168,16 @@ for i,v in pairs(player.Buffs) do
 	tee(i, v.Id, v.Name)
 end
 tee("");
+
+printHeader("Party");
+for i = 1,6 do
+	pcheck = GetPartyMemberAddress(i)
+	if pcheck then
+		member = CPawn(pcheck.Address)
+		printLine(colWidth, member.Id, member.Name);
+	end
+end
+tee("")
 
 printHeader("Craft Levels");
 local colWidth = 20;
