@@ -2384,7 +2384,7 @@ function evalTargetDefault(address, target)
 
 	-- Dead
 	target:updateHP()
-	if( target.HP <= 0 ) then
+	if( target.Level > 1 and target.HP <= 0 ) then
 		debug_target("target HP is less than 1")
 		return false;
 	end
