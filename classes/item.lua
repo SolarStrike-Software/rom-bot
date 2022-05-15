@@ -97,6 +97,8 @@ function CItem:update()
 			Some items do not seem to have their durability set on the item itself. Those items always seem to have
 			a durability of 80; how the game determines when to use 80, or use the value set on the item, is unknown.
 			For now, we can assume 80 for any durability that seems way out of range, though this isn't always accurate.
+			It may also be a percentage; ie a value of '120' indicates 120% of normal durability -- but no clear
+			indication as to w hat the normal durability is.
 		]]
 		if( self.MaxDurability < 60 or self.MaxDurability > 140 or self.MaxDurability < (self.Durability/100.0) ) then
 			self.MaxDurability = 80;

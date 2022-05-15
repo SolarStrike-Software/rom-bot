@@ -213,7 +213,7 @@ equipment = CEquipment();
 
 for i = 0,#equipment.BagSlot do
 	local item = equipment.BagSlot[i];
-	printLine(colWidth, getEquipSlotName(i), sprintf("ID: %6d\tName: %s", item.Id, item.Name));
+	printLine(colWidth, getEquipSlotName(i), sprintf("0x%X\tID: %6d\tName: %s\tDura: %s/%s", item.Address, item.Id, item.Name, item.Durability, item.MaxDurability));
 end
 
 
