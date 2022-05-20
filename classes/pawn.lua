@@ -29,6 +29,7 @@ NTYPE_HERB = 3
 ATTACKABLE_MASK_PLAYER = 0x10000;
 ATTACKABLE_MASK_MONSTER = 0x20000;
 ATTACKABLE_MASK_CLICKABLE = 0x10;
+ATTACKABLE_MASK_ATTACKABLE = 0x100000;
 
 AGGRESSIVE_MASK_MONSTER = 0x10000;
 
@@ -179,14 +180,7 @@ function CPawn:update()
 		end
 
 		if( self.Type == PT_MONSTER ) then
-			local attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER);
-			local clickable = bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE);
-				
-			if( attackable and clickable ) then
-				self.Attackable = true;
-			else
-				self.Attackable = false;
-			end
+			self.Attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE);
 
 			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
 				self.Aggressive = true;
@@ -262,6 +256,7 @@ function CPawn:updateName()
 		tmp = memoryReadString(getProc(), namePtr); -- Don't use memoryReadRepeat here; this CAN fail!
 	end
 	
+
 	showWarnings(true); -- Re-enable warnings after reading
 	-- UTF8 -> ASCII translation not for player names
 	-- because that would need the whole table and there we normaly
@@ -599,14 +594,7 @@ function CPawn:updateAttackable()
 	if( self.Type == PT_MONSTER ) then
 		local attackableFlag = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.attackable_flags);
 		if attackableFlag then
-			local attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_MONSTER);
-			local clickable = bitAnd(attackableFlag, ATTACKABLE_MASK_CLICKABLE);
-
-			if( attackable and clickable ) then
-				self.Attackable = true;
-			else
-				self.Attackable = false;
-			end
+			self.Attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE);
 
 			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
 				self.Aggressive = true;
