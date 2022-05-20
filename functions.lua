@@ -3156,6 +3156,10 @@ function printFallbackLogo()
 end
 
 function toBinaryStr(x)
+	if x == nil then
+		return '0';
+	end
+	
 	local result = ""
 	while (x~=1 and x~=0) do
 		result = tostring(x%2) .. result
