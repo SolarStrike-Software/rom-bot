@@ -4148,3 +4148,37 @@ end
 function CPlayer:getLastDodgeTime()
 	return RoMScript("igf_events:getLastPlayerDodgeTime()")
 end
+
+--[[
+	Returns nil|CPawn	A nearby lootable enemy body, or nil if there aren't any
+]]
+function CPlayer:getNearbyLoot(dist)
+	dist = dist or 200
+
+	local closest = nil
+	local objList = CObjectList()
+	objList:update()
+	for i,v in pairs(objList.Objects) do
+		if( v.Id ~= nil and v.Id > 0) then
+			local pawn = CPawn(v.Address)
+			pawn:update()
+
+			if pawn.Type == PT_MONSTER and pawn.Lootable then
+				local distToPawn = distance(self.X, self.Z, self.Y, pawn.X, pawn.Z, pawn.Y)
+
+				if distToPawn < dist then
+					if closest == nil then
+						closest = pawn
+					else
+						local distToClosest = distance(self.X, self.Z, self.Y, closest.X, closest.Z, closest.Y)
+						if( distToPawn < distToClosest ) then
+							closest = pawn
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return closest
+end
