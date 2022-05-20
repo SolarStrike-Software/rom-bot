@@ -932,7 +932,18 @@ function main()
 
 
 		else
-		-- don't fight, move to wp
+			local lootable = player:getNearbyLoot(200)
+			if( lootable ) then
+				player:moveTo(CWaypoint(lootable.X, lootable.Z), true, false, 50)
+				lootable:update()
+				if( lootable:exists() ) then
+					player:target(lootable.Address)
+					player:loot()
+					yrest(200)
+				end
+			end
+
+			-- don't fight, move to wp
 			if player.TargetPtr ~= 0 then player:clearTarget(); end
 
 			-- First check up on eggpet

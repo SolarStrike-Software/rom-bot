@@ -30,6 +30,7 @@ ATTACKABLE_MASK_PLAYER = 0x10000;
 ATTACKABLE_MASK_MONSTER = 0x20000;
 ATTACKABLE_MASK_CLICKABLE = 0x10;
 ATTACKABLE_MASK_ATTACKABLE = 0x100000;
+ATTACKABLE_MASK_ATTACKABLE2 = 0x80000;
 
 AGGRESSIVE_MASK_MONSTER = 0x10000;
 
@@ -179,17 +180,7 @@ function CPawn:update()
 			self.InParty = false
 		end
 
-		if( self.Type == PT_MONSTER ) then
-			self.Attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE);
-
-			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
-				self.Aggressive = true;
-			else
-				self.Aggressive = false;
-			end
-		else
-			self.Attackable = false;
-		end
+		self:updateAttackable();
 	end
 
 	self:updateMounted();
@@ -594,7 +585,7 @@ function CPawn:updateAttackable()
 	if( self.Type == PT_MONSTER ) then
 		local attackableFlag = memoryReadRepeat("uint", getProc(), self.Address + addresses.game_root.pawn.attackable_flags);
 		if attackableFlag then
-			self.Attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE);
+			self.Attackable = bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE) or bitAnd(attackableFlag, ATTACKABLE_MASK_ATTACKABLE2);
 
 			if( bitAnd(attackableFlag, AGGRESSIVE_MASK_MONSTER) ) then
 				self.Aggressive = true;
