@@ -932,14 +932,22 @@ function main()
 
 
 		else
-			local lootable = player:getNearbyLoot(200)
-			if( lootable ) then
-				player:moveTo(CWaypoint(lootable.X, lootable.Z), true, false, 50)
-				lootable:update()
-				if( lootable:exists() ) then
+			--[[
+				zoneId 369 == Mysterious Bunker
+				It is important that we loot everything in here so
+				the next wave can spawn.
+			]]
+			local zoneId = getZoneId()
+			if( zoneId == 369 ) then
+				local lootable = player:getNearbyLoot(200)
+				if( lootable ) then
 					player:target(lootable.Address)
-					player:loot()
-					yrest(200)
+					player:moveTo(CWaypoint(lootable.X, lootable.Z), true, false, 50)
+					lootable:update()
+					if( lootable:exists() ) then
+						player:loot()
+						yrest(200)
+					end
 				end
 			end
 
