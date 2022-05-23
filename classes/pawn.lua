@@ -246,7 +246,7 @@ function CPawn:updateName()
 	else
 		tmp = memoryReadString(getProc(), namePtr); -- Don't use memoryReadRepeat here; this CAN fail!
 	end
-	
+
 
 	showWarnings(true); -- Re-enable warnings after reading
 	-- UTF8 -> ASCII translation not for player names
@@ -311,7 +311,7 @@ function CPawn:updateHP()
 
 	local hpTmp = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.hp);
 	local maxHpTmp = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.max_hp);
-	
+
 	if( hpTmp ~= nil ) then
 		self.HP = math.floor(QWord:fromQWord(hpTmp) + 0.5);
 	end
@@ -437,6 +437,9 @@ function CPawn:updateBuffs()
 
 		if name ~= nil then
 			tmp.Name, tmp.Count = parseBuffName(name)
+			if( type(tmp.Count) ~= "number" ) then
+				tmp.Count = 1
+			end
 			tmp.TimeLeft = memoryReadRepeat("float", proc, i + addresses.game_root.pawn.buffs.buff.time_remaining);
 			tmp.Level = memoryReadRepeat("int", proc, i + addresses.game_root.pawn.buffs.buff.level);
 
@@ -444,7 +447,7 @@ function CPawn:updateBuffs()
 			buffIndex = buffIndex + 1;
 		end
 	end
-	
+
 end
 
 function CPawn:updateLootable()
@@ -703,6 +706,10 @@ function CPawn:hasDebuff(debuff, count)
 end
 
 function CPawn:getBuff(buffnamesorids, count)
+	if( type(count) ~= "number" ) then
+		count = nil
+	end
+
 	self:updateBuffs()
 
 	if type(buffnamesorids) ~= "table" then
@@ -1042,7 +1049,7 @@ function CPawn:getRemainingCastTime()
 	else
 		return 0,0
 	end
-	
+
 	return 0;
 end
 
