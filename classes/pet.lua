@@ -199,7 +199,7 @@ function checkfairy()
 		print("Summoning "..GetIdName(fairy.PetId))
 		repeat
 			yrest(1000)
-		until not (memoryReadRepeat("int", getProc(), player.Address + addresses.pawnCasting_offset) ~= 0);
+		until not (memoryReadRepeat("float", getProc(), player.Address + addresses.game_root.pawn.cast_full_time) ~= 0);
 
 		petupdate()
 		local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
