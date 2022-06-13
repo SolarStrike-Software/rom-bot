@@ -1070,8 +1070,8 @@ local missingUpdates = 0;
 -- Use MDBrute to find memdatabase
 mdbrutePath = getExecutionPath() .. "/bin/";
 if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
-	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address... This may take some time.\n\n\n");
-	local cmd = sprintf('cd "%s" && mdbrute.exe --first-only', mdbrutePath);
+	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address...\n\n\n");
+	local cmd = sprintf('cd "%s" && mdbrute.exe', mdbrutePath);
 	local mdbruteResults = io.popen(cmd):read('*a');
 	local addr = string.match(mdbruteResults, "Found address 0x([0-9a-fA-F]+)");
 
