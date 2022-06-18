@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints>
+<onLoad>
+		<!-- V1.3 -->
+	<!-- USER OPTIONS -->
+
+	local weapons = 2;
+	local weapon1type = "DAGGER"; -- main hand: AXE, AXE2H, BLADE, BLUDGEON, CLAYMORE, DAGGER, HAMMER, POLEARM, STAFF, WAND
+	local weapon2type = "DAGGER"; -- off-hand: AXE, AXE2H, BLADE, BLUDGEON, CLAYMORE, DAGGER, HAMMER, POLEARM, STAFF, WAND
+
+	<!--              -->
+
+	getCD = getCooldownForId -- Shortcut to function getCooldownForId() in functions.lua
+
+	changeProfileOption("MAX_TARGET_DIST", 25);
+	changeProfileOption("COMBAT_DISTANCE", 25);
+
+	if(weapons == 1) then
+		cprintf(cli.lightgreen,"Start training with %s weapon: %s!\n\n", weapons, weapon1type);
+	elseif(weapons == 2) then
+		cprintf(cli.lightgreen,"Start training with %s weapons: %s and %s!\n\n", weapons, weapon1type, weapon2type);
+	else
+		weapons = 1;
+		cprintf(cli.lightred,"Weapons in waypoint file must be 1 or 2, please fix this!\n", weapons);
+		cprintf(cli.lightgreen,"Start training with %s weapon: %s!\n\n", weapons, weapon1type);
+	end
+
+	local Music
+	if inventory:findItem(204462) then -- 3 day
+		Music = inventory:findItem(204462)
+	elseif inventory:findItem(204570) then -- 7 day
+		Music = inventory:findItem(204570)
+	elseif inventory:findItem(206419) then -- 30 day
+		Music = inventory:findItem(206419)
+	end
+
+	local FireTraining
+	local SoldiersAttack
+	FireTraining = RoMScript("} for i = 0, GetTitleCount() do name, titleID, geted = GetTitleInfoByIndex(i) if titleID == 530467 then a = {geted} end end z= {");
+	SoldiersAttack = RoMScript("} for i = 0, GetTitleCount() do name, titleID, geted = GetTitleInfoByIndex(i) if titleID == 530538 then a = {geted} end end z= {");
+	if FireTraining then
+		for k,v in pairs(settings.profile.skills) do
+			if v.Name=="ALL_FIRE_TRAINING" then
+				RoMScript("SetTitleRequest(530467)");
+				cprintf(cli.blue,"\nWill use Fire Training!\n")
+				FireTraining = true
+				break
+			else
+				FireTraining = false
+			end
+		end
+		if FireTraining == false then
+			print("Need to define Fire Training in profile!")
+		end
+	elseif SoldiersAttack then
+		for k,v in pairs(settings.profile.skills) do
+			if v.Name=="ALL_SOLDIERS_ATTACK" then
+				RoMScript("SetTitleRequest(530538)");
+				cprintf(cli.blue,"\nWill use Soldier's Attack!\n")
+				SoldiersAttack = true
+				break
+			else
+				SoldiersAttack = false
+			end
+		end
+		if SoldiersAttack == false then
+			print("Need to define Soldiers Attack in profile!")
+		end
+	else
+		print("No attack speed titles to use or not defined in profile")
+	end
+
+	local starttime = os.time();
+	local startlevel1, startlevel2;
+	local startpercent1, startpercent2;
+	local reset1 = 0;
+	local reset2 = 0;
+	local hittarget, resetAutoShot
+	----------------------------------------------------------------------------------------------------------------------
+
+	while true do
+
+		<!-- Current places it can train at, add to this list if another is found -->
+		local targetlist = {
+			106770, -- Merdin Tower
+			112064, -- Outer Siege Gates
+			106062, -- TB Egg
+			107789, -- Sarlo Device
+			100056, 103618,
+		}
+		<!-- 																	  -->
+		hittarget = player:findNearestNameOrId(targetlist)
+		<!-- Skill Section -->
+		if player:target() == nil then
+			resetAutoShot = true
+		end
+
+		if hittarget and 50 > distance(hittarget.X, hittarget.Z, player.X, player.Z) then
+			if player:target() ~= hittarget then
+				player:target(hittarget.Address)
+			end
+			Attack()
+			yrest(500);
+			if Music ~= nil then
+				local maxCD, CurrentCD = RoMScript("GetBagItemCooldown(".. (Music.SlotNumber - 60) ..")")
+				if CurrentCD == 0 then
+					Music:use()
+				end
+			end
+			if getZoneId() == 402 and inventory:findItem(206688) then -- Battle Time
+				local BattleTime = inventory:findItem(206688)
+				local maxCD, CurrentCD = RoMScript("GetBagItemCooldown(".. (BattleTime.SlotNumber - 60) ..")")
+				if CurrentCD == 0 then
+					BattleTime:use()
+				end
+			end
+			local frenzycd = getCD(490493)
+			local ferventcd = getCD(490333)
+			if player.Class1 == 1 and frenzycd == 0 then	-- w
+				RoMScript('CastSpellByName("Frenzy")');
+			elseif player.Class1 == 3 and ferventcd == 0 then -- r
+				RoMScript('CastSpellByName("Fervent Attack")');
+			end
+			if player.Class1 == 2 then	-- s
+				if resetAutoShot == true then
+					player:cast("SCOUT_AUTOSHOT");
+					resetAutoShot = false
+				end
+				yrest(500);
+				SlashCommand('/script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot")')
+			elseif player.Class2 == 2 then -- s
+				yrest(500);
+				SlashCommand('/script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot"); /wait 2 /script CastSpellByName("Shot")')
+			end
+			local buff = player:getBuff(501575)
+			if (player.Class1 == 9 or player.Class2 == 9) then -- wl
+				yrest(500);
+				RoMScript('CastSpellByName("Warp Charge")');
+				yrest(1000);
+			end
+			if FireTraining then
+				local FTcd = getCD(495174)
+				if FTcd == 0 then
+					player:cast("ALL_FIRE_TRAINING");
+					yrest(1000);
+				end
+			elseif SoldiersAttack then
+				local SAcd = getCD(495176)
+				if SAcd == 0 then
+					player:cast("ALL_SOLDIERS_ATTACK");
+					yrest(1000);
+				end
+			end
+			if player.Class1 == 3 and player.Class2 == 4 then	-- r/m
+				local IBDcd = getCD(497205)
+				local ammo = equipment.BagSlot[9]
+				ammo:update();
+				if IBDcd == 0 and ammo.ItemCount > 20 and ammo.ObjSubType == 6 then
+					player:cast("ROGUE_ILLUSION_BLADE_DANCE");
+				end
+			end
+			if player.Class1 == 3 and player.Class2 == 9 then	-- r/wl
+				local BWRcd = getCD(498804)
+				if BWRcd == 0 and ferventcd ~= 0 then
+					RoMScript('CastSpellByName("Begin When Ready")');
+					yrest(1000);
+					RoMScript('CastSpellByName("Fervent Attack")');
+				end
+			end
+
+			<!--               -->
+
+		---------------------------------------------------------------------------------------------------------------------
+
+
+			yrest(10000)
+
+			cprintf(cli.lightgreen,"Dura mainhand: %s%%\n", math.floor(inventory:getMainHandDurability()));
+			cprintf(cli.lightgreen,"Dura off-hand: %s%%\n", math.floor(inventory:getDurability(16)));
+
+			local skill = RoMScript("GetPlayerCurrentSkillValue(\""..weapon1type.."\")");
+			local levelmax = RoMScript("GetPlayerMaxSkillValue(\""..weapon1type.."\")");
+			local level = math.floor(skill);
+			local percent = math.floor((skill-level)*10000+0.5)/100;
+			if (startlevel1 == nil) then
+				reset1 = 1;
+				startlevel1 = level;
+				startpercent1 = skill-level;
+			end
+			if(startlevel1 ~= level) then
+				reset1 = 1;
+				startlevel1 = level;
+				startpercent1 = skill-level;
+				starttime = os.time();
+			end
+
+			local timediff = os.time() - starttime;
+			local currentpercent = skill-level;
+			local secondsleft = math.floor(((1-currentpercent)*timediff)/(currentpercent-startpercent1));
+			local hours = math.floor(secondsleft/3600);
+			local minutes = math.floor((secondsleft-(hours*3600))/60);
+			local seconds = secondsleft - (hours*3600) - (minutes*60);
+
+			if (reset1 == 1) then
+				reset1 = 0;
+				cprintf(cli.lightred,"%s level: %s/%s ... %s%%\tLvl in:: insufficient data to calculate time...\n", weapon1type, level, levelmax, percent);
+			else
+				cprintf(cli.lightgreen,"%s level: %s/%s ... %s%%\tLvl in: %sh %sm %ss\n", weapon1type, level, levelmax, percent, hours, minutes, seconds);
+			end
+
+			if( weapons == 2 and weapon1type ~= weapon2type) then
+
+				local skill = RoMScript("GetPlayerCurrentSkillValue(\""..weapon2type.."\")");
+				local levelmax = RoMScript("GetPlayerMaxSkillValue(\""..weapon2type.."\")");
+				local level = math.floor(skill);
+				local percent = math.floor((skill-level)*10000+0.5)/100;
+				if (startlevel2 == nil) then
+					reset2 = 1;
+					startlevel2 = level;
+					startpercent2 = skill-level;
+				end
+				if(startlevel2 ~= level) then
+					reset2 = 1;
+					startlevel2 = level;
+					startpercent2 = skill-level;
+					starttime = os.time();
+				end
+
+				local timediff = os.time() - starttime;
+				local currentpercent = skill-level;
+				local secondsleft = math.floor(((1-currentpercent)*timediff)/(currentpercent-startpercent2));
+				local hours = math.floor(secondsleft/3600);
+				local minutes = math.floor((secondsleft-(hours*3600))/60);
+				local seconds = secondsleft - (hours*3600) - (minutes*60);
+
+				if (reset2 == 1) then
+					reset2 = 0;
+					cprintf(cli.lightred,"%s level: %s/%s ... %s%%\tLvl in: insufficient data to calculate time...\n", weapon2type, level, levelmax, percent);
+				else
+					cprintf(cli.lightgreen,"%s level: %s/%s ... %s%%\tLvl in: %sh %sm %ss\n", weapon2type, level, levelmax, percent, hours, minutes, seconds);
+				end
+			end
+
+			inventory:update()
+			local hammer = inventory:itemTotalCount(201967);
+			cprintf(cli.lightgreen,"Hammers left: %s\n", hammer);
+
+			if ( 50 > inventory:getMainHandDurability() ) then
+				if hammer > 0 then
+					cprintf(cli.lightred,"repairing mainhand....");
+					inventory:useItem(201967);
+					RoMScript("PickupEquipmentItem(15)");
+					cprintf(cli.yellow,"done!\n");
+					inventory:update();
+				else
+					cprintf(cli.lightred,"No simple rapair hammers in bag!\n");
+					player:clearTarget();
+					player:sleep();
+				end
+			end
+
+			if ( 50 > inventory:getDurability(16) ) then
+				if hammer > 1 then
+					cprintf(cli.lightred,"repairing offhand....");
+					inventory:useItem(201967);
+					RoMScript("PickupEquipmentItem(16)");
+					cprintf(cli.yellow,"done!\n");
+					inventory:update();
+				else
+					cprintf(cli.lightred,"No or insufficient simple rapair hammers in bag!\n");
+					player:clearTarget();
+					player:sleep();
+				end
+			end
+		end
+	end
+</onLoad>
+</waypoints>

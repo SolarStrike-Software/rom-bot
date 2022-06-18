@@ -3169,3 +3169,17 @@ function toBinaryStr(x)
 	result = tostring(x) .. result
 	return result
 end
+
+function getCooldownForId(id)
+	local addr = GetItemAddress(id)
+	if( addr == nil ) then
+		return 0
+	end
+
+	local offset = memoryReadRepeat("int", getProc(), addr + addresses.skill.remaining_cooldown) or 0
+	if offset and offset ~= 0 then
+		return memoryReadRepeat("int", getProc(), getBaseAddress(addresses.cooldowns.base) + addresses.cooldowns.array_start + (offset*4))/10
+	end
+
+	return 0
+end
