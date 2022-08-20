@@ -90,7 +90,7 @@ function CItem:update()
 			return;
 		end;
 		self.Name = "";
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.ammo_count );
 		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability ) or 1000;
 		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability ) or 80;
 		--[[
