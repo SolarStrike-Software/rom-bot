@@ -79,6 +79,8 @@ function CItem:update()
 		self.Empty = false;
 	end
 
+
+
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then
 		self.BaseItemAddress = GetItemAddress( self.Id );
 
@@ -90,7 +92,7 @@ function CItem:update()
 			return;
 		end;
 		self.Name = "";
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.ammo_count );
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
 		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability ) or 1000;
 		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability ) or 80;
 		--[[

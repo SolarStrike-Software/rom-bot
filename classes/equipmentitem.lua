@@ -16,6 +16,9 @@ function CEquipmentItem:update()
 	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * addresses.inventory.item.size );
 	CItem.update(self)
 
+	-- Equipped items' ammo count works different than when it is in your bag.
+	self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.ammo_count );
+
 	if( settings.profile.options.DEBUG_INV ) then
 		if ( self.Empty ) then
 			printf( "Slot[%02d] <EMPTY>.\n", self.SlotNumber );

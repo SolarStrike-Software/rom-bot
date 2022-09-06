@@ -277,7 +277,7 @@ for i = 60,239 do
 			-- We'll dump more details on this item later
 			foundItem = v;
 		end
-		printLine(colWidth, i, sprintf("ID: %-8d Bound: %d Count: %-5d %s", v.Id or 0, v.Bound and 1 or 0, v.ItemCount or 0, v.Name or ""));
+		printLine(colWidth, i, sprintf("ID: %-8d Bound: %d Count: %-5d 0x%X  %s", v.Id or 0, v.Bound and 1 or 0, v.ItemCount or 0, v.Address, v.Name or ""));
 		found = found + 1
 	end
 end
