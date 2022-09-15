@@ -281,26 +281,26 @@ addresses = {
 		base = 0x60C874,
 	},
 	bank = {
-		base = 0x61DB9C,
+		base = 0x61EB9C,
 		open = {
             base = 0x662CDC,
 			offset = 0x10,
 		},
 		rent = {
-			base = 0x61E00C,
+			base = 0x626CCC,
 		},
 		guild = {
 			base = 0x665AA4,
 		},
 	},
 	inventory = {
-		base = 0x619810,
+		base = 0x61A810,
 		item = {
 			size = 0x48
 		},
 		rent = {
-			base = 0x610e38, --[[{inventory_rent_base}]]
-			offset = 0x107cc, --[[{inventory_rent_offset}]]
+			base = 0x3F0004, --[[{inventory_rent_base}]] -- 626CA4
+			offset = 0x48C, --[[{inventory_rent_offset}]]
 		},
 	},
 	cursor = {
