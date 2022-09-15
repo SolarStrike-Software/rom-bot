@@ -257,7 +257,7 @@ addresses = {
 		card_or_npc_id = 0x36c,
 		recipe_id = 0xF0,
 		name = 0xC,
-		ammo_count = 0xC,
+		ammo_count = 0x10,
 		count = 0x10,
 		max_stack = 0x1C,
 		max_durability = 0x15, -- 1 byte
@@ -278,7 +278,7 @@ addresses = {
 		casting = 0x1c
 	},
 	equipment = {
-		base = 0x60B878,
+		base = 0x60C874,
 	},
 	bank = {
 		base = 0x61DB9C,
