@@ -299,7 +299,7 @@ addresses = {
 			size = 0x48
 		},
 		rent = {
-			base = 0x3F0004, --[[{inventory_rent_base}]] -- 626CA4
+			base = 0x3F0004, --[[{inventory_rent_base}]]
 			offset = 0x48C, --[[{inventory_rent_offset}]]
 		},
 	},
