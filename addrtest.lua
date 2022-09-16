@@ -285,20 +285,6 @@ if( found == 0 ) then
 	tee("No items were found in this inventory")
 end
 
-tee("\n")
-printHeader("Bank", ' ');
-bank = CBank()
-found = 0
-for i,v in pairs(bank.BagSlot) do
-	if( v and not v.Empty ) then
-		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
-		found = found + 1
-	end
-end
-if( found == 0 ) then
-	tee("No items were found in the bank")
-end
-
 if( foundItem ) then
 	tee("\n")
 	printHeader("Item details", ' ');
@@ -319,6 +305,35 @@ if( foundItem ) then
 	printLine(colWidth, 'CoolDownTime', foundItem.CoolDownTime);
 	printLine(colWidth, 'ItemCount', foundItem.ItemCount);
 	printLine(colWidth, 'RequiredLvl', foundItem.RequiredLvl);
+end
+
+tee("")
+printHeader("Inventory rent", ' ')
+for page = 3,6 do -- Pages 1 & 2 are free; always unlocked
+	local tested = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.inventory.rent.base), addresses.inventory.rent.offset + (page-3) * 4) ~= 0xFFFFFFFF
+	printLine(colWidth, sprintf("Page %d", page), tested)
+end
+
+
+tee("\n")
+printHeader("Bank", ' ');
+bank = CBank()
+found = 0
+for i,v in pairs(bank.BagSlot) do
+	if( v and not v.Empty ) then
+		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
+		found = found + 1
+	end
+end
+if( found == 0 ) then
+	tee("No items were found in the bank")
+end
+
+tee("")
+printHeader("Bank rent", ' ')
+for page = 2,5 do -- Page 1 is free; always unlocked
+	local tested = memoryReadUInt(getProc(), getBaseAddress(addresses.bank.rent.base) + math.floor((page-2) * 4)) ~= 0xFFFFFFFF
+	printLine(colWidth, sprintf("Page %d", page), tested)
 end
 
 tee("")
