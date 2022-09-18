@@ -58,12 +58,8 @@ function CInventoryItem:update()
 
 	-- Check if not rented
 	if self.SlotNumber > 120 then
-		--[[
-			RoM stores the number of minutes (from now) that each bag (starting at 3) will expire
-			A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
-		--]]
-		index = math.floor((self.SlotNumber - 121)/30);
-		self.Available = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.inventory.rent.base), addresses.inventory.rent.offset + index * 4) ~= 0xFFFFFFFF
+		page = 3 + math.floor((self.SlotNumber - 121) / 30)
+		self.Available = self:isPageAvailable(page)
 	else
 		self.Available = true
 	end
@@ -99,6 +95,25 @@ function CInventoryItem:update()
 			cprintf(  _color, "[%s]\n", self.Name );
 		end;
 	end;
+end
+
+function CInventoryItem:isPageAvailable(page)
+	--[[
+		RoM stores the number of minutes (from now) that each bag (starting at 3) will expire
+		A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
+	--]]
+
+	if ( page == 1 or page == 2 ) then
+		return true -- Always have pages 1 and 2
+	end
+
+	if ( page > 6 ) then
+		return false -- There's only 6 pages
+	end
+
+	return memoryReadIntPtr(getProc(),
+		getBaseAddress(addresses.inventory.rent.base),
+		addresses.inventory.rent.offset + (page-3) * 4) >= 0
 end
 
 function CInventoryItem:use()

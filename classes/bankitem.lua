@@ -13,12 +13,28 @@ CBankItem = class(CItem,
 	end
 );
 
+function CBankItem:isPageAvailable(page)
+	if ( page == 1 ) then
+		return true -- Always have page 1
+	end
+
+	if ( page > 5 ) then
+		return false -- There's only 5 pages
+	end
+
+	return memoryReadIntPtr(getProc(),
+		getBaseAddress(addresses.inventory.rent.base),
+		addresses.inventory.rent.offset + addresses.inventory.rent.bank_offset + (page-2) * 4) >= 0
+end
+
 function CBankItem:update()
 	self.Address = getBaseAddress(addresses.bank.base) + ( (self.BagId - 1) * addresses.inventory.item.size );
 
 	-- Check if available
 	if self.BagId > 40 and self.BagId <= 200 then
-		self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.bank.rent.base) + math.floor((self.BagId - 41)/40) * 4) ~= 0xFFFFFFFF
+		-- self.Available = memoryReadUInt(getProc(), getBaseAddress(addresses.bank.rent.base) + math.floor((self.BagId - 41)/40) * 4) ~= 0xFFFFFFFF
+		local page = math.floor((self.BagId - 41)/40);
+		self.Available = self:isPageAvailable(page)
 	else
 		self.Available = true
 	end

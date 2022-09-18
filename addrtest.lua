@@ -310,7 +310,7 @@ end
 tee("")
 printHeader("Inventory rent", ' ')
 for page = 3,6 do -- Pages 1 & 2 are free; always unlocked
-	local tested = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.inventory.rent.base), addresses.inventory.rent.offset + (page-3) * 4) ~= 0xFFFFFFFF
+	local tested = CInventoryItem.isPageAvailable(nil, page)
 	printLine(colWidth, sprintf("Page %d", page), tested)
 end
 
@@ -332,7 +332,7 @@ end
 tee("")
 printHeader("Bank rent", ' ')
 for page = 2,5 do -- Page 1 is free; always unlocked
-	local tested = memoryReadUInt(getProc(), getBaseAddress(addresses.bank.rent.base) + math.floor((page-2) * 4)) ~= 0xFFFFFFFF
+	local tested = CBankItem.isPageAvailable(nil, page)
 	printLine(colWidth, sprintf("Page %d", page), tested)
 end
 
