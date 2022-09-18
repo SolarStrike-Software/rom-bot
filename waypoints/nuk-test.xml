@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints>
+	<!-- #  1 --><waypoint x="-102" z="-7060" y="48">	</waypoint>
+	<!-- #  2 --><waypoint x="48" z="-6871" y="41">	</waypoint>
+	<!-- #  3 --><waypoint x="274" z="-6975" y="57">	</waypoint>
+	<!-- #  4 --><waypoint x="140" z="-7138" y="65">	</waypoint>
+	<!-- #  5 --><waypoint x="-5" z="-7120" y="53">
+        -- Remember waypoint list for later
+        local currentWPL = __WPL;
+        local currentRPL = __RPL;
+
+        -- Log off of character
+        printf("Logging out of character %s\n", player.Name)
+        RoMCode("CloseAllWindows()") yrest(500)
+		RoMCode("Logout();");
+
+        -- Wait for resume
+        printf("Now switch to the next character.\n")
+        printf("Press %s key to continue.\n", getKeyName(settings.hotkeys.START_BOT.key))
+        while (true) do
+            yrest(10)
+            if( keyPressed(settings.hotkeys.START_BOT.key) ) then
+                print("Continuing...")
+                break
+            end
+        end
+        waitForLoadingScreen(60)
+
+        -- Reload bot entities
+        player = CPlayer.new();
+        settings.load();
+        settings.loadProfile(player.Name)
+        player:update()
+
+        -- Switch back to current waypoints
+        __WPL = currentWPL
+        __RPL = currentRPL
+
+        printf("Switched to character %s\n", player.Name)
+    </waypoint>
+</waypoints>

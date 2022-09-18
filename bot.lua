@@ -323,14 +323,6 @@ function main()
 	guildbank = CGuildbank()
 	cursor = CCursor()
 
-	inventory:update()
-	for i = 0,239 do
-		local test = inventory.BagSlot[i].Available
-		printf("Test slot %d = %s\n", i, test)
-	end
-	error('done testing')
-
-
 	LoadItemTypes()     -- Needs macros to already be set up.
 
 
