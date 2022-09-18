@@ -942,10 +942,21 @@ local updatables = {
 	},
 
 	inventory_rent_base = {
-		value_offset = 0x7,
+		value_offset = 0x2C,
 		value_size = 4,
 		value_raw = false,
 		pattern = byteArrayToPattern([[
+			56
+			8B 74 24 08
+			6A 01
+			56
+			E8 ?? ?? ?? ??
+			83 C0 FF
+			83 C4 08
+			83 F8 05
+			0F 87 A1 00 00 00
+			FF 24 85 ?? ?? ?? ??
+			6A 01
 			56
 			E8 ?? ?? ?? ??
 			A1 ?? ?? ?? ??
@@ -953,11 +964,9 @@ local updatables = {
 			DD 1C 24
 			56
 			E8 ?? ?? ?? ??
-			83 C4 ??
+			83 C4 0C
 			B8 02 00 00 00
-			5E
-			C3
-			6A 01
+			5E C3
 		]]),
 		partners = {
 			inventory_rent_offset = {
