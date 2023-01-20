@@ -152,6 +152,8 @@ tee("");
 
 printHeader("Player Info");
 player = CPlayer.new();
+printLine(colWidth, "Address:", sprintf("0x%X", player.Address));
+printLine(colWidth, "Level:", memoryReadInt(getProc(), player.Address + addresses.game_root.pawn.level));
 printLine(colWidth, "Name:", player.Name);
 --print(sprintf("%" .. colWidth .. "s", "Name:"), player.Name);
 printLine(colWidth, "Class 1:", getClassName(player.Class1) .. " lvl " .. player.Level);
@@ -239,7 +241,7 @@ local expectations = {
 	['ZONE955_JOLIN_S1'] = 'Only I can sing on my stage!'
 }
 for i,key in pairs({'AC_INSTRUCTION_01', 'AC_INSTRUCTION_02', 'ZONE955_JOLIN_S1'}) do
-	printLine(colWidth, key, sprintf("%-25s", getTEXT(key)), sprintf("%-25s", expectations[key]));
+	printLine(colWidth, key, sprintf("%-25s", getTEXT(key) or 'not found'), sprintf("%-25s", expectations[key]));
 end
 
 tee("\nLoading data for additional testing...");
