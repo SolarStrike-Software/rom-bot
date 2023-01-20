@@ -446,31 +446,14 @@ local updatables = {
 		]]),
 	},
 
+--[[ Deprecated
 	actionbar_base = {
 		value_offset = 0x0F,
 		value_size = 4,
 		value_raw = false,
-		pattern = byteArrayToPattern([[
-			56
-			8B 74 24 08
-			6A 01
-			56
-			E8 ?? ?? ?? ??
-			8B 0D ?? ?? ?? ??
-			83 C4 08
-			83 E8 01
-			50
-			E8 ?? ?? ?? ??
-			8B D0
-			85 D2
-			B0 01
-			74 78
-			8B 0A
-			83 C1 FD
-			83 F9 ??
-			77 6E
-		]]),
+		pattern = byteArrayToPattern(invalid pattern removed),
 	},
+	--]]
 
 	gold_base = {
 		value_offset = 0x30,
