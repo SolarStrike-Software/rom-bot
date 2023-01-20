@@ -291,7 +291,7 @@ addresses = {
 		},
 	},
 	inventory = {
-		base = 0x61F890,--0x61A810,
+		base = 0x61F890,
 		item = {
 			size = 0x48
 		},
