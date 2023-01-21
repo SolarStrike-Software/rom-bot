@@ -2221,10 +2221,14 @@ end
 
 -- Finds a string in another string, normalising it first.
 function FindNormalisedString(_name, _string)
+	if( _name == nil or _string == nil ) then
+		return false;
+	end
+	
 	_name = string.lower(_name)
 	_string = NormaliseString(_string)
 
-	if string.find(_name,_string) then
+	if string.find(_name, _string) then
 		return true
 	else
 		return false
@@ -2242,7 +2246,7 @@ function ChoiceOptionByName(optiontext)
 		return
 	end
 
-	if FindNormalisedString(getTEXT("HOUSE_MAID_LEAVE_TALK"),optiontext) then -- Should be the "Leave conversation" option
+	if FindNormalisedString(getTEXT("HOUSE_MAID_LEAVE_TALK"), optiontext) then -- Should be the "Leave conversation" option
 		RoMCode("SpeakFrame_Hide()")
 		return true
 	end
@@ -2567,11 +2571,22 @@ end
 local getTEXTCache = {}
 local textCacheFilename = getExecutionPath() .. "/cache/texts.lua";
 function getTEXT(key)
-	if( getTEXTCache['GAME_VERSION'] == nil or getTEXTCache['AC_INSTRUCTION_01'] == nil ) then
+	if( key == nil or getTEXTCache['GAME_VERSION'] == nil or getTEXTCache['AC_INSTRUCTION_01'] == nil) then
 		if( not readCachedGameTexts() ) then
 			readAndCacheGameTexts();
 		end
+
+		if( key == nil ) then return; end
 	end
+
+	if( type(key) ~= 'string' ) then
+		error('`key` passed to getTEXT() must be a string; ' .. type(key) .. ' received.', 2)
+	end
+
+	if( getTEXTCache[key] == nil ) then
+		cprintf_ex('|yellow|Warning: |white|Could not find text string %s\n', key)
+	end
+
 	return getTEXTCache[key];
 end
 
@@ -3159,7 +3174,7 @@ function toBinaryStr(x)
 	if x == nil then
 		return '0';
 	end
-	
+
 	local result = ""
 	while (x~=1 and x~=0) do
 		result = tostring(x%2) .. result
