@@ -286,17 +286,6 @@ function selectGame(character)
 	return windowList[windowChoice];
 end
 
-
--- get current directory (theres gotho be an easier way)
-function currDir()
-  os.execute("cd > cd.tmp")
-  local f = io.open("cd.tmp", r)
-  local cwd = f:read("*a")
-  f:close()
-  os.remove("cd.tmp")
-  return cwd
-end
-
 function getWin(character)
 	if( __WIN == nil ) then
   		__WIN = selectGame(character);
@@ -322,35 +311,23 @@ function getProc()
 end
 
 function angleDifference(angle1, angle2)
-  if( math.abs(angle2 - angle1) > math.pi ) then
-    return (math.pi * 2) - math.abs(angle2 - angle1);
-  else
-    return math.abs(angle2 - angle1);
-  end
+  return math.min(math.abs(angle2 - angle1), (math.pi * 2) - math.abs(angle2 - angle1))
 end
+
 
 function distance(x1, z1, y1, x2, z2, y2)
 	if type(x1) == "table" and type(z1) == "table" then
-        y2 = z1.Y or z1[3]
-        z2 = z1.Z or z1[2]
-        x2 = z1.X or z1[1]
-        y1 = x1.Y or x1[3]
-        z1 = x1.Z or x1[2]
-        x1 = x1.X or x1[1]
-    elseif z2 == nil and y2 == nil then -- assume x1,z1,x2,z2 values (2 dimensional)
-		z2 = x2
-		x2 = y1
-		y1 = nil
+		x1, z1, y1, x2, z2, y2 = x1.X or x1[1], x1.Z or x1[2], x1.Y or x1[3], z1.X or z1[1], z1.Z or z1[2], z1.Y or z1[3]
+	elseif y2 == nil then
+		z2 = x2; x2 = y1; y1 = nil
 	end
 
-	if( x1 == nil or z1 == nil or x2 == nil or z2 == nil ) then
-		error("Error: nil value passed to distance()", 2);
-	end
+	assert(x1 and z1 and x2 and z2, "Error: nil value passed to distance()")
 
-	if y1 == nil or y2 == nil then -- 2 dimensional calculation
-		return math.sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) );
-	else -- 3 dimensional calculation
-		return math.sqrt( (z2-z1)*(z2-z1) + (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+	if y1 == nil or y2 == nil then
+		return math.sqrt((z2 - z1) ^ 2 + (x2 - x1) ^ 2)
+	else
+		return math.sqrt((z2 - z1) ^ 2 + (x2 - x1) ^ 2 + (y2 - y1) ^ 2)
 	end
 end
 
@@ -510,54 +487,30 @@ end
 -- returns full path if it exists, searching relative, local and global folders
 -- To be found, _file path should be relative to 'rom' or 'romglobal' or the current waypoint file.
 function findFile(_file)
+	local currentWPLPath = __WPL and __WPL.FileName and string.match(__WPL.FileName, "(.+/)") or ""
+
 	-- Check relative to current wp files location.
-	if __WPL and __WPL.FileName then
-		-- we strip "waypoints/" since we search relative to current waypoint location.
-		local tmpFile = string.gsub(_file,"^/?waypoints/","")
-
-		local currentWPLPath = string.match(__WPL.FileName,"(.+/)") or ""
-
-		-- Simple nested folder
-		if fileExists(getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile) then
-			return getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile
-		end
-
-		-- Strip duplicate dirs
-		local tmpPath = string.match(tmpFile, "^(.*%/).*%....")
-		if tmpPath then
-			repeat
-				if string.match(currentWPLPath, tmpPath .. "$") then
-					-- Match found, strip dirs
-					currentWPLPath = string.match(currentWPLPath, "(.*)"..tmpPath.."$")
-					if fileExists(getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile) then
-						return getExecutionPath() .. "/waypoints/" .. currentWPLPath .. tmpFile
-					end
-				end
-				-- Take off a dir and try again
-				tmpPath = string.match(tmpPath, "^(.-)[^%/]*%/$")
-			until tmpPath == ""
-		end
+	local path = getExecutionPath() .. "/waypoints/" .. currentWPLPath .. string.gsub(_file, "^/?waypoints/", "")
+	if fileExists(path) then
+		return path
 	end
 
-	-- Then check local folder
-	if fileExists(getExecutionPath() .. "/" .. _file) then
-		return getExecutionPath() .. "/" .. _file
+	path = getExecutionPath() .. "/" .. _file
+	if fileExists(path) then
+		return path
 	end
 
-	-- Then check global folder
-	if fileExists(getExecutionPath() .. "/../romglobal/" .. _file) then
-		return getExecutionPath() .. "/../romglobal/" .. _file
+	path = getExecutionPath() .. "/../romglobal/" .. _file
+	if fileExists(path) then
+		return path
 	end
 
-	-- if neither exist return local as default
 	return getExecutionPath() .. "/" .. _file
 end
 
 function load_paths( _wp_path, _rp_path)
-
 	cprintf(cli.yellow, "Please use the renamed function \'loadPaths()\' instead of \'load_paths\'!\n");
 	loadPaths( _wp_path, _rp_path);
-
 end
 
 function loadPaths( _wp_path, _rp_path)
@@ -1493,7 +1446,6 @@ end
 
 -- Returns the point that is nearest to (X,Z) between segment (A,B) and (C,D)
 function getNearestSegmentPoint(x, z, a, b, c, d)
-
 	if a == c and b == d then
 		return CWaypoint(a, b)
 	end
@@ -2224,7 +2176,7 @@ function FindNormalisedString(_name, _string)
 	if( _name == nil or _string == nil ) then
 		return false;
 	end
-	
+
 	_name = string.lower(_name)
 	_string = NormaliseString(_string)
 

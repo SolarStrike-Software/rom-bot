@@ -155,7 +155,7 @@ language = {
 
 	[159] = "Bewege in die Item-Shop-Tasche: %s.\n",
 	[160] = "Skript pausiert, bis Sie sich selbst wiederbeleben. Dr\129cken Sie %s wenn Sie weitermachen m\148chten.\n",
-	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion load_paths() zu nutzen. Es wurden keine Pfade geladen!\n",
+	[161] = "Sie m\129ssen entweder eine Wegepunktdatei oder einen R\129ckkehrpfad angeben, um die Funktion loadPaths() zu nutzen. Es wurden keine Pfade geladen!\n",
 	[162] = "R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[163] = "Es wurde keine R\129ckkehrpfaddatei mit dem Defaultnamen %s gefunden.\n",
 	[164] = "Wir kommen von einem R\129ckkehrpfade. Daher werden wir auch jetzt den R\129ckkehrpfad %s benutzen.\n",

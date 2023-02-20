@@ -139,7 +139,7 @@ language = {
 	[151] = "Kompilacja i wykonanie kodu LUA dla %s w Twoim profilu - nie powiod\136y si\169.",
 
 	[160] = "Wykonywanie skryptu spauzowane dop\162ki sam si\169 nie wskrzesisz. Naci\152nij %s gdy b\169dziesz gotowy, aby kontynuowa\134.\n",
-	[161] = "Musisz sprecyzowa\134 \152cie\190k\169, b\165d\171 \152cie\190k\169 powrotn\165, aby u\190y\134 funkcji load_paths(). \189adne \152cie\190ki nie zosta\136y za\136adowane!\n",
+	[161] = "Musisz sprecyzowa\134 \152cie\190k\169, b\165d\171 \152cie\190k\169 powrotn\165, aby u\190y\134 funkcji loadPaths(). \189adne \152cie\190ki nie zosta\136y za\136adowane!\n",
 	[162] = "\151cie\190ka powrotna odnaleziona wed\136ug nazwy domy\152lnej: %s\n",
 	[163] = "Nie znaleziono \152cie\190ki powrotnej wed\136ug nazwy domy\152lnej.\n",
 	[164] = "Przychodzimy ze \152cie\190ki powrotnej. Wi\169c b\169dziemy kontynuowa\134 \152cie\190k\165 powrotn\165 %s.\n",

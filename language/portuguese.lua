@@ -143,7 +143,7 @@ language = {
 	[152] = "Falhou a compila\135\132o e execu\135\132o do c\162digo Lua no evento onLoad do caminho .",
 
 	[160] = "O Script parou at\130 se ressurscitar a si pr\162prio. Pressione %s quando estiver pronto a continuar.\n",
-	[161] = "Tem que especificar um caminho ou um caminho de retorno para usar a fun\135\132o load_paths(). N\132o foi carregado nenhum caminho!\n",
+	[161] = "Tem que especificar um caminho ou um caminho de retorno para usar a fun\135\132o loadPaths(). N\132o foi carregado nenhum caminho!\n",
 	[162] = "Caminho de retorno com a nomenclatura por defeito: %s\n",
 	[163] = "N\132o foi encontrado um caminho de retorno com a nomeclatura por defeito %s.\n",
 	[164] = "Estamos a vir de um caminho de retorno. Por isso vamos continuar a usar o caminho de retorno %s.\n",
