@@ -417,6 +417,10 @@ function CItem:moveTo(bag)
 	end
 
 	-- Try to find a stack to merge with
+	--[[ Disabled for now - item max stack count not available.
+	https://www.solarstrike.net/phpBB3/viewtopic.php?t=7584
+
+
 	if self.MaxStack > 1 and self.ItemCount < self.MaxStack then
 		for slot = first, last do
 			local toItem = toLocation.BagSlot[slot]
@@ -466,6 +470,7 @@ function CItem:moveTo(bag)
 			end
 		end
 	end
+	]]
 
 	-- Put the rest in an empty slot
 	if not self.Empty then
