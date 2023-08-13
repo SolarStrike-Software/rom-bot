@@ -2940,6 +2940,9 @@ function getLastUpdateCheckedTime()
 	local checkedTime = 0;
 	if( file ) then
 		checkedTime = file:read('*n');
+		if( type(checkedTime) ~= "number" ) then
+			checkedTime = 0;
+		end
 	end
 
 	return checkedTime;
