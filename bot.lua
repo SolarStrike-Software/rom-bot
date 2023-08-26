@@ -916,7 +916,7 @@ function main()
 
 						-- execute the action from the skiped wp
 						if( currentWp.Action and type(currentWp.Action) == "string" ) then
-							local actionchunk = loadstring(currentWp.Action);
+							local actionchunk,errmsg = loadstring(currentWp.Action);
 							if( not actionchunk ) then
 								cprintf(cli.yellow, sprintf(language[150], WPLorRPL.CurrentWaypoint) .. "\n")
 								handleLoadstringFailure(currentWp.Action, errmsg, filename)
@@ -1006,7 +1006,7 @@ function main()
 					-- Execute it's action, if it has one.
 					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
 						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
-						local actionchunk = loadstring(wp.Action);
+						local actionchunk,errmsg = loadstring(wp.Action);
 						if( not actionchunk ) then
 							cprintf(cli.yellow, sprintf(language[150], __RPL.CurrentWaypoint) .. "\n")
 							handleLoadstringFailure(wp.Action, errmsg, filename)
@@ -1018,7 +1018,7 @@ function main()
 					-- Execute it's action, if it has one.
 					if( wp.Action and type(wp.Action) == "string" and string.find(wp.Action,"%a") ) then
 						keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200) -- Stop moving
-						local actionchunk = loadstring(wp.Action);
+						local actionchunk,errmsg = loadstring(wp.Action);
 						if( not actionchunk ) then
 							cprintf(cli.yellow, sprintf(language[150], __WPL.CurrentWaypoint) .. "\n")
 							handleLoadstringFailure(wp.Action, errmsg, filename)

@@ -3052,20 +3052,23 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 	filename = filename or ""
 	linesbefore = linesbefore or 5
 	linesafter = linesafter or 5
+	errmsg = errmsg or 'Lua parse error'
 
 	-- Try to information from errmsg
-	linenumber = tonumber(string.match(errmsg, "%[string \"%.%.%.\"%]:(%d+):") or -1)
+	linenumber = tonumber(string.match(errmsg, "%[string \".*%.%.%.\"%]:(%d+):") or -1)
 
 	startline = 0
 	endline = 0
 	if linenumber > 0 then
 		startline = math.max(0, linenumber - linesbefore)
 		endline = linenumber + linesafter
+	else
+		_,endline = luacode:gsub("\n", "\n")
 	end
 
 	-- Output code sample
 	if( filename ~= "" ) then
-		print("File: ", filename .. "\n")
+		cprintf(cli.turquoise, "\nFile: " .. filename .. "\n----------------------------------------\n")
 	end
 
 	lc = 0
@@ -3085,6 +3088,7 @@ function handleLoadstringFailure(luacode, errmsg, filename, linesbefore, linesaf
 		end
 	end
 
+	cprintf(cli.turquoise, '----------------------------------------\n')
 	print("")
 	error(errmsg, 2)
 end
