@@ -548,7 +548,7 @@ function checkEggPets()
 		local item, cake, cheese, milk, beef, favorite, dessert = 0,0,0,0,0,0,0
 		for slot = 51, 240 do
 			item = inventory.BagSlot[slot]
-			if item.Available then
+			if item ~= nil and item.Available then
 				if item.Id == 204791 then
 					cake = cake + item.ItemCount
 				elseif item.Id == 204925 then

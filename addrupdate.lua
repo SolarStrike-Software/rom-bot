@@ -1029,7 +1029,12 @@ local updatables = {
 			8B 0D ?? ?? ?? ??
 			83 C4 04
 			E9 ?? ?? ?? ??
-		]])
+		]]),
+		partners = {
+			eggpet_base = {
+				add_value = -0xB19C,
+			}
+		}
 	},
 
 	channel_base = {

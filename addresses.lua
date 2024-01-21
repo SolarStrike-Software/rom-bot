@@ -346,7 +346,7 @@ addresses = {
 		offset = 0x7c, --[[{newbie_eggpet_offset}]]
 	},
 	eggpet = {
-		base = 0x61F9a8,
+		base = 0x62e7b0, --[[{eggpet_base}]]
 		size = 0x348,
 		max_slots = 6,
 		name = 0x0,
