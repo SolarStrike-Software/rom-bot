@@ -347,7 +347,7 @@ addresses = {
 	},
 	eggpet = {
 		base = 0x62e7b0, --[[{eggpet_base}]]
-		size = 0x348,
+		size = 0x36C,
 		max_slots = 6,
 		name = 0x0,
 		id = 0x20,
