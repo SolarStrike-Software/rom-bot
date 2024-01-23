@@ -969,9 +969,9 @@ function CPlayer:cast(skill)
 			end;
 			skill.LastCastTime = getTime()
 			local remaining = skill:getRemainingCooldown()
-			if remaining > 0 then
+			--[[if remaining > 0 then
 				skill.LastCastTime.low = skill.LastCastTime.low +remaining*1000 * bot.GetTimeFrequency
-			end
+			end]]
 		elseif skill.GlobalCooldown ~= false then -- Wait for global cooldown to start
 			self:updateGlobalCooldown()
 			local startTime = getTime()
