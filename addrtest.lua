@@ -164,6 +164,20 @@ printLine(colWidth, "MP2:", player.MP2 .. "/" .. player.MaxMP2);
 printLine(colWidth, "Target:", sprintf('0x%X', player.TargetPtr or 0) .. ' (' .. (player:getTarget().Id or 0) .. ')');
 tee("");
 
+printHeader("Class Info");
+local classInfoBase = memoryReadUInt(getProc(), getBaseAddress(addresses.class_info.base)) + addresses.class_info.offset;
+printLine(colWidth, "Warrior:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_WARRIOR - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Scout:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_SCOUT - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Rogue:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_ROGUE - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Mage:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_MAGE - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Priest:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_PRIEST - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Knight:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_KNIGHT - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Warden:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_WARDEN - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Druid:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_DRUID - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Warlock:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_WARLOCK - 1) + addresses.class_info.level)) or 'failed to read');
+printLine(colWidth, "Champion:", memoryReadInt(getProc(), classInfoBase + (addresses.class_info.size * (CLASS_CHAMPION - 1) + addresses.class_info.level)) or 'failed to read');
+tee("");
+
 printHeader("Player Buffs");
 player:updateBuffs()
 for i,v in pairs(player.Buffs) do

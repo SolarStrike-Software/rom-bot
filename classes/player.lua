@@ -200,7 +200,7 @@ function CPlayer:update()
 		end
 	end--]]
 
-	local classInfoBase = memoryReadUIntPtr(getProc(), getBaseAddress(addresses.class_info.base), addresses.class_info.offset);
+	local classInfoBase = memoryReadUInt(getProc(), getBaseAddress(addresses.class_info.base)) + addresses.class_info.offset;
 	self.Class1 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class1) or self.Class1;
 	self.Class2 = memoryReadRepeat("int", getProc(), self.Address + addresses.game_root.pawn.class2) or self.Class2;
 
@@ -212,8 +212,8 @@ function CPlayer:update()
 		cprintf(cli.yellow, "[warn] Player class 2 may be invalid (%d)\n", self.Class2);
 	end
 
-	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1)) + addresses.class_info.level) or self.Level
-	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1)) + addresses.class_info.level) or self.Level2
+	self.Level = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class1 - 1) + addresses.class_info.level)) or self.Level;
+	self.Level2 = memoryReadRepeat("int", getProc(), classInfoBase + (addresses.class_info.size * (self.Class2 - 1) + addresses.class_info.level)) or self.Level2;
 
 	if( self.Level == nil or self.Level < 1 or self.Level > 300 ) then
 		self.Level = memoryReadInt(getProc(), self.Address + addresses.game_root.pawn.level) or self.Level;
