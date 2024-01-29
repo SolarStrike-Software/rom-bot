@@ -791,7 +791,6 @@ function CSkill:getRemainingCooldown()
 
 	-- If we have been given a specific cooldown, check that first
     if (self.Cooldown > 0 and self.Cooldown > secondsSinceLastUse) then
-		print("Exit early", (self.Cooldown - secondsSinceLastUse))
         return (self.Cooldown - secondsSinceLastUse);
     end
 

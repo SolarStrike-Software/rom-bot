@@ -568,7 +568,7 @@
 	<!-- General -->
 	<skill name="WARDEN_CHARGED_CHOP" 					id="493395" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		globalcooldown="false" />
 	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="1"	cooldown="15"	target="enemy" />
-	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958,623126" />
+	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958,504537,623126" />
 	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false"/>
 	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		maxhpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" 					id="493406" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		inbattle="true" />
