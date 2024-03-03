@@ -1077,7 +1077,7 @@ if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
 		foundUpdates['memdatabase_base'] = addr;
 		cprintf_ex("|green|Found |pink|{memdatabase_base}|green| at |yellow|0x%X\n", addr);
 	else
-		cprintf_ex("|red|Could not locate {memdatabase_base}\n");
+		cprintf_ex("|red|Could not locate {memdatabase_base}. Is the game client open and logged in?\n");
 	end
 else
 	print("MDBrute not installed; could not scan for memdatabase");
