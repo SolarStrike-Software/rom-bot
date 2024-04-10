@@ -38,6 +38,10 @@ function log_debug(...)
 			-- Hide player's name from output
 			str = str:gsub(player.Name, "<redacted>");
 		end
+		if( string.sub(str, -1) ~= "\n" ) then
+			str = str .. ' '
+		end
+
 		logfile:write(str);
 	end
 	logfile:write("\n")
@@ -155,6 +159,7 @@ player = CPlayer.new();
 printLine(colWidth, "Address:", sprintf("0x%X", player.Address));
 printLine(colWidth, "Level:", memoryReadInt(getProc(), player.Address + addresses.game_root.pawn.level));
 printLine(colWidth, "Name:", player.Name);
+printLine(colWidth, "Position:", sprintf("(%d, %d, %d)", player.X, player.Y, player.Z))
 --print(sprintf("%" .. colWidth .. "s", "Name:"), player.Name);
 printLine(colWidth, "Class 1:", getClassName(player.Class1) .. " lvl " .. player.Level);
 printLine(colWidth, "Class 2:", getClassName(player.Class2) .. " lvl " .. player.Level2);
@@ -397,7 +402,7 @@ else
 end
 
 tee("");
-printHeader("Skills", ' ');
+printHeader("Skills");
 settings.loadSkillSet(player.Class1)
 
 getResourceName = function (skill)
