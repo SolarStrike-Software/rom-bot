@@ -600,6 +600,15 @@ function CItem:pickup()
 end
 
 function CItem:getRemainingCooldown()
+	if (self.BagId ) then
+		local maxCD, currentCD = RoMScript("GetBagItemCooldown(".. self.BagId .. ")");
+		if( currentCD) then
+			return currentCD, true
+		end
+	end
+	return 0.0, false
+	--[[ deprecated. An item's cooldown is not stored in its struct anymore.
+
 	local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id );
 	if ( skillItemId ~= nil and skillItemId ~= 0 ) then
 		local skillItemAddress = GetItemAddress( skillItemId );
@@ -617,6 +626,7 @@ function CItem:getRemainingCooldown()
 		end
 	end
 	return 0, false
+	]]
 end
 
 --[[
