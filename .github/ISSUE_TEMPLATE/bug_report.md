@@ -22,11 +22,11 @@ Please include steps to reproduce the issue.
 A clear and concise description of what you expected to happen.
 
 ## Game info (please complete the following information):
-**Note:** You can get your **bot version hash** by opening `rom-bot/.git/refs/heads/master` in any text editor, such as Notepad.
+**Note:** The **Revision hash** is shown when starting the bot.
 
  - Author: Gameforge (or specify if using private server)
  - Game version: [e.g. 7.4.0.3000]
- - Bot version hash: [e.g. 7e028732a7a20a77a58ad136f84b00c811c148b3]
+ - Bot revision: [e.g. c8cf40a]
 
 
 ## Waypoints, profiles & userfunctions
