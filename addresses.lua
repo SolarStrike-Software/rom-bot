@@ -31,7 +31,7 @@ addresses = {
 		tp = 0x10
 	},
 	currency = {
-		base = 0x622C68,
+		base = 0x631B38
 	},
 	crafting = {
 		base = 0x611224, --[[{crafting_base}]]

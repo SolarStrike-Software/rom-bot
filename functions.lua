@@ -2685,11 +2685,15 @@ function getCurrency(name)
 
 	local group, index, memoffset
 	if noSname == "shell" or name == string.lower(getTEXT("SYS_MONEY_TYPE_11")) then
-		group, index, memoffset = 1,1,3
+		group, index, memoffset = 1,1,0x1C
 	elseif noSname == "energy" or noSname == "eoj" or name == string.lower(getTEXT("SYS_MONEY_TYPE_12")) then
 		group, index, memoffset = 1,2,4
 	elseif noSname == "dreamland" or noSname == "pioneer sigil" or noSname == "sigil" or name == string.lower(getTEXT("SYS_MONEY_TYPE_10")) then
 		group, index, memoffset = 1,3,5
+	elseif noSname == "peak_fragment" or noSname == "peak fragment" then
+		group, index, memoffset = 1,4,12
+	elseif noSname == "stardust" then
+		group, index, memoffset = 1,5,16
 	elseif noSname == "mem" or noSname == "mento" or noSname == "memento" or name == string.lower(getTEXT("SYS_MONEY_TYPE_9")) then
 		group, index, memoffset = 2,1,1
 	elseif noSname == "proof" or noSname == "pom" or name == string.lower(getTEXT("SYS_MONEY_TYPE_13")) then
@@ -2699,11 +2703,15 @@ function getCurrency(name)
 	elseif noSname == "mirrorworld_ticket" then
 		group, index, memoffset = 2,4,7
 	elseif noSname == "honor" or name == string.lower(getTEXT("SYS_MONEY_TYPE_4")) then
-		group, index, memoffset = 3,1
+		group, index, memoffset = 3,1,nil
 	elseif noSname == "trial" or noSname == "bott" or name == string.lower(getTEXT("SYS_MONEY_TYPE_8")) then
-		group, index, memoffset = 3,2
+		group, index, memoffset = 3,2,nil
 	elseif noSname == "warrior" or noSname == "botw" or name == string.lower(getTEXT("SYS_MONEY_TYPE_14")) then
-		group, index, memoffset = 3,3
+		group, index, memoffset = 3,3,nil
+	elseif noSname == "copper_stomping_ground" then
+		group, index, memoffset = 3,4,0xA
+	elseif noSname == "silver_stomping_ground" then
+		group, index, memoffset = 3,5,0xE
 	else
 		print("Invalid currency type. Please use 'shell', 'eoj', 'sigil', 'mem', 'proof', 'honor', 'trial' or 'warrior'.")
 		return 0,0

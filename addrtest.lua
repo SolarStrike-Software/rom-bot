@@ -357,6 +357,29 @@ for page = 2,5 do -- Page 1 is free; always unlocked
 	printLine(colWidth, sprintf("Page %d", page), tested)
 end
 
+tee("\n")
+printHeader("Currency");
+
+printLine(30, "Currency name", "Amount", "Max Amount")
+printLine(30, "-------------", "------", "----------")
+printLine(30, "Phirus Shells:", getCurrency("shell"));
+printLine(30, "Energy of Justice:", getCurrency("eoj"))
+printLine(30, "Dreamland Pioneer:", getCurrency("dreamland"))
+printLine(30, "Peak Fragment:", getCurrency("peak_fragment"))
+printLine(30, "Stardust:", getCurrency("stardust"))
+
+printLine(30, "Ancient Memento:", getCurrency("mem"))
+printLine(30, "Proof of Myth:", getCurrency("proof"))
+printLine(30, "Mirror Shards:", getCurrency("mirror_shard"))
+printLine(30, "Mirrorworld Tickets:", getCurrency("mirrorworld_ticket"))
+
+printLine(30, "Honor Points:", getCurrency("honor"))
+printLine(30, "Badges of the ...:", getCurrency("bott"))
+printLine(30, "Badge of the ...:", getCurrency("botw"))
+printLine(30, "Copper stomping ground:", getCurrency("copper_stomping_ground"))
+printLine(30, "Silver stomping ground:", getCurrency("silver_stomping_ground"))
+
+
 tee("")
 printHeader("Object List");
 local olist = CObjectList();
