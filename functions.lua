@@ -2297,7 +2297,7 @@ function GetSkillBookData(_tabs)
 		-- Get power and consumables
 		tmp.BaseItemAddress = GetItemAddress(tmp.Id)
 		if( tmp.BaseItemAddress == nil ) then
-			return nil;
+			return tmp;
 		end
 
 		for count = 0, 1 do
