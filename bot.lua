@@ -286,7 +286,7 @@ function main()
 		RoMCode("GC_SetSelfCastEnable(true)")
 	end
 	if debug_override == true then -- Needs to be after loading profile.
-		--settings.profile.options.DEBUG_INV = true;
+		settings.profile.options.DEBUG_INV = true;
 		settings.profile.options.DEBUG_LOOT = true;
 		settings.profile.options.DEBUG_TARGET = true;
 		settings.profile.options.DEBUG_HARVEST = true;

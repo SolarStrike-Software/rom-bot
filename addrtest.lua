@@ -268,6 +268,7 @@ attach(getWin(player.Name));
 include("/language/english.lua")
 database.load();
 settings.loadProfile("Default")
+
 inventory = CInventory();
 inventory:update()
 
@@ -342,7 +343,7 @@ bank = CBank()
 found = 0
 for i,v in pairs(bank.BagSlot) do
 	if( v and not v.Empty ) then
-		printLine(colWidth, i, sprintf("ID: %-8d Count: %-5d %s", v.Id or 0, v.ItemCount or 0, v.Name));
+		printLine(colWidth, i, sprintf("ID: %-8d Addr: 0x%x Count: %-5d %s", v.Id or 0, v.Address or 0, v.ItemCount or 0, v.Name));
 		found = found + 1
 	end
 end

@@ -86,9 +86,12 @@ function CItem:update()
 
 		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
 			local msg = sprintf("Wrong value returned in update of CItem id: %d\n%s\n", self.Id, debug.traceback())
-			cprintf( cli.yellow, msg);
-
 			logMessage(msg);
+
+			if( settings.profile.options.DEBUG_INV ) then
+				cprintf( cli.yellow, msg);
+			end
+
 			return;
 		end;
 		self.Name = "";
