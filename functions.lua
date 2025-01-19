@@ -3165,3 +3165,15 @@ function getCooldownForId(id)
 
 	return 0
 end
+
+function isQuestComplete(questId)
+	local macro = "qid=" .. questId .. [[; local fc = function ()
+		for i=1,30 do
+			_1,_2,_3,_4,_5,_6,_7,_8,_9,_10 = GetQuestInfo(i);
+			if(_9==qid) then a = _10; return; end;
+		end;
+		a = false;
+	end; fc()]]
+
+	return RoMCode(macro);
+end
