@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?><waypoints type="TRAVEL">
+<!--    Rock5's Invaders script    -->
+<!-- For getting your elite skills -->
+<!--         Version 0.5           -->
+	<onLoad>
+		include("waypoints/"..getFilePath(__WPL.FileName).."/invaders_functions.lua",true)
+
+		-- user variables
+		InvadersDebug = false 	-- Set to true if you want to display some debugging information.
+
+		-- Variables
+		quest = GetIdName(423953) -- Invaders from the Sea
+		JohnnyWalk = 117420
+		OldBag = 209231
+		BagsWanted = getBagsWanted() -- Gets user input
+
+		-- Check if in middle of quest
+		if getQuestStatus(quest) == "incomplete" and getSubQuestId() ~= 508565 then
+			setupSubQuest()
+		else -- Have to start at npc
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("NPC"))
+		end
+	</onLoad>
+
+	<!-- #  1 --><waypoint x="-7723" z="-4460" y="117" tag="NPC">
+		-- Complete quest if needed.
+		if questComplete() then
+			player:target_NPC(JohnnyWalk); yrest(1000)
+			RoMScript("CompleteQuest()") yrest(2000)
+		end
+
+		-- Check if we already have the correct number of bags.
+		if inventory:itemTotalCount(OldBag) >= BagsWanted then
+			error("Finished collecting Old Bags.",2)
+		end
+
+		-- Accept quest
+		repeat
+			player:target_NPC(JohnnyWalk); yrest(1000)
+			RoMScript("AcceptQuest()") yrest(1000)
+		until getQuestStatus(quest) ~= "not accepted"
+
+		-- Setup the doActions function and path
+		setupSubQuest()
+
+		__WPL:setDirection(WPT_FORWARD)
+	</waypoint>
+	<!-- #  2 --><waypoint x="-7889" z="-4574" y="88" tag="Goto Quest Path">
+		if not questComplete() then
+			__WPL:setDirection(WPT_FORWARD)
+			-- Go to correct path
+			__WPL:setWaypointIndex(__WPL:findWaypointTag(path))
+		else
+			__WPL:setDirection(WPT_BACKWARD)
+		end
+	</waypoint>
+
+	<!-- === Find Pirates path === -->
+	<!-- #  3 --><waypoint x="-8022" z="-4686" y="90" tag="Find Pirates">
+		if not questComplete() then
+			__WPL:setDirection(WPT_FORWARD)
+		end
+
+		checkQuest()
+	</waypoint>
+	<!-- #  4 --><waypoint x="-8078" z="-4694" y="90">	checkQuest()	</waypoint>
+	<!-- #  5 --><waypoint x="-8069" z="-4622" y="88">	checkQuest()	</waypoint>
+	<!-- #  6 --><waypoint x="-8054" z="-4542" y="90">	checkQuest()	</waypoint>
+	<!-- #  7 --><waypoint x="-8058" z="-4480" y="90">	checkQuest()	</waypoint>
+	<!-- #  8 --><waypoint x="-8062" z="-4415" y="92">	checkQuest()	</waypoint>
+	<!-- #  9 --><waypoint x="-8064" z="-4342" y="89">	checkQuest()	</waypoint>
+	<!-- # 10 --><waypoint x="-8087" z="-4280" y="92">	checkQuest()	</waypoint>
+	<!-- # 11 --><waypoint x="-8114" z="-4254" y="94">	checkQuest()	</waypoint>
+	<!-- # 12 --><waypoint x="-8058" z="-4233" y="95">	checkQuest()	</waypoint>
+	<!-- # 13 --><waypoint x="-8057" z="-4180" y="94">	checkQuest()	</waypoint>
+	<!-- # 14 --><waypoint x="-8055" z="-4132" y="96">	checkQuest()	</waypoint>
+	<!-- # 15 --><waypoint x="-8066" z="-4080" y="97">	checkQuest()	</waypoint>
+	<!-- # 16 --><waypoint x="-8045" z="-4036" y="98">	checkQuest()
+		__WPL:setDirection(WPT_BACKWARD)
+	</waypoint>
+
+	<!-- === Find Craftsmen path === -->
+	<!-- # 17 --><waypoint x="-8008" z="-4566" y="88" tag="Find Craftsmen">
+		corners = {
+			[1] = {X = -8057, Z = -4575},
+			[2] = {X = -8031, Z = -4646},
+			[3] = {X = -7984, Z = -4629},
+			[4] = {X = -8008, Z = -4558},
+		}
+		corner = 4
+		quest508565()
+		if questComplete() then
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Goto Quest Path"))
+		end
+	</waypoint>
+	<!-- # 18 --><waypoint x="-8054" z="-4530" y="90">
+		corners = {
+			[1] = {X = -8053, Z = -4540},
+			[2] = {X = -8065, Z = -4474},
+			[3] = {X = -8116, Z = -4476},
+			[4] = {X = -8100, Z = -4558},
+		}
+		corner = 1
+		quest508565()
+		if questComplete() then
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Goto Quest Path"))
+		else
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Find Craftsmen"))
+		end
+	</waypoint>
+
+	<!-- # 19 --><waypoint x="-7555" z="-4256" y="129" tag="Return from sample delivery">	</waypoint>
+	<!-- # 20 --><waypoint x="-7619" z="-4379" y="128">
+		if questComplete() then
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("NPC"))
+		else
+			__WPL:setWaypointIndex(__WPL:findWaypointTag("Goto Quest Path"))
+		end
+	</waypoint>
+</waypoints>
