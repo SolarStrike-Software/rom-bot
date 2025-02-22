@@ -57,8 +57,8 @@ function CInventoryItem:update()
 	end
 
 	-- Check if not rented
-	if self.SlotNumber > 120 then
-		page = 3 + math.floor((self.SlotNumber - 121) / 30)
+	if self.SlotNumber > 119 then
+		page = 3 + math.floor((self.SlotNumber - 120) / 30)
 		self.Available = self:isPageAvailable(page)
 	else
 		self.Available = true
