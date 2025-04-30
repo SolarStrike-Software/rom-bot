@@ -9,7 +9,7 @@ function objectDump(object, filename)
         end
 
         local id = (object.Id or 0);
-        local name = (object.Name or 'unknown');
+        local name = string.gsub((object.Name or 'unknown'), "[^%w%-%._]", "");
 
         if( player ~= nil and object.Address == player.Address ) then
             name = 'Player';
@@ -19,7 +19,6 @@ function objectDump(object, filename)
 
     local size = 0x1000;
     local outfile = io.open(filename, 'w');
-
     outfile:write(sprintf("Dump of 0x%X\n", object.Address))
 
     for i = 0, size-1 do
