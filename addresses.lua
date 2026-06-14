@@ -372,8 +372,8 @@ addresses = {
 		herbalism = 0xd8
 	},
 	version = {
-		x64_start = 0x1A6000,
-		x32_start = 0x1D0000,
+		x64_start = 0xAE0000,
+		x32_start = 0x126000,
 		scan_size = 0x40000,
 	}
 }

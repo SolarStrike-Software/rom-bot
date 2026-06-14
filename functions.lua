@@ -2628,9 +2628,9 @@ function getGameVersion(proc)
 	end
 
 	-- Look for pattern in 64 bit memory area first
-	local x64Addr = addresses.version.x64_start or 0x1A6000;
-	local x32Addr = addresses.version.x32_start or 0x1D0000;
-	local scanSize = addresses.version.scan_size or 0x20000;
+	local x64Addr = addresses.version.x64_start or 0xAE0000;
+	local x32Addr = addresses.version.x32_start or 0x126000;
+	local scanSize = addresses.version.scan_size or 0x40000;
 	local foundAddress = findPatternInProcess(proc, string.char(0xBD, 0x04, 0xEF, 0xFE), "xxxx", x64Addr, scanSize)
 
 	-- If it fails then look in 32 bit memory area
