@@ -596,7 +596,12 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 						local pawn = CPawn.new(obj.Address);
 						pawn:updateTargetPtr()
 
-						if( evalFunc(pawn.Address, pawn) == true ) then
+						local isInMobs = true
+						if( #settings.profile.mobs > 0 ) then
+							isInMobs = self:isInMobs(pawn)
+						end;
+
+						if( isInMobs and evalFunc(pawn.Address, pawn) == true ) then
 							pawn:updateXYZ()
 							pawn:updateInParty()
 							if ((pawn.TargetPtr == self.Address or pawn:targetIsFriend()) and
@@ -3248,7 +3253,8 @@ function CPlayer:findTarget()
 		return false;
 	end
 
-	keyboardPress(settings.hotkeys.TARGET.key, settings.hotkeys.TARGET.modifier);
+	--keyboardPress(settings.hotkeys.TARGET.key, settings.hotkeys.TARGET.modifier);
+	local target = self:findEnemy()
 
 	yrest(10);
 
