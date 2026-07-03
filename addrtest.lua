@@ -185,10 +185,28 @@ tee("");
 
 printHeader("Player Buffs");
 player:updateBuffs()
-for i,v in pairs(player.Buffs) do
-	tee(i, v.Id, v.Name)
+if #player.Buffs == 0 then
+	tee("No buffs")
+else
+	for i,v in pairs(player.Buffs) do
+		tee(i, v.Id, v.Name)
+	end
 end
 tee("");
+
+if( player.TargetPtr ~= nil and player.TargetPtr ~= 0 ) then
+	printHeader("Target Buffs");
+	if #player.Buffs == 0 then
+		tee("No buffs")
+	else
+		local target = player:getTarget()
+		target:updateBuffs()
+		for i,v in pairs(target.Buffs) do
+			tee(i, v.Id, v.Name)
+		end
+	end
+	tee("");
+end
 
 printHeader("Party");
 for i = 1,6 do
