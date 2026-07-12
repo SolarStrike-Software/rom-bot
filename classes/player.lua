@@ -595,6 +595,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 					if dist < settings.profile.options.MAX_TARGET_DIST then
 						local pawn = CPawn.new(obj.Address);
 						pawn:updateTargetPtr()
+						pawn:updateAlive()
 
 						local isInMobs = true
 						if( #settings.profile.mobs > 0 ) then
@@ -602,6 +603,7 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 						end;
 
 						if( isInMobs and evalFunc(pawn.Address, pawn) == true ) then
+						if( pawn:isAlive() and isInMobs and evalFunc(pawn.Address, pawn) == true ) then
 							pawn:updateXYZ()
 							pawn:updateInParty()
 							if ((pawn.TargetPtr == self.Address or pawn:targetIsFriend()) and
