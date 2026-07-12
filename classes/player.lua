@@ -602,7 +602,6 @@ function CPlayer:findEnemy(aggroOnly, _id, evalFunc, ignore)
 							isInMobs = self:isInMobs(pawn)
 						end;
 
-						if( isInMobs and evalFunc(pawn.Address, pawn) == true ) then
 						if( pawn:isAlive() and isInMobs and evalFunc(pawn.Address, pawn) == true ) then
 							pawn:updateXYZ()
 							pawn:updateInParty()
@@ -2368,7 +2367,6 @@ function evalTargetDefault(address, target)
 
 	--== First do checks that target is valid and alive ==--
 	--------------------------------------------------------
-
 
 	-- Check if still valid target
 	if not target:exists() then
