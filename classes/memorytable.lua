@@ -32,10 +32,12 @@ function GetIdName(itemId, plural)
 	-- parse the item link.
 	if( commandMacro ~= 0 and itemId >= 490000 and itemId < 540000 and MemDatabase.database[id] == nil ) then
 		local link = RoMScript(sprintf("GetItemLink(%d)", itemId));
-		local name = string.match(link, "%[([^%]]+)%]");
-		if( name ~= nil ) then
-			idNameMap[itemId] = {single = name, plural = name};
-			return name;
+		if( link ~= nil ) then
+			local name = string.match(link, "%[([^%]]+)%]");
+			if( name ~= nil ) then
+				idNameMap[itemId] = {single = name, plural = name};
+				return name;
+			end
 		end
 	end
 
