@@ -79,6 +79,8 @@ function byteArrayToPattern(bytes)
 		if( match == "??" ) then
 			-- Match anything
 			str = str .. ".";
+		elseif( match == "00" ) then
+			str = str .. "%z";
 		else
 			-- Match exact
 			local chr = string.char(tonumber("0x"..match));
@@ -554,11 +556,26 @@ local updatables = {
 			DC C1
 			D9 C9
 		]]),
-		partners = {
-			global_cooldown_base = {
-				add_value = 0x10;-- + 0x1a28,
-			},
-		},
+	},
+
+	global_cooldown_base = {
+		value_offset = 0x15, -- Immediate operand of MOV ECX before the cooldown writer call.
+		value_size = 4,
+		value_raw = false,
+		pattern = byteArrayToPattern([[
+			8B 8E ?? ?? ?? ??
+			8D 14 80
+			8B 86 ?? ?? ?? ??
+			03 D2
+			52
+			50
+			51
+			B9 ?? ?? ?? ??
+			E8 ?? ?? ?? ??
+			84 C0
+			74 ??
+			8B 96 ?? ?? ?? ??
+		]]),
 	},
 
 	global_cooldown_offset = {
@@ -1153,6 +1170,7 @@ function save(filename, backup)
 	end
 
 	local addressFile = handle:read('*a');
+	handle:close();
 
 	if( backup ) then
 		local backupFilename = 'backup-' .. filename;
@@ -1192,6 +1210,7 @@ function save(filename, backup)
 	printf("Writing new addresses to %s\n", filename);
 	local newHandle = io.open(getExecutionPath() .. "/" .. filename, 'w');
 	newHandle:write(addressFile);
+	newHandle:close();
 end
 
 

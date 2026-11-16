@@ -64,7 +64,7 @@ addresses = {
 	exp_table = 0x673f6c, --[[{exp_table}]]
 	psi = 0x615e7c, --[[{psi}]]
 	global_cooldown = {
-		base = 0x611278, --[[{global_cooldown_base}]]
+		base = 0x611270, --[[{global_cooldown_base}]]
 		offset = 0x1a84, --[[{global_cooldown_offset}]]
 	},
 	actionbar = {
