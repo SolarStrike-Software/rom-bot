@@ -118,36 +118,40 @@ function memoryReadRepeat(_type, proc, address, offset)
 		end
 	end
 
-	if (settings.options.DEBUGGING) then
-		printf("Error in memory reading: memoryread%s(proc,0x%X", _type, address)
-		if ptr then
-			if type(offset) == "number" then
-				printf(" ,0x%X)\n", offset)
-			elseif type(offset) == "table" then
-				printf(" ,{")
-				for k, v in pairs(offset) do
-					printf("0x%X,", v)
-				end
-				printf("})\n")
-			end
-		else
-			print(")")
-		end
+	if not settings.options.DEBUGGING then
+		return
 	end
+
+	printf("Error in memory reading: memoryread%s(proc,0x%X", _type, address)
+	if not ptr then
+		print(")")
+		return
+	end
+
+	if type(offset) == "number" then
+		printf(" ,0x%X)\n", offset)
+		return
+	end
+
+	if type(offset) ~= "table" then
+		return
+	end
+
+	printf(" ,{")
+	for _, v in pairs(offset) do
+		printf("0x%X,", v)
+	end
+	printf("})\n")
 end
 
 -- Ask witch character does the user want to be, from the open windows.
-function selectGame(character)
-	if functionBeingLoaded then
-		cprintf(cli.lightred,"The loading of userfunction '%s' is forcing the bot to attach to the game early. This can cause errors and features of the bot to not work properly. Userfunctions should execute as little code as possible while loading. This should be fixed.\n", functionBeingLoaded)
-	end
-	-- Get list of windows in an array
+local function findGameWindows()
 	local windowList = {}
 	if findProcessByExeList then
 		local processList = findProcessByExeList("Client.exe")
 		if (processList == nil or #processList == 0) then
 			error("You need to run rom first!", 0)
-			return 0
+			return nil
 		end
 		for k, v in pairs(processList) do
 			for i, j in pairs( getWindowsFromProcess(v)) do
@@ -170,62 +174,119 @@ function selectGame(character)
 		windowList = findWindowList("*", "Radiant Arcana")
 		if (#windowList == 0) then
 			error("You need to run rom first!", 0)
-			return 0
+			return nil
 		end
 	end
 
+	return windowList
+end
 
-	if (#windowList == 0) then
+local function labelGameWindow(window, index)
+	local procId = findProcessByWindow(window)
+	local process = openProcess(procId)
+	local version = getGameVersion(process)
+	if version ~= 0 then
+		version = " - " .. version
+	else
+		version = ""
+	end
+
+	showWarnings(false)
+	local gameroot = getModuleAddress(procId, "Client.exe") + addresses.game_root.base
+	local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base)
+	local nameAddress
+	if playerAddress then
+		nameAddress = memoryReadUInt(process, playerAddress + addresses.game_root.pawn.name_ptr)
+	end
+
+	local label
+	if nameAddress ~= nil then
+		label = memoryReadString(process, nameAddress)
+	end
+	if label == nil then
+		label = "(RoM window " .. index .. ")" .. version
+	elseif database and next(database.utf8_ascii) then
+		if bot.ClientLanguage == "RU" then
+			label = utf82oem_russian(label)
+		else
+			label = utf8ToAscii_umlauts(label)
+		end
+	end
+
+	charToUse[index] = label
+	showWarnings(true)
+	closeProcess(process)
+end
+
+local function chooseGameWindow(windowCount)
+	windowChoice = 1
+	-- wait until enter is released
+	while keyPressedLocal(key.VK_RETURN) do
+		yrest(200)
+	end
+
+	notShown = true
+	if windowCount <= 1 then
+		return
+	end
+
+	while not keyPressedLocal(key.VK_RETURN) do
+		if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) or notShown then
+			notShown = false
+			if keyPressedLocal(key.VK_DOWN) then
+				windowChoice = windowChoice + 1
+				if windowChoice > #charToUse then
+					windowChoice = #charToUse
+				end
+			end
+			if keyPressedLocal(key.VK_UP) then
+				windowChoice = windowChoice - 1
+				if windowChoice < 1 then
+					windowChoice = 1
+				end
+			end
+
+			if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) then
+				print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+			end
+
+			-- start message
+			printf("Choose your character that you want to play on:\n")
+
+			for i = 1, #charToUse, 1 do
+				if i == windowChoice then
+					cprintf(240, "\n"..charToUse[i])
+				else
+					printf("\n"..charToUse[i])
+				end
+			end
+			printf("\n")
+		end
+		if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
+			error("User quit")
+		end
+		yrest(50)
+	end
+	yrest(200)
+end
+
+function selectGame(character)
+	if functionBeingLoaded then
+		cprintf(cli.lightred,"The loading of userfunction '%s' is forcing the bot to attach to the game early. This can cause errors and features of the bot to not work properly. Userfunctions should execute as little code as possible while loading. This should be fixed.\n", functionBeingLoaded)
+	end
+
+	local windowList = findGameWindows()
+	if not windowList then
+		return 0
+	end
+	if #windowList == 0 then
 		print("You need to run rom first!")
 		return 0
 	end
 
 	charToUse = {}
-
-	for i = 1, #windowList, 1 do
-		local process, playerAddress, nameAddress
-		-- open first window
-		local procId = findProcessByWindow(windowList[i])
-		process = openProcess(procId)
-		local ver = getGameVersion(process)
-		if ver ~= 0 then
-			ver = " - " .. ver
-		else
-			ver = ""
-		end
-
-		-- read player address
-		showWarnings(false)
-		local gameroot = getModuleAddress(procId, "Client.exe") + addresses.game_root.base
-		local playerAddress = memoryReadRepeat("uintptr", process, gameroot, addresses.game_root.player.base)
-
-		-- read player name
-		if (playerAddress) then
-			nameAddress = memoryReadUInt(process, playerAddress + addresses.game_root.pawn.name_ptr)
-		else
-			nameAddress = nil
-		end
-
-		-- store the player name, with window number
-		if nameAddress == nil then
-			charToUse[i] = "(RoM window "..i..")" .. ver
-		else
-			local tmp = memoryReadString(process, nameAddress)
-			if tmp == nil then
-				charToUse[i] = "(RoM window "..i..")" .. ver
-			elseif database and next(database.utf8_ascii) then -- If database is available then the convert function is available.
-				if (bot.ClientLanguage == "RU") then
-					charToUse[i] = utf82oem_russian(tmp)
-				else
-					charToUse[i] = utf8ToAscii_umlauts(tmp)	-- only convert umlauts
-				end
-			else
-				charToUse[i] = tmp
-			end
-		end
-
-		showWarnings(true)
-		closeProcess(process)
+	for i = 1, #windowList do
+		labelGameWindow(windowList[i], i)
 	end
 
 	if (character) then
@@ -237,54 +298,7 @@ function selectGame(character)
 		end
 	end
 
-	windowChoice = 1
-	-- wait until enter is released
-	while keyPressedLocal(key.VK_RETURN) do
-		yrest(200)
-	end
-
-	notShown = true
-	if (#windowList > 1) then  -- if theres more than 1 window, ask the player witch character to use
-		while not keyPressedLocal(key.VK_RETURN) do
-			if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) or notShown then
-				notShown = false
-				if keyPressedLocal(key.VK_DOWN) then
-					windowChoice = windowChoice + 1
-					if windowChoice > #charToUse then
-						windowChoice = #charToUse
-					end
-				end
-				if keyPressedLocal(key.VK_UP) then
-					windowChoice = windowChoice - 1
-					if windowChoice < 1 then
-						windowChoice = 1
-					end
-				end
-
-				if keyPressedLocal(key.VK_UP) or keyPressedLocal(key.VK_DOWN) then
-					print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-				end
-
-				-- start message
-				printf("Choose your character that you want to play on:\n")
-
-				for i = 1, #charToUse, 1 do
-					if i == windowChoice then
-						cprintf(240, "\n"..charToUse[i])
-					else
-						printf("\n"..charToUse[i])
-					end
-				end
-				printf("\n")
-			end
-			if keyPressedLocal(settings.hotkeys.STOP_BOT.key) then
-				error("User quit")
-			end
-			yrest(50)
-		end
-		yrest(200)
-	end
-
+	chooseGameWindow(#windowList)
 	return windowList[windowChoice]
 end
 
@@ -528,6 +542,81 @@ function load_paths( _wp_path, _rp_path)
 	loadPaths( _wp_path, _rp_path)
 end
 
+local function preparePrimaryRoute(_wp_path)
+	local wpfilename
+	if (_wp_path and
+		string.lower(_wp_path) ~= "wander" and
+		string.lower(_wp_path) ~= "resume") then
+		local filename
+		if _wp_path:sub(2, 2) == ":" then
+			filename = _wp_path
+		else
+			filename = findFile("waypoints/" .. _wp_path )
+		end
+		if not fileExists(filename) then
+			local msg = sprintf(language[142], filename ) -- We can't find your waypoint file
+			error(msg, 3)
+		end
+		__WPL = CWaypointList()
+		wpfilename = filename
+		cprintf(cli.yellow, language[0], _wp_path)	-- Loaded waypoint path
+	end
+
+	-- set wander for WP
+	if (string.lower(_wp_path) == "wander") then
+		__WPL = CWaypointListWander()
+		__WPL:setRadius(settings.profile.options.WANDER_RADIUS)
+		__WPL:setMode("wander")
+		cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS)	-- Loaded waypoint path
+	end
+
+	if (string.lower(_wp_path) == "resume") then
+		local resumelogname = getExecutionPath() .. "/logs/resumes/"..player.Name..".txt"
+		if not fileExists(resumelogname) then
+			local msg = sprintf(language[142], resumelogname ) -- We can't find your waypoint file
+			error(msg, 3)
+		end
+		local filename, resume_num, resumeType = dofile(resumelogname)
+		wpfilename = findFile("waypoints/"..filename)
+		__WPL = CWaypointList()
+		__WPL.ResumePoint = resume_num
+		__WPL.ResumeType = resumeType
+		cprintf(cli.yellow, language[0], wpfilename)	-- Loaded waypoint path
+	end
+
+	return wpfilename
+end
+
+local function resolveReturnRoute(_rp_path, rp_default)
+	-- look for default return path with suffix '_return'
+	if (not _rp_path) then
+		local filename = findFile("waypoints/" .. rp_default)
+		if fileExists(filename) then
+			cprintf(cli.green, language[162], rp_default )	-- Return path found with default naming
+			_rp_path = rp_default	-- set default
+		else
+			cprintf(cli.lightgray, language[163], rp_default )	-- No return path with default naming
+		end
+	end
+
+	-- check if _rp_path exists
+	local rpfilename
+	if (_rp_path) then
+		if (not __RPL) then  		-- define object if not there
+			__RPL = CWaypointList()
+		end
+		local filename = findFile("waypoints/" .. _rp_path)
+		if not fileExists(filename) then
+			local msg = sprintf(language[143], _rp_path ) -- We can't find your returnpath file
+			error(msg, 0)
+		end
+		rpfilename = filename
+		cprintf(cli.green, language[1], _rp_path)	-- Loaded return path
+	end
+
+	return rpfilename, _rp_path
+end
+
 function loadPaths( _wp_path, _rp_path)
 -- load given waypoint path and return path file
 -- if you don't specify a return path the function will look for
@@ -565,75 +654,9 @@ function loadPaths( _wp_path, _rp_path)
 		_rp_path = _rp_path .. ".xml"
 	end
 
-	-- waypoint path is defined
-
-	-- check if _wp_path exists
-	local wpfilename
-	if (_wp_path and
-		string.lower(_wp_path) ~= "wander" and
-		string.lower(_wp_path) ~= "resume") then
-		local filename
-		if _wp_path:sub(2, 2) == ":" then
-			filename = _wp_path
-		else
-			filename = findFile("waypoints/" .. _wp_path )
-		end
-		if not fileExists(filename) then
-			local msg = sprintf(language[142], filename ) -- We can't find your waypoint file
-			error(msg, 2)
-		end
-		__WPL = CWaypointList()
-		wpfilename = filename
-		cprintf(cli.yellow, language[0], _wp_path)	-- Loaded waypoint path
-	end
-
-	-- set wander for WP
-	if (string.lower(_wp_path) == "wander") then
-		__WPL = CWaypointListWander()
-		__WPL:setRadius(settings.profile.options.WANDER_RADIUS)
-		__WPL:setMode("wander")
-		cprintf(cli.green, language[168], settings.profile.options.WANDER_RADIUS)	-- Loaded waypoint path
-	end
-
-	if (string.lower(_wp_path) == "resume") then
-		local resumelogname = getExecutionPath() .. "/logs/resumes/"..player.Name..".txt"
-		if not fileExists(resumelogname) then
-			local msg = sprintf(language[142], resumelogname ) -- We can't find your waypoint file
-			error(msg, 2)
-		end
-		local filename, resume_num, resumeType = dofile(resumelogname)
-		wpfilename = findFile("waypoints/"..filename)
-		__WPL = CWaypointList()
-		__WPL.ResumePoint = resume_num
-		__WPL.ResumeType = resumeType
-		cprintf(cli.yellow, language[0], wpfilename)	-- Loaded waypoint path
-	end
-
-	-- look for default return path with suffix '_return'
-	if (not _rp_path) then
-		local filename = findFile("waypoints/" .. rp_default)
-		if fileExists(filename) then
-			cprintf(cli.green, language[162], rp_default )	-- Return path found with default naming
-			_rp_path = rp_default	-- set default
-		else
-			cprintf(cli.lightgray, language[163], rp_default )	-- No return path with default naming
-		end
-	end
-
-	-- check if _rp_path exists
+	local wpfilename = preparePrimaryRoute(_wp_path)
 	local rpfilename
-	if (_rp_path) then
-		if (not __RPL) then  		-- define object if not there
-			__RPL = CWaypointList()
-		end
-		local filename = findFile("waypoints/" .. _rp_path)
-		if not fileExists(filename) then
-			local msg = sprintf(language[143], _rp_path ) -- We can't find your returnpath file
-			error(msg, 0)
-		end
-		rpfilename = filename
-		cprintf(cli.green, language[1], _rp_path)	-- Loaded return path
-	end
+	rpfilename, _rp_path = resolveReturnRoute(_rp_path, rp_default)
 
 	-- check if on returnpath
 	if (player.Returning == true  and
@@ -708,131 +731,23 @@ function SlashCommand(script)
 end
 
 --- Run rom scripts, usage: RoMScript("BrithRevive();");
-function RoMScript(script)
-	-- Check if in game
-	if not isInGame() then
-		-- Cannot execute RoMScript. Not in game.
-		return
+local function splitMacroCommand(text)
+	local chunks = {}
+	if string.len(text) <= 254 then
+		return chunks
 	end
 
-	if commandMacro == 0 then
-		-- setupMacros() hasn't run yet
-		return error('Cannot use RoMScript until after setupMacros()', 2)
-	else -- check if still valid
-		local __, cName = readMacro(commandMacro)
-		local __, rName = readMacro(resultMacro)
-		if cName ~= COMMAND_MACRO_NAME or rName ~= RESULT_MACRO_NAME then -- macros moved
-			setupMacros()
-		end
+	table.insert(chunks, "!" .. text:sub(1, 253))
+	local count = 1
+	while #text:sub(253 * count + 1) > 253 do
+		table.insert(chunks, "@" .. text:sub(253 * count + 1, 253 * (count + 1)))
+		count = count + 1
 	end
+	table.insert(chunks, "#" .. text:sub(253 * count + 1))
+	return chunks
+end
 
-	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base))
-
---	local scriptDef;
-
---	if( settings.options.LANGUAGE == "spanish" ) then
---		scriptDef = "/redactar";
---	else
---		scriptDef = "/script";
---	end
-
-	--- Macro length is max 255, and after we add the return code,
-	--- we are left with about 155 character limit.
-
-	local dataPart = 0 -- The part of the data to get
-	local raw = ""     -- Combined raw data from 'R'
-	repeat
-		local text
-
-		-- The command macro
-		if dataPart == 0 then
-			-- The initial command macro
---			text = scriptDef.." R='' a={" .. script ..
---			"} for i=1,#a do R=R..tostring(a[i])" ..
---			"..'" .. string.char(9) .. "' end" ..
---			" EditMacro("..resultMacro..",'"..RESULT_MACRO_NAME.."',7,R)";
-			text = script
-		else
-			-- command macro to get the rest of the data from 'R'
---			text = scriptDef.." EditMacro("..resultMacro..",'"..
---			RESULT_MACRO_NAME.."',7,string.sub(R,".. (1 + dataPart * 255) .."))";
-			text = "SendMore"
-		end
-
-		-- Check to make sure length is within bounds
-		local len = string.len(text)
-		local texts = {}
-		if (len > 254) then
-			-- Break into parts
-			table.insert(texts,"!"..text:sub(1, 253))
-			local count = 1
-			while #text:sub(253 * count + 1) > 253 do
-				table.insert(texts,"@"..text:sub(253 * count + 1, 253 * (count + 1)))
-				count = count + 1
-			end
-			table.insert(texts, "#"..text:sub(253 * count + 1))
-		end
-		repeat
-			repeat
-				-- Write the command macro
-				if #texts > 0 then
-					text = texts[1]
-					table.remove(texts, 1)
-				end
-
-				-- Send first part
-				writeToMacro(commandMacro, text)
-
-				-- Write something on the first address, to see when its over written
-				memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6)
-
-				-- Execute it
-				if (settings.profile.hotkeys.MACRO) then
---					keyboardPress(settings.profile.hotkeys.MACRO.key);
-					keyboardHold(settings.profile.hotkeys.MACRO.key)
---					rest(100)
-					keyboardRelease(settings.profile.hotkeys.MACRO.key)
-				end
-
-				local tryagain = false
-
-				-- A cheap version of a Mutex... wait till it is "released"
-				-- Use high-res timers to find out when to time-out
-				local startWaitTime = getTime()
-				while (memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6) do
-					if (deltaTime(getTime(), startWaitTime) > 800) then
-						if settings.options.DEBUGGING then
-							printf("0x%X\n", addresses.editBoxHasFocus_address)
-						end
-						local base = getBaseAddress(addresses.input_box.base)
-						local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
-						if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
-							-- Clear input box focus
-							memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0)
-							if RoMScript("GameMenuFrame:IsVisible()") then
-								-- Clear the game menu and reset editbox focus
-								RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
-							end
-						end
-
-
-						tryagain = true
-						break
-					end
-					rest(10)
-				end
-			until tryagain == false
-		until #texts == 0
-
-		--- Read the outcome from the result macro
-		local rawPart = readMacro(resultMacro)
-
-		raw = raw .. rawPart
-
-		dataPart = dataPart + 1
-	until string.len(rawPart) < 255
-
+local function decodeMacroResult(raw, script)
 	readsz = ""
 	ret = {}
 	cnt = 0
@@ -841,7 +756,7 @@ function RoMScript(script)
 
 		if (byte == 0 or byte == null) then -- Break on NULL terminator
 			break
-		elseif (byte == 9) then -- Use TAB to seperate
+		elseif (byte == 9) then -- Use TAB to separate
 			-- Implicit casting
 			if (string.find(readsz, "^[%-%+]?%d+%.?%d+$")) then readsz = tonumber(readsz)
 			elseif (string.find(readsz, "^[%-%+]?%d+$")) then readsz = tonumber(readsz)
@@ -868,6 +783,94 @@ function RoMScript(script)
 	end
 
 	return unpack(ret)
+end
+
+function RoMScript(script)
+	-- Check if in game
+	if not isInGame() then
+		-- Cannot execute RoMScript. Not in game.
+		return
+	end
+
+	if commandMacro == 0 then
+		-- setupMacros() hasn't run yet
+		return error('Cannot use RoMScript until after setupMacros()', 2)
+	end
+
+	local _, commandName = readMacro(commandMacro)
+	local _, resultName = readMacro(resultMacro)
+	if commandName ~= COMMAND_MACRO_NAME or resultName ~= RESULT_MACRO_NAME then
+		setupMacros()
+	end
+
+	--- Get the real offset of the address
+	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base))
+
+	local firstPart = true
+	local raw = ""     -- Combined raw data from 'R'
+	repeat
+		local text = "SendMore"
+		if firstPart then
+			text = script
+		end
+		local texts = splitMacroCommand(text)
+
+		repeat
+			-- Write the command macro
+			if #texts > 0 then
+				text = texts[1]
+				table.remove(texts, 1)
+			end
+
+			-- Send first part
+			writeToMacro(commandMacro, text)
+
+			-- Write something on the first address, to see when its over written
+			memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6)
+
+			-- Execute it
+			if (settings.profile.hotkeys.MACRO) then
+				keyboardHold(settings.profile.hotkeys.MACRO.key)
+				keyboardRelease(settings.profile.hotkeys.MACRO.key)
+			end
+
+			local tryagain = false
+
+			-- A cheap version of a Mutex... wait till it is "released"
+			-- Use high-res timers to find out when to time-out
+			local startWaitTime = getTime()
+			while (memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6) do
+				if (deltaTime(getTime(), startWaitTime) > 800) then
+					if settings.options.DEBUGGING then
+						printf("0x%X\n", addresses.editBoxHasFocus_address)
+					end
+					local base = getBaseAddress(addresses.input_box.base)
+					local inputbox = memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets)
+					if memoryReadUIntPtr(getProc(), base, addresses.input_box.offsets) ~= 0 then
+						-- Clear input box focus
+						memoryWriteIntPtr(getProc(), base, addresses.input_box.offsets, 0)
+						if RoMScript("GameMenuFrame:IsVisible()") then
+							-- Clear the game menu and reset editbox focus
+							RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
+						end
+					end
+
+					tryagain = true
+					break
+				end
+				rest(10)
+			end
+		until not tryagain and #texts == 0
+
+		--- Read the outcome from the result macro
+		local rawPart = readMacro(resultMacro)
+
+		raw = raw .. rawPart
+
+		firstPart = false
+	until string.len(rawPart) < 255
+
+	return decodeMacroResult(raw, script)
 end
 
 -- Executes code as apposed to returning a value. Can still return a value if assigned to variable 'a' in a table.
@@ -1023,60 +1026,70 @@ end
 
 
 -- open gift bag (at the moment level 1-19)
+local function findFirstGiftBagLevel()
+	for level = 1, 19 do
+		for _, entry in pairs(database.giftbags) do
+			if entry.level == level and entry.type == "bag" then
+				if inventory:findItem(entry.itemid, "bags") then
+					return level
+				end
+			end
+		end
+	end
+end
+
+local function processGiftBagItem(entry, level)
+	local item = inventory:findItem(entry.itemid, "bags")
+	if not item then
+		cprintf(cli.yellow, language[174], GetIdName(entry.itemid))
+		return
+	end
+
+	if entry.type == "bag" then
+		cprintf(cli.lightblue, language[170], level)
+		item:use()
+		repeat
+			yrest(1000)
+		until ItemQueueCount() == 0
+		yrest(500)
+		inventory:update()
+		return
+	end
+
+	if entry.type == "is" then
+		cprintf(cli.lightblue, language[159], item.Name)
+		item:moveTo("itemshop")
+		return
+	end
+
+	if entry.armor == armorMap[player.Class1] or entry.armor == "any" then
+		cprintf(cli.lightblue, language[171], item.Name)
+		item:use()
+	end
+end
+
 function openGiftbags1To10(_player_level)
 	player:updateMounted()
 	local wasMounted = player.Mounted
 
-	if (not _player_level) then
+	if not _player_level then
 		_player_level = player.Level
 	end
 	if _player_level > 19 then
 		return
 	end
 
-	-- Find first available bag.
-	local foundbag = 0
-	for l = 1, 19 do
-		for i, v in pairs(database.giftbags) do
-			if v.level == l and v.type == "bag" then
-				-- Find bag in backpack
-				local gb_item = inventory:findItem( v.itemid, "bags" )
-				if gb_item then
-					foundbag = l
-					break
+	local firstLevel = findFirstGiftBagLevel()
+	if firstLevel then
+		for level = firstLevel, _player_level do
+			for _, entry in pairs(database.giftbags) do
+				if entry.level == level then
+					processGiftBagItem(entry, level)
 				end
 			end
 		end
-		if foundbag > 0 then break end
 	end
 
-	-- Start opening bags and using items
-	if foundbag > 0 then
-		for currentlevel = foundbag, _player_level do
-			for i, v in pairs(database.giftbags) do
-				if (v.level == currentlevel) then
-					-- Find item in backpack
-					local gb_item = inventory:findItem( v.itemid, "bags" )
-					if (not gb_item) then
-						cprintf(cli.yellow, language[174], GetIdName(v.itemid) ) -- item not found
-					elseif (v.type == "bag") then
-						cprintf(cli.lightblue, language[170], currentlevel ) -- Open and equip gift bag for level
-						gb_item:use()
-						repeat yrest(1000) until ItemQueueCount() == 0 -- wait for items to go in packpack
-						yrest(500)
-						inventory:update()
-					elseif (v.type == "is") then
-						cprintf(cli.lightblue, language[159], gb_item.Name ) -- Moving to Item Shop bag:
-						gb_item:moveTo("itemshop")
-					elseif (v.armor == armorMap[player.Class1]) or -- Only equip items that meet class requirements.
-						(v.armor == "any") then
-						cprintf(cli.lightblue, language[171], gb_item.Name ) -- Open/equip item:
-						gb_item:use()
-					end
-				end
-			end
-		end
-	end
 	player:updateMounted()
 	if wasMounted and not player.Mounted then
 		player:mount()
@@ -1990,9 +2003,63 @@ function AcceptQuestByName(_nameorid, _questgroup)
 	return matchFound
 end
 
+local function selectQuestReward(reward, startedAt, debugEnabled)
+	if not reward then
+		if os.time() - startedAt >= 2 then
+			RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item1)")
+			yrest(100)
+		end
+		return true
+	end
+
+	if debugEnabled then
+		printf("_rewardnumberorname: %s \n", reward)
+	end
+
+	if type(reward) == "number" then
+		RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item" .. reward .. ")")
+		yrest(100)
+		return true
+	end
+
+	if type(reward) ~= "string" then
+		printf("Invalid reward type specified. Expected \"number\" or \"string\", got \"" .. type(reward) .. "\".\n")
+		return false
+	end
+
+	for rewardNum = 1, RoMScript("SpeakQuestReward1.itemcount") do
+		local rewardName = RoMScript("SpeakQuestReward1_Item" .. rewardNum .. "_Desc:GetText()")
+		if FindNormalisedString(rewardName, reward) then
+			RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item" .. rewardNum .. ")")
+			yrest(100)
+			return true
+		end
+	end
+
+	printf("Invalid reward name or number, \"%s\"\n", reward)
+	return false
+end
+
+local function completeQuestEntry(index, name, group, reward, debugEnabled)
+	local startedAt = os.time()
+	repeat
+		RoMCode("OnClick_QuestListButton(3, " .. index .. ")")
+		yrest(100)
+		if not selectQuestReward(reward, startedAt, debugEnabled) then
+			return false
+		end
+
+		RoMCode("CompleteQuest()")
+		yrest(100)
+		if reward then
+			yrest(900)
+		end
+	until getQuestStatus(name, group) ~= "complete"
+	return true
+end
+
 function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
-	local DEBUG = false
-	if settings.options.DEBUGGING == true then DEBUG = true end
+	local DEBUG = settings.options.DEBUGGING == true
 
 	-- Check for valid _nameorid
 	local questToComplete
@@ -2006,9 +2073,9 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 	if type(questToComplete) ~= "string" then
 		error("Invalid name or id used in CompleteQuestByName")
 	end
-				if DEBUG then
-					printf("questToComplete: %s\n", questToComplete)
-				end
+	if DEBUG then
+		printf("questToComplete: %s\n", questToComplete)
+	end
 
 	-- Check if user put questgroup in second argument
 	if type(_rewardnumberorname) == "string" and
@@ -2064,67 +2131,23 @@ function CompleteQuestByName(_nameorid, _rewardnumberorname, _questgroup)
 
 	local questOnBoard = ""
 	local availableQuests = RoMScript("GetNumQuest(3)")
-				if DEBUG then
-					printf("Number of available quests: %d\n", availableQuests)
-				end
+	if DEBUG then
+		printf("Number of available quests: %d\n", availableQuests)
+	end
 
 	-- For each quest
 	for i=1, availableQuests do
 		-- Get quest name
 		questOnBoard, daily, qgroup = RoMScript("GetQuestNameByIndex(3, "..i..")")
-				if DEBUG then
-					printf("questOnBoard / Index: %s \t %d\n", questOnBoard, i)
-				end
+		if DEBUG then
+			printf("questOnBoard / Index: %s \t %d\n", questOnBoard, i)
+		end
 		if ((questToComplete == "" or questToComplete == "all") or -- Complete all
 		  FindNormalisedString(questOnBoard, questToComplete)) and -- Or match name
 		  (_questgroup == nil or _questgroup == qgroup) then -- And match quest group
-			local _counttime = os.time()
-			repeat
-				RoMCode("OnClick_QuestListButton(3, "..i..")") -- Clicks the quest
-				yrest(100)
-
-				if _rewardnumberorname then
-							if DEBUG then
-								printf("_rewardnumberorname: %s \n", _rewardnumberorname)
-							end
-					if type(_rewardnumberorname) == "number" then
-						RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item".._rewardnumberorname..")")
-						yrest(100)
-					elseif type(_rewardnumberorname) == "string" then
-						-- Search for reward name
-						local found = false
-						for rewardNum = 1, RoMScript("SpeakQuestReward1.itemcount") do
-							-- rewardID = RoMScript("SpeakQuestReward1_Item"..rewardNum..".ID")
-							-- rewardType = RoMScript("SpeakQuestReward1_Item"..rewardNum..".Type")
-							-- set Tooltip
-							-- RoMScript("GameTooltip:SetQuestItem("..rewardType..","..rewardID..")")
-							-- get Tooltip data
-							local rewardName = RoMScript("SpeakQuestReward1_Item"..rewardNum.."_Desc:GetText()")
-							if FindNormalisedString(rewardName, _rewardnumberorname) then
-								found = true
-								RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item"..rewardNum..")")
-								yrest(100)
-								break
-							end
-						end
-						if not found then
-							printf("Invalid reward name or number, \"%s\"\n", _rewardnumberorname)
-							return
-						end
-					else
-						printf("Invalid reward type specified. Expected \"number\" or \"string\", got \""..type(_rewardnumberorname).."\".\n")
-						return
-					end
-				elseif (os.time() - _counttime) >= 2 then -- quest still there because of reward item needs choosing
-					RoMCode("SpeakFrame_ClickQuestReward(SpeakQuestReward1_Item1)")
-					yrest(100)
-				end
-				RoMCode("CompleteQuest()") -- Completes the quest
-				yrest(100)
-				if _rewardnumberorname then
-					yrest(900) -- Give extra time for quests with rewards
-				end
-			until (getQuestStatus(questOnBoard, qgroup)~="complete")
+			if not completeQuestEntry(i, questOnBoard, qgroup, _rewardnumberorname, DEBUG) then
+				return
+			end
 			printf("Quest completed: %s\n", questOnBoard)
 
 			-- break if name matched
@@ -2297,6 +2320,64 @@ function PointInPoly(vertices, testx, testz )
 	return c
 end
 
+local function getSkillBookTabLayout(scanTab, hasClass2)
+	-- The memory array starts at the second visible tab.
+	local index = scanTab - 2
+	local startOffset = addresses.skillbook.book1_start
+	local endOffset = addresses.skillbook.book1_end
+
+	if scanTab == 3 and hasClass2 then
+		return scanTab, scanTab - 3, addresses.skillbook.book2_start, addresses.skillbook.book2_end
+	end
+	if scanTab >= 4 then
+		index = scanTab - 3
+	end
+
+	-- The last single-class tab uses tab 4 for skill activation.
+	local skillTab = scanTab == 3 and not hasClass2 and 4 or scanTab
+	return skillTab, index, startOffset, endOffset
+end
+
+local function decodeSkillResources(proc, tmp)
+	for count = 0, 1 do
+		local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
+		if uses == 0 then
+			break
+		end
+		local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
+		if uses == SKILLUSES_MANA then
+			if tmp.Level > 49 then
+				tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
+			elseif tmp.Level > 1 then
+				tmp.Mana = usesnum * (1 + (tmp.Level - 1)*0.1)
+			else
+				tmp.Mana = usesnum
+			end
+		elseif uses == SKILLUSES_RAGE then
+			tmp.Rage = usesnum
+		elseif uses == SKILLUSES_FOCUS then
+			tmp.Focus = usesnum
+		elseif uses == SKILLUSES_ENERGY then
+			tmp.Energy = usesnum
+		elseif uses == SKILLUSES_ITEM then
+			tmp.Consumable = "item"
+			tmp.ConsumableNumber = usesnum
+		elseif uses == SKILLUSES_PROJECTILE then
+			tmp.Consumable = "projectile"
+			tmp.ConsumableNumber = usesnum
+		elseif uses == SKILLUSES_ARROW then
+			tmp.Consumable = "arrow"
+			tmp.ConsumableNumber = usesnum
+		elseif uses == SKILLUSES_PSI then
+			tmp.Psi = usesnum
+		elseif tmp.Name ~= "" and uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
+			uses = uses or -1
+			usesnum = usesnum or -1
+			printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n", tmp.Name, uses, usesnum)
+		end
+	end
+end
+
 function GetSkillBookData(_tabs)
 	if type(_tabs) == "table" then
 		-- do nothing
@@ -2340,43 +2421,7 @@ function GetSkillBookData(_tabs)
 			return tmp
 		end
 
-		for count = 0, 1 do
-			local uses = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses)
-			if uses == 0 then
-				break
-			end
-			local usesnum = memoryReadRepeat("int", proc, tmp.BaseItemAddress + (8 * count) + addresses.skill.uses + 4)
-			if uses == SKILLUSES_MANA then
-				if tmp.Level > 49 then
-					tmp.Mana = usesnum * (5.8 + (tmp.Level - 49)*0.2)
-				elseif tmp.Level > 1 then
-					tmp.Mana = usesnum * (1 + (tmp.Level - 1)*0.1)
-				else
-					tmp.Mana = usesnum
-				end
-			elseif uses == SKILLUSES_RAGE then
-				tmp.Rage = usesnum
-			elseif uses == SKILLUSES_FOCUS then
-				tmp.Focus = usesnum
-			elseif uses == SKILLUSES_ENERGY then
-				tmp.Energy = usesnum
-			elseif uses == SKILLUSES_ITEM then
-				tmp.Consumable = "item"
-				tmp.ConsumableNumber = usesnum
-			elseif uses == SKILLUSES_PROJECTILE then
-				tmp.Consumable = "projectile"
-				tmp.ConsumableNumber = usesnum
-			elseif uses == SKILLUSES_ARROW then
-				tmp.Consumable = "arrow"
-				tmp.ConsumableNumber = usesnum
-			elseif uses == SKILLUSES_PSI then
-				tmp.Psi = usesnum
-			elseif tmp.Name ~= "" and uses ~= 1 and uses ~= 3 and uses ~= 4 then -- known unused 'uses' values.
-				uses = uses or -1
-				usesnum = usesnum or -1
-				printf("Skill %s 'uses' unknown type %d, 'usesnum' %d. Please report to bot devs. We might be able to use it.\n", tmp.Name, uses, usesnum)
-			end
-		end
+		decodeSkillResources(proc, tmp)
 
 		return tmp
 	end
@@ -2392,36 +2437,9 @@ function GetSkillBookData(_tabs)
 		hasClass2	=	true
 	end
 
-	for tab = 2, tabCount do
-		-- The first tab in skillbook isn't stored in this same way, so the 2nd tab is actually
-		-- the first in this memory structure.
-		-- Additionally, we need to subtract 1 anyways because array index start at 0.
-		-- Basically index 0 = skillbook tab 2 (the start of your real class skills).
-		local tabindex	=	tab - 2
-		local base		=	getBaseAddress(addresses.skillbook.base) + addresses.skillbook.offset
-
-		-- 2nd class skills are stored on a separate section of memory
-		local book			=	1
-		local tabStartOff	=	addresses.skillbook.book1_start
-		local tabEndOff		=	addresses.skillbook.book1_end
-
-		if (tab == 3 and hasClass2) then
-			book		=	2
-			tabindex	=	tab - 3 -- Switch books, so need to roll back more
-			tabStartOff	=	addresses.skillbook.book2_start
-			tabEndOff	=	addresses.skillbook.book2_end
-		end
-
-		if (tab >= 4) then
-			tabindex = tab - 3
-		end
-
-		if (tab == 3 and not hasClass2) then
-			-- If we do *not* have a second class, and are on our last tab (tab3),
-			-- pretend that it is tab4 (as if we had a 2nd class) because this is
-			-- what we actually will need for using the skill
-			tab = 4
-		end
+	for scanTab = 2, tabCount do
+		local base = getBaseAddress(addresses.skillbook.base) + addresses.skillbook.offset
+		local tab, tabindex, tabStartOff, tabEndOff = getSkillBookTabLayout(scanTab, hasClass2)
 
 		local tabBaseAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabStartOff)
 		local tabEndAddress = memoryReadRepeat("uint", proc, base + tabInfoSize*tabindex + tabEndOff)
