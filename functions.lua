@@ -654,7 +654,10 @@ function loadPaths( _wp_path, _rp_path)
 		_rp_path = _rp_path .. ".xml"
 	end
 
-	local wpfilename = preparePrimaryRoute(_wp_path)
+	local wpfilename
+	if _wp_path ~= nil then
+		wpfilename = preparePrimaryRoute(_wp_path)
+	end
 	local rpfilename
 	rpfilename, _rp_path = resolveReturnRoute(_rp_path, rp_default)
 
@@ -664,7 +667,9 @@ function loadPaths( _wp_path, _rp_path)
 		cprintf(cli.green, language[164], _rp_path)	-- We are coming from a return_path.
 	else
 		player.Returning = false
-		cprintf(cli.green, language[165], _wp_path )-- We use the normal waypoint path %s now
+		if _wp_path ~= nil then
+			cprintf(cli.green, language[165], _wp_path) -- We use the normal waypoint path %s now
+		end
 	end
 
 	-- waypoint path is defined ... load it
