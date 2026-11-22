@@ -47,7 +47,8 @@ function CWaypointList:load(filename)
 	self.Waypoints = {} -- Delete current waypoints.
 	self.ForcedType = 0	-- delete forced waypoint type
 
-	local onLoadEvent = nil
+	self.onLoadEvent = nil
+	self.DoOnload = false
 
 	for i, v in pairs(elements) do
 		local x, z, y = v:getAttribute("x"), v:getAttribute("z"), v:getAttribute("y")
@@ -97,12 +98,14 @@ function CWaypointList:load(filename)
 		end
 	end
 
-	self.Mode = "waypoints"
-	if #self.Waypoints > 0 then
-		self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y))
-		self.LastWaypoint = self.CurrentWaypoint -1
-		if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
+	if #self.Waypoints == 0 then
+		error(sprintf("No usable waypoints in '%s'", filename), 0)
 	end
+
+	self.Mode = "waypoints"
+	self:setWaypointIndex(self:getNearestWaypoint(player.X, player.Z, player.Y))
+	self.LastWaypoint = self.CurrentWaypoint - 1
+	if self.LastWaypoint < 1 then self.LastWaypoint = #self.Waypoints end
 
 	if (self.onLoadEvent) then
 		self.DoOnload = true
@@ -231,16 +234,10 @@ function CWaypointList:setDirection(wpt)
 
 	if (wpt ~= self.Direction) then
 		self.Direction = wpt
-		if (wpt == WPT_BACKWARD) then
-			self.CurrentWaypoint = self.CurrentWaypoint - 2
-			if (self.CurrentWaypoint < 1) then
-				self.CurrentWaypoint = #self.Waypoints + self.CurrentWaypoint
-			end
-		else
-			self.CurrentWaypoint = self.CurrentWaypoint + 2
-			if (self.CurrentWaypoint > #self.Waypoints) then
-				self.CurrentWaypoint = self.CurrentWaypoint - #self.Waypoints
-			end
+		local count = #self.Waypoints
+		if count > 0 then
+			local shift = wpt == WPT_BACKWARD and -2 or 2
+			self.CurrentWaypoint = (self.CurrentWaypoint - 1 + shift) % count + 1
 		end
 	end
 end
@@ -282,11 +279,12 @@ function CWaypointList:getNearestWaypoint(_x, _z, _y, _start, _end)
 	if _end and _end > #self.Waypoints then _end = #self.Waypoints end
 
 	local closest = _start or 1
+	local point = { X = _x, Z = _z, Y = _y }
 
 	for i = (_start or 1), (_end or #self.Waypoints) do
 		local v= self.Waypoints[i]
 		local oldClosestWp = self.Waypoints[closest]
-		if (distance(_x, _z, _y, v.X, v.Z, v.Y) < distance(_x, _z, _y, oldClosestWp.X, oldClosestWp.Z, oldClosestWp.Y)) then
+		if (distance(point, v) < distance(point, oldClosestWp)) then
 			closest = i
 		end
 	end
@@ -423,10 +421,12 @@ function CWaypointList:findPulledBeforeWaypoint()
 	local bestdist -- Best distance to path so far
 	local disttotal = 0   -- Tally of distance so far
 
+	local lookBackStep = self.Direction == WPT_BACKWARD and 1 or -1
+
 	repeat
+		local previousIndex = (wptotest - 1 + lookBackStep) % WPCount + 1
 		local towp = self.Waypoints[wptotest]
-		local fromwp = self.Waypoints[wptotest-1]
-		if fromwp == nil then fromwp = self.Waypoints[#self.Waypoints] end
+		local fromwp = self.Waypoints[previousIndex]
 
 		-- First find segment point
 		local segpoint = getNearestSegmentPoint(player.X, player.Z, towp.X, towp.Z, fromwp.X, fromwp.Z)
@@ -448,8 +448,7 @@ function CWaypointList:findPulledBeforeWaypoint()
 			return bestwaypointindex
 		end
 
-		wptotest = wptotest - 1
-		if wptotest < 1 then wptotest = #self.Waypoints end
+		wptotest = previousIndex
 	until wptotest == self.CurrentWaypoint -- Gone through all points
 
 	return bestwaypointindex

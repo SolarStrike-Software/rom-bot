@@ -2750,7 +2750,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 
 	-- Direction ok, start moving forward
 	local success, failreason = true, WF_NONE
-	local dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y)
+	local dist = distance(self, waypoint)
 	local lastDist = dist
 	local lastpos = {X=self.X, Z=self.Z, Y=self.Y}
 	self.LastDistImprove = os.time()	-- global, because we reset it whil skill use
@@ -2764,7 +2764,7 @@ function CPlayer:moveTo(waypoint, ignoreCycleTargets, dontStopAtEnd, range)
 		player:checkAddress()
 		loopstart = os.clock()
 
-		dist = distance(self.X, self.Z, self.Y, waypoint.X, waypoint.Z, waypoint.Y)
+		dist = distance(self, waypoint)
 		angle = math.atan2(waypoint.Z - self.Z, waypoint.X - self.X)
 
 		self:updateHP()

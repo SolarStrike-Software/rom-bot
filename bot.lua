@@ -680,11 +680,11 @@ function main()
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) )
 		local hf_wp = __WPL:getNextWaypoint()
-		local dist_to_wp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
+		local dist_to_wp = distance(player, hf_wp)
 
 		__RPL:setWaypointIndex( __RPL:getNearestWaypoint(player.X, player.Z, player.Y ) )
 		local hf_wp = __RPL:getNextWaypoint()
-		local dist_to_rp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
+		local dist_to_rp = distance(player, hf_wp)
 
 		if (dist_to_rp < dist_to_wp) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true	-- then use return path first
@@ -975,17 +975,14 @@ function main()
 			-- First check up on eggpet
 			checkEggPets()
 
-			local wp = nil
-			local wpnum = nil
+			local route = player.Returning and __RPL or __WPL
+			local wp = route:getNextWaypoint()
+			local wpnum = route.CurrentWaypoint
 
 			if (player.Returning) then
-				wp = __RPL:getNextWaypoint()
-				wpnum = __RPL.CurrentWaypoint
 				wptag = (wp.Tag~='' and ' tag: '..wp.Tag or '')
 				cprintf(cli.green, language[13], wpnum, wp.X, wp.Z, wptag)   -- Moving to returnpath waypoint
 			else
-				wp = __WPL:getNextWaypoint()
-				wpnum = __WPL.CurrentWaypoint
 				wptag = (wp.Tag~='' and ' tag: '..wp.Tag or '')
 				cprintf(cli.green, language[6], wpnum, wp.X, wp.Z, wptag)   -- Moving to waypoint
 			end
@@ -1065,8 +1062,8 @@ function main()
 					end
 				end
 
-				if reason == WF_PULLBACK and #__WPL.Waypoints > 2 then
-					__WPL:setWaypointIndex(__WPL:findPulledBeforeWaypoint())
+				if reason == WF_PULLBACK and #route.Waypoints > 2 then
+					route:setWaypointIndex(route:findPulledBeforeWaypoint())
 				end
 
 				if (reason == WF_STUCK or distBreakCount > 3) then
@@ -1219,11 +1216,11 @@ function resurrect()
 		-- compare closest waypoint with closest returnpath point
 		__WPL:setWaypointIndex( __WPL:getNearestWaypoint(player.X, player.Z, player.Y ) )
 		local hf_wp = __WPL:getNextWaypoint()
-		local dist_to_wp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
+		local dist_to_wp = distance(player, hf_wp)
 
 		__RPL:setWaypointIndex(__RPL:getNearestWaypoint(player.X, player.Z) )
 		local hf_wp = __RPL:getNextWaypoint()
-		local dist_to_rp = distance(player.X, player.Z, player.Y, hf_wp.X, hf_wp.Z, hf_wp.Y)
+		local dist_to_rp = distance(player, hf_wp)
 
 		if (dist_to_rp < dist_to_wp) then	-- returnpoint is closer then next normal wayoiint
 			player.Returning = true	-- then use return path first
