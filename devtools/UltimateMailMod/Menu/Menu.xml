@@ -5,12 +5,12 @@
       <Layer level="HIGHLIGHT">
         <Texture name="$parentTexture">
           <Size>
-            <AbsDimension x="16" y="16"/>
+            <AbsDimension x="16" y="16" />
           </Size>
           <Anchors>
             <Anchor point="CENTER">
               <Offset>
-                <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -19,11 +19,11 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMenuTabTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMenuTabTemplate_OnLoad(this)
+</OnLoad>
       <OnClick>
-        UMMMenuTabTemplate_OnClick(this);
-      </OnClick>
+        UMMMenuTabTemplate_OnClick(this)
+</OnClick>
     </Scripts>
   </Button>
 	
@@ -36,7 +36,7 @@
     <Anchors>
       <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
         <Offset>
-          <AbsDimension x="0" y="110"/>
+          <AbsDimension x="0" y="110" />
         </Offset>
       </Anchor>
     </Anchors>
@@ -49,7 +49,7 @@
           <Anchors>
       	    <Anchor point="BOTTOM">
       	      <Offset>
-      	        <AbsDimension x="0" y="-5"/>
+                <AbsDimension x="0" y="-5" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -61,7 +61,7 @@
           <Anchors>
       	    <Anchor point="BOTTOMRIGHT">
       	      <Offset>
-      	        <AbsDimension x="-25" y="-2"/>
+                <AbsDimension x="-25" y="-2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -94,7 +94,7 @@
         <Anchors>
           <Anchor point="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="20" y="-3"/>
+              <AbsDimension x="20" y="-3" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -104,7 +104,7 @@
               <Anchors>
                 <Anchor point="LEFT" relativePoint="RIGHT">
                   <Offset>
-                    <AbsDimension x="0" y="0"/>
+                    <AbsDimension x="0" y="0" />
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -113,18 +113,18 @@
         </Layers>
         <Scripts>
           <OnClick>
-            this:GetParent():CheckSetting(this, "AudioWarning");
-          </OnClick>
+            this:GetParent():CheckSetting(this, "AudioWarning")
+</OnClick>
         </Scripts>
       </CheckButton>
     </Frames>
     <Scripts>
       <OnShow>
-        UMMFrame_OnShow(this);
-      </OnShow>
+        UMMFrame_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMFrame_OnHide(this);
-      </OnHide>
+        UMMFrame_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 

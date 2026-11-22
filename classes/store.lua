@@ -45,7 +45,7 @@ function CStore:update()
 	for i = 1, sellItems do
 		self.Item[i] = {}
 		local __, name, price, __, __, __, maxheap = RoMScript("GetStoreSellItemInfo(".. i ..")")
-		local id = parseItemLink(RoMScript("GetStoreSellItemLink(".. i ..")"));
+		local id = parseItemLink(RoMScript("GetStoreSellItemLink(".. i ..")"))
 		self.Item[i].Name = name
 		self.Item[i].Price = price
 		self.Item[i].MaxHeap = maxheap
@@ -73,7 +73,7 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 		buyIndex = nameIdOrIndex
 	elseif type(nameIdOrIndex) == "number" or type(nameIdOrIndex) == "string" then
 		-- buying by id or name, search for id or name
-		for i,item in pairs(self.Item) do
+		for i, item in pairs(self.Item) do
 			if nameIdOrIndex == item.Id or nameIdOrIndex == item.Name then
 				buyIndex = i
 				break
@@ -93,7 +93,7 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 	buyMaxHeap = self.Item[buyIndex].MaxHeap
 
 	-- Buy the item/s
-	printf(language[1001]);  -- Shopping
+	printf(language[1001])  -- Shopping
 	repeat
 		if quantity > buyMaxHeap then
 			RoMCode("StoreBuyItem(" .. buyIndex .. "," .. buyMaxHeap .. ")")
@@ -122,47 +122,47 @@ function CStore:buyConsumable(type, quantity)
 	self:update()
 
 	-- Find best store item
-	local bestLevel = 0;
-	for i,item in pairs(self.Item) do
+	local bestLevel = 0
+	for i, item in pairs(self.Item) do
 		local storeItemId = item.Id
 
-		local consumable = database.consumables[storeItemId];
+		local consumable = database.consumables[storeItemId]
 
-		if( consumable
+		if (consumable
 		  and consumable.Type == type
-		  and consumable.Level <= player.Level ) then
+		  and consumable.Level <= player.Level) then
 			if consumable.Level > bestLevel then
-				bestLevel = consumable.Level;
-				bestItem = item.Id;
-				bestItemSlot = i;
+				bestLevel = consumable.Level
+				bestItem = item.Id
+				bestItemSlot = i
 			end
 		end
 	end
 
 	if bestLevel == 0 then
-	    return false;
- 	end
+		return false
+	end
 
 	-- Count number of better items in inventory
-	inventory:update();
+	inventory:update()
 
-	local totalCount = 0;
- 	for slot,item in pairs(inventory.BagSlot) do
-		local consumable = database.consumables[item.Id];
-	    if item.Available and
+	local totalCount = 0
+	for slot, item in pairs(inventory.BagSlot) do
+		local consumable = database.consumables[item.Id]
+		if item.Available and
 		  consumable and
 		  consumable.Type == type and
 		  consumable.Level >= bestLevel and
 		  consumable.Level <= player.Level then
 			totalCount = totalCount + item.ItemCount
-		end;
-	end;
+		end
+	end
 
 	-- See how many needed
 	if totalCount < quantity then
-	    numberToBuy = quantity - totalCount;
+		numberToBuy = quantity - totalCount
 		self:buyItem(bestItemSlot, numberToBuy)
 	end
 
-	return true;
+	return true
 end

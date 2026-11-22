@@ -131,7 +131,7 @@
 	<skills_priest>
 		<skill name="PRIEST_GRACE_OF_LIFE" 		hotkey="MACRO" priority="120" rebuffcut="10" inbattle="false" />
 		<skill name="PRIEST_SOUL_SOURCE"     	hotkey="MACRO" priority="110" inbattle="true" hpper="15" />
-		<skill name="PRIEST_URGENT_HEAL"     	hotkey="MACRO" priority="100" hpper="50"  />
+		<skill name="PRIEST_URGENT_HEAL"     	hotkey="MACRO" priority="100" hpper="50" />
 		<skill name="PRIEST_HOLY_AURA"       	hotkey="MACRO" priority="90" inbattle="true" hpper="24" />
 		<skill name="PRIEST_REGENERATE"      	hotkey="MACRO" priority="80"  hpper="80" />
 		<skill name="PRIEST_RISING_TIDE"     	hotkey="MACRO" priority="70" />
@@ -155,7 +155,7 @@
 	<skills_scout>
 		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_SHOT"          		hotkey="MACRO" priority="90" />
-		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true"/>
+		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true" />
 		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="85" />
 		<skill name="SCOUT_AUTOSHOT"      		hotkey="MACRO" priority="80" />
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />
@@ -223,34 +223,34 @@
 		-- Additional Lua code to execute after loading the profile
 		-- and before the bot starts. e.g. You could overwrite profile settings here
 		-- like: changeProfileOption("HP_REST", 60);
-		inventory:update();
+		inventory:update()
 
-		if(player.Level == 1) then
-			openGiftbags1To10(player.Level);
+		if (player.Level == 1) then
+			openGiftbags1To10(player.Level)
 		else
-			levelupSkills1To10("loadonly");
-		end;
+			levelupSkills1To10("loadonly")
+		end
 
-		if(player.Class1 == CLASS_SCOUT ) then
-			changeProfileOption("ARROW_QUIVER", 2);
-		end;
+		if (player.Class1 == CLASS_SCOUT) then
+			changeProfileOption("ARROW_QUIVER", 2)
+		end
 
-	</onLoad>
+</onLoad>
 
 	<onDeath>
 		-- Additional Lua code to execute on death
 		-- pauseOnDeath(); -- Stop the script
-	</onDeath>
+</onDeath>
 
 	<onLeaveCombat>
 		-- Additional Lua code to execute after a target is finished
 
-			if(player.Level == 10) then
+			if (player.Level == 10) then
 				__WPL:setForcedWaypointType("TRAVEL")
-			end;
+			end
 
 
-	</onLeaveCombat>
+</onLeaveCombat>
 
 	<onLevelup>
 		-- thats a demo for opening the gift bags from Lvl 1-10
@@ -259,16 +259,16 @@
 
 			-- single skill would be: sendMacro("SetSpellPoint(4,2);");
 			-- or levelupSkill(_skillname, _times)
-			levelupSkills1To10();
+			levelupSkills1To10()
 
 			-- open giftbag and equipt content
-			openGiftbags1To10(player.Level);
+			openGiftbags1To10(player.Level)
 
-	</onLevelup>
+</onLevelup>
 
 	<onSkillCast>
 		-- Additional Lua code to execute when casting a skill
 		-- Note: arg1 contains the skill being used.
 		-- i.e. arg1.Name will be the name of the skill being cast.
-	</onSkillCast>
+</onSkillCast>
 </profile>

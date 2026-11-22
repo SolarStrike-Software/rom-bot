@@ -6,13 +6,13 @@
     </Size>
     <Backdrop bgFile="Interface/Tooltips/tooltip-background" edgeFile="Interface/Tooltips/tooltip-border" tile="true">
       <BackgroundInsets>
-        <AbsInset left="3" right="3" top="3" bottom="3"/>
+        <AbsInset left="3" right="3" top="3" bottom="3" />
       </BackgroundInsets>
       <TileSize>
-        <AbsValue val="16"/>
+        <AbsValue val="16" />
       </TileSize>
       <EdgeSize>
-        <AbsValue val="16"/>
+        <AbsValue val="16" />
       </EdgeSize>
     </Backdrop>
     <Layers>
@@ -73,7 +73,7 @@
           <Anchors>
             <Anchor point="LEFT">
               <Offset>
-                <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -97,40 +97,40 @@
 
       <Button name="$parentButton1" id="1" inherits="UIPanelButtonTemplate" text="" hidden="true">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick(this:GetID());
-          </OnClick>
+            this:GetParent():ButtonClick(this:GetID())
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentButton2" id="2" inherits="UIPanelButtonTemplate" text="" hidden="true">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick(this:GetID());
-          </OnClick>
+            this:GetParent():ButtonClick(this:GetID())
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentButton3" id="3" inherits="UIPanelButtonTemplate" text="" hidden="true">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick(this:GetID());
-          </OnClick>
+            this:GetParent():ButtonClick(this:GetID())
+</OnClick>
         </Scripts>
       </Button>
       
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMPopUpDialogTemplate_OnLoad(this);
-      </OnLoad>
+        UMMPopUpDialogTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
 	</Frame>
 	

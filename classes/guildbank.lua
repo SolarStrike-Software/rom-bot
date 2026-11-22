@@ -1,23 +1,23 @@
-include("memorytable.lua");
-include("guildbankitem.lua");
+include("memorytable.lua")
+include("guildbankitem.lua")
 
 CGuildbank = class(
 	function (self)
 
-		self.PageListAddress = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.bank.guild.base),0xC4);
-		self.PageAddresses = {};
-		self.BagSlot = {};
+		self.PageListAddress = memoryReadRepeat("uintptr", getProc(), getBaseAddress(addresses.bank.guild.base), 0xC4)
+		self.PageAddresses = {}
+		self.BagSlot = {}
 
-		local timeStart = getTime();
+		local timeStart = getTime()
 
-		if( settings.profile.options.DEBUG_INV ) then
-			printf( "Guild Bank update took: %d\n", deltaTime( getTime(), timeStart ) );
-		end;
+		if (settings.profile.options.DEBUG_INV) then
+			printf( "Guild Bank update took: %d\n", deltaTime( getTime(), timeStart ) )
+		end
 	end
-);
+)
 
 function CGuildbank:update()
-	local timeStart = getTime();
+	local timeStart = getTime()
 
 	if self:updatePageAddresses() == false then
 		-- Unable to update at this moment
@@ -31,19 +31,19 @@ function CGuildbank:update()
 
 	for slotNumber = 1, #self.PageAddresses*100, 1 do
 		if self.BagSlot[slotNumber] then
-			self.BagSlot[ slotNumber ]:update();
+			self.BagSlot[ slotNumber ]:update()
 		else
 			self.BagSlot[slotNumber] = CGuildbankItem( slotNumber )
 		end
 	end
 
-	if( settings.profile.options.DEBUG_INV ) then
-		printf( "Guild Bank update took: %d\n", deltaTime( getTime(), timeStart ) );
-	end;
-end;
+	if (settings.profile.options.DEBUG_INV) then
+		printf( "Guild Bank update took: %d\n", deltaTime( getTime(), timeStart ) )
+	end
+end
 
 function CGuildbank:updatePageAddresses()
-	local tmpPage1Address = memoryReadUIntPtr(getProc(), addresses.staticGuildBankBase,{0xC4,0x0})
+	local tmpPage1Address = memoryReadUIntPtr(getProc(), addresses.staticGuildBankBase,{0xC4, 0x0})
 
 	-- If update not necessary
 	if self.PageAddresses[1] ~= nil and self.PageAddresses[1] == tmpPage1Address and self.PageAddresses[page] then
@@ -65,9 +65,9 @@ function CGuildbank:updatePageAddresses()
 		-- Look for new page address among the 3 addresses on this page.
 		newFound = false
 		for i = 0, 2 do
-			nextPageAddress	= memoryReadUInt(getProc(),self.PageAddresses[curPage] + i*0x4)
+			nextPageAddress	= memoryReadUInt(getProc(), self.PageAddresses[curPage] + i*0x4)
 			-- see if we already have this address
-			for k,v in pairs(self.PageAddresses) do
+			for k, v in pairs(self.PageAddresses) do
 				if self.PageListAddress == nextPageAddress or v == nextPageAddress  then
 					nextPageAddress = nil
 					break
@@ -87,7 +87,7 @@ function CGuildbank:updatePageAddresses()
 end
 
 function CGuildbank:findItem( itemNameOrId, range)
-	if memoryReadBytePtr(getProc(),addresses.staticGuildBankBase, addresses.guildBankOpen_offset) ~= 1 then
+	if memoryReadBytePtr(getProc(), addresses.staticGuildBankBase, addresses.guildBankOpen_offset) ~= 1 then
 		print("Warning! Guild bank is not open.")
 		return
 	end
@@ -118,7 +118,7 @@ function CGuildbank:findItem( itemNameOrId, range)
 			item = self.BagSlot[slot]
 		end
 
- 	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
+		if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
 			if (os.clock() - item.LastMovedTime) > ITEM_REUSE_DELAY then
 				if item.ItemCount > 1 then
 					-- find smallest stack
@@ -129,14 +129,14 @@ function CGuildbank:findItem( itemNameOrId, range)
 					return item
 				end
 			end
-		end;
-	end;
+		end
+	end
 
 	return smallestStack
 end
 
 function CGuildbank:itemTotalCount(itemNameOrId, range)
-	if memoryReadBytePtr(getProc(),addresses.staticGuildBankBase, addresses.guildBankOpen_offset) ~= 1 then
+	if memoryReadBytePtr(getProc(), addresses.staticGuildBankBase, addresses.guildBankOpen_offset) ~= 1 then
 		print("Warning! Guild bank is not open.")
 		return 0
 	end
@@ -159,7 +159,7 @@ function CGuildbank:itemTotalCount(itemNameOrId, range)
 	end
 
 	local item
-	local totalCount = 0;
+	local totalCount = 0
 	for slot = first, last do
 		if self.BagSlot[slot] then
 			item = self.BagSlot[slot]
@@ -173,10 +173,10 @@ function CGuildbank:itemTotalCount(itemNameOrId, range)
 			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
 				totalCount = totalCount + 1
 			else
-				totalCount = totalCount + item.ItemCount;
+				totalCount = totalCount + item.ItemCount
 			end
 		end
-	end;
+	end
 
-	return totalCount;
-end;
+	return totalCount
+end

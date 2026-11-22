@@ -24,7 +24,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="30" y="0"/>
+                <AbsDimension x="30" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -36,7 +36,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="130" y="0"/>
+                <AbsDimension x="130" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -45,7 +45,7 @@
           <Anchors>
       	    <Anchor point="RIGHT">
       	      <Offset>
-      	        <AbsDimension x="-3" y="0"/>
+                <AbsDimension x="-3" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -57,7 +57,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="130" y="2"/>
+                <AbsDimension x="130" y="2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -79,51 +79,51 @@
         <Layers>
           <Layer level="BACKGROUND">
             <Texture name="$parentNormal" file="Interface/Buttons/QuickSlot-Normal">
-              <Size><AbsDimension x="40" y="40"/></Size>
-              <Anchors><Anchor point="CENTER"/></Anchors>
+              <Size><AbsDimension x="40" y="40" /></Size>
+              <Anchors><Anchor point="CENTER" /></Anchors>
             </Texture>
           </Layer>
           <Layer level="BORDER">
             <Texture name="$parentIcon">
-              <Size><AbsDimension x="20" y="20"/></Size>
-              <Anchors><Anchor point="CENTER"/></Anchors>
+              <Size><AbsDimension x="20" y="20" /></Size>
+              <Anchors><Anchor point="CENTER" /></Anchors>
             </Texture>
           </Layer>
           <Layer level="OVERLAY">
             <FontString name="$parentCount" inherits="NumberFontNormal" weight="BOLD" justifyH="RIGHT" hidden="true">
               <Anchors>
                 <Anchor point="BOTTOMRIGHT">
-                  <Offset><AbsDimension x="-4" y="-2"/></Offset>
+                  <Offset><AbsDimension x="-4" y="-2" /></Offset>
                 </Anchor>
               </Anchors>
             </FontString>
             <FontString name="$parentStock" inherits="NumberFontNormal" weight="BOLD" justifyH="LEFT" hidden="true">
               <Anchors>
                 <Anchor point="TOPLEFT">
-                  <Offset><AbsDimension x="2" y="2"/></Offset>
+                  <Offset><AbsDimension x="2" y="2" /></Offset>
                 </Anchor>
               </Anchors>
             </FontString>
           </Layer>
           <Layer level="ARTWORK">
-            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true" />
           </Layer>
         </Layers>
         <PushedTexture name="$parentPushed" file="Interface/Buttons/QuickSlot-Depress">
-          <Size><AbsDimension x="40" y="40"/></Size>
-          <Anchors><Anchor point="CENTER"/></Anchors>
+          <Size><AbsDimension x="40" y="40" /></Size>
+          <Anchors><Anchor point="CENTER" /></Anchors>
         </PushedTexture>
-        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD"/>
+        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD" />
         <Scripts>
           <OnEnter>
-            UMMInboxTOCButtonTemplate_OnEnter(this:GetParent());
-          </OnEnter>
+            UMMInboxTOCButtonTemplate_OnEnter(this:GetParent())
+</OnEnter>
           <OnClick>
-            UMMInboxTOCButtonTemplate_OnClick(this:GetParent());
-          </OnClick>
+            UMMInboxTOCButtonTemplate_OnClick(this:GetParent())
+</OnClick>
           <OnLeave>
-            UMMInboxTOCButtonTemplate_OnLeave(this:GetParent());
-          </OnLeave>
+            UMMInboxTOCButtonTemplate_OnLeave(this:GetParent())
+</OnLeave>
         </Scripts>
       </Button>
       <Frame name="$parentAttachedMoney" inherits="UMMSmallRightAlignedMoneyFrameTemplate" hidden="true">
@@ -147,18 +147,18 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMListTemplate_Init(this, "Hover");
-        UMMListTemplate_Init(this, "Tagged");
-      </OnLoad>
+        UMMListTemplate_Init(this, "Hover")
+        UMMListTemplate_Init(this, "Tagged")
+</OnLoad>
       <OnEnter>
-        UMMInboxTOCButtonTemplate_OnEnter(this);
-      </OnEnter>
+        UMMInboxTOCButtonTemplate_OnEnter(this)
+</OnEnter>
       <OnClick>
-        UMMInboxTOCButtonTemplate_OnClick(this);
-      </OnClick>
+        UMMInboxTOCButtonTemplate_OnClick(this)
+</OnClick>
       <OnLeave>
-        UMMInboxTOCButtonTemplate_OnLeave(this);
-      </OnLeave>
+        UMMInboxTOCButtonTemplate_OnLeave(this)
+</OnLeave>
     </Scripts>
   </Button>
 
@@ -169,7 +169,7 @@
           <Anchors>
       	    <Anchor point="LEFT" relativePoint="RIGHT">
       	      <Offset>
-      	        <AbsDimension x="10" y="0"/>
+                <AbsDimension x="10" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -178,8 +178,8 @@
     </Layers>
     <Scripts>
       <OnClick>
-        this:GetParent():SetOption(this:GetID());
-      </OnClick>
+        this:GetParent():SetOption(this:GetID())
+</OnClick>
     </Scripts>
   </CheckButton>
 
@@ -190,7 +190,7 @@
     <Anchors>
       <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
         <Offset>
-          <AbsDimension x="-5" y="5"/>
+          <AbsDimension x="-5" y="5" />
         </Offset>
       </Anchor>
     </Anchors>
@@ -200,7 +200,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="10" y="10"/>
+                <AbsDimension x="10" y="10" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -209,7 +209,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel1" relativePoint="BOTTOMLEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="2"/>
+                <AbsDimension x="0" y="2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -218,7 +218,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel2" relativePoint="BOTTOMLEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="2"/>
+                <AbsDimension x="0" y="2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -227,7 +227,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel3" relativePoint="BOTTOMLEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="2"/>
+                <AbsDimension x="0" y="2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -236,7 +236,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT" relativeTo="$parentHelpLabel4" relativePoint="BOTTOMLEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="2"/>
+                <AbsDimension x="0" y="2" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -246,7 +246,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="10" y="220"/>
+                <AbsDimension x="10" y="220" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -256,7 +256,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="10" y="400"/>
+                <AbsDimension x="10" y="400" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -265,7 +265,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="10" y="420"/>
+                <AbsDimension x="10" y="420" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -277,19 +277,19 @@
 
       <Button name="$parentButtonTake" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT">
             <Offset>
-              <AbsDimension x="10" y="100"/>
+              <AbsDimension x="10" y="100" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("take");
-          </OnClick>
+            this:GetParent():ButtonClick("take")
+</OnClick>
         </Scripts>
       </Button>
       <CheckButton name="$parentOption1" id="1" inherits="UMMInboxOptionButtonTemplate">
@@ -335,7 +335,7 @@
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentOption4" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="-3" y="2"/>
+              <AbsDimension x="-3" y="2" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -348,7 +348,7 @@
               <Anchors>
                 <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
                   <Offset>
-                    <AbsDimension x="5" y="6"/>
+                    <AbsDimension x="5" y="6" />
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -359,102 +359,102 @@
 
       <Button name="$parentButtonTagChars" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentMassTagLabel" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="0" y="5"/>
+              <AbsDimension x="0" y="5" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("tagchars");
-          </OnClick>
+            this:GetParent():ButtonClick("tagchars")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonTagFriends" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentButtonTagChars" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("tagfriends");
-          </OnClick>
+            this:GetParent():ButtonClick("tagfriends")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonTagGuildies" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentButtonTagFriends" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("tagguildies");
-          </OnClick>
+            this:GetParent():ButtonClick("tagguildies")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonTagOther" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentButtonTagGuildies" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("tagother");
-          </OnClick>
+            this:GetParent():ButtonClick("tagother")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonTagEmpty" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentButtonTagChars" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="0" y="5"/>
+              <AbsDimension x="0" y="5" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("tagempty");
-          </OnClick>
+            this:GetParent():ButtonClick("tagempty")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonReturn" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT">
             <Offset>
-              <AbsDimension x="10" y="320"/>
+              <AbsDimension x="10" y="320" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -464,7 +464,7 @@
               <Anchors>
                 <Anchor point="LEFT" relativePoint="RIGHT">
                   <Offset>
-                    <AbsDimension x="5" y="0"/>
+                    <AbsDimension x="5" y="0" />
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -473,19 +473,19 @@
         </Layers>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("return");
-          </OnClick>
+            this:GetParent():ButtonClick("return")
+</OnClick>
         </Scripts>
       </Button>
 
       <Button name="$parentButtonDelete" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT">
             <Offset>
-              <AbsDimension x="10" y="350"/>
+              <AbsDimension x="10" y="350" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -495,7 +495,7 @@
               <Anchors>
                 <Anchor point="LEFT" relativePoint="RIGHT">
                   <Offset>
-                    <AbsDimension x="5" y="0"/>
+                    <AbsDimension x="5" y="0" />
                   </Offset>
                 </Anchor>
               </Anchors>
@@ -504,8 +504,8 @@
         </Layers>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("delete");
-          </OnClick>
+            this:GetParent():ButtonClick("delete")
+</OnClick>
         </Scripts>
       </Button>
 
@@ -513,7 +513,7 @@
         <Anchors>
           <Anchor point="LEFT" relativeTo="$parentTotalMoneyLabel" relativePoint="LEFT">
             <Offset>
-              <AbsDimension x="-20" y="1"/>
+              <AbsDimension x="-20" y="1" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -522,7 +522,7 @@
         <Anchors>
           <Anchor point="LEFT" relativeTo="$parentTotalDiamondsLabel" relativePoint="LEFT">
             <Offset>
-              <AbsDimension x="-20" y="1"/>
+              <AbsDimension x="-20" y="1" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -531,9 +531,9 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
-        UMMInboxToolsTemplate_OnLoad(this);
-      </OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40)
+        UMMInboxToolsTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -544,7 +544,7 @@
     <Anchors>
       <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
         <Offset>
-          <AbsDimension x="5" y="5"/>
+          <AbsDimension x="5" y="5" />
         </Offset>
       </Anchor>
     </Anchors>
@@ -572,30 +572,30 @@
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parent">
             <Offset>
-              <AbsDimension x="415" y="20"/>
+              <AbsDimension x="415" y="20" />
             </Offset>
           </Anchor>
           <Anchor point="BOTTOMLEFT" relativeTo="$parent">
             <Offset>
-              <AbsDimension x="415" y="20"/>
+              <AbsDimension x="415" y="20" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnLoad>
-            this:SetValueStepMode("INT");
-          </OnLoad>
+            this:SetValueStepMode("INT")
+</OnLoad>
           <OnValueChanged>
-            UIPanelScrollBar_OnValueChanged(this, arg1);
-            this:GetParent():ScrollChanged();
-          </OnValueChanged>
+            UIPanelScrollBar_OnValueChanged(this, arg1)
+            this:GetParent():ScrollChanged()
+</OnValueChanged>
         </Scripts>
       </Slider>
 	  <Frame name="$parentMailCount">
 		<Anchors>
 		  <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 			<Offset>
-			  <AbsDimension x="335" y="-25"/>
+			  <AbsDimension x="335" y="-25" />
 			</Offset>
 		  </Anchor>
 		</Anchors>
@@ -605,7 +605,7 @@
 				  <Anchors>
 					<Anchor point="TOPRIGHT">
 					  <Offset>
-						<AbsDimension x="0" y="0"/>
+						<AbsDimension x="0" y="0" />
 					  </Offset>
 					</Anchor>
 				  </Anchors>
@@ -618,14 +618,14 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMInboxTOCTemplate_OnLoad(this);
-      </OnLoad>
+        UMMInboxTOCTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMInboxTOCTemplate_OnShow(this);
-      </OnShow>
+        UMMInboxTOCTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMInboxTOCTemplate_OnHide(this);
-      </OnHide>
+        UMMInboxTOCTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -636,7 +636,7 @@
     <Anchors>
       <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="0" y="0" />
         </Offset>
       </Anchor>
     </Anchors>
@@ -657,7 +657,7 @@
         <Anchors>
           <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="-5" y="5"/>
+              <AbsDimension x="-5" y="5" />
             </Offset>
           </Anchor>
         </Anchors>

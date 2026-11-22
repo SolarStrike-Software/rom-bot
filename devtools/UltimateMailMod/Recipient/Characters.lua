@@ -21,4 +21,4 @@
 --
 
 UMM_OwnCharacters = {
-};
+}

@@ -1,13 +1,13 @@
-local CACHE_PATH = getExecutionPath() .. "/../cache";
+local CACHE_PATH = getExecutionPath() .. "/../cache"
 local ITEMTYPESTABLE_VERSION = 1.0 -- Change if the saved format changes to force an update of the file.
 
 function LoadItemTypes()
 	itemtypes = nil
 
-	local fname = CACHE_PATH .. "/itemtypestable.lua";
-	if( fileExists(fname) ) then
+	local fname = CACHE_PATH .. "/itemtypestable.lua"
+	if (fileExists(fname)) then
 		LoadItemTypes_cached(fname)
-		if itemtypes_language ~= string.sub(RoMScript("GetLanguage()"),1,2) then
+		if itemtypes_language ~= string.sub(RoMScript("GetLanguage()"), 1, 2) then
 			printf("Client Language changed.\n")
 		elseif itemtypes_version ~= ITEMTYPESTABLE_VERSION	then
 			printf("itemtypestable is incorrect version.\n")
@@ -18,18 +18,18 @@ function LoadItemTypes()
 	end
 
 	LoadItemTypes_memory()
-	CacheItemTypes();
+	CacheItemTypes()
 end
 
 function LoadItemTypes_cached(filename)
-	local status, err = pcall(dofile, filename);
+	local status, err = pcall(dofile, filename)
 
-	if( not status ) then
+	if (not status) then
 		-- Failed to load the cache file.
-		cprintf(cli.red, "[DEBUG] Failed to load item types cache file; Dropping bad file.\n");
+		cprintf(cli.red, "[DEBUG] Failed to load item types cache file; Dropping bad file.\n")
 
-		LoadItemTypes_memory();
-		CacheItemTypes();
+		LoadItemTypes_memory()
+		CacheItemTypes()
 	end
 end
 
@@ -141,15 +141,15 @@ function CacheItemTypes()
 end
 
 function PrintItemTypes()
-	for k,v in pairs(itemtypes) do
+	for k, v in pairs(itemtypes) do
 		if k~="Name" then
-			print(k,v.Name)
-			for k,v in pairs(v) do
+			print(k, v.Name)
+			for k, v in pairs(v) do
 				if k~="Name" then
-					print("",k,v.Name)
-					for k,v in pairs(v) do
+					print("", k, v.Name)
+					for k, v in pairs(v) do
 						if k~="Name" then
-							print("","",k,v.Name)
+							print("","", k, v.Name)
 						end
 					end
 				end

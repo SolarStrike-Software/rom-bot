@@ -139,7 +139,7 @@
 
 			local count = RoMScript("CharactFrame_GetEquipSlotCount();")
 			local hplevels = {}
-			for i = 1,count do
+			for i = 1, count do
 				RoMScript("SwapEquipmentItem("..(i - 1)..");") yrest(2000)
 				player:update()
 				hplevels[i] = player.MaxHP
@@ -149,11 +149,13 @@
 				for b = a + 1, #hplevels do -- compare against the rest
 					if hplevels[b] > hplevels[a]*2 then
 						skill2TacticWorks = true
-						firstswap = a; secondswap = b
+						firstswap = a
+						secondswap = b
 						break
 					elseif hplevels[a] > hplevels[b]*2 then
 						skill2TacticWorks = true
-						firstswap = b; secondswap = a
+						firstswap = b
+						secondswap = a
 						break
 					end
 				end
@@ -173,13 +175,13 @@
 			doActions = quest508572 -- Copy correct actions function.
 			path = "Find Pirates" -- The path to use
 		else
-			error(string.format("Sub quest id %d not found. Name \"%s\"\n",subQuest, GetIdName(subQuest)))
+			error(string.format("Sub quest id %d not found. Name \"%s\"\n", subQuest, GetIdName(subQuest)))
 		end
 
 		-- Count extra action button to make sure there weren't existing buttons. If so, set offset.
 		actionOffset = RoMCode("a=0 while GetExtraActionInfo(a+1)~=nil do a=a+1 end") - #skills
 
-		cprintf(cli.yellow,"Doing subquest \"%s\".\n",GetIdName(subQuest))
+		cprintf(cli.yellow,"Doing subquest \"%s\".\n", GetIdName(subQuest))
 	end
 
 	function checkQuest()
@@ -261,7 +263,7 @@
 			return
 		end
 
-		cprintf(cli.yellow, "Casting \"%s\".\n",skill.Name)
+		cprintf(cli.yellow, "Casting \"%s\".\n", skill.Name)
 
 		return true
 	end
@@ -269,12 +271,12 @@
 	function quest508564()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -282,7 +284,7 @@
 					skill = skills[k]
 					if skillCanUse(skill) then
 						player:target(targetpawn)
-						player:moveTo(targetpawn,true,nil,skill.Range)
+						player:moveTo(targetpawn, true, nil, skill.Range)
 						yrest(200)
 						RoMScript("UseExtraAction(".. k+actionOffset ..")")
 						yrest(skill.CastTime * 1000)
@@ -313,7 +315,10 @@
 				-- Correct craftsman found
 				break
 			end
-			corner = corner + 1; if corner > 4 then corner = 1 end
+			corner = corner + 1
+			if corner > 4 then
+				corner = 1
+			end
 			player:moveTo(CWaypoint(corners[corner].X, corners[corner].Z), true)
 		until false
 
@@ -325,8 +330,8 @@
 		yrest(1500)
 
 		--Setup chat monitor.
-		EventMonitorStop("CraftsmanSaid");
-		EventMonitorStart("CraftsmanSaid", "CHAT_MSG_SYSTEM");
+		EventMonitorStop("CraftsmanSaid")
+		EventMonitorStart("CraftsmanSaid", "CHAT_MSG_SYSTEM")
 
 		-- Check monitor while following craftsman.
 		local nextCraftsman = false
@@ -342,7 +347,10 @@
 				end
 			elseif distance(player.X, player.Z, craftsman.X, craftsman.Z) > 40 then
 				-- Craftsman moved. Move to next corner.
-				corner = corner + 1; if corner > 4 then corner = 1 end
+				corner = corner + 1
+				if corner > 4 then
+					corner = 1
+				end
 				player:moveTo(CWaypoint(corners[corner].X, corners[corner].Z), true)
 				yrest(1000)
 			else
@@ -350,14 +358,14 @@
 				repeat
 					local time, moreToCome, name, msg = EventMonitorCheck("CraftsmanSaid", "4,1")
 					if time ~= nil then
-						if string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH02\")"),1,true) then -- Fix that end!
+						if string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH02\")"), 1, true) then -- Fix that end!
 							RoMScript("UseExtraAction(".. 2+actionOffset ..")") yrest(1500)
-						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH01\")"),1,true) then -- It's time to measure that distance!
+						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH01\")"), 1, true) then -- It's time to measure that distance!
 							RoMScript("UseExtraAction(".. 3+actionOffset ..")") yrest(1500)
-						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH03\")"),1,true) then -- Good! Assemble it!
+						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH03\")"), 1, true) then -- Good! Assemble it!
 							RoMScript("UseExtraAction(".. 4+actionOffset ..")") yrest(1500)
-						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH04\")"),1,true) or -- failed
-							   string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH05\")"),1,true) then -- succeeded
+						elseif string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH04\")"), 1, true) or -- failed
+							   string.find(msg, RoMScript("TEXT(\"SC_PE_ZONE13_01_SMITH05\")"), 1, true) then -- succeeded
 							-- Move to next Craftsman
 							nextCraftsman = true
 						end
@@ -376,12 +384,12 @@
 	function quest508566()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -389,7 +397,7 @@
 					skill = skills[k]
 					if skillCanUse(skill) then
 						player:target(targetpawn)
-						player:moveTo(targetpawn,true,nil,skill.Range)
+						player:moveTo(targetpawn, true, nil, skill.Range)
 						yrest(200)
 						RoMScript("UseExtraAction(".. k+actionOffset ..")")
 						yrest(skill.CastTime * 1000)
@@ -413,12 +421,12 @@
 	function quest508567()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -426,7 +434,7 @@
 					skill = skills[k]
 					if skillCanUse(skill) then
 						player:target(targetpawn)
-						player:moveTo(targetpawn,true,nil,skill.Range)
+						player:moveTo(targetpawn, true, nil, skill.Range)
 						yrest(200)
 						RoMScript("UseExtraAction(".. k+actionOffset ..")")
 						yrest(skill.CastTime * 1000)
@@ -446,12 +454,12 @@
 	function quest508568()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -464,7 +472,7 @@
 
 				if skillCanUse(skill) then
 					player:target(targetpawn)
-					player:moveTo(targetpawn,true,nil,skill.Range)
+					player:moveTo(targetpawn, true, nil, skill.Range)
 					yrest(200)
 					RoMScript("UseExtraAction(".. k+actionOffset ..")")
 					yrest(skill.CastTime * 1000)
@@ -482,20 +490,20 @@
 	function quest508569()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
 		-- Cast Impending Doom
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
 				skill = skills[1]
 				if skillCanUse(skill) then
 					player:target(targetpawn)
-					player:moveTo(targetpawn,true,nil,skill.Range)
+					player:moveTo(targetpawn, true, nil, skill.Range)
 					yrest(200)
 					RoMScript("UseExtraAction(".. 1+actionOffset ..")")
 					skill.LastCastTime = os.clock()
@@ -511,9 +519,9 @@
 			-- Is still in Cooldown?
 			if skills[2].LastCastTime == nil or (os.clock() - skills[2].LastCastTime > skills[2].Cooldown) then
 				player:target(targetpawn)
-				player:moveTo(targetpawn,true,nil,skills[2].Range)
+				player:moveTo(targetpawn, true, nil, skills[2].Range)
 				yrest(200)
-				cprintf(cli.yellow, "Casting \"%s\".\n",skills[2].Name)
+				cprintf(cli.yellow, "Casting \"%s\".\n", skills[2].Name)
 				RoMScript("UseExtraAction(".. 2+actionOffset ..")")
 				skills[2].LastCastTime = os.clock()
 			end
@@ -527,11 +535,11 @@
 					return
 				end
 
-				objectList:update();
+				objectList:update()
 				local objSize = objectList:size()
 				range = 150
-				for i = 0,objSize do
-					local obj = objectList:getObject(i);
+				for i = 0, objSize do
+					local obj = objectList:getObject(i)
 					if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 						targetpawn = CPawn(obj.Address)
 
@@ -547,14 +555,14 @@
 	function quest508570()
 		local range = 150
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
 		-- Count pirates in range
 		local count = 0
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -567,14 +575,14 @@
 
 		if count > 4 then
 			yrest(200)
-			cprintf(cli.yellow, "Casting \"%s\".\n",skills[3].Name)
+			cprintf(cli.yellow, "Casting \"%s\".\n", skills[3].Name)
 			LastCastTime = os.clock()
 			RoMScript("UseExtraAction(".. 3+actionOffset ..")")
 			yrest(1000)
-			cprintf(cli.yellow, "Casting \"%s\".\n",skills[1].Name)
+			cprintf(cli.yellow, "Casting \"%s\".\n", skills[1].Name)
 			RoMScript("UseExtraAction(".. 1+actionOffset ..")")
 			yrest(1000)
-			cprintf(cli.yellow, "Casting \"%s\".\n",skills[2].Name)
+			cprintf(cli.yellow, "Casting \"%s\".\n", skills[2].Name)
 			RoMScript("UseExtraAction(".. 2+actionOffset ..")")
 			yrest(8000)
 			player:update()
@@ -596,12 +604,12 @@
 	function quest508571()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -609,14 +617,14 @@
 
 				if skillCanUse(skill) then
 					player:target(targetpawn)
-					player:moveTo(targetpawn,true,nil,skill.Range)
+					player:moveTo(targetpawn, true, nil, skill.Range)
 					yrest(200)
 					RoMScript("UseExtraAction(".. 1+actionOffset ..")")
 					yrest(700)
-					cprintf(cli.yellow, "Casting \"%s\".\n",skills[2].Name)
+					cprintf(cli.yellow, "Casting \"%s\".\n", skills[2].Name)
 					RoMScript("UseExtraAction(".. 2+actionOffset ..")")
 					yrest(2000)
-					cprintf(cli.yellow, "Casting \"%s\".\n",skills[3].Name)
+					cprintf(cli.yellow, "Casting \"%s\".\n", skills[3].Name)
 					local startTimer = getTime()
 					repeat
 						SlashCommand("/script UseExtraAction(".. 3+actionOffset ..")")
@@ -625,7 +633,7 @@
 						if deltaTime(getTime(), startTimer) > 10000 then -- Give up after 10s
 							return
 						end
-					until 5 > distance(player.X,player.Z,-7526,-4226) and not player:hasBuff(508623) -- Fresh Sample
+					until 5 > distance(player.X, player.Z,-7526,-4226) and not player:hasBuff(508623) -- Fresh Sample
 					yrest(2000)
 					player:update()
 					__WPL:setDirection(WPT_FORWARD)
@@ -639,8 +647,8 @@
 	function quest508572()
 		local range = 70
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
 		if skill2TacticWorks and
@@ -650,15 +658,15 @@
 				RoMScript("SwapEquipmentItem("..(firstswap - 1)..")") yrest(2000)
 				RoMScript("SwapEquipmentItem("..(secondswap - 1)..")") yrest(2000)
 			end
-			cprintf(cli.yellow, "Casting \"%s\".\n",skills[2].Name)
+			cprintf(cli.yellow, "Casting \"%s\".\n", skills[2].Name)
 			RoMScript("UseExtraAction(".. 2+actionOffset ..")")
 			skills[2].LastCastTime = os.clock()
 			yrest(500)
 			if secondswap ~= originalequipement then RoMScript("SwapEquipmentItem("..(originalequipement - 1)..")") end
 		end
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if range > distance(player.X, player.Z, obj.X, obj.Z) then -- In range
 				targetpawn = CPawn(obj.Address)
 
@@ -666,18 +674,18 @@
 
 				if skillCanUse(skill) then
 					player:target(targetpawn)
-					player:moveTo(targetpawn,true,nil,skill.Range)
+					player:moveTo(targetpawn, true, nil, skill.Range)
 					yrest(200)
 					RoMScript("UseExtraAction(".. 1+actionOffset ..")")
 					skill.LastCastTime = os.clock()
 
 					-- Try and heal NPC
 					targetpawn.Type = 1
-					for i,v in pairs(settings.profile.skills) do
+					for i, v in pairs(settings.profile.skills) do
 						if (v.AutoUse and v:canUse(true, targetpawn) ) and
 						   (v.Type == STYPE_HEAL or v.Type == STYPE_HOT) and
 						   (v.Target == STARGET_FRIENDLY) then
-							printf("Casting %s on NPC.\n",v.Name)
+							printf("Casting %s on NPC.\n", v.Name)
 							player:target(targetpawn)
 							yrest(500)
 							v:use()

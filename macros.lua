@@ -7,10 +7,10 @@ RESULT_MACRO_NAME = "RB"
 function setupMacros()
 	-- See if there is old version macros
 	local body, name, icon, id = readMacro(1)
-	if( settings.options.LANGUAGE == "spanish" ) then
-		scriptDef = "/redactar";
+	if (settings.options.LANGUAGE == "spanish") then
+		scriptDef = "/redactar"
 	else
-		scriptDef = "/script";
+		scriptDef = "/script"
 	end
 
 	-- Find commandMacro
@@ -34,7 +34,7 @@ function setupMacros()
 		end
 	end
 
-	if(settings.options.DEBUGGING_MACRO) then
+	if (settings.options.DEBUGGING_MACRO) then
 		printf("commandMacro set to " .. commandMacro .. ".\n")
 		printf("resultMacro set to " .. resultMacro .. ".\n")
 	end
@@ -94,12 +94,12 @@ function writeToMacro(macroNum, body, name, icon)
 	end
 
 	--- Get macros base address
-	local address = getBaseAddress(addresses.macro.base);
-	local macro_address = memoryReadUInt(getProc(), address);
-	
+	local address = getBaseAddress(addresses.macro.base)
+	local macro_address = memoryReadUInt(getProc(), address)
+
 	--- Write the macro body
 	if body ~= null and type(body) == "string" then
-		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content , string.sub(body, 1, MacroMaxBodyLength).."\0");
+		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content , string.sub(body, 1, MacroMaxBodyLength).."\0")
 --		local byte;
 --		for i = 0, 254, 1 do
 --			byte = string.byte(body, i + 1);
@@ -115,7 +115,7 @@ function writeToMacro(macroNum, body, name, icon)
 
 	--- Write the macro name
 	if name ~= null and type(name) == "string" then
-		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name , string.sub(name, 1, 32).."\0");
+		memoryWriteString(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name , string.sub(name, 1, 32).."\0")
 --		local byte;
 --		for i = 0, 31, 1 do
 --			byte = string.byte(name, i + 1);
@@ -131,7 +131,7 @@ function writeToMacro(macroNum, body, name, icon)
 
 	-- Set the macro icon
 	if icon ~= null and type(icon) == "number" and icon > 0 and icon <= 60 then
-		memoryWriteInt(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.icon, icon);
+		memoryWriteInt(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.icon, icon)
 	end
 
 end
@@ -142,38 +142,38 @@ function readMacro(macroNum)
 	end
 
 	--- Get macros base address
-	local address = getBaseAddress(addresses.macro.base);
-	local macro_address = memoryReadRepeat("uint", getProc(), address);
+	local address = getBaseAddress(addresses.macro.base)
+	local macro_address = memoryReadRepeat("uint", getProc(), address)
 
 	--- Read the macro body
-	local body = "";
+	local body = ""
 	for i = 0, 254, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content + i);
+		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.content + i)
 
-		if( byte == 0 ) then -- Break on NULL terminator
-			break;
+		if (byte == 0) then -- Break on NULL terminator
+			break
 		else
-			body = body .. string.char(byte);
+			body = body .. string.char(byte)
 		end
 	end
 
 	--- Read the macro name
-	local name = "";
+	local name = ""
 	for i = 0, 31, 1 do
-		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name + i);
+		local byte = memoryReadUByte(getProc(), macro_address + addresses.macro.size *(macroNum - 1) + addresses.macro.name + i)
 
-		if( byte == 0 ) then -- Break on NULL terminator
-			break;
+		if (byte == 0) then -- Break on NULL terminator
+			break
 		else
-			name = name .. string.char(byte);
+			name = name .. string.char(byte)
 		end
 	end
 
 	-- Read the macro icon
-	local icon = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.icon);
+	local icon = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.icon)
 
 	-- Read the macro id
-	local id = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.id);
+	local id = memoryReadUInt(getProc(), macro_address + addresses.macro.size * (macroNum -1) + addresses.macro.id)
 
 	return body, name, icon, id
 end
@@ -189,35 +189,35 @@ function searchForMacro(bodypattern, namematch, iconmatch, idmatch)
 		if (namematch == null or name == namematch) and
 			(iconmatch == null or icon == iconmatch) and
 			(idmatch == null or id == idmatch) and
-			(bodypattern == null or string.find(body,bodypattern)) then
+			(bodypattern == null or string.find(body, bodypattern)) then
 			return i
 		end
 	end
 end
 
 function findMacroByName(macroName)
-	return searchForMacro(null,macroName)
+	return searchForMacro(null, macroName)
 end
 
 function findEmptyMacro()
-	return searchForMacro("","",0xFFFFFFFF)
+	return searchForMacro("","", 0xFFFFFFFF)
 end
 
 -- Action Key functions
 function getActionKeyInfo(actionKey)
 	-- Not sure what this was for. Does not appear to be relevant to the current game, but keeping it just in case.
-	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
-	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset;
-	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
-	local id = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id);
-	local type = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.type);
+	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base))
+	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset
+	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size
+	local id = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.id)
+	local type = memoryReadUInt(getProc(), bar1 + slotOffset + addresses.actionbar.slot.type)
 	return id, type
 end
 
 function setActionKeyToId(actionkey, id)
-	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base));
-	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset;
-	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size;
+	local base = memoryReadUInt(getProc(), getBaseAddress(addresses.actionbar.base))
+	local bar1 = base + addresses.actionbar.size_per_class*player.Class1 + addresses.actionbar.offset
+	local slotOffset = (actionKey-1) * addresses.actionbar.slot.size
 
 	-- write id
 	if id == "delete" then
@@ -227,7 +227,7 @@ function setActionKeyToId(actionkey, id)
 	end
 
 	-- get type
-	local type;
+	local type
 	if id == "delete" then
 		type = 0 -- type empty
 	elseif id >= 0 and id < 49 then
@@ -273,7 +273,7 @@ function findUsableActionKey(preferable)
 	local firstActionKey = getHotkeyByName("ACTIONBAR1BUTTON1")
 
 	-- Only returns usable action keys with a hotkey and no modifier.
-	local bestkey, hotkey, modifier;
+	local bestkey, hotkey, modifier
 	for i = 1, 80 do
 		-- if empty
 		local keyId, type = getActionKeyInfo(i)
@@ -300,18 +300,18 @@ end
 
 -- Hotkey functions
 function getHotkey(number)
-	local address = getBaseAddress(addresses.hotkey.base);
-	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), address, addresses.hotkey.list);
+	local address = getBaseAddress(addresses.hotkey.base)
+	local hotkeysTableAddress = memoryReadUIntPtr(getProc(), address, addresses.hotkey.list)
 	local hotkeyAddress = memoryReadUInt(getProc(), hotkeysTableAddress + (0x4 * (number - 1)))
 	if hotkeyAddress < 1 then return end -- invalid number
-	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkey.hotkey1);
+	local hotkey = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkey.hotkey1)
 
 	local name = memoryReadString(getProc(), hotkeyAddress + addresses.hotkey.name)
 	if name ~= string.match(name,"[%u%d_]*") or name == "" then
 		name = memoryReadStringPtr(getProc(), hotkeyAddress + addresses.hotkey.name, 0)
 	end
 	local tempModifier = memoryReadUByte(getProc(), hotkeyAddress + addresses.hotkey.modifier1)
-	local modifier;
+	local modifier
 	if tempModifier == 1 then
 		modifier = key.VK_SHIFT
 	elseif tempModifier == 2 then

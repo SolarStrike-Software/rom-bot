@@ -1,124 +1,124 @@
-local exeName = "Client.exe";
-local exeStartAddress = 0x400000;
+local exeName = "Client.exe"
+local exeStartAddress = 0x400000
 
-print("\201================================ [ NOTICE ] =================================\187");
-print("\186     This script is still in development.                                    \186");
-print("\186     Use at your own risk                                                    \186");
-print("\200" .. string.rep("=", 77) .. "\188\n\n");
+print("\201================================ [ NOTICE ] =================================\187")
+print("\186     This script is still in development.                                    \186")
+print("\186     Use at your own risk                                                    \186")
+print("\200" .. string.rep("=", 77) .. "\188\n\n")
 
 -- Attempt to read install location from registry
 function getAutoClientPath()
-	local regQuery = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{dd7f99fe-264a-4259-8ef0-da6d482e2b76}" /v InstallLocation';
-	local response = io.popen(regQuery):read('*a');
-	local pattern = "InstallLocation%s+REG_SZ%s+([^\n]+)";
-	local parsed = string.match(response, pattern);
+	local regQuery = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{dd7f99fe-264a-4259-8ef0-da6d482e2b76}" /v InstallLocation'
+	local response = io.popen(regQuery):read('*a')
+	local pattern = "InstallLocation%s+REG_SZ%s+([^\n]+)"
+	local parsed = string.match(response, pattern)
 
-	if( parsed == nil ) then
-		return nil;
+	if (parsed == nil) then
+		return nil
 	end
 
-	return appendSlashesIfNeeded(parsed);
+	return appendSlashesIfNeeded(parsed)
 end
 
 -- Ask the user to select the file manually
 function getSelectClientPath()
-	local exePath = getOpenFileName("", "Runes of Magic .exe\0" .. exeName .. "\0\0");
-	return exePath;
+	local exePath = getOpenFileName("", "Runes of Magic .exe\0" .. exeName .. "\0\0")
+	return exePath
 end
 
 -- If the path does not end on a slash, add one.
 function appendSlashesIfNeeded(str)
-	if( not str:find(".*([\\/])$") ) then
-		str = str .. "\\";
+	if (not str:find(".*([\\/])$")) then
+		str = str .. "\\"
 	end
-	return str;
+	return str
 end
 
 
 function getClientHandle()
-	local exePath = getAutoClientPath();
-	local fullPath = "";
+	local exePath = getAutoClientPath()
+	local fullPath = ""
 
-	if( not exePath or not fileExists(exePath .. exeName) ) then
-		printf("\aPlease select the Runes of Magic %s\n", exeName);
-		rest(1000);
-		fullPath = fixSlashes(getSelectClientPath(), false);
-		exePath = appendSlashesIfNeeded(getFilePath(fullPath));
+	if (not exePath or not fileExists(exePath .. exeName)) then
+		printf("\aPlease select the Runes of Magic %s\n", exeName)
+		rest(1000)
+		fullPath = fixSlashes(getSelectClientPath(), false)
+		exePath = appendSlashesIfNeeded(getFilePath(fullPath))
 	else
-		fullPath = exePath .. exeName;
+		fullPath = exePath .. exeName
 	end
 
-	if( not fileExists(fullPath) ) then
-		error("Could not locate Runes of Magic client");
+	if (not fileExists(fullPath)) then
+		error("Could not locate Runes of Magic client")
 	end
 
-	local handle = io.open(fullPath, 'rb');
-	return handle;
+	local handle = io.open(fullPath, 'rb')
+	return handle
 end
 
 
-handle = getClientHandle();
-if( not handle ) then
-	error("Could not open Runes of Magic client for reading");
+handle = getClientHandle()
+if (not handle) then
+	error("Could not open Runes of Magic client for reading")
 end
-print("Opened ROM client successfully...");
+print("Opened ROM client successfully...")
 
 
-fileContents = handle:read("*a");
-handle:close();
+fileContents = handle:read("*a")
+handle:close()
 
-printf("File size: %d bytes\n", #fileContents);
+printf("File size: %d bytes\n", #fileContents)
 
 -- Convert an "array" of bytes into a raw string for
 -- pattern matching
 -- Example: byteArrayToPattern("41 42 43 ?? ");
 function byteArrayToPattern(bytes)
-	local str = "";
+	local str = ""
 
 	for match in bytes:gmatch("([%x?][%x?])%s*") do
-		if( match == "??" ) then
+		if (match == "??") then
 			-- Match anything
-			str = str .. ".";
-		elseif( match == "00" ) then
-			str = str .. "%z";
+			str = str .. "."
+		elseif (match == "00") then
+			str = str .. "%z"
 		else
 			-- Match exact
-			local chr = string.char(tonumber("0x"..match));
+			local chr = string.char(tonumber("0x"..match))
 
-			if( string.find(chr, "[^a-zA-Z0-9]") ) then
+			if (string.find(chr, "[^a-zA-Z0-9]")) then
 				-- escape it
-				chr = "%" .. chr;
+				chr = "%" .. chr
 			end
 
-			str = str .. chr;
+			str = str .. chr
 		end
 	end
-	return str;
+	return str
 end
 
 function findPattern(pattern)
-	local found = fileContents:find(pattern);
-	if( found ) then
-		found = found - 1;
+	local found = fileContents:find(pattern)
+	if (found) then
+		found = found - 1
 	end
 
-	return found;
+	return found
 end
 
 function getInt(loc, bytes)
-	bytes = bytes or 4;
-	local result = 0;
+	bytes = bytes or 4
+	local result = 0
 
-	for i = 1,bytes do
-		local byte = string.byte(fileContents:sub(loc + i, loc + i + 1));
-		if( i > 1 ) then
-			result = result + byte * 256^(i-1);
+	for i = 1, bytes do
+		local byte = string.byte(fileContents:sub(loc + i, loc + i + 1))
+		if (i > 1) then
+			result = result + byte * 256^(i-1)
 		else
-			result = result + byte;
+			result = result + byte
 		end
 	end
 
-	return tonumber(result);
+	return tonumber(result)
 end
 
 
@@ -171,7 +171,7 @@ local updatables = {
 			]]),
 		partners = {
 			crafting_base = {
-				add_value = 0x1618; -- Assumed; not referenced in code
+				add_value = 0x1618, -- Assumed; not referenced in code
 			},
 		},
 	},
@@ -525,7 +525,7 @@ local updatables = {
 		]]),
 		partners = {
 			object_list_size = {
-				add_value = -4; -- 4 bytes previous to object_list_base
+				add_value = -4, -- 4 bytes previous to object_list_base
 			},
 		},
 	},
@@ -695,7 +695,7 @@ local updatables = {
 		]]),
 		partners = {
 			macro_size = {
-				value_offset = 6; -- 6 bytes after macro_base
+				value_offset = 6, -- 6 bytes after macro_base
 				value_size = 4,
 			},
 		},
@@ -835,7 +835,7 @@ local updatables = {
 		]]),
 		partners = {
 			party_member_list_offset = {
-				value_offset = 17; -- 17 bytes after macro_base
+				value_offset = 17, -- 17 bytes after macro_base
 				value_size = 1,
 			},
 		},
@@ -970,7 +970,7 @@ local updatables = {
 		]]),
 		partners = {
 			inventory_rent_offset = {
-				value_offset = 6; -- 6 bytes after inventory_rent_base
+				value_offset = 6, -- 6 bytes after inventory_rent_base
 				value_size = 4,
 			},
 		},
@@ -1075,176 +1075,176 @@ local updatables = {
 			C3
 		]])
 	},
-};
+}
 
-local startTime = getTime();
-local foundUpdates = {};
-local missingUpdates = 0;
+local startTime = getTime()
+local foundUpdates = {}
+local missingUpdates = 0
 
 -- Use MDBrute to find memdatabase
-mdbrutePath = getExecutionPath() .. "/bin/";
-if( fileExists(mdbrutePath .. "mdbrute.exe") ) then
-	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address...\n\n\n");
-	local cmd = sprintf('cd "%s" && mdbrute.exe', mdbrutePath);
-	local mdbruteResults = io.popen(cmd):read('*a');
-	local addr = string.match(mdbruteResults, "Found address 0x([0-9a-fA-F]+)");
+mdbrutePath = getExecutionPath() .. "/bin/"
+if (fileExists(mdbrutePath .. "mdbrute.exe")) then
+	cprintf_ex("Using |lightblue|MDBrute|white| to find memdatabase base address...\n\n\n")
+	local cmd = sprintf('cd "%s" && mdbrute.exe', mdbrutePath)
+	local mdbruteResults = io.popen(cmd):read('*a')
+	local addr = string.match(mdbruteResults, "Found address 0x([0-9a-fA-F]+)")
 
-	if( addr ~= nil ) then
-		addr = tonumber(addr, 16);
-		foundUpdates['memdatabase_base'] = addr;
-		cprintf_ex("|green|Found |pink|{memdatabase_base}|green| at |yellow|0x%X\n", addr);
+	if (addr ~= nil) then
+		addr = tonumber(addr, 16)
+		foundUpdates['memdatabase_base'] = addr
+		cprintf_ex("|green|Found |pink|{memdatabase_base}|green| at |yellow|0x%X\n", addr)
 	else
-		cprintf_ex("|red|Could not locate {memdatabase_base}. Is the game client open and logged in?\n");
+		cprintf_ex("|red|Could not locate {memdatabase_base}. Is the game client open and logged in?\n")
 	end
 else
-	print("MDBrute not installed; could not scan for memdatabase");
-	printf("If you would like to use this feature, download, extract, and place mdbrute.exe into:\n%s\n\n", mdbrutePath);
-	print("Download at: https://github.com/SolarStrike-Software/mdbrute/releases\n\n\n");
+	print("MDBrute not installed; could not scan for memdatabase")
+	printf("If you would like to use this feature, download, extract, and place mdbrute.exe into:\n%s\n\n", mdbrutePath)
+	print("Download at: https://github.com/SolarStrike-Software/mdbrute/releases\n\n\n")
 end
 
 
-for i,v in pairs(updatables) do
-	local found = findPattern(v.pattern);
-	if( found ) then
-		local val = nil;
-		if( v.value_type == "address" ) then
-			val = found + (v.value_offset or 0);
+for i, v in pairs(updatables) do
+	local found = findPattern(v.pattern)
+	if (found) then
+		local val = nil
+		if (v.value_type == "address") then
+			val = found + (v.value_offset or 0)
 		else
-			val = getInt(found + (v.value_offset or 0), (v.value_size or 4));
-			if( not v.value_raw ) then
+			val = getInt(found + (v.value_offset or 0), (v.value_size or 4))
+			if (not v.value_raw) then
 				-- If this is supposed to be an offset from client.exe, subtract it.
-				val = val - exeStartAddress;
-				if( val < 0 ) then
-					error(sprintf("\n{%s} has value_raw=true, but final result was negitive; are you sure that's right?", i));
+				val = val - exeStartAddress
+				if (val < 0) then
+					error(sprintf("\n{%s} has value_raw=true, but final result was negitive; are you sure that's right?", i))
 				end
 			end
 		end
 
 		cprintf_ex("|green|Found pattern for |pink|{%s}|green| at |yellow|0x%X|green|, new value: |yellow|0x%X\n",
-		i, found + v.value_offset, val);
-		foundUpdates[i] = val;
+		i, found + v.value_offset, val)
+		foundUpdates[i] = val
 
-		if( v.partners ~= nil ) then
-			for j,k in pairs(v.partners) do
-				local moddesc = "+0";
-				local value_size = k.value_size or 4;
+		if (v.partners ~= nil) then
+			for j, k in pairs(v.partners) do
+				local moddesc = "+0"
+				local value_size = k.value_size or 4
 
-				if( k.add_value ~= nil ) then
-					val = val + k.add_value;
-					if( k.add_value >= 0 ) then
-						moddesc = "+";
+				if (k.add_value ~= nil) then
+					val = val + k.add_value
+					if (k.add_value >= 0) then
+						moddesc = "+"
 					else
-						moddesc = "-";
+						moddesc = "-"
 					end
-					moddesc = moddesc .. sprintf("0x%X", math.abs(k.add_value));
-				elseif( k.value_offset ~= nil ) then
-					if( k.value_offset >= 0 ) then
-						moddesc = "+";
+					moddesc = moddesc .. sprintf("0x%X", math.abs(k.add_value))
+				elseif (k.value_offset ~= nil) then
+					if (k.value_offset >= 0) then
+						moddesc = "+"
 					else
-						moddesc = "-";
+						moddesc = "-"
 					end
-					moddesc = moddesc .. sprintf("0x%X", math.abs(k.value_offset));
-					local newLoc = (v.value_offset or 0) + k.value_offset;
-					val = getInt(found + newLoc, value_size);
+					moddesc = moddesc .. sprintf("0x%X", math.abs(k.value_offset))
+					local newLoc = (v.value_offset or 0) + k.value_offset
+					val = getInt(found + newLoc, value_size)
 				end
 				cprintf_ex("|green|Found |pink|{%s}|green| at |pink|{%s}|yellow| %s|green|, new value: |yellow|0x%X\n",
 					j, i, moddesc, val
-				);
-				foundUpdates[j] = val;
+				)
+				foundUpdates[j] = val
 			end
 		end
 	else
-		cprintf(cli.lightred, "Could not find pattern for {%s}\n", i);
-		missingUpdates = missingUpdates + 1;
+		cprintf(cli.lightred, "Could not find pattern for {%s}\n", i)
+		missingUpdates = missingUpdates + 1
 	end
 end
 
 
 
 function save(filename, backup)
-	backup = backup or true;
+	backup = backup or true
 
-	local handle = io.open(getExecutionPath() .. '/' .. filename, 'r');
-	if( not handle ) then
-		error("Could not open " .. filename .. " for reading.");
+	local handle = io.open(getExecutionPath() .. '/' .. filename, 'r')
+	if (not handle) then
+		error("Could not open " .. filename .. " for reading.")
 	end
 
-	local addressFile = handle:read('*a');
-	handle:close();
+	local addressFile = handle:read('*a')
+	handle:close()
 
-	if( backup ) then
-		local backupFilename = 'backup-' .. filename;
-		printf("Backuping up to %s\n", backupFilename);
+	if (backup) then
+		local backupFilename = 'backup-' .. filename
+		printf("Backuping up to %s\n", backupFilename)
 
-		local outhandle = io.open(getExecutionPath() .. '/' .. backupFilename, 'w');
-		outhandle:write(addressFile);
-		outhandle:close();
+		local outhandle = io.open(getExecutionPath() .. '/' .. backupFilename, 'w')
+		outhandle:write(addressFile)
+		outhandle:close()
 	end
 
 	-- Do replacements as requested
-	printf("Replacing addresses...\n");
-	for key,value in pairs(foundUpdates) do
+	printf("Replacing addresses...\n")
+	for key, value in pairs(foundUpdates) do
 		--local hexValue = sprintf("0x%x", value);
-		local skip = false;
+		local skip = false
 		local changed = string.gsub(addressFile,
 			"=(%s-)([x%x]+)([%,%s]*)%-%-%[%[(%s*)%{" .. key .. "%}(%s*)%]%]([^\n]*)",
 			function (ws1, curValue, ws2, ws3, ws4, ws5)
-				if( tonumber(curValue) == value ) then
-					skip = true;
+				if (tonumber(curValue) == value) then
+					skip = true
 				end
-				return sprintf("=%s0x%x%s--[[%s{%s}%s]]%s", ws1, value, ws2, ws3, key, ws4, ws5);
-			end);
+				return sprintf("=%s0x%x%s--[[%s{%s}%s]]%s", ws1, value, ws2, ws3, key, ws4, ws5)
+			end)
 
-		if( skip or changed ~= addressFile ) then
-			cprintf_ex("|green|[+]|white| Successfully patched |pink|{%s}\n", key);
+		if (skip or changed ~= addressFile) then
+			cprintf_ex("|green|[+]|white| Successfully patched |pink|{%s}\n", key)
 		else
-			if( addressFile:find("%-%-%[%[%s*%{" .. key .. "%}%s*%]%]") ) then
-				cprintf_ex("|yellow|[!]|white| Failed to patch |pink|{%s}|white| or already valid.\n", key);
+			if (addressFile:find("%-%-%[%[%s*%{" .. key .. "%}%s*%]%]")) then
+				cprintf_ex("|yellow|[!]|white| Failed to patch |pink|{%s}|white| or already valid.\n", key)
 			else
-				cprintf_ex("|lightred|[-]|white| Failed to patch |pink|{%s}|white| (token not found in file)\n", key);
+				cprintf_ex("|lightred|[-]|white| Failed to patch |pink|{%s}|white| (token not found in file)\n", key)
 			end
 		end
-		addressFile = changed;
+		addressFile = changed
 	end
 
-	printf("Writing new addresses to %s\n", filename);
-	local newHandle = io.open(getExecutionPath() .. "/" .. filename, 'w');
-	newHandle:write(addressFile);
-	newHandle:close();
+	printf("Writing new addresses to %s\n", filename)
+	local newHandle = io.open(getExecutionPath() .. "/" .. filename, 'w')
+	newHandle:write(addressFile)
+	newHandle:close()
 end
 
 
-local continue = true;
-if( missingUpdates > 0 ) then
+local continue = true
+if (missingUpdates > 0) then
 	cprintf_ex("\n\n|yellow|Not all updatable addresses could be found.\n"
-		.. "Do you want to continue and update found information? |white|y/n: ");
-	while(true) do
-		local inp = string.lower(string.sub(io.read("*l"), 1, 1));
-		if( #inp == 0 ) then
-			continue = false; -- Default = don't write
-			break;
+		.. "Do you want to continue and update found information? |white|y/n: ")
+	while (true) do
+		local inp = string.lower(string.sub(io.read("*l"), 1, 1))
+		if (#inp == 0) then
+			continue = false -- Default = don't write
+			break
 		end
-		if( inp ~= 'y' and inp ~= 'n' ) then
-			printf("Not a valid option. Select (y)es or (n)o: ");
+		if (inp ~= 'y' and inp ~= 'n') then
+			printf("Not a valid option. Select (y)es or (n)o: ")
 		else
-			if( inp == 'y' ) then
-				continue = true;
+			if (inp == 'y') then
+				continue = true
 			else
-				continue = false;
+				continue = false
 			end
 
-			break;
+			break
 		end
 	end
 end
 
-local endTime = getTime();
-if( continue ) then
-	save('addresses.lua', true);
+local endTime = getTime()
+if (continue) then
+	save('addresses.lua', true)
 else
-	print("Changed were not committed");
+	print("Changed were not committed")
 end
 
 
 
-printf("Took %0.2f seconds\n", deltaTime(endTime, startTime) / 1000.0);
+printf("Took %0.2f seconds\n", deltaTime(endTime, startTime) / 1000.0)

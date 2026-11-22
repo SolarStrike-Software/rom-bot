@@ -22,7 +22,7 @@ local LastMessageEvents = {
 local LastMessageLog = {}
 
 local function IsLastMessageEvent(event)
-	for k,v in pairs(LastMessageEvents) do
+	for k, v in pairs(LastMessageEvents) do
 		if v == event then
 			return true
 		end
@@ -34,7 +34,7 @@ end
 function igf_events:OnLoad(this)
 	InGameFrame = this
 
-	for k,v in pairs(LastMessageEvents) do
+	for k, v in pairs(LastMessageEvents) do
 		-- Register LastMessageEvents
 		InGameFrame:RegisterEvent(v)
 		-- Create initial LastMessage log tables
@@ -206,7 +206,7 @@ function igf_events:GetLogEvent(monitorName, returnFilter, lastEntryOnly)
 	end
 	if type(monitorName) ~= "string" or
 		(returnFilter ~= nil and type(returnFilter) ~= "string" ) or
-		(lastEntryOnly ~= nil and type(lastEntryOnly) ~= "boolean" ) then
+		(lastEntryOnly ~= nil and type(lastEntryOnly) ~= "boolean") then
 
 		SendSystemChat("Incorrect argument used in 'igf_events:GetLogEvent()'.")
 		return
@@ -248,13 +248,13 @@ function igf_events:GetLogEvent(monitorName, returnFilter, lastEntryOnly)
 		for val in string.gmatch(returnFilter,"[^]+(.*)[,]+") do
 			local val = tonumber(val)
 			if val and entryToSend.Args[val] then
-				table.insert(toSend,entryToSend.Args[val])
+				table.insert(toSend, entryToSend.Args[val])
 			end
 		end
 	else
 		for k, v in pairs(entryToSend.Args) do
 			if v ~= nil  then
-				table.insert(toSend,v)
+				table.insert(toSend, v)
 			end
 		end
 	end
@@ -278,7 +278,7 @@ function igf_events:getLastEventMessage(event, text, age)
 		end
 	else
 		for message, time in pairs(LastMessageLog[event]) do
-			if string.match(message,text,1,true) then
+			if string.match(message, text, 1, true) then
 				if age == nil or (GetTime()-time) <= age then
 					return time, message
 				end

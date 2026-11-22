@@ -7,40 +7,40 @@
       <Layer level="BORDER">
         <Texture name="$parentQualityBorder" file="Interface/AddOns/UltimateMailMod/Textures/ItemTaggedBorder" alphaMode="BLEND" hidden="true">
           <Size>
-            <AbsDimension x="43" y="43"/>
+            <AbsDimension x="43" y="43" />
           </Size>
           <Anchors>
-            <Anchor point="CENTER"/>
+            <Anchor point="CENTER" />
           </Anchors>
         </Texture>
       </Layer>
       <Layer level="ARTWORK">
-        <Texture name="$parentInvalid" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+        <Texture name="$parentInvalid" file="Interface/Buttons/QuickSlot-Red" hidden="true" />
       </Layer>
       <Layer level="ARTWORK">
         <Texture name="$parentMarkBorder" file="Interface/AddOns/UltimateMailMod/Textures/ItemTaggedBorder" alphaMode="BLEND" hidden="true">
           <Size>
-            <AbsDimension x="43" y="43"/>
+            <AbsDimension x="43" y="43" />
           </Size>
           <Anchors>
-            <Anchor point="CENTER"/>
+            <Anchor point="CENTER" />
           </Anchors>
         </Texture>
       </Layer>
     </Layers>
     <Scripts>
       <OnLoad>
-        this:RegisterForClicks("LeftButton");
-      </OnLoad>
+        this:RegisterForClicks("LeftButton")
+</OnLoad>
       <OnEnter>
-        UMMMassSendItemsSlotTemplate_OnEnter(this);
-      </OnEnter>
+        UMMMassSendItemsSlotTemplate_OnEnter(this)
+</OnEnter>
       <OnClick>
-        UMMMassSendItemsSlotTemplate_OnClick(this);
-      </OnClick>
+        UMMMassSendItemsSlotTemplate_OnClick(this)
+</OnClick>
       <OnLeave>
-        UMMMassSendItemsSlotTemplate_OnLeave(this);
-      </OnLeave>
+        UMMMassSendItemsSlotTemplate_OnLeave(this)
+</OnLeave>
     </Scripts>
   </Button>
 
@@ -82,9 +82,9 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
-        UMMMassSendItemsBagTemplate_OnLoad(this);
-      </OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40)
+        UMMMassSendItemsBagTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -111,14 +111,14 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsBagsTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsBagsTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMMassSendItemsBagsTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsBagsTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMMassSendItemsBagsTemplate_OnHide(this);
-      </OnHide>
+        UMMMassSendItemsBagsTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -134,7 +134,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="30" y="0"/>
+                <AbsDimension x="30" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -146,7 +146,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="130" y="0"/>
+                <AbsDimension x="130" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -158,7 +158,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="375" y="0"/>
+                <AbsDimension x="375" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -180,51 +180,51 @@
         <Layers>
           <Layer level="BACKGROUND">
             <Texture name="$parentNormal" file="Interface/Buttons/QuickSlot-Normal">
-              <Size><AbsDimension x="40" y="40"/></Size>
-              <Anchors><Anchor point="CENTER"/></Anchors>
+              <Size><AbsDimension x="40" y="40" /></Size>
+              <Anchors><Anchor point="CENTER" /></Anchors>
             </Texture>
           </Layer>
           <Layer level="BORDER">
             <Texture name="$parentIcon">
-              <Size><AbsDimension x="20" y="20"/></Size>
-              <Anchors><Anchor point="CENTER"/></Anchors>
+              <Size><AbsDimension x="20" y="20" /></Size>
+              <Anchors><Anchor point="CENTER" /></Anchors>
             </Texture>
           </Layer>
           <Layer level="OVERLAY">
             <FontString name="$parentCount" inherits="NumberFontNormal" weight="BOLD" justifyH="RIGHT" hidden="true">
               <Anchors>
                 <Anchor point="BOTTOMRIGHT">
-                  <Offset><AbsDimension x="-4" y="-2"/></Offset>
+                  <Offset><AbsDimension x="-4" y="-2" /></Offset>
                 </Anchor>
               </Anchors>
             </FontString>
             <FontString name="$parentStock" inherits="NumberFontNormal" weight="BOLD" justifyH="LEFT" hidden="true">
               <Anchors>
                 <Anchor point="TOPLEFT">
-                  <Offset><AbsDimension x="2" y="2"/></Offset>
+                  <Offset><AbsDimension x="2" y="2" /></Offset>
                 </Anchor>
               </Anchors>
             </FontString>
           </Layer>
           <Layer level="ARTWORK">
-            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true"/>
+            <Texture name="$parentDisabled" file="Interface/Buttons/QuickSlot-Red" hidden="true" />
           </Layer>
         </Layers>
         <PushedTexture name="$parentPushed" file="Interface/Buttons/QuickSlot-Depress">
-          <Size><AbsDimension x="40" y="40"/></Size>
-          <Anchors><Anchor point="CENTER"/></Anchors>
+          <Size><AbsDimension x="40" y="40" /></Size>
+          <Anchors><Anchor point="CENTER" /></Anchors>
         </PushedTexture>
-        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD"/>
+        <HighlightTexture file="Interface/Buttons/QuickSlot-Highlight" alphaMode="ADD" />
       </Button>
 
       <EditBox name="$parentCOD" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true" hidden="true">
         <Size>
-          <AbsDimension x="90" y="30"/>
+          <AbsDimension x="90" y="30" />
         </Size>
         <Anchors>
           <Anchor point="LEFT">
             <Offset>
-              <AbsDimension x="375" y="0"/>
+              <AbsDimension x="375" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
@@ -247,23 +247,23 @@
         </Layers>
         <Scripts>
           <OnEscapePressed>
-            this:ClearFocus();
-          </OnEscapePressed>
+            this:ClearFocus()
+</OnEscapePressed>
           <OnTextChanged>
-            this:GetParent():GetParent():DefineCOD(this:GetParent():GetID(), this:GetText());
-          </OnTextChanged>
+            this:GetParent():GetParent():DefineCOD(this:GetParent():GetID(), this:GetText())
+</OnTextChanged>
         </Scripts>
         <TextInsets>
-          <AbsInset top="8" left="4" bottom="0" right="4"/>
+          <AbsInset top="8" left="4" bottom="0" right="4" />
         </TextInsets>
-        <FontString inherits="NumberFontNormal" spacing="1"/>
+        <FontString inherits="NumberFontNormal" spacing="1" />
       </EditBox>
 
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsStatusItemTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsStatusItemTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Button>
 
@@ -289,7 +289,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="35" y="0"/>
+                <AbsDimension x="35" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -301,7 +301,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="135" y="0"/>
+                <AbsDimension x="135" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -313,7 +313,7 @@
           <Anchors>
       	    <Anchor point="TOPLEFT">
       	      <Offset>
-      	        <AbsDimension x="380" y="0"/>
+                <AbsDimension x="380" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -324,36 +324,36 @@
 
       <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPRIGHT">
             <Offset>
-              <AbsDimension x="-15" y="1"/>
+              <AbsDimension x="-15" y="1" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():StartSending();
-          </OnClick>
+            this:GetParent():StartSending()
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="RIGHT" relativeTo="$parentSend" relativePoint="LEFT">
             <Offset>
-              <AbsDimension x="-10" y="0"/>
+              <AbsDimension x="-10" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():CancelCOD();
-          </OnClick>
+            this:GetParent():CancelCOD()
+</OnClick>
         </Scripts>
       </Button>
 
@@ -380,37 +380,37 @@
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parent">
             <Offset>
-              <AbsDimension x="510" y="40"/>
+              <AbsDimension x="510" y="40" />
             </Offset>
           </Anchor>
           <Anchor point="BOTTOMLEFT" relativeTo="$parent">
             <Offset>
-              <AbsDimension x="510" y="6"/>
+              <AbsDimension x="510" y="6" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnLoad>
-            this:SetValueStepMode("INT");
-          </OnLoad>
+            this:SetValueStepMode("INT")
+</OnLoad>
           <OnValueChanged>
-            UIPanelScrollBar_OnValueChanged(this, arg1);
-            this:GetParent():ScrollChanged(this);
-          </OnValueChanged>
+            UIPanelScrollBar_OnValueChanged(this, arg1)
+            this:GetParent():ScrollChanged(this)
+</OnValueChanged>
         </Scripts>
       </Slider>
 
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsStatusTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsStatusTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMMassSendItemsStatusTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsStatusTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMMassSendItemsStatusTemplate_OnHide(this);
-      </OnHide>
+        UMMMassSendItemsStatusTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -433,7 +433,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -443,49 +443,49 @@
     <Frames>
       <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="RIGHT">
             <Offset>
-              <AbsDimension x="0" y="0"/>
+              <AbsDimension x="0" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():Send();
-          </OnClick>
+            this:GetParent():Send()
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentCOD" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="RIGHT" relativeTo="$parentSend" relativePoint="LEFT">
             <Offset>
-              <AbsDimension x="-10" y="0"/>
+              <AbsDimension x="-10" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():COD();
-          </OnClick>
+            this:GetParent():COD()
+</OnClick>
         </Scripts>
       </Button>
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsActionTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsActionTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMMassSendItemsActionTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsActionTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMMassSendItemsActionTemplate_OnHide(this);
-      </OnHide>
+        UMMMassSendItemsActionTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -505,75 +505,75 @@
     <Frames>
       <Button name="$parentFind" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="60" y="24"/>
+          <AbsDimension x="60" y="24" />
         </Size>
         <Anchors>
           <Anchor point="LEFT">
             <Offset>
-              <AbsDimension x="0" y="0"/>
+              <AbsDimension x="0" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():FindRecipient();
-          </OnClick>
+            this:GetParent():FindRecipient()
+</OnClick>
         </Scripts>
       </Button>
 
       <EditBox name="$parentRecipient" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
         <Size>
-          <AbsDimension x="150" y="25"/>
+          <AbsDimension x="150" y="25" />
         </Size>
         <Anchors>
           <Anchor point="LEFT"  relativeTo="$parentFind" relativePoint="RIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnEscapePressed>
-            this:ClearFocus();
-          </OnEscapePressed>
+            this:ClearFocus()
+</OnEscapePressed>
           <OnTextChanged>
-            this:GetParent():CheckSendStatus();
-          </OnTextChanged>
+            this:GetParent():CheckSendStatus()
+</OnTextChanged>
         </Scripts>
         <TextInsets>
-          <AbsInset top="4" left="4" bottom="0" right="4"/>
+          <AbsInset top="4" left="4" bottom="0" right="4" />
         </TextInsets>
-        <FontString inherits="GameEditFont" spacing="1"/>
+        <FontString inherits="GameEditFont" spacing="1" />
       </EditBox>
 
       <Button name="$parentReset" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="60" y="24"/>
+          <AbsDimension x="60" y="24" />
         </Size>
         <Anchors>
           <Anchor point="LEFT" relativeTo="$parentRecipient" relativePoint="RIGHT">
             <Offset>
-              <AbsDimension x="6" y="0"/>
+              <AbsDimension x="6" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():Reset();
-          </OnClick>
+            this:GetParent():Reset()
+</OnClick>
         </Scripts>
       </Button>
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsRecipientTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsRecipientTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMMassSendItemsRecipientTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsRecipientTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMMassSendItemsRecipientTemplate_OnHide(this);
-      </OnHide>
+        UMMMassSendItemsRecipientTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -597,8 +597,8 @@
     </Frames>
     <Scripts>
       <OnShow>
-        UMMMassSendItemsPeopleTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsPeopleTemplate_OnShow(this)
+</OnShow>
     </Scripts>
   </Frame>
 
@@ -606,18 +606,18 @@
 
   <Button name="UMMMassSendItemsMarkButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
     <Size>
-      <AbsDimension x="65" y="24"/>
+      <AbsDimension x="65" y="24" />
     </Size>
     <Scripts>
       <OnEnter>
-        this:GetParent():ButtonEnter(this);
-      </OnEnter>
+        this:GetParent():ButtonEnter(this)
+</OnEnter>
       <OnClick>
-        this:GetParent():ButtonClick(this:GetID());
-      </OnClick>
+        this:GetParent():ButtonClick(this:GetID())
+</OnClick>
       <OnLeave>
-        this:GetParent():ButtonLeave();
-      </OnLeave>
+        this:GetParent():ButtonLeave()
+</OnLeave>
     </Scripts>
   </Button>
 
@@ -641,7 +641,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -663,8 +663,8 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMassSendItemsMarkButtonsTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMassSendItemsMarkButtonsTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -691,11 +691,11 @@
     </Frames>
     <Scripts>
       <OnShow>
-        UMMMassSendItemsTemplate_OnShow(this);
-      </OnShow>
+        UMMMassSendItemsTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMMassSendItemsTemplate_OnHide(this);
-      </OnHide>
+        UMMMassSendItemsTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 

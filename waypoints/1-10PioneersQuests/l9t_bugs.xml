@@ -1,10 +1,10 @@
-<waypoints type="TRAVEL" >
-<onload> player:mount() </onload>
-	<!-- # 1 --><waypoint x="-1936" z="-4665" y="5">	</waypoint>
-	<!-- # 2 --><waypoint x="-1899" z="-4560" y="5">	</waypoint>
-	<!-- # 3 --><waypoint x="-1642" z="-4402" y="48">	</waypoint>
-	<!-- # 4 --><waypoint x="-1514" z="-4322" y="31">	</waypoint>
-	<!-- # 5 --><waypoint x="-1314" z="-4299" y="1">	</waypoint>
+<waypoints type="TRAVEL">
+<onload> player:mount()</onload>
+	<!-- # 1 --><waypoint x="-1936" z="-4665" y="5"></waypoint>
+	<!-- # 2 --><waypoint x="-1899" z="-4560" y="5"></waypoint>
+	<!-- # 3 --><waypoint x="-1642" z="-4402" y="48"></waypoint>
+	<!-- # 4 --><waypoint x="-1514" z="-4322" y="31"></waypoint>
+	<!-- # 5 --><waypoint x="-1314" z="-4299" y="1"></waypoint>
 	<!-- # 5 --><waypoint x="-1272" z="-4282"></waypoint>
 	<!-- # 6 --><waypoint x="-1128" z="-4137"></waypoint>
 	<!-- # 7 --><waypoint x="-934" z="-3984"></waypoint>
@@ -22,6 +22,6 @@
 	<!-- #19 --><waypoint x="125" z="-1206"></waypoint>
 	<!-- #20 --><waypoint x="303" z="-1166"></waypoint>
 	<!-- #21 --><waypoint x="426" z="-1106">
-		loadPaths("1-10Pioneersquests/l9-10_bugs");
-	</waypoint>
+		loadPaths("1-10Pioneersquests/l9-10_bugs")
+</waypoint>
 </waypoints>

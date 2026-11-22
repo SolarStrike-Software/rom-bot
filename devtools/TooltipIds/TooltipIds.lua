@@ -19,7 +19,7 @@ local me = {   -- Create local namespace
 			[8] = true,
 			[9] = true,
 		},
-		TextColor ={r=.33,g=0.86,b=0.6},
+		TextColor ={r=.33, g=0.86, b=0.6},
 	},
 
 	Constants = {
@@ -62,9 +62,9 @@ local function startIdScan()
 	if not IdTable then
 		StartTime = GetTime()
 		scanTable = {}
-		for _,range in pairs(ranges) do
+		for _, range in pairs(ranges) do
 			for id = range.from, range.to do
-				table.insert(scanTable,id)
+				table.insert(scanTable, id)
 			end
 		end
 
@@ -96,12 +96,12 @@ local function addLine(line)
 	local firstLine = string.match(line,"^%C*")
 	local lineobj, text
 	local lineAlreadyAdded = false
-	for i=1,40,1 do
-		lineobj = _G["GameTooltipTextLeft"..i];
+	for i=1, 40, 1 do
+		lineobj = _G["GameTooltipTextLeft"..i]
 		if (not lineobj) or (not lineobj:IsVisible()) then
 			break
 		else
-			text = lineobj:GetText();
+			text = lineobj:GetText()
 			if string.find(text, firstLine) then
 				lineAlreadyAdded = true
 				break
@@ -111,7 +111,7 @@ local function addLine(line)
 
 	-- Add if not already added
 	if not lineAlreadyAdded then
-		local color = string.format("%2x%2x%2x",settings.TextColor.r*0xff, settings.TextColor.g*0xff, settings.TextColor.b*0xff)
+		local color = string.format("%2x%2x%2x", settings.TextColor.r*0xff, settings.TextColor.g*0xff, settings.TextColor.b*0xff)
 		GameTooltip:AddLine("|cff"..color..tostring(line))
 	end
 end
@@ -157,25 +157,25 @@ local function setupAddonManagerMiniButton()
 		end
 	else
 		DEFAULT_CHAT_FRAME:AddMessage(me.Strings.AddonName.. " " .. me.Strings.Version .. " loaded",
-			settings.TextColor.r, settings.TextColor.g, settings.TextColor.b);
+			settings.TextColor.r, settings.TextColor.g, settings.TextColor.b)
 	end
 end
 
 -- Sets up the hooks
 local function setHooks()
-	local Orig_GameTooltipSetBagItem = GameTooltip["SetBagItem"];
-	local Orig_GameTooltipSetBankItem = GameTooltip["SetBankItem"];
-	local Orig_GameTooltipSetUnitBuff = GameTooltip["SetUnitBuff"];
-	local Orig_GameTooltipSetUnitDebuff = GameTooltip["SetUnitDebuff"];
-	local Orig_GameTooltipSetSkillItem = GameTooltip["SetSkillItem"];
-	local Orig_GameTooltipSetTitle = GameTooltip["SetTitle"];
-	local Orig_GameTooltipSetItemMall = GameTooltip["SetItemMall"];
-	local Orig_GameTooltipSetStoreItem = GameTooltip["SetStoreItem"];
-	local Orig_GameTooltipSetHyperLink = GameTooltip["SetHyperLink"];
+	local Orig_GameTooltipSetBagItem = GameTooltip["SetBagItem"]
+	local Orig_GameTooltipSetBankItem = GameTooltip["SetBankItem"]
+	local Orig_GameTooltipSetUnitBuff = GameTooltip["SetUnitBuff"]
+	local Orig_GameTooltipSetUnitDebuff = GameTooltip["SetUnitDebuff"]
+	local Orig_GameTooltipSetSkillItem = GameTooltip["SetSkillItem"]
+	local Orig_GameTooltipSetTitle = GameTooltip["SetTitle"]
+	local Orig_GameTooltipSetItemMall = GameTooltip["SetItemMall"]
+	local Orig_GameTooltipSetStoreItem = GameTooltip["SetStoreItem"]
+	local Orig_GameTooltipSetHyperLink = GameTooltip["SetHyperLink"]
 
 	-- SetBagItem hook
 	function GameTooltip:SetBagItem( BagId )
-		Orig_GameTooltipSetBagItem( self, BagId );
+		Orig_GameTooltipSetBagItem( self, BagId )
 
 		if settings.Options[2] then
 			local link = GetBagItemLink(BagId)
@@ -185,7 +185,7 @@ local function setHooks()
 
 	-- SetBankItem hook
 	function GameTooltip:SetBankItem( BankId )
-		Orig_GameTooltipSetBankItem( self, BankId );
+		Orig_GameTooltipSetBankItem( self, BankId )
 
 		if settings.Options[2] then
 			local link = GetBankItemLink(BankId)
@@ -195,23 +195,23 @@ local function setHooks()
 
 	-- SetUnitBuff hook
 	function GameTooltip:SetUnitBuff( unit, num )
-		Orig_GameTooltipSetUnitBuff( self, unit, num );
+		Orig_GameTooltipSetUnitBuff( self, unit, num )
 
 		if settings.Options[4] then
 			local name, icon, count, ID = UnitBuff(unit , num )
 			addId(ID) -- Doesn't work
-			DEFAULT_CHAT_FRAME:AddMessage(name.." ID: ".. ID, settings.TextColor.r, settings.TextColor.g, settings.TextColor.b);
+			DEFAULT_CHAT_FRAME:AddMessage(name.." ID: ".. ID, settings.TextColor.r, settings.TextColor.g, settings.TextColor.b)
 		end
 	end
 
 	-- SetUnitDebuff hook
 	function GameTooltip:SetUnitDebuff( unit, num )
-		Orig_GameTooltipSetUnitDebuff( self, unit, num );
+		Orig_GameTooltipSetUnitDebuff( self, unit, num )
 
 		if settings.Options[4] then
 			local name, icon, count, ID = UnitDebuff(unit , num )
 			-- addId(ID) -- Doesn't work
-			DEFAULT_CHAT_FRAME:AddMessage(name.." ID: ".. ID, settings.TextColor.r, settings.TextColor.g, settings.TextColor.b);
+			DEFAULT_CHAT_FRAME:AddMessage(name.." ID: ".. ID, settings.TextColor.r, settings.TextColor.g, settings.TextColor.b)
 		end
 	end
 
@@ -246,13 +246,13 @@ local function setHooks()
 
 	-- QuestBookItem_OnEnter replacment
 	function QuestBookItem_OnEnter( this )
-		local textObj = getglobal( this:GetName() .. "_QuestName" );
+		local textObj = getglobal( this:GetName() .. "_QuestName" )
 
-		if( textObj:IsDrawDot() or settings.Options[9])then
-			local text = textObj:GetText();
-			GameTooltip:SetOwner( this, "ANCHOR_TOPRIGHT", -5, 0 );
-			GameTooltip:SetText( text,1,1,1 );
-			GameTooltip:Show();
+		if (textObj:IsDrawDot() or settings.Options[9])then
+			local text = textObj:GetText()
+			GameTooltip:SetOwner( this, "ANCHOR_TOPRIGHT", -5, 0 )
+			GameTooltip:SetText( text, 1, 1, 1 )
+			GameTooltip:Show()
 		end
 		if settings.Options[9] then
 			addId(GetQuestId(this.QuestID))
@@ -262,8 +262,8 @@ local function setHooks()
 
 
 	-- SetStoreItem hook
-	function GameTooltip:SetStoreItem(tab,index)
-		Orig_GameTooltipSetStoreItem(self, tab,index)
+	function GameTooltip:SetStoreItem(tab, index)
+		Orig_GameTooltipSetStoreItem(self, tab, index)
 
 		if settings.Options[7] then
 			local link
@@ -277,7 +277,7 @@ local function setHooks()
 	end
 
 	function GameTooltip:SetHyperLink(itemlink)
-		Orig_GameTooltipSetHyperLink(self,itemlink)
+		Orig_GameTooltipSetHyperLink(self, itemlink)
 
 		if settings.Options[8] then
 			addId(itemlink)
@@ -320,20 +320,20 @@ end
 -- Unit mouseover function. Called by pbinfo or local mouseover event handler.
 function me:MouseOverUnit()
 	if settings.Options[1] then
-		local name = UnitName("mouseover");
+		local name = UnitName("mouseover")
 		if name then
 			local ids = GetNameIds(name)
 			if ids then
-				local cols = math.min(4,math.ceil(#ids/20))
+				local cols = math.min(4, math.ceil(#ids/20))
 				local tmpIds = {}
-				for k= 1,#ids,cols do
+				for k= 1,#ids, cols do
 					local tmp = ids[k]
 					for i = k+1, k + cols-1 do
 						if ids[i] then
 							tmp = tmp .. " " .. ids[i]
 						end
 					end
-					table.insert(tmpIds,tmp)
+					table.insert(tmpIds, tmp)
 				end
 				tmpIds = table.concat(tmpIds,"\n")
 				addId(tmpIds)
@@ -344,8 +344,8 @@ end
 
 -- OnLoad Handler
 function me:OnLoad(this)
-	UIPanelBackdropFrame_SetTexture( this, "Interface/Common/PanelCommonFrame", 256, 256 );
-	this:RegisterEvent("VARIABLES_LOADED");
+	UIPanelBackdropFrame_SetTexture( this, "Interface/Common/PanelCommonFrame", 256, 256 )
+	this:RegisterEvent("VARIABLES_LOADED")
 	setHooks()
 end
 
@@ -367,22 +367,22 @@ function me.OnUpdate(this)
 				if NameTable[t2] == nil then
 					NameTable[t2] = {id}
 				else
-					table.insert(NameTable[t2],id)
+					table.insert(NameTable[t2], id)
 				end
 			end
 		end
 		if scanTo == #scanTable then -- Scan finished
 			-- Print message
-			local msg = string.format("TooltipIds Id update complete in %.1fs",GetTime() - StartTime)
+			local msg = string.format("TooltipIds Id update complete in %.1fs", GetTime() - StartTime)
 			SendSystemChat(msg)
 			-- Reset values
 			scanIndex = nil
 			scanTable = nil
 			me.UpdateFrame:Hide() -- Stops the scanning
 			-- Check that that id range hasn't gone out of bounds
-			for k,v in pairs(ranges) do
+			for k, v in pairs(ranges) do
 				if IdTable[v.to] then
-					local msg = string.format("TooltipIds: Id range ending in %d needs to be updated.",v.to)
+					local msg = string.format("TooltipIds: Id range ending in %d needs to be updated.", v.to)
 					SendSystemChat(msg)
 				end
 			end
@@ -401,29 +401,29 @@ function me:OnEvent(frame, event, arg1, arg2)
 		end
 		settings = _G[me.Strings.AddonName.."_Settings"]
 		--local checksettings
-		local function checksettings(_settings,_defaults)
-			for k,v in pairs(_defaults) do
+		local function checksettings(_settings, _defaults)
+			for k, v in pairs(_defaults) do
 				if _settings[k] == nil then
 					_settings[k] = v
 				elseif type(v) == "table" then
-					checksettings(_settings[k],v)
+					checksettings(_settings[k], v)
 				end
 			end
 		end
-		checksettings(settings,me.DefaultSettings)
+		checksettings(settings, me.DefaultSettings)
 
 		SaveVariables(me.Strings.AddonName.."_Settings")
 
 		-- Set up frame
 		me.UpdateFrame = _G[me.Strings.AddonName.."UpdateFrame"]
 		me.Frame = _G[me.Strings.AddonName.."Frame"]
-		me.Frame:SetSize(220,me.Constants.OptionTopSpace*2+#settings.Options*me.Constants.OptionSpacing)
+		me.Frame:SetSize(220, me.Constants.OptionTopSpace*2+#settings.Options*me.Constants.OptionSpacing)
 		_G[me.Frame:GetName().."Title"]:SetText("|cffffaa50"..me.Strings.AddonName.." "..me.Strings.Version)
 
 		-- Position colorpicker button
 		me.ColorPicker = _G[me.Frame:GetName().."ColorPicker"]
 		me.ColorPicker:ClearAllAnchors()
-		me.ColorPicker:SetAnchor("TOPLEFT","TOPLEFT",me.Strings.AddonName.."Frame",70,me.Constants.OptionTopSpace)
+		me.ColorPicker:SetAnchor("TOPLEFT","TOPLEFT", me.Strings.AddonName.."Frame", 70, me.Constants.OptionTopSpace)
 		_G[me.Frame:GetName().. "ColorPickerButtonBlock"]:SetColor(settings.TextColor.r, settings.TextColor.g, settings.TextColor.b)
 		_G[me.Frame:GetName().. "ColorPickerText"]:SetText("|cfffffd66Id Color")
 
@@ -433,19 +433,19 @@ function me:OnEvent(frame, event, arg1, arg2)
 		for i = 1, #me.Constants.Options do
 			me.Option[i]=_G[me.Frame:GetName().."Option"..i]
 			me.Option[i]:ClearAllAnchors()
-			me.Option[i]:SetAnchor("TOPLEFT","TOPLEFT",me.Strings.AddonName.."Frame",50,me.Constants.OptionTopSpace+me.Option[i]:GetID()*me.Constants.OptionSpacing)
+			me.Option[i]:SetAnchor("TOPLEFT","TOPLEFT", me.Strings.AddonName.."Frame", 50, me.Constants.OptionTopSpace+me.Option[i]:GetID()*me.Constants.OptionSpacing)
 			me.Option[i]:SetChecked(settings.Options[i])
 			local text = "|cffbbbbffShow |cfffffd66"..me.Constants.Options[i].." |cffbbbbffIds"
 			_G[me.Option[i]:GetName().."Name"]:SetText(text)
 		end
 		if pbInfo then
-			local Orig_TooltipAddonUpdate_orig = pbInfo.Tooltip.Scripts.OnUpdate;
+			local Orig_TooltipAddonUpdate_orig = pbInfo.Tooltip.Scripts.OnUpdate
 			pbInfo.Tooltip.Scripts.OnUpdate = function()
 				Orig_TooltipAddonUpdate_orig()
-				me.MouseOverUnit();
+				me.MouseOverUnit()
 			end
 		else
-			frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+			frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 		end
 
 		setupSlashCommands()
@@ -468,14 +468,14 @@ end
 -- Color picker for displayed Id.
 function me:OpenColorPicker(this)
 	--CallBack data
-	ColorPickerFrame.call=this;
+	ColorPickerFrame.call=this
 
-	local r,g,b=getglobal(this:GetName().."Block"):GetColor();
+	local r, g, b=getglobal(this:GetName().."Block"):GetColor()
 
 	if (r==0 and g==0 and b==0) then
-		r=1;
-		g=1;
-		b=1;
+		r=1
+		g=1
+		b=1
 	end
 
 	local function ColorOkay()
@@ -485,23 +485,23 @@ function me:OpenColorPicker(this)
 	end
 
 	local function ColorUpdate()
-		local r, g, b = ColorPickerFrame.r, ColorPickerFrame.g, ColorPickerFrame.b;
-		_G[this:GetName() .. "Block"]:SetColor(r, g, b);
+		local r, g, b = ColorPickerFrame.r, ColorPickerFrame.g, ColorPickerFrame.b
+		_G[this:GetName() .. "Block"]:SetColor(r, g, b)
 	end
 
-	local info = {};
-	info.parent    = this;
-	info.titleText = _G[this:GetParent():GetName().."Text"]:GetText();
-	info.alphaMode = nil;
-	info.r         = r;
-	info.g         = g;
-	info.b         = b;
-	info.a         = 1;
-	info.brightnessUp   = 1;
-	info.brightnessDown = 0.2;
-	info.callbackFuncOkay   = ColorOkay;
-	info.callbackFuncUpdate = ColorUpdate;
-	info.callbackFuncCancel = ColorUpdate;
+	local info = {}
+	info.parent    = this
+	info.titleText = _G[this:GetParent():GetName().."Text"]:GetText()
+	info.alphaMode = nil
+	info.r         = r
+	info.g         = g
+	info.b         = b
+	info.a         = 1
+	info.brightnessUp   = 1
+	info.brightnessDown = 0.2
+	info.callbackFuncOkay   = ColorOkay
+	info.callbackFuncUpdate = ColorUpdate
+	info.callbackFuncCancel = ColorUpdate
 
-	OpenColorPickerFrameEx(info);
+	OpenColorPickerFrameEx(info)
 end

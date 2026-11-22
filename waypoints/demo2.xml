@@ -8,7 +8,7 @@
 	<!-- # 7 --><waypoint x="-3831" z="-8364"></waypoint>
 	<!-- # 8 --><waypoint x="-3773" z="-8491"></waypoint>
 	<!-- # 9 --><waypoint x="-3720" z="-8597"></waypoint>
-	<!-- #10 --><waypoint x="-3696" z="-8685">player:sleep();</waypoint>
+	<!-- #10 --><waypoint x="-3696" z="-8685">player:sleep()</waypoint>
 	<!-- #11 --><waypoint x="-3585" z="-8682"></waypoint>
 	<!-- #12 --><waypoint x="-3416" z="-8690"></waypoint>
 	<!-- #13 --><waypoint x="-3193" z="-8850"></waypoint>
@@ -16,5 +16,5 @@
 	<!-- #15 --><waypoint x="-2600" z="-9067"></waypoint>
 	<!-- #16 --><waypoint x="-2397" z="-9260"></waypoint>
 	<!-- #17 --><waypoint x="-2360" z="-9456"></waypoint>
-	<!-- #18 --><waypoint x="-2248" z="-9620">loadPaths("demo3");</waypoint>
+	<!-- #18 --><waypoint x="-2248" z="-9620">loadPaths("demo3")</waypoint>
 </waypoints>

@@ -1,27 +1,27 @@
-include("item.lua");
+include("item.lua")
 
 CInventoryItem = class(CItem,
 	function( self, slotnumber )
 		self.Location = "inventory"
-		self.Available = false; -- If slot is in unrented bag then = false
+		self.Available = false -- If slot is in unrented bag then = false
 
 		self.SlotNumber = slotnumber
-		self.BagId = nil;
+		self.BagId = nil
 
 		if self.SlotNumber ~= nil and self.SlotNumber >= 0 then
 			self:update()
 		end
 	end
-);
+)
 
 function CInventoryItem:update()
-	local oldBagId = self.BagId;
+	local oldBagId = self.BagId
 
-	if( self.SlotNumber == nil ) then
-		return;
+	if (self.SlotNumber == nil) then
+		return
 	end
 
-	self.BagId = self.SlotNumber + 1;
+	self.BagId = self.SlotNumber + 1
 
 	--[[ Inventory is stored as a static array of basic inventory item structs.
 		At +0x0 will be the Item ID, and the struct size is 0x48 bytes.
@@ -44,16 +44,16 @@ function CInventoryItem:update()
 		180-209			181-210		Bag V (random order)
 		210-239			211-240		Bag V (random order)
 	--]]
-	local base = getBaseAddress(addresses.inventory.base);
-	local inventory_address = base + ((self.SlotNumber) * addresses.inventory.item.size);
+	local base = getBaseAddress(addresses.inventory.base)
+	local inventory_address = base + ((self.SlotNumber) * addresses.inventory.item.size)
 
-	id = memoryReadInt(getProc(), inventory_address) or 0;
-	if( (id > 100000 and id < 900000) ) then
+	id = memoryReadInt(getProc(), inventory_address) or 0
+	if ((id > 100000 and id < 900000)) then
 		--self.Id = id;
-		self.Address = inventory_address;
+		self.Address = inventory_address
 	else
-		self.BaseItemAddress = 0;
-		self.Available = false;
+		self.BaseItemAddress = 0
+		self.Available = false
 	end
 
 	-- Check if not rented
@@ -67,34 +67,34 @@ function CInventoryItem:update()
 	-- Don't waste time updating if not available.
 	if not self.Available then return end
 
-	if( self.Address and self.Address > 0 ) then
+	if (self.Address and self.Address > 0) then
 		CItem.update(self)
 	end
 
-	if( settings.profile.options.DEBUG_INV ) then
-		if ( self.Empty ) then
-			printf( "BagID: %d Slot: %d is <EMPTY>.\n", self.BagId, self.SlotNumber );
+	if (settings.profile.options.DEBUG_INV) then
+		if ( self.Empty) then
+			printf( "BagID: %d Slot: %d is <EMPTY>.\n", self.BagId, self.SlotNumber )
 		else
-			local _color = cli.white;
-			printf( "BagID: %d Slot: %d\tcontains: %d\t (%d) ", self.BagId, self.SlotNumber, self.ItemCount, self.Id );
-			if ( self.Quality == 1 ) then
-				_color = cli.lightgreen;
-			end;
-			if ( self.Quality == 2 ) then
-				_color = cli.blue;
-			end;
-			if ( self.Quality == 3 ) then
-				_color = cli.purple;
-			end;
-			if ( self.Quality == 4 ) then
-				_color = cli.yellow;
-			end;
-			if ( self.Quality == 5 ) then
-				_color = cli.forestgreen;
-			end;
-			cprintf(  _color, "[%s]\n", self.Name );
-		end;
-	end;
+			local _color = cli.white
+			printf( "BagID: %d Slot: %d\tcontains: %d\t (%d) ", self.BagId, self.SlotNumber, self.ItemCount, self.Id )
+			if ( self.Quality == 1) then
+				_color = cli.lightgreen
+			end
+			if ( self.Quality == 2) then
+				_color = cli.blue
+			end
+			if ( self.Quality == 3) then
+				_color = cli.purple
+			end
+			if ( self.Quality == 4) then
+				_color = cli.yellow
+			end
+			if ( self.Quality == 5) then
+				_color = cli.forestgreen
+			end
+			cprintf(  _color, "[%s]\n", self.Name )
+		end
+	end
 end
 
 function CInventoryItem:isPageAvailable(page)
@@ -103,11 +103,11 @@ function CInventoryItem:isPageAvailable(page)
 		A value of 0xFFFFFFFF indicates it is expired, a value of 1 would indicate it expires in 1 minute
 	--]]
 
-	if ( page == 1 or page == 2 ) then
+	if ( page == 1 or page == 2) then
 		return true -- Always have pages 1 and 2
 	end
 
-	if ( page > 6 ) then
+	if ( page > 6) then
 		return false -- There's only 6 pages
 	end
 
@@ -117,9 +117,9 @@ function CInventoryItem:isPageAvailable(page)
 end
 
 function CInventoryItem:use()
-	local canUse = true;
-	local reason = "";
-	self:update();
+	local canUse = true
+	local reason = ""
+	self:update()
 
 	if self.Available == false or self.Empty then
 		return
@@ -131,28 +131,28 @@ function CInventoryItem:use()
 		if success == true and cd ~= 0 then -- Item is on CoolDown we can't use it
 		--if ( self.CoolDownTime > 0 and self.LastTimeUsed ~= 0 and
 		--( deltaTime( getTime(), self.LastTimeUsed ) / 1000 ) < self.CoolDownTime ) then -- Item is on CoolDown we can't use it
-			canUse = false;
-			reason = "Cooldown";
-		end;
+			canUse = false
+			reason = "Cooldown"
+		end
 	else -- Item is in use, locked, we can't use it
-		reason = "In use";
-		canUse = false;
-	end;
+		reason = "In use"
+		canUse = false
+	end
 
-	if ( canUse ) then
-		RoMCode("UseBagItem("..self.BagId..")");
-		self.LastTimeUsed = getTime();
-		yrest( 500 ); -- give time for server to respond with new item count
+	if ( canUse) then
+		RoMCode("UseBagItem("..self.BagId..")")
+		self.LastTimeUsed = getTime()
+		yrest( 500 ) -- give time for server to respond with new item count
 	else
-		cprintf( cli.yellow, "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason );
-		logMessage( sprintf( "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason ) );
-	end;
+		cprintf( cli.yellow, "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason )
+		logMessage( sprintf( "DEBUG - Cannot use Item %s\t BagId: #%s ItemCount: %s\treason: %s\n", self.Name, self.BagId, self.ItemCount, reason ) )
+	end
 
-	self:update();
+	self:update()
 
-	if ( settings.profile.options.DEBUG_INV ) then
-		cprintf( cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount );				-- Open/eqipt item:
-	end;
+	if ( settings.profile.options.DEBUG_INV) then
+		cprintf( cli.lightblue, "DEBUG - Use Item BagId: #%s ItemCount: %s\n", self.BagId, self.ItemCount )				-- Open/eqipt item:
+	end
 
-	return self.ItemCount;
+	return self.ItemCount
 end

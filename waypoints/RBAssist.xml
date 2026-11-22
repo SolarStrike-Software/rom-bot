@@ -13,16 +13,16 @@
 	----------------------------------------------------
 
 	-- Start messages
-	cprintf(cli.lightblue, "\nRock5's Rombot Assist\n");
-	cprintf(cli.white, "Attack mode is set to: %s\n", attackMode);
+	cprintf(cli.lightblue, "\nRock5's Rombot Assist\n")
+	cprintf(cli.white, "Attack mode is set to: %s\n", attackMode)
 	if attackMode == "trigger" then
-		cprintf(cli.yellow, "Use the \"triggerKEY\" to attack targeted mobs.\n");
+		cprintf(cli.yellow, "Use the \"triggerKEY\" to attack targeted mobs.\n")
 	elseif attackMode == "auto" then
-		cprintf(cli.yellow, "Use the \"triggerKEY\" to toggle auto attack on/off.\n");
+		cprintf(cli.yellow, "Use the \"triggerKEY\" to toggle auto attack on/off.\n")
 	elseif attackMode == "disabled" then
-		cprintf(cli.yellow, "Will only buff and heal. Will never fight. The \"triggerKEY\" does nothing.\n");
+		cprintf(cli.yellow, "Will only buff and heal. Will never fight. The \"triggerKEY\" does nothing.\n")
 	else
-		error("Incorrect value for option 'attackMode'. Please check script.\n",0)
+		error("Incorrect value for option 'attackMode'. Please check script.\n", 0)
 	end
 
 	-- start with attack on. Only useful for "auto" mode. Starts with auto mode "on".
@@ -90,7 +90,7 @@
 
 			-- If mob attacks me
 			player:updateBattling()
-			local aggrotarget=player:findEnemy(true,nil,evalTargetDefault)
+			local aggrotarget=player:findEnemy(true, nil, evalTargetDefault)
 			if player.Battling or aggrotarget then
 				-- Attack back only if not moving
 				player:updateActualSpeed()
@@ -121,9 +121,9 @@
 			player:checkPotions()
 			player:updateTargetPtr()
 			local target = CPawn.new(player.TargetPtr)
-			player:checkSkills(true, target);
+			player:checkSkills(true, target)
 			checkEggPets()
 		end
 	end
-	</onLoad>
+</onLoad>
 </waypoints>

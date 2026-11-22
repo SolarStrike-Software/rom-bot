@@ -1,4 +1,4 @@
-include("item.lua");
+include("item.lua")
 
 CEquipmentItem = class(CItem,
 	function( self, slot )
@@ -7,39 +7,39 @@ CEquipmentItem = class(CItem,
 		self.BagId = slot
 
 		if self.SlotNumber ~= nil then
-			self:update();
-		end;
+			self:update()
+		end
 	end
-);
+)
 
 function CEquipmentItem:update()
-	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * addresses.inventory.item.size );
+	self.Address = getBaseAddress(addresses.equipment.base) + ( self.BagId * addresses.inventory.item.size )
 	CItem.update(self)
 
 	-- Equipped items' ammo count works different than when it is in your bag.
-	self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.ammo_count );
+	self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.ammo_count )
 
-	if( settings.profile.options.DEBUG_INV ) then
-		if ( self.Empty ) then
-			printf( "Slot[%02d] <EMPTY>.\n", self.SlotNumber );
+	if (settings.profile.options.DEBUG_INV) then
+		if ( self.Empty) then
+			printf( "Slot[%02d] <EMPTY>.\n", self.SlotNumber )
 		else
-			local _color = cli.white;
-			printf( "Slot[%02d] contains: %4d (%08d) ", self.SlotNumber, self.ItemCount, self.Id );
-			if ( self.Quality == 1 ) then
-				_color = cli.lightgreen;
-			elseif ( self.Quality == 2 ) then
-				_color = cli.blue;
-			elseif ( self.Quality == 3 ) then
-				_color = cli.purple;
-			elseif ( self.Quality == 4 ) then
-				_color = cli.yellow;
-			elseif ( self.Quality == 5 ) then
-				_color = cli.forestgreen;
-			end;
-			cprintf(  _color, "[%s]", self.Name );
-			printf( ", dur: %d\n", self.Durability );
-		end;
-	end;
+			local _color = cli.white
+			printf( "Slot[%02d] contains: %4d (%08d) ", self.SlotNumber, self.ItemCount, self.Id )
+			if ( self.Quality == 1) then
+				_color = cli.lightgreen
+			elseif ( self.Quality == 2) then
+				_color = cli.blue
+			elseif ( self.Quality == 3) then
+				_color = cli.purple
+			elseif ( self.Quality == 4) then
+				_color = cli.yellow
+			elseif ( self.Quality == 5) then
+				_color = cli.forestgreen
+			end
+			cprintf(  _color, "[%s]", self.Name )
+			printf( ", dur: %d\n", self.Durability )
+		end
+	end
 end
 
 function CEquipmentItem:use()
@@ -51,14 +51,15 @@ function CEquipmentItem:use()
 
 	if self.InUse then
 		printf("Can't use equipment item %S, item is in use.\n", self.Name)
-	end;
+	end
 
-	RoMCode("UseEquipmentItem("..self.BagId..")"); yrest(500)
+	RoMCode("UseEquipmentItem("..self.BagId..")")
+	yrest(500)
 	self:update()
 
-	if ( settings.profile.options.DEBUG_INV ) then
-		cprintf( cli.lightblue, "DEBUG - Use Equipment Item BagId: #%s \n", self.BagId);
-	end;
+	if ( settings.profile.options.DEBUG_INV) then
+		cprintf( cli.lightblue, "DEBUG - Use Equipment Item BagId: #%s \n", self.BagId)
+	end
 
 	return
 end

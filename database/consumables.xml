@@ -20,7 +20,7 @@
 	<potion type="hot" id="200808" level="16" name="Major First Aid Potion" />
 	<potion type="hot" id="200807" level="11" potency="400" name="First Aid Potion" />
 	<potion type="hot" id="200664" level="6" name="Basic First Aid Potion" />
-	<potion type="hot" id="200663" level="1" potency="200" name="Simple First Aid Potion"/>
+	<potion type="hot" id="200663" level="1" potency="200" name="Simple First Aid Potion" />
 
 	<potion type="heal" id="242899" level="98" potency="7500" name="Healing Potion of Redemption" />
 	<potion type="heal" id="242895" level="95" potency="7000" name="Source of Healing" />

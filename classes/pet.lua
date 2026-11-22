@@ -45,7 +45,7 @@ end
 function setpetautoattacks()
 	petupdate()
 	--=== set pet to counter attack except for nature crystal
-	local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
+	local icon, active, autoCastAllowed = RoMScript("GetPetActionInfo(4)")
 	if pet.Name ~= GetIdName(102325) then
 		if active ~= true then
 			RoMCode("UsePetAction(4)")
@@ -56,16 +56,16 @@ function setpetautoattacks()
 		end
 	end
 
-	for k,v in pairs(pettable) do
+	for k, v in pairs(pettable) do
 		if v.name == pet.Name then
 			if v.skill5auto == "true" then
-				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(5)")
+				local icon, active, autoCastAllowed = RoMScript("GetPetActionInfo(5)")
 				if active ~= true then
 					RoMCode("UsePetAction(5,true)")
 				end
 			end
 			if v.skill5auto == "true" then
-				local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(6)")
+				local icon, active, autoCastAllowed = RoMScript("GetPetActionInfo(6)")
 				if active ~= true then
 					RoMCode("UsePetAction(6,true)")
 				end
@@ -75,7 +75,7 @@ function setpetautoattacks()
 end
 
 function petupdate()
-	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.game_root.pawn.pet_ptr);
+	petaddress = memoryReadRepeat("uint", getProc(), player.Address + addresses.game_root.pawn.pet_ptr)
 	pet = CPawn(petaddress)
 	setpettable()
 end
@@ -194,19 +194,20 @@ function checkfairy()
 			return false
 		end
 
-		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key); yrest(500)
+		keyboardRelease(settings.hotkeys.MOVE_FORWARD.key)
+		yrest(500)
 		sendMacro("CastSpellByName(\""..GetIdName(fairy.PetSummon).."\")")
 		print("Summoning "..GetIdName(fairy.PetId))
 		repeat
 			yrest(1000)
-		until not (memoryReadRepeat("float", getProc(), player.Address + addresses.game_root.pawn.cast_full_time) ~= 0);
+		until not (memoryReadRepeat("float", getProc(), player.Address + addresses.game_root.pawn.cast_full_time) ~= 0)
 
 		petupdate()
-		local icon,active,autoCastAllowed = RoMScript("GetPetActionInfo(4)")
+		local icon, active, autoCastAllowed = RoMScript("GetPetActionInfo(4)")
 		if active == true then
 			sendMacro("UsePetAction(4)")
 		end
-		player.LastDistImprove = os.time();   -- global, because we reset it while skill use
+		player.LastDistImprove = os.time()   -- global, because we reset it while skill use
 	else
 		PetWaitTimer = 0
 	end

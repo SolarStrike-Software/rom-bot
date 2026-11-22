@@ -21,7 +21,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="15"/>
+                    <AbsDimension x="10" y="15" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -30,7 +30,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="35"/>
+                    <AbsDimension x="10" y="35" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -40,57 +40,57 @@
         <Frames>
           <EditBox name="$parentAuthor" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
             <Size>
-              <AbsDimension x="150" y="25"/>
+              <AbsDimension x="150" y="25" />
             </Size>
             <Anchors>
               <Anchor point="LEFT" relativeTo="$parentAuthorLabel" relativePoint="LEFT">
                 <Offset>
-                  <AbsDimension x="60" y="0"/>
+                  <AbsDimension x="60" y="0" />
                 </Offset>
               </Anchor>
             </Anchors>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
               <OnTabPressed>
-                this:ClearFocus();
-              </OnTabPressed>
+                this:ClearFocus()
+</OnTabPressed>
               <OnTextChanged>
-                this:GetParent():GetParent():CheckSendStatus();
-              </OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus()
+</OnTextChanged>
             </Scripts>
             <TextInsets>
-              <AbsInset top="4" left="4" bottom="0" right="4"/>
+              <AbsInset top="4" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="GameEditFont" spacing="1"/>
+            <FontString inherits="GameEditFont" spacing="1" />
           </EditBox>
           <EditBox name="$parentSubject" inherits="UIPanelEditBoxTemplate" historylines="0" letters="255">
             <Size>
-              <AbsDimension x="245" y="25"/>
+              <AbsDimension x="245" y="25" />
             </Size>
             <Anchors>
               <Anchor point="LEFT" relativeTo="$parentSubjectLabel" relativePoint="LEFT">
                 <Offset>
-                  <AbsDimension x="60" y="0"/>
+                  <AbsDimension x="60" y="0" />
                 </Offset>
               </Anchor>
             </Anchors>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
               <OnTabPressed>
-                this:ClearFocus();
-              </OnTabPressed>
+                this:ClearFocus()
+</OnTabPressed>
               <OnTextChanged>
-                this:GetParent():GetParent():CheckSendStatus();
-              </OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus()
+</OnTextChanged>
             </Scripts>
             <TextInsets>
-              <AbsInset top="4" left="4" bottom="0" right="4"/>
+              <AbsInset top="4" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="GameEditFont" spacing="1"/>
+            <FontString inherits="GameEditFont" spacing="1" />
           </EditBox>
         </Frames>
       </Frame>
@@ -98,36 +98,36 @@
       <!-- Action buttons for this mail -->
       <Button name="$parentReset" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="2" y="2"/>
+              <AbsDimension x="2" y="2" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            UMMComposeMailTemplateButton_OnClick(this, "Reset");
-          </OnClick>
+            UMMComposeMailTemplateButton_OnClick(this, "Reset")
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentSend" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPRIGHT" relativeTo="$parentHeader" relativePoint="BOTTOMRIGHT">
             <Offset>
-              <AbsDimension x="0" y="2"/>
+              <AbsDimension x="0" y="2" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            UMMComposeMailTemplateButton_OnClick(this, "Send");
-          </OnClick>
+            UMMComposeMailTemplateButton_OnClick(this, "Send")
+</OnClick>
         </Scripts>
       </Button>
       <!-- Body panel displaying the mail contents -->
@@ -143,26 +143,26 @@
           </Anchor>
         </Anchors>
         <Frames>
-          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000" >
+          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000">
             <Size>
-              <AbsDimension x="295" y="280"/>
+              <AbsDimension x="295" y="280" />
             </Size>
             <Anchors>
               <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="10" y="10"/>
+                  <AbsDimension x="10" y="10" />
                 </Offset>
               </Anchor>
             </Anchors>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
             </Scripts>
             <TextInsets>
-              <AbsInset top="4" left="4" bottom="0" right="4"/>
+              <AbsInset top="4" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="GameEditFont" spacing="1"/>
+            <FontString inherits="GameEditFont" spacing="1" />
           </EditBox>
         </Frames>
       </Frame>
@@ -184,7 +184,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="10"/>
+                    <AbsDimension x="10" y="10" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -196,30 +196,30 @@
             <Anchors>
         	    <Anchor point="TOPLEFT">
         	      <Offset>
-        	        <AbsDimension x="15" y="35"/>
+                    <AbsDimension x="15" y="35" />
         	      </Offset>
         	    </Anchor>
             </Anchors>
             <Scripts>
               <OnLoad>
-                this:RegisterForClicks("LeftButton", "RightButton");
-              </OnLoad>
+                this:RegisterForClicks("LeftButton", "RightButton")
+</OnLoad>
               <OnEnter>
-                this:GetParent():GetParent():AttachEnter();
-              </OnEnter>
+                this:GetParent():GetParent():AttachEnter()
+</OnEnter>
               <OnLeave>
-                this:GetParent():GetParent():AttachLeave();
-              </OnLeave>
+                this:GetParent():GetParent():AttachLeave()
+</OnLeave>
               <OnReceiveDrag>
-                this:GetParent():GetParent():AttachItem(arg1);
-              </OnReceiveDrag>
+                this:GetParent():GetParent():AttachItem(arg1)
+</OnReceiveDrag>
               <OnMouseUp>
                 if (key == "LBUTTON") then
-                  this:GetParent():GetParent():AttachItem(arg1);
+                  this:GetParent():GetParent():AttachItem(arg1)
                 else
-                  this:GetParent():GetParent():RemoveAttachment();
+                  this:GetParent():GetParent():RemoveAttachment()
                 end
-              </OnMouseUp>
+</OnMouseUp>
             </Scripts>
           </Button>
 
@@ -227,7 +227,7 @@
             <Anchors>
               <Anchor point="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="100" y="35"/>
+                  <AbsDimension x="100" y="35" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -237,7 +237,7 @@
                   <Anchors>
               	    <Anchor point="LEFT" relativePoint="RIGHT">
               	      <Offset>
-              	        <AbsDimension x="10" y="0"/>
+                        <AbsDimension x="10" y="0" />
               	      </Offset>
               	    </Anchor>
                   </Anchors>
@@ -246,18 +246,18 @@
             </Layers>
             <Scripts>
               <OnClick>
-                this:GetParent():GetParent():SetOption("money");
-              </OnClick>
+                this:GetParent():GetParent():SetOption("money")
+</OnClick>
             </Scripts>
           </CheckButton>
           <EditBox name="$parentMoney" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true">
             <Size>
-              <AbsDimension x="90" y="30"/>
+              <AbsDimension x="90" y="30" />
             </Size>
             <Anchors>
               <Anchor point="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="210" y="28"/>
+                  <AbsDimension x="210" y="28" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -280,23 +280,23 @@
             </Layers>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
               <OnTextChanged>
-                this:GetParent():GetParent():CheckSendStatus();
-              </OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus()
+</OnTextChanged>
             </Scripts>
             <TextInsets>
-              <AbsInset top="8" left="4" bottom="0" right="4"/>
+              <AbsInset top="8" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="NumberFontNormal" spacing="1"/>
+            <FontString inherits="NumberFontNormal" spacing="1" />
           </EditBox>
 
           <CheckButton name="$parentOptionCOD" inherits="UIPanelRadioButtonTemplate">
             <Anchors>
               <Anchor point="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="100" y="55"/>
+                  <AbsDimension x="100" y="55" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -306,7 +306,7 @@
                   <Anchors>
               	    <Anchor point="LEFT" relativePoint="RIGHT">
               	      <Offset>
-              	        <AbsDimension x="10" y="0"/>
+                        <AbsDimension x="10" y="0" />
               	      </Offset>
               	    </Anchor>
                   </Anchors>
@@ -315,18 +315,18 @@
             </Layers>
             <Scripts>
               <OnClick>
-                this:GetParent():GetParent():SetOption("cod");
-              </OnClick>
+                this:GetParent():GetParent():SetOption("cod")
+</OnClick>
             </Scripts>
           </CheckButton>
           <EditBox name="$parentCOD" inherits="MoneyEditBoxTemplate" letters="10" historylines="0" numeric="true">
             <Size>
-              <AbsDimension x="90" y="30"/>
+              <AbsDimension x="90" y="30" />
             </Size>
             <Anchors>
               <Anchor point="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="210" y="48"/>
+                  <AbsDimension x="210" y="48" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -349,16 +349,16 @@
             </Layers>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
               <OnTextChanged>
-                this:GetParent():GetParent():CheckSendStatus();
-              </OnTextChanged>
+                this:GetParent():GetParent():CheckSendStatus()
+</OnTextChanged>
             </Scripts>
             <TextInsets>
-              <AbsInset top="8" left="4" bottom="0" right="4"/>
+              <AbsInset top="8" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="NumberFontNormal" spacing="1"/>
+            <FontString inherits="NumberFontNormal" spacing="1" />
           </EditBox>
 
         </Frames>
@@ -366,14 +366,14 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMComposeMailTemplate_OnLoad(this);
-      </OnLoad>
+        UMMComposeMailTemplate_OnLoad(this)
+</OnLoad>
       <OnShow>
-        UMMComposeMailTemplate_OnShow(this);
-      </OnShow>
+        UMMComposeMailTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMComposeMailTemplate_OnHide(this);
-      </OnHide>
+        UMMComposeMailTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 
@@ -384,7 +384,7 @@
     <Anchors>
       <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
         <Offset>
-          <AbsDimension x="0" y="0"/>
+          <AbsDimension x="0" y="0" />
         </Offset>
       </Anchor>
     </Anchors>
@@ -418,9 +418,9 @@
         </Anchors>
         <Scripts>
           <OnShow>
-            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
-            this:SetupList("own");
-          </OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor")
+            this:SetupList("own")
+</OnShow>
         </Scripts>
       </Frame>
       <Frame name="$parentFriends" inherits="UMMRecipientListTemplate">
@@ -433,9 +433,9 @@
         </Anchors>
         <Scripts>
           <OnShow>
-            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
-            this:SetupList("friend");
-          </OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor")
+            this:SetupList("friend")
+</OnShow>
         </Scripts>
       </Frame>
       <Frame name="$parentGuildies" inherits="UMMRecipientListTemplate">
@@ -448,20 +448,20 @@
         </Anchors>
         <Scripts>
           <OnShow>
-            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor");
-            this:SetupList("guild");
-          </OnShow>
+            this:SetTarget(this:GetParent():GetName().."ComposerHeaderAuthor")
+            this:SetupList("guild")
+</OnShow>
         </Scripts>
       </Frame>
 
     </Frames>
     <Scripts>
       <OnShow>
-        UMMComposeTemplate_OnShow(this);
-      </OnShow>
+        UMMComposeTemplate_OnShow(this)
+</OnShow>
       <OnHide>
-        UMMComposeTemplate_OnHide(this);
-      </OnHide>
+        UMMComposeTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 

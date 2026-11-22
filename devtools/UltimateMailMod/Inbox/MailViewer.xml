@@ -3,17 +3,17 @@
   <Button name="UMMMailViewerAttachmentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
     <Scripts>
       <OnLoad>
-        this:RegisterForClicks("LeftButton");
-      </OnLoad>
+        this:RegisterForClicks("LeftButton")
+</OnLoad>
       <OnEnter>
-        this:GetParent():GetParent():AttachmentOnEnter(this);
-      </OnEnter>
+        this:GetParent():GetParent():AttachmentOnEnter(this)
+</OnEnter>
       <OnClick>
-        this:GetParent():GetParent():AttachmentOnClick(this);
-      </OnClick>
+        this:GetParent():GetParent():AttachmentOnClick(this)
+</OnClick>
       <OnLeave>
-        this:GetParent():GetParent():AttachmentOnLeave(this);
-      </OnLeave>
+        this:GetParent():GetParent():AttachmentOnLeave(this)
+</OnLeave>
     </Scripts>
   </Button>
   
@@ -36,7 +36,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="10"/>
+                    <AbsDimension x="10" y="10" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -48,7 +48,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="70" y="10"/>
+                    <AbsDimension x="70" y="10" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -57,7 +57,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="25"/>
+                    <AbsDimension x="10" y="25" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -69,7 +69,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="70" y="25"/>
+                    <AbsDimension x="70" y="25" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -80,70 +80,70 @@
       <!-- Action buttons for this mail -->
       <Button name="$parentReply" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="2" y="2"/>
+              <AbsDimension x="2" y="2" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("Reply");
-          </OnClick>
+            this:GetParent():ButtonClick("Reply")
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentReturn" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentReply" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("Return");
-          </OnClick>
+            this:GetParent():ButtonClick("Return")
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentDelete" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="$parentReturn" relativePoint="TOPRIGHT">
             <Offset>
-              <AbsDimension x="5" y="0"/>
+              <AbsDimension x="5" y="0" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("Delete");
-          </OnClick>
+            this:GetParent():ButtonClick("Delete")
+</OnClick>
         </Scripts>
       </Button>
       <Button name="$parentClose" inherits="UIPanelButtonTemplate" text="">
         <Size>
-          <AbsDimension x="70" y="24"/>
+          <AbsDimension x="70" y="24" />
         </Size>
         <Anchors>
           <Anchor point="TOPRIGHT" relativeTo="$parentHeader" relativePoint="BOTTOMRIGHT">
             <Offset>
-              <AbsDimension x="0" y="2"/>
+              <AbsDimension x="0" y="2" />
             </Offset>
           </Anchor>
         </Anchors>
         <Scripts>
           <OnClick>
-            this:GetParent():ButtonClick("Close");
-          </OnClick>
+            this:GetParent():ButtonClick("Close")
+</OnClick>
         </Scripts>
       </Button>
       <!-- Body panel displaying the mail contents -->
@@ -159,26 +159,26 @@
           </Anchor>
         </Anchors>
         <Frames>
-          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000" >
+          <EditBox name="$parentInput" inherits="UIMultiEditBoxTemplate" letters="5000">
             <Size>
-              <AbsDimension x="295" y="280"/>
+              <AbsDimension x="295" y="280" />
             </Size>
             <Anchors>
               <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="10" y="10"/>
+                  <AbsDimension x="10" y="10" />
                 </Offset>
               </Anchor>
             </Anchors>
             <Scripts>
               <OnEscapePressed>
-                this:ClearFocus();
-              </OnEscapePressed>
+                this:ClearFocus()
+</OnEscapePressed>
             </Scripts>
             <TextInsets>
-              <AbsInset top="4" left="4" bottom="0" right="4"/>
+              <AbsInset top="4" left="4" bottom="0" right="4" />
             </TextInsets>
-            <FontString inherits="GameEditFont" spacing="1"/>
+            <FontString inherits="GameEditFont" spacing="1" />
           </EditBox>
         </Frames>
       </Frame>
@@ -200,7 +200,7 @@
               <Anchors>
           	    <Anchor point="LEFT">
           	      <Offset>
-          	        <AbsDimension x="10" y="0"/>
+                    <AbsDimension x="10" y="0" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -230,7 +230,7 @@
             <Anchors>
               <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
                 <Offset>
-                  <AbsDimension x="140" y="10"/>
+                  <AbsDimension x="140" y="10" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -240,7 +240,7 @@
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
-                        <AbsDimension x="0" y="0"/>
+                        <AbsDimension x="0" y="0" />
                       </Offset>
                     </Anchor>
                   </Anchors>
@@ -252,7 +252,7 @@
             <Anchors>
               <Anchor point="LEFT">
                 <Offset>
-                  <AbsDimension x="0" y="0"/>
+                  <AbsDimension x="0" y="0" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -261,7 +261,7 @@
             <Anchors>
               <Anchor point="LEFT">
                 <Offset>
-                  <AbsDimension x="0" y="0"/>
+                  <AbsDimension x="0" y="0" />
                 </Offset>
               </Anchor>
             </Anchors>
@@ -271,11 +271,11 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMMailViewerTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMailViewerTemplate_OnLoad(this)
+</OnLoad>
       <OnHide>
-        UMMMailViewerTemplate_OnHide(this);
-      </OnHide>
+        UMMMailViewerTemplate_OnHide(this)
+</OnHide>
     </Scripts>
   </Frame>
 	

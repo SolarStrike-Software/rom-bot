@@ -5,10 +5,10 @@
 	<!-- # 4 --><waypoint x="-826" z="-5547"></waypoint>
 	<!-- # 5 --><waypoint x="-987" z="-5458"></waypoint>
 	<!-- # 6 --><waypoint x="-1167" z="-5528">
-		player:target_NPC(language[175]);
-		player:rest(2);
-		sendMacro("ChoiceOption(2);");
-		</waypoint>
+		player:target_NPC(language[175])
+		player:rest(2)
+		sendMacro("ChoiceOption(2);")
+</waypoint>
 	<!-- # 7 --><waypoint x="-1305" z="-5364"></waypoint>
-	<!-- # 8 --><waypoint x="-1463" z="-5360">loadPaths("1-10Pioneers/l5-7_beetle");</waypoint>
+	<!-- # 8 --><waypoint x="-1463" z="-5360">loadPaths("1-10Pioneers/l5-7_beetle")</waypoint>
 </waypoints>

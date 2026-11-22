@@ -2,12 +2,12 @@
 	<onLoad>
 
 
-	while(true) do
+	while (true) do
 
 	PartyDPS()
 
 	end
-		
 
-	</onLoad>
+
+</onLoad>
 </waypoints>

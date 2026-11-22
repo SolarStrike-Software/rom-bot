@@ -46,4 +46,4 @@ language = {
 	[60] = "Nom inconnu %s non trouve dans le profile %s.xml. Verifiez votre  profile!\n",
 
 	[70] = "Le repos se terminera dans %s secondes.\n",
-};
+}

@@ -382,11 +382,11 @@ addresses = {
 	DEPRECATED; Please don't use these. Use the real addresses above instead
 	These are left here for compatibility reasons only.
 ]]
-partyLeader_address = 0x400000 + (addresses.party.leader.base);
-addresses.partyIconList_base = 0x400000 + (addresses.party.icon_list.base);
-partyIconList_offset = addresses.party.icon_list.offset;
-partyMemberList_address = 0x400000 + (addresses.party.member_list.base);
-partyMemberList_offset = addresses.party.member_list.offset;
+partyLeader_address = 0x400000 + (addresses.party.leader.base)
+addresses.partyIconList_base = 0x400000 + (addresses.party.icon_list.base)
+partyIconList_offset = addresses.party.icon_list.offset
+partyMemberList_address = 0x400000 + (addresses.party.member_list.base)
+partyMemberList_offset = addresses.party.member_list.offset
 
-addresses.loadingScreenPtr = 0x400000 + addresses.loading.base;
-addresses.loadingScreen_offset = addresses.loading.offsets;
+addresses.loadingScreenPtr = 0x400000 + addresses.loading.base
+addresses.loadingScreen_offset = addresses.loading.offsets

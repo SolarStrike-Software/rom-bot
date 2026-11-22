@@ -17,20 +17,20 @@
 	<!-- #16 --><waypoint x="1848" z="918"></waypoint>
 	<!-- #17 --><waypoint x="2105" z="986"></waypoint>
 	<!-- #18 --><waypoint x="2303" z="1134">
-		player:target_NPC(language[175]);
-		player:rest(2);
-		sendMacro("SpeakFrame_Hide()");
-		</waypoint>
+		player:target_NPC(language[175])
+		player:rest(2)
+		sendMacro("SpeakFrame_Hide()")
+</waypoint>
 	<!-- #19 --><waypoint x="2459" z="1138"></waypoint>
 	<!-- #20 --><waypoint x="2578" z="1011"></waypoint>
 	<!-- #21 --><waypoint x="2755" z="960">
-		player:target_NPC("Lieve");
-		player:rest(2);
-		sendMacro("ChoiceOption(1);");
-		yrest(12000);
-		player:update();
-		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
-	</waypoint>
+		player:target_NPC("Lieve")
+		player:rest(2)
+		sendMacro("ChoiceOption(1);")
+		yrest(12000)
+		player:update()
+		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z))
+</waypoint>
 	<!-- #22 --><waypoint x="2901" z="586"></waypoint>
 	<!-- #23 --><waypoint x="3032" z="414"></waypoint>
 	<!-- #24 --><waypoint x="3207" z="180"></waypoint>
@@ -80,18 +80,24 @@
 	<!-- #69 --><waypoint x="5397" z="-4202"></waypoint>
 	<!-- #70 --><waypoint x="5523" z="-4356"></waypoint>
 	<!-- #71 --><waypoint x="5529" z="-4428">
-	player:target_NPC("Lehman");
-	player:rest(4);
-	sendMacro("OnClick_QuestListButton(1,1)");	yrest(1000);
-	sendMacro("AcceptQuest();");			yrest(1000);
-	sendMacro("CloseWindows();"); yrest(1000);
-   player:target_NPC("Lehman"); yrest(1000);
+	player:target_NPC("Lehman")
+	player:rest(4)
+	sendMacro("OnClick_QuestListButton(1,1)")
+	yrest(1000)
+	sendMacro("AcceptQuest();")
+	yrest(1000)
+	sendMacro("CloseWindows();")
+	yrest(1000)
+   player:target_NPC("Lehman")
+   yrest(1000)
    <!-- the 3 is for completed quests -->
-   sendMacro("OnClick_QuestListButton(3,1);"); yrest(1000);
-   sendMacro("CompleteQuest();"); yrest(1000);
+   sendMacro("OnClick_QuestListButton(3,1);")
+   yrest(1000)
+   sendMacro("CompleteQuest();")
+   yrest(1000)
 	<!-- completing the quest didn't work because of problems loading the quest details  -->
 	<!-- that's the reason for the sleep() function. If you find a solution pls share it -->
 	<!--  player:sleep();  -->
-	loadPaths("1-10Pioneers/l10t_postbox");
-	</waypoint>
+	loadPaths("1-10Pioneers/l10t_postbox")
+</waypoint>
 </waypoints>

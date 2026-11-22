@@ -36,17 +36,17 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMNewMailButton_OnLoad(this);
-      </OnLoad>
+        UMMNewMailButton_OnLoad(this)
+</OnLoad>
       <OnEnter>
-        this:Enter();
-      </OnEnter>
+        this:Enter()
+</OnEnter>
       <OnLeave>
-        this:Leave();
-      </OnLeave>
+        this:Leave()
+</OnLeave>
       <OnUpdate>
-        this:Update(this, elapsedTime);
-      </OnUpdate>
+        this:Update(this, elapsedTime)
+</OnUpdate>
     </Scripts>
   </Button>
 
@@ -63,14 +63,14 @@
     </Anchors>
     <Scripts>
       <OnLoad>
-        UMMMasterFrame_OnLoad(this);
-      </OnLoad>
+        UMMMasterFrame_OnLoad(this)
+</OnLoad>
       <OnEvent>
-        UMMMasterFrame_OnEvent(event, arg1, arg2, arg3, arg4);
-      </OnEvent>
+        UMMMasterFrame_OnEvent(event, arg1, arg2, arg3, arg4)
+</OnEvent>
       <OnUpdate>
-        UMMMasterFrame_OnUpdate(this, elapsedTime);
-      </OnUpdate>
+        UMMMasterFrame_OnUpdate(this, elapsedTime)
+</OnUpdate>
     </Scripts>
   </Frame>
 

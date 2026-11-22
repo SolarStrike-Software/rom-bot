@@ -27,7 +27,7 @@
           <Anchors>
       	    <Anchor point="LEFT">
       	      <Offset>
-      	        <AbsDimension x="2" y="0"/>
+                <AbsDimension x="2" y="0" />
       	      </Offset>
       	    </Anchor>
           </Anchors>
@@ -36,18 +36,18 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMListTemplate_Init(this, "Hover");
-        UMMListTemplate_Init(this, "Tagged");
-      </OnLoad>
+        UMMListTemplate_Init(this, "Hover")
+        UMMListTemplate_Init(this, "Tagged")
+</OnLoad>
       <OnEnter>
-        UMMRecipientNameSelectorTemplate_OnEnter(this);
-      </OnEnter>
+        UMMRecipientNameSelectorTemplate_OnEnter(this)
+</OnEnter>
       <OnClick>
-        UMMRecipientNameSelectorTemplate_OnClick(this);
-      </OnClick>
+        UMMRecipientNameSelectorTemplate_OnClick(this)
+</OnClick>
       <OnLeave>
-        UMMRecipientNameSelectorTemplate_OnLeave(this);
-      </OnLeave>
+        UMMRecipientNameSelectorTemplate_OnLeave(this)
+</OnLeave>
     </Scripts>
   </Button>
   
@@ -76,7 +76,7 @@
               <Anchors>
           	    <Anchor point="TOPLEFT">
           	      <Offset>
-          	        <AbsDimension x="0" y="0"/>
+                    <AbsDimension x="0" y="0" />
           	      </Offset>
           	    </Anchor>
               </Anchors>
@@ -130,23 +130,23 @@
             <Anchors>
               <Anchor point="TOPRIGHT" relativeTo="$parent">
                 <Offset>
-                  <AbsDimension x="4" y="27"/>
+                  <AbsDimension x="4" y="27" />
                 </Offset>
               </Anchor>
               <Anchor point="BOTTOMRIGHT" relativeTo="$parent">
                 <Offset>
-                  <AbsDimension x="4" y="-26"/>
+                  <AbsDimension x="4" y="-26" />
                 </Offset>
               </Anchor>
             </Anchors>
             <Scripts>
               <OnLoad>
-                this:SetValueStepMode("INT");
-              </OnLoad>
+                this:SetValueStepMode("INT")
+</OnLoad>
               <OnValueChanged>
-                UIPanelScrollBar_OnValueChanged(this, arg1);
-                this:GetParent():GetParent():ScrollChanged(this);
-              </OnValueChanged>
+                UIPanelScrollBar_OnValueChanged(this, arg1)
+                this:GetParent():GetParent():ScrollChanged(this)
+</OnValueChanged>
             </Scripts>
           </Slider>
         </Frames>
@@ -154,8 +154,8 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        UMMRecipientListTemplate_OnLoad(this);
-      </OnLoad>
+        UMMRecipientListTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 	

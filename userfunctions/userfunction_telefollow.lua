@@ -5,37 +5,37 @@
 -- West = +3 or -3
 
 
-function telefollow(_dist,address)
+function telefollow(_dist, address)
 	teleport_SetStepSize(30)
 	teleport_SetStepPause(300)
 	if _dist == nil then
 		print("\nrequirements missing.\n")
 		return
 	end
-	
-	local function calccoords(dist,angle)
+
+	local function calccoords(dist, angle)
 		if dist == nil or angle == nil then
 			print("\nrequirements missing.\n")
 			return
 		end
 		local degrees, theta, sn, cs, X, Z
 		degrees = angle * 60
-		theta=(degrees*math.pi)/180;
-		sn=math.sin(theta);
-		cs=math.cos(theta);
+		theta=(degrees*math.pi)/180
+		sn=math.sin(theta)
+		cs=math.cos(theta)
 		X= (dist*cs)
 		Z= (dist*sn)
-		return X,Z
+		return X, Z
 	end
-	
-	player:update() 
+
+	player:update()
 	if address == nil then
 		target = player:getTarget()
 	else
 		target = CPawn(address)
 	end
 	if target then
-		X,Z = calccoords(_dist,target.Direction)
+		X, Z = calccoords(_dist, target.Direction)
 		teleport((target.X - X), (target.Z-Z), target.Y)
 		player:faceDirection(target.Direction)
 	end

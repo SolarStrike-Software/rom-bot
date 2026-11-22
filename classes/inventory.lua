@@ -1,5 +1,5 @@
-include("memorytable.lua");
-include("inventoryitem.lua");
+include("memorytable.lua")
+include("inventoryitem.lua")
 
 -- Tooltip parser keywords
 ITEM_TOOLTIP_DURABILITY = {
@@ -13,64 +13,68 @@ ITEM_TOOLTIP_DURABILITY = {
 	ES		= "Durabilidad",
 	SA 		= "Durabilidad",
 	ENAR 	= "Durability",
-};
+}
 
-local INV_MAX_SLOTS = 239; -- Range 0-239; 240 slots total
+local INV_MAX_SLOTS = 239 -- Range 0-239; 240 slots total
 
 CInventory = class(
 	function (self)
-		RoMCode("ToggleBackpack() BagFrame:Hide()"); -- Make sure the client loads the tables first.
-		RoMCode("GoodsFrame:Show() GoodsFrame:Hide()"); -- Make sure the client loads the tables first.
+		RoMCode("ToggleBackpack() BagFrame:Hide()") -- Make sure the client loads the tables first.
+		RoMCode("GoodsFrame:Show() GoodsFrame:Hide()") -- Make sure the client loads the tables first.
 
-		self.MaxSlots = INV_MAX_SLOTS;
-		self.BagSlot = {};
-		self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
+		self.MaxSlots = INV_MAX_SLOTS
+		self.BagSlot = {}
+		self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset)
 
-		local timeStart = getTime();
+		local timeStart = getTime()
 
 		for slotNumber = 0, self.MaxSlots, 1 do
-			self.BagSlot[slotNumber] = CInventoryItem( slotNumber );
+			self.BagSlot[slotNumber] = CInventoryItem( slotNumber )
 		end
 
-		if( settings.profile.options.DEBUG_INV ) then
-			printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) );
-		end;
+		if (settings.profile.options.DEBUG_INV) then
+			printf( "Inventory update took: %d\n", deltaTime( getTime(), timeStart ) )
+		end
 
-		self.NextItemToUpdate = 1;
+		self.NextItemToUpdate = 1
 	end
-);
+)
 
 function CInventory:update( _maxslot )
 
-	self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset);
+	self.Money = memoryReadIntPtr( getProc(), getBaseAddress(addresses.gold.base), addresses.gold.offset)
 
-	if( not _maxslot ) then _maxslot = self.MaxSlots; end;
-
-	for slotNumber = 0, _maxslot, 1 do
-		self.BagSlot[slotNumber]:update();
+	if (not _maxslot) then
+		_maxslot = self.MaxSlots
 	end
 
-end;
+	for slotNumber = 0, _maxslot, 1 do
+		self.BagSlot[slotNumber]:update()
+	end
+
+end
 
 -- update x slots until given time in ms is gone
 function CInventory:updateSlotsByTime(_ms)
-local start_update = getTime();
+local start_update = getTime()
 
-	keyboardSetDelay(0);
-	while ( deltaTime(getTime(), start_update ) < _ms ) do
-		self:updateNextSlot();
+	keyboardSetDelay(0)
+	while ( deltaTime(getTime(), start_update ) < _ms) do
+		self:updateNextSlot()
 	end
-	keyboardSetDelay(50);
+	keyboardSetDelay(50)
 
 end
 
 -- update x slots
 function CInventory:updateNextSlot(_times)
 
-	if(not _times) then _times = 1; end
+	if (not _times) then
+		_times = 1
+	end
 
 	for i = 1, _times do
-		local item = self.BagSlot[self.NextItemToUpdate];
+		local item = self.BagSlot[self.NextItemToUpdate]
 
 --		if( settings.profile.options.DEBUG_INV) then
 --			local msg = "";
@@ -84,68 +88,68 @@ function CInventory:updateNextSlot(_times)
 --			cprintf(cli.lightblue, "%s\n", msg);
 --		end;
 
-		self.BagSlot[self.NextItemToUpdate]:update();
-		self.NextItemToUpdate = self.NextItemToUpdate + 1;
+		self.BagSlot[self.NextItemToUpdate]:update()
+		self.NextItemToUpdate = self.NextItemToUpdate + 1
 		if (self.NextItemToUpdate > self.MaxSlots) then
-			self.NextItemToUpdate = 1;
-		end;
+			self.NextItemToUpdate = 1
+		end
 
-	end;
-end;
+	end
+end
 
 -- return is true or false. false if there was no ammunition in the bag, type is "thrown" or "arrow"
 function CInventory:reloadAmmunition(type)
-	local item = self:bestAvailableConsumable(type);
+	local item = self:bestAvailableConsumable(type)
 	-- if theres no ammunition, open a ammunition bag
 	if not item then
 		local openItem
 		if type == "arrow" then
-			openItem = self:bestAvailableConsumable("arrow_quiver");
+			openItem = self:bestAvailableConsumable("arrow_quiver")
 		elseif type == "thrown" then
-			openItem = self:bestAvailableConsumable("thrown_bag");
+			openItem = self:bestAvailableConsumable("thrown_bag")
 		end
 
 		if not openItem then
-			return false;
+			return false
 		end
 
-		local checkItemName = openItem.Name;
-		yrest(300);
-		item = self:bestAvailableConsumable(type);
-		if( item and checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)); -- NOTICE: Item mismatch
-			openItem:update();
+		local checkItemName = openItem.Name
+		yrest(300)
+		item = self:bestAvailableConsumable(type)
+		if (item and checkItemName ~= item.Name) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)) -- NOTICE: Item mismatch
+			openItem:update()
 		else
-			openItem:use();
-			yrest( 500 ); --give time to server to respond with the opened item
+			openItem:use()
+			yrest( 500 ) --give time to server to respond with the opened item
 		end
 
-		item = self:bestAvailableConsumable(type);
+		item = self:bestAvailableConsumable(type)
 	end
 
 	if item then
 		-- use it
 		-- local unused,unused,checkItemName = RoMScript("GetBagItemInfo(" .. item.SlotNumber .. ")");
-		local checkItemName = item.Name;
-		item:update();
-		if( checkItemName ~= item.Name ) then
-			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)); -- NOTICE: Item mismatch
-			item:update();
+		local checkItemName = item.Name
+		item:update()
+		if (checkItemName ~= item.Name) then
+			cprintf(cli.yellow, language[18], tostring(checkItemName), tostring(item.Name)) -- NOTICE: Item mismatch
+			item:update()
 		else
-			item:use();
+			item:use()
 		end
 	end
-end;
+end
 
 -- Here for compatibility reasons
 function CInventory:getItemCount(itemId, range)
-	if(itemId == nil) then
-		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" );
-		return 0;
+	if (itemId == nil) then
+		cprintf(cli.yellow, "Inventory:getItemCount with itemId=nil, please (do not) inform the developers.\n" )
+		return 0
 	end
 
-	return self:itemTotalCount( itemId, range );
-end;
+	return self:itemTotalCount( itemId, range )
+end
 
 -- No longer uses cached information, it updates before checking
 function CInventory:itemTotalCount(itemNameOrId, range)
@@ -167,22 +171,22 @@ function CInventory:itemTotalCount(itemNameOrId, range)
 	end
 
 	local item
-	local totalCount = 0;
+	local totalCount = 0
 	for slot = first, last do
 		item = inventory.BagSlot[slot]
 		item:update()
 
- 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+		if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
 			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
 				totalCount = totalCount + 1
 			else
-				totalCount = totalCount + item.ItemCount;
+				totalCount = totalCount + item.ItemCount
 			end
-		end;
-	end;
+		end
+	end
 
-	return totalCount;
-end;
+	return totalCount
+end
 
 function CInventory:findItem (itemNameOrIdOrPattern, range, usePattern)
 	local itemList = {}
@@ -225,89 +229,89 @@ end
 function CInventory:useItem(itemNameOrId)
 	local item = self:findItem(itemNameOrId)
 	if item then
-		item:use();
-		return true, item.Id, item.Name;
-	end;
+		item:use()
+		return true, item.Id, item.Name
+	end
 
-	return false;
-end;
+	return false
+end
 
 -- Make a full update
 -- or update slot 0 to _maxslot
 -- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailableConsumable(type)
-	local bestLevel = 0;		-- required player level of a potion
-	local bestPotency = 0;		-- power of a potion
-	local bestItem = false;
-	local bestSmallStack = 999;
-	local select_strategy;
-	local select_strategy_best = "best";
-	local select_strategy_minstack = "minstack";
-	local select_strategy_default = "best";
+	local bestLevel = 0		-- required player level of a potion
+	local bestPotency = 0		-- power of a potion
+	local bestItem = false
+	local bestSmallStack = 999
+	local select_strategy
+	local select_strategy_best = "best"
+	local select_strategy_minstack = "minstack"
+	local select_strategy_default = "best"
 
 
 	-- set select strategy
-	if( type == "mot" ) then
-		if( settings.profile.options.USE_MANA_POTION == select_strategy_minstack ) then
-			select_strategy = select_strategy_minstack;
+	if (type == "mot") then
+		if (settings.profile.options.USE_MANA_POTION == select_strategy_minstack) then
+			select_strategy = select_strategy_minstack
 		else
-			select_strategy = select_strategy_default;
+			select_strategy = select_strategy_default
 		end
-	elseif(type == "hot" ) then
-		if( settings.profile.options.USE_HP_POTION == select_strategy_minstack ) then
-			select_strategy = select_strategy_minstack;
+	elseif (type == "hot") then
+		if (settings.profile.options.USE_HP_POTION == select_strategy_minstack) then
+			select_strategy = select_strategy_minstack
 		else
-			select_strategy = select_strategy_default;
+			select_strategy = select_strategy_default
 		end
 	else
-		select_strategy = select_strategy_default;	-- default = 'best'
+		select_strategy = select_strategy_default	-- default = 'best'
 	end
 
-	self:update();
+	self:update()
 	-- check item slots slot by slot
-	for slot,item in pairs(self.BagSlot) do
-		local consumable = database.consumables[item.Id];
+	for slot, item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id]
 
-		if( consumable  and							-- item in database
-		    consumable.Type == type and	 			-- right type (mana, arrow, ...)
-		 	consumable.Level <= player.Level and	-- level ok
-		 	item.ItemCount > 0 and					-- use only if some available
+		if (consumable  and							-- item in database
+			consumable.Type == type and	 			-- right type (mana, arrow, ...)
+			consumable.Level <= player.Level and	-- level ok
+			item.ItemCount > 0 and					-- use only if some available
 			item.Available) then					-- not in unrented bag
 
-			if( select_strategy == select_strategy_minstack ) then
+			if (select_strategy == select_strategy_minstack) then
 				-- select smallest stack
 				if item.ItemCount < bestSmallStack then
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				end
 			else	-- select best available consumable (& smallest stack by default)
 				-- select better level
 
-				if( consumable.Level > bestLevel  ) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				if (consumable.Level > bestLevel) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				-- same level but select better potency
-				elseif( consumable.Level == bestLevel  and
-				  		consumable.Potency > bestPotency) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				elseif (consumable.Level == bestLevel  and
+						consumable.Potency > bestPotency) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				-- same/same but select smaller stack
-				elseif( consumable.Level == bestLevel  and
+				elseif (consumable.Level == bestLevel  and
 						consumable.Potency == bestPotency  and
-						item.ItemCount < bestSmallStack ) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+						item.ItemCount < bestSmallStack) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				end
 			end
 		end
 	end
-	return bestItem;
+	return bestItem
 end
 
 -- Kept for backward compatibility. Use store:buyItem(nameIdOrIndex, quantity) instead
@@ -321,78 +325,78 @@ function CInventory:storeBuyConsumable(type, quantity)
 end
 
 function CInventory:deleteItemInSlot(slot)
- 	self.BagSlot[slot]:delete();
+	self.BagSlot[slot]:delete()
 end
 
 
 function CInventory:autoSell(evalfunc)
 
-	if( settings.profile.options.INV_AUTOSELL_ENABLE ~= true ) then
+	if (settings.profile.options.INV_AUTOSELL_ENABLE ~= true) then
 		return false
 	end
 
 	-- warning if not all inventory slots are updated
-	if( settings.profile.options.INV_AUTOSELL_TOSLOT > self.MaxSlots ) then
-		cprintf(cli.yellow, language[1003], self.MaxSlots, settings.profile.options.INV_AUTOSELL_TOSLOT);
+	if (settings.profile.options.INV_AUTOSELL_TOSLOT > self.MaxSlots) then
+		cprintf(cli.yellow, language[1003], self.MaxSlots, settings.profile.options.INV_AUTOSELL_TOSLOT)
 	end
 
 	-- warning if igf addon is missing
-	if( bot.IgfAddon == false	and
+	if (bot.IgfAddon == false	and
 		( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	or
-		  settings.profile.options.INV_AUTOSELL_STATS_NOSELL ~= nil ) ) then
-		cprintf(cli.yellow, language[1004]);	-- Ingamefunctions addon (igf) is not installed
-		 return false;
+		  settings.profile.options.INV_AUTOSELL_STATS_NOSELL ~= nil )) then
+		cprintf(cli.yellow, language[1004])	-- Ingamefunctions addon (igf) is not installed
+		 return false
 	end
 
 	if evalfunc == nil or type(evalfunc) ~= "function" then -- Set up default eval function
 		-- move color settings into table
-		local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-		local hf_quality_table = explode( hf_quality, "\n" );	-- move colors to table
+		local hf_quality = string.gsub (settings.profile.options.INV_AUTOSELL_QUALITY, "%s*[;,]%s*", "\n")	-- replace ; with linefeed
+		local hf_quality_table = explode( hf_quality, "\n" )	-- move colors to table
 
-		local hf_ignore_table;
+		local hf_ignore_table
 		-- move ignore list into table
-		if( settings.profile.options.INV_AUTOSELL_IGNORE ) then
-			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n");	-- replace ; with linefeed
-			hf_ignore_table = explode( hf_explode, "\n" );	-- move ignore list
-			for i,v in pairs(hf_ignore_table) do local m = string.match(v,"^'(.*)'$") if m then hf_ignore_table[i] = m end end -- remove quotes
+		if (settings.profile.options.INV_AUTOSELL_IGNORE) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_IGNORE, "%s*[;,]%s*", "\n")	-- replace ; with linefeed
+			hf_ignore_table = explode( hf_explode, "\n" )	-- move ignore list
+			for i, v in pairs(hf_ignore_table) do local m = string.match(v,"^'(.*)'$") if m then hf_ignore_table[i] = m end end -- remove quotes
 		end
 
-		local hf_stats_nosell;
+		local hf_stats_nosell
 		-- move ignore stats list into table
-		if( settings.profile.options.INV_AUTOSELL_STATS_NOSELL ) then
-			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-			hf_stats_nosell = explode( hf_explode, "\n" );	-- move ignore list
-			for i,v in pairs(hf_stats_nosell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_nosell[i] = m end end -- remove quotes
+		if (settings.profile.options.INV_AUTOSELL_STATS_NOSELL) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_NOSELL, "[;,]", "\n")	-- replace ; with linefeed/ no trim
+			hf_stats_nosell = explode( hf_explode, "\n" )	-- move ignore list
+			for i, v in pairs(hf_stats_nosell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_nosell[i] = m end end -- remove quotes
 		end
 
-		local hf_stats_sell;
+		local hf_stats_sell
 		-- move stats list into table
-		if( settings.profile.options.INV_AUTOSELL_STATS_SELL ) then
-			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-			hf_stats_sell = explode( hf_explode, "\n" );	-- move ignore list
-			for i,v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
+		if (settings.profile.options.INV_AUTOSELL_STATS_SELL) then
+			local hf_explode = string.gsub (settings.profile.options.INV_AUTOSELL_STATS_SELL, "[;,]", "\n")	-- replace ; with linefeed/ no trim
+			hf_stats_sell = explode( hf_explode, "\n" )	-- move ignore list
+			for i, v in pairs(hf_stats_sell) do local m = string.match(v,"^'(.*)'$") if m then hf_stats_sell[i] = m end end -- remove quotes
 		end
 
-		local hf_type_sell;
+		local hf_type_sell
 		-- move type list into table
-		if( settings.profile.options.INV_AUTOSELL_TYPES ) then
-			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-			hf_type_sell = explode( hf_explode, "\n" );
+		if (settings.profile.options.INV_AUTOSELL_TYPES) then
+			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES, "[;,]", "\n")	-- replace ; with linefeed/ no trim
+			hf_type_sell = explode( hf_explode, "\n" )
 		end
 
-		local hf_type_nosell;
+		local hf_type_nosell
 		-- move type list into table
-		if( settings.profile.options.INV_AUTOSELL_TYPES_NOSELL ) then
-			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES_NOSELL, "[;,]", "\n");	-- replace ; with linefeed/ no trim
-			hf_type_nosell = explode( hf_explode, "\n" );
+		if (settings.profile.options.INV_AUTOSELL_TYPES_NOSELL) then
+			local hf_explode = string.gsub(settings.profile.options.INV_AUTOSELL_TYPES_NOSELL, "[;,]", "\n")	-- replace ; with linefeed/ no trim
+			hf_type_nosell = explode( hf_explode, "\n" )
 		end
 
 		--	ITEMCOLORS table is defined in item.lua
 		local function sellColor(_itemcolor)
 
-			for i,v in pairs(hf_quality_table) do
+			for i, v in pairs(hf_quality_table) do
 
-				if( ITEMCOLOR[string.upper(v)] == _itemcolor ) then
+				if (ITEMCOLOR[string.upper(v)] == _itemcolor) then
 					return true
 				end
 			end
@@ -403,11 +407,11 @@ function CInventory:autoSell(evalfunc)
 
 		local function isInTypeSell(_slotitem)
 
-			if ( not hf_type_sell  ) then
+			if ( not hf_type_sell) then
 				return true
 			end
 
-			for i,v in pairs(hf_type_sell) do
+			for i, v in pairs(hf_type_sell) do
 
 				if _slotitem:isType(v) then
 					return true
@@ -420,11 +424,11 @@ function CInventory:autoSell(evalfunc)
 
 		local function isInTypeNosell(_slotitem)
 
-			if ( not hf_type_nosell  ) then
+			if ( not hf_type_nosell) then
 				return false
 			end
 
-			for i,v in pairs(hf_type_nosell) do
+			for i, v in pairs(hf_type_nosell) do
 				if _slotitem:isType(v) then
 					return true
 				end
@@ -437,16 +441,16 @@ function CInventory:autoSell(evalfunc)
 		-- check if itemname or itemid is in the ignorelist
 		local function isInIgnorelist(_item)
 
-			if ( not hf_ignore_table ) then
+			if ( not hf_ignore_table) then
 				return false
 			end
 
-			for i,ignorelistitem in pairs(hf_ignore_table) do
+			for i, ignorelistitem in pairs(hf_ignore_table) do
 
-				if( string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
-					_item.Id == tonumber(ignorelistitem) ) then
+				if (string.find( string.lower(_item.Name), string.lower(ignorelistitem), 1, true) or
+					_item.Id == tonumber(ignorelistitem)) then
 					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.Id, _item.Name, "=>", "'"..ignorelistitem.."'");
+					  "Itemname/id is in ignore list INV_AUTOSELL_IGNORE:", _item.Id, _item.Name, "=>", "'"..ignorelistitem.."'")
 					return true
 				end
 
@@ -458,19 +462,19 @@ function CInventory:autoSell(evalfunc)
 
 		local function isInStatsNoSell(_item)
 
-			if ( not hf_stats_nosell ) then
+			if ( not hf_stats_nosell) then
 				return false
 			end
 
-			for i1,stat in pairs(_item.Stats) do
-				for i2,nosellstat in pairs(hf_stats_nosell) do
+			for i1, stat in pairs(_item.Stats) do
+				for i2, nosellstat in pairs(hf_stats_nosell) do
 
 					debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-					  "Check nosellstat line:", i1, tooltipline, "=>", nosellstat);
+					  "Check nosellstat line:", i1, tooltipline, "=>", nosellstat)
 
-					if( string.find( string.lower(stat.Name), string.lower(nosellstat), 1, true)  ) then
+					if (string.find( string.lower(stat.Name), string.lower(nosellstat), 1, true)) then
 						debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-						  "Not to sell stat found:", stat.Name);
+						  "Not to sell stat found:", stat.Name)
 						return true
 					end
 
@@ -483,16 +487,16 @@ function CInventory:autoSell(evalfunc)
 
 		local function isInStatsSell(_item)
 
-			if ( not hf_stats_sell ) then
+			if ( not hf_stats_sell) then
 				return false
 			end
 
-			for i,stat in pairs(_item.Stats) do
-				for i,sellstat in pairs(hf_stats_sell) do
+			for i, stat in pairs(_item.Stats) do
+				for i, sellstat in pairs(hf_stats_sell) do
 
-					if( string.find( string.lower(stat.Name), string.lower(sellstat), 1, true)  ) then
+					if (string.find( string.lower(stat.Name), string.lower(sellstat), 1, true)) then
 						debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-						  "Allways sell stat found:", stat.Name);
+						  "Allways sell stat found:", stat.Name)
 						return true
 					end
 
@@ -506,60 +510,60 @@ function CInventory:autoSell(evalfunc)
 		function evalfunc(slotitem)
 
 			debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-			  "Check item so sell:", slotitem.SlotNumber, slotitem.Id, slotitem.Name);
+			  "Check item so sell:", slotitem.SlotNumber, slotitem.Id, slotitem.Name)
 
 			-- Check if can be sold
 			if slotitem.CannotBeSold then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Item can not be sold");
+				  "Item can not be sold")
 				return false
 			end
 
 			-- check item quality color
-			if( sellColor(slotitem.Color) == false ) then
+			if (sellColor(slotitem.Color) == false) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() );
+				  "Itemcolor not in option INV_AUTOSELL_QUALITY:", slotitem:getColorString() )
 				return false
 			end
 
 			-- check if on type sell lists
-			if (isInTypeSell(slotitem) == false ) then
+			if (isInTypeSell(slotitem) == false) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE);
+				  "Item is not in type option INV_AUTOSELL_TYPE:", settings.profile.options.INV_AUTOSELL_TYPE)
 				return false
-			elseif (isInTypeNosell(slotitem) == true ) then
+			elseif (isInTypeNosell(slotitem) == true) then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL);
+				  "Item is in type option INV_AUTOSELL_TYPE_NOSELL:", settings.profile.options.INV_AUTOSELL_TYPE_NOSELL)
 				return false
 			end
 
 			-- check itemname against ignore list
-			if( isInIgnorelist(slotitem) == true ) then
+			if (isInIgnorelist(slotitem) == true) then
 				return false
 			end
 
 			-- check number of named stats
 			if #slotitem.Stats >= settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
-				  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER );
+				  "Number of stats not less than INV_AUTOSELL_NOSELL_STATSNUMBER", settings.profile.options.INV_AUTOSELL_NOSELL_STATSNUMBER )
 				return false
 			end
 
 			-- check max durability value
-			if( settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
+			if (settings.profile.options.INV_AUTOSELL_NOSELL_DURA > 0	and
 				slotitem.MaxDurability > 0 and
 				slotitem.MaxDurability > settings.profile.options.INV_AUTOSELL_NOSELL_DURA )then
 				debugMsg(settings.profile.options.DEBUG_AUTOSELL,
 				  "Don't sell, durability > INV_AUTOSELL_NOSELL_DURA:",
-				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA );
+				  settings.profile.options.INV_AUTOSELL_NOSELL_DURA )
 				return false
 			end
 
 			-- check if stats / text strings are on the ingnore list
-			if( isInStatsNoSell(slotitem) == true ) then
+			if (isInStatsNoSell(slotitem) == true) then
 
 				-- check if in sell always stats
-				if( isInStatsSell(slotitem) == true ) then
+				if (isInStatsSell(slotitem) == true) then
 					-- don't change the sell flag
 				else
 					return false
@@ -573,12 +577,12 @@ function CInventory:autoSell(evalfunc)
 
 	local sellstartstring = "} local U=UseBagItem; if StoreFrame:IsVisible() then a={true};"
 	local sellstring = sellstartstring
-	local hf_wesell = false;
+	local hf_wesell = false
 	-- check the given slot numbers to autosell
 	for slotNumber = settings.profile.options.INV_AUTOSELL_FROMSLOT + 59, settings.profile.options.INV_AUTOSELL_TOSLOT + 59, 1 do
-		local slotitem = self.BagSlot[slotNumber];
+		local slotitem = self.BagSlot[slotNumber]
 
-		if( slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
+		if (slotitem  and  tonumber(slotitem.Id) > 0 and slotitem.Available and slotitem.CanBeSold) then
 			if evalfunc(slotitem) == true then
 				-- Passed eval function. Then sell the item
 				sellstring = sellstring .. "U("..slotitem.BagId..");"
@@ -591,14 +595,14 @@ function CInventory:autoSell(evalfunc)
 		sellstring = sellstring .. "end;z={"
 		if RoMScript(sellstring) then
 			yrest(100)
-			hf_wesell = true;
+			hf_wesell = true
 		end
 	end
 
-	if( hf_wesell == true ) then
-		return true;
+	if (hf_wesell == true) then
+		return true
 	else
-		return false;
+		return false
 	end
 
 end
@@ -704,15 +708,15 @@ function CInventory:getMount()
 	{first = 242447, last = 242449},
 	494474,
 	505113,
-	};
+	}
 
 
- 	for slot,item in pairs(self.BagSlot) do
+	for slot, item in pairs(self.BagSlot) do
 		if item.Available then
 			for i, mount in ipairs(mounts) do
 				if type(mount) == "number" then
 					if item.Id == mount then
-						return item;
+						return item
 					end
 				else -- table
 					if item.Id >= mount.first and item.Id <= mount.last then
@@ -723,7 +727,7 @@ function CInventory:getMount()
 		end
 	end
 
-	return false;
+	return false
 end
 
 function getInventoryRange(range)
@@ -831,134 +835,134 @@ end
 -- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailablePhirius(type)
 
-	local bestPer = 0;		-- power of a potion
-	local bestItem = false;
-	local select_strategy = "best";
+	local bestPer = 0		-- power of a potion
+	local bestItem = false
+	local select_strategy = "best"
 
-	self:update();
+	self:update()
 	-- check item slots slot by slot
-	for slot,item in pairs(self.BagSlot) do
-		local consumable = database.consumables[item.Id];
+	for slot, item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id]
 
 		if consumable  and							-- item in database
-		    (consumable.Type == type and	-- right type (mana, hp, both)
-		 	item.ItemCount > 0 and					-- use only if some available
+			(consumable.Type == type and	-- right type (mana, hp, both)
+			item.ItemCount > 0 and					-- use only if some available
 			item.Available) then			-- not in unrented bag
 
-			if( consumable.Potency > bestPer) then
-				bestPer = consumable.Potency;
-				bestSmallStack = item.ItemCount;
-				bestItem = item;
+			if (consumable.Potency > bestPer) then
+				bestPer = consumable.Potency
+				bestSmallStack = item.ItemCount
+				bestItem = item
 			-- same/same but select smaller stack
-			elseif( consumable.Potency == bestPer  and
-				item.ItemCount < bestSmallStack ) then
-				bestPer = consumable.Potency;
-				bestSmallStack = item.ItemCount;
-				bestItem = item;
+			elseif (consumable.Potency == bestPer  and
+				item.ItemCount < bestSmallStack) then
+				bestPer = consumable.Potency
+				bestSmallStack = item.ItemCount
+				bestItem = item
 			end
 
 		end
 	end
 
 	if bestItem == false then
-		for slot,item in pairs(self.BagSlot) do
-			local consumable = database.consumables[item.Id];
+		for slot, item in pairs(self.BagSlot) do
+			local consumable = database.consumables[item.Id]
 			if consumable  and							-- item in database
 				(consumable.Type == "phirusboth" and	-- right type (mana, hp, both)
 				item.ItemCount > 0 and					-- use only if some available
 				item.Available) then			-- not in unrented bag
 
-				if( consumable.Potency > bestPer) then
-					bestPer = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				if (consumable.Potency > bestPer) then
+					bestPer = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				-- same/same but select smaller stack
-				elseif( consumable.Potency == bestPer  and
-					item.ItemCount < bestSmallStack ) then
-					bestPer = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				elseif (consumable.Potency == bestPer  and
+					item.ItemCount < bestSmallStack) then
+					bestPer = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				end
 			end
 		end
 	end
-	return bestItem;
+	return bestItem
 end
 
 -- Returns item name or false, takes in type, example: "hot" or "mot" or "arrow" or "thrown"
 function CInventory:bestAvailablepotion(type)
-	local bestLevel = 0;		-- required player level of a potion
-	local bestPotency = 0;		-- power of a potion
-	local bestItem = false;
-	local bestSmallStack = 999;
-	local select_strategy;
-	local select_strategy_best = "best";
-	local select_strategy_minstack = "minstack";
-	local select_strategy_default = "best";
+	local bestLevel = 0		-- required player level of a potion
+	local bestPotency = 0		-- power of a potion
+	local bestItem = false
+	local bestSmallStack = 999
+	local select_strategy
+	local select_strategy_best = "best"
+	local select_strategy_minstack = "minstack"
+	local select_strategy_default = "best"
 
 
 	-- set select strategy
-	if( type == "mana" ) then
-		if( settings.profile.options.USE_MANA_POTION == select_strategy_minstack ) then
-			select_strategy = select_strategy_minstack;
+	if (type == "mana") then
+		if (settings.profile.options.USE_MANA_POTION == select_strategy_minstack) then
+			select_strategy = select_strategy_minstack
 		else
-			select_strategy = select_strategy_default;
+			select_strategy = select_strategy_default
 		end
-	elseif(type == "heal" ) then
-		if( settings.profile.options.USE_HP_POTION == select_strategy_minstack ) then
-			select_strategy = select_strategy_minstack;
+	elseif (type == "heal") then
+		if (settings.profile.options.USE_HP_POTION == select_strategy_minstack) then
+			select_strategy = select_strategy_minstack
 		else
-			select_strategy = select_strategy_default;
+			select_strategy = select_strategy_default
 		end
 	else
-		select_strategy = select_strategy_default;	-- default = 'best'
+		select_strategy = select_strategy_default	-- default = 'best'
 	end
 
-	self:update();
+	self:update()
 	-- check item slots slot by slot
-	for slot,item in pairs(self.BagSlot) do
-		local consumable = database.consumables[item.Id];
+	for slot, item in pairs(self.BagSlot) do
+		local consumable = database.consumables[item.Id]
 
-		if( consumable  and							-- item in database
-		    consumable.Type == type and	 			-- right type (mana, arrow, ...)
-		 	consumable.Level <= player.Level and	-- level ok
-		 	item.ItemCount > 0 and					-- use only if some available
+		if (consumable  and							-- item in database
+			consumable.Type == type and	 			-- right type (mana, arrow, ...)
+			consumable.Level <= player.Level and	-- level ok
+			item.ItemCount > 0 and					-- use only if some available
 			item.Available) then					-- not in unrented bag
 
-			if( select_strategy == select_strategy_minstack ) then
+			if (select_strategy == select_strategy_minstack) then
 				-- select smallest stack
 				if item.ItemCount < bestSmallStack then
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				end
 			else	-- select best available consumable (& smallest stack by default)
 				-- select better level
 
-				if( consumable.Level > bestLevel  ) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				if (consumable.Level > bestLevel) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				-- same level but select better potency
-				elseif( consumable.Level == bestLevel  and
-				  		consumable.Potency > bestPotency) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+				elseif (consumable.Level == bestLevel  and
+						consumable.Potency > bestPotency) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				-- same/same but select smaller stack
-				elseif( consumable.Level == bestLevel  and
+				elseif (consumable.Level == bestLevel  and
 						consumable.Potency == bestPotency  and
-						item.ItemCount < bestSmallStack ) then
-					bestLevel = consumable.Level;
-					bestPotency = consumable.Potency;
-					bestSmallStack = item.ItemCount;
-					bestItem = item;
+						item.ItemCount < bestSmallStack) then
+					bestLevel = consumable.Level
+					bestPotency = consumable.Potency
+					bestSmallStack = item.ItemCount
+					bestItem = item
 				end
 			end
 		end
 	end
-	return bestItem;
+	return bestItem
 end
 
 --==     Superseded Functions     ==--
@@ -968,21 +972,21 @@ function CInventory:updateEquipment()
 	if equipment then
 		equipment:update()
 	end
-end;
+end
 
 -- Obsolete. Kept for backward compatability
 function CInventory:getAmmunitionCount()
 	if equipment then
 		return equipment:getAmmunitionCount()
 	end
-end;
+end
 
 -- Obsolete. Kept for backward compatability
 function CInventory:isEquipped( __space )
 	if equipment then
 		return equipment:isEquipped( __space )
 	end
-end;
+end
 
 -- Obsolete. Kept for backward compatability
 function CInventory:getDurability( _slot )
@@ -991,13 +995,13 @@ function CInventory:getDurability( _slot )
 	else
 		return 0
 	end
-end;
+end
 
 -- Obsolete. Kept for backward compatability
 function CInventory:getMainHandDurability()
 	-- return values in percent from 0 - 100
 	if equipment then
-		return equipment:getDurability( 15 );		-- 15=Main Hand
+		return equipment:getDurability( 15 )		-- 15=Main Hand
 	end
-end;
+end
 

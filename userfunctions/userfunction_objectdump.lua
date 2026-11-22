@@ -1,44 +1,44 @@
 function objectDump(object, filename)
-    if( filename == nil ) then
-        object:update();
-        path = getExecutionPath() .. "/objdump/";
+    if (filename == nil) then
+        object:update()
+        path = getExecutionPath() .. "/objdump/"
 
-        local dir = getDirectory(path);
-        if( dir == nil ) then
-            os.execute(sprintf('md "%s" >nul 2>&1', path));
+        local dir = getDirectory(path)
+        if (dir == nil) then
+            os.execute(sprintf('md "%s" >nul 2>&1', path))
         end
 
-        local id = (object.Id or 0);
-        local name = string.gsub((object.Name or 'unknown'), "[^%w%-%._]", "");
+        local id = (object.Id or 0)
+        local name = string.gsub((object.Name or 'unknown'), "[^%w%-%._]", "")
 
-        if( player ~= nil and object.Address == player.Address ) then
-            name = 'Player';
+        if (player ~= nil and object.Address == player.Address) then
+            name = 'Player'
         end
-        filename = sprintf("%s%d-%s.dat", path, id, name);
+        filename = sprintf("%s%d-%s.dat", path, id, name)
     end
 
-    local size = 0x1000;
-    local outfile = io.open(filename, 'w');
+    local size = 0x1000
+    local outfile = io.open(filename, 'w')
     outfile:write(sprintf("Dump of 0x%X\n", object.Address))
 
     for i = 0, size-1 do
-        local addr = object.Address + i;
-        local value = memoryReadUByte(getProc(), addr);
+        local addr = object.Address + i
+        local value = memoryReadUByte(getProc(), addr)
 
-        if( i == 0 or (i % 16) == 0 ) then
-            outfile:write(sprintf("\n%08x:\t", i));
+        if (i == 0 or (i % 16) == 0) then
+            outfile:write(sprintf("\n%08x:\t", i))
         end
-        if( value ~= nil ) then
-            outfile:write(sprintf("%02x", value));
+        if (value ~= nil) then
+            outfile:write(sprintf("%02x", value))
         else
-            outfile:write("--");
+            outfile:write("--")
         end
 
-        if( i == size ) then
-            outfile:write("\n");
-        elseif( (i % 16) < 15 ) then
-            outfile:write(" ");
+        if (i == size) then
+            outfile:write("\n")
+        elseif ((i % 16) < 15) then
+            outfile:write(" ")
         end
     end
-    outfile:close();
+    outfile:close()
 end

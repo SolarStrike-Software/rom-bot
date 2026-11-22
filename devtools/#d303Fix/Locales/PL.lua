@@ -21,7 +21,7 @@ d303Fix.Strings = {
 Wpisz |cff00ff00/dtis help|r lub |cff00ff00/dtss help|r aby dowiedzie\196\135 si\196\153 wi\196\153cej o poleceniach.",
 	NoFn			= "Funkcja \"%s\" jest niedost\196\153pna.",
 	OsRedeclared	= "Obiekt os jest zadeklarowany. Zast\196\153powanie.",
-	
+
 	ItemShop = {
 		On			= "Item Shop b\196\153dzie pr\195\178bkowany w celu pobrania czasu.",
 		Off			= "Item Shop nie b\196\153dzie pr\195\178bkowany w celu pobrania czasu.",
@@ -36,7 +36,7 @@ Wpisz |cff00ff00/dtis help|r lub |cff00ff00/dtss help|r aby dowiedzie\196\135 si
 - |cff00ff00/dtis [hours]|r -Ustaw przesuni\196\153cie czasu pobieranego z Item Shop.\
 - |cff00ff00/dtis|r - Reset\195\178j zegar (i ponownie pobierz czas z Item Shop'a).",
 	},
-	
+
 	ScreenShot = {
 		On			= "Screenshot b\196\153dzie ustawia\197\130 czas.",
 		Off			= "Screenshot nie b\196\153dzie ustawia\197\130 czasu.",
@@ -57,7 +57,7 @@ Wpisz |cff00ff00/dtis help|r lub |cff00ff00/dtss help|r aby dowiedzie\196\135 si
 
 	MonthsShort		= { "Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Pa\197\186", "Lis", "Gru", },
 	MonthsFull		= { "Stycze\197\132", "Luty", "Marzec", "Kwiecie\197\132", "Maj", "Czerwiec", "Lipiec", "Sierpie\197\132", "Wrzesie\197\132", "Pa\197\186dziernik", "Listopad", "Grudzie\197\132", },
-		
+
 	WeekDaysShort	= { "Nie", "Pon", "Wto", "Sro", "Czw", "Pi\196\133", "sob", },
 	WeekDaysFull	= { "Niedziela", "Poniedzia\197\130ek", "Wtorek", "Sroda", "Czwartek", "Pi\196\133tek", "Sobota", },
 }

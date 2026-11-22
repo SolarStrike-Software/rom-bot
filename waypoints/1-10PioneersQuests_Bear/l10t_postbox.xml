@@ -1,4 +1,4 @@
-<waypoints type="RUN" >
+<waypoints type="RUN">
 	<!-- # 1 --><waypoint x="5529" z="-4428"></waypoint>
 	<!-- # 2 --><waypoint x="5523" z="-4371"></waypoint>
 	<!-- # 3 --><waypoint x="5408" z="-4163"></waypoint>
@@ -6,14 +6,14 @@
 	<!-- # 5 --><waypoint x="5238" z="-3996"></waypoint>
 	<!-- # 6 --><waypoint x="5277" z="-3963"></waypoint>
 	<!-- # 7 --><waypoint x="5276" z="-3915">
-		player:target_NPC(110922); -- Lyeve
-		player:rest(2);
-		sendMacro("ChoiceOption(2);");
+		player:target_NPC(110922) -- Lyeve
+		player:rest(2)
+		sendMacro("ChoiceOption(2);")
 		waitForLoadingScreen(20)
-		player:rest(3);
-		player:update();
-		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z));
-	</waypoint>
+		player:rest(3)
+		player:update()
+		__WPL:setWaypointIndex(__WPL:getNearestWaypoint(player.X, player.Z))
+</waypoint>
 	<!-- # 8 --><waypoint x="5210" z="-3809"></waypoint>
 	<!-- # 9 --><waypoint x="5197" z="-3680"></waypoint>
 	<!-- #10 --><waypoint x="5255" z="-3494"></waypoint>
@@ -29,7 +29,7 @@
 	<!-- #20 --><waypoint x="4737" z="-2426"></waypoint>
 	<!-- #21 --><waypoint x="4619" z="-2218"></waypoint>
 	<!-- #22 --><waypoint x="4574" z="-2206">
-	printf("We where running for %s Minutes.\n", math.floor (os.difftime(os.time(),player.BotStartTime_nr) - player.Sleeping_time)/60 );
-	error("Bot finished", 0); -- Not really an error, but it will drop us back to shell.               
-	</waypoint>
+	printf("We where running for %s Minutes.\n", math.floor (os.difftime(os.time(), player.BotStartTime_nr) - player.Sleeping_time)/60 )
+	error("Bot finished", 0) -- Not really an error, but it will drop us back to shell.
+</waypoint>
 </waypoints>

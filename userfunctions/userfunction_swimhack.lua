@@ -15,32 +15,32 @@
 
 local codemod = CCodeMod(addresses.code_mod.swimhack.base,
 	addresses.code_mod.swimhack.original_code,
-	addresses.code_mod.swimhack.replace_code);
+	addresses.code_mod.swimhack.replace_code)
 
-local installed = false;
+local installed = false
 
-local SWIMMING_VALUE = 4;
+local SWIMMING_VALUE = 4
 
 function fly()
-	local player = CPlayer.new();
+	local player = CPlayer.new()
 
 	-- Install codemod
-	installed = codemod:safeInstall();
-	if( installed == false ) then
-		print("Failed to install swimhack codemod");
-		return;
+	installed = codemod:safeInstall()
+	if (installed == false) then
+		print("Failed to install swimhack codemod")
+		return
 	end
 
 	-- Write swimming state to player
 	memoryWriteIntPtr(getProc(),
 		player.Address + addresses.game_root.pawn.swimming.base,
 		addresses.game_root.pawn.swimming.swimming,
-		SWIMMING_VALUE);
-	
-	print("Swimhack ACTIVATED!");
+		SWIMMING_VALUE)
+
+	print("Swimhack ACTIVATED!")
 end
 
 function flyoff()
-	installed = codemod:safeUninstall();
-	print("Swimhack Deactivated.");
+	installed = codemod:safeUninstall()
+	print("Swimhack Deactivated.")
 end

@@ -44,22 +44,22 @@
 		"SCOUT_IGNITE", -- Best for scout/mage.
 	}
 
-	include("waypoints/"..getFilePath(__WPL.FileName).."/survivalR5onload.lua",true)
+	include("waypoints/"..getFilePath(__WPL.FileName).."/survivalR5onload.lua", true)
 
 </onLoad>
 	<!--    In the survival game    -->
 	<!-- #  1 --><waypoint x="2519" z="2593" y="9">
-		player:target_NPC(joker);
-		sendMacro("ChoiceOption(2);");
-	</waypoint>
-	<!-- #  2 --><waypoint x="2546" z="2681" y="9">	</waypoint>
-	<!-- #  3 --><waypoint x="2586" z="2789" y="9">	</waypoint>
+		player:target_NPC(joker)
+		sendMacro("ChoiceOption(2);")
+</waypoint>
+	<!-- #  2 --><waypoint x="2546" z="2681" y="9"></waypoint>
+	<!-- #  3 --><waypoint x="2586" z="2789" y="9"></waypoint>
 	<!-- #  4 --><waypoint x="2606" z="2843" y="9">
 		yrest(2000)
 		logentry = "Ran out of time" -- default
 		checkskills()
 		createTileTable() -- do it here as you can't see the pawns until you start the event.
-		local trash = player:findNearestNameOrId({bizarremechanism,guardianrockspirit},nil, function(addr) local pawn = CPawn(addr) return pawn.HP > 4 and (not pawn.Lootable) end) -- check for spawns
+		local trash = player:findNearestNameOrId({bizarremechanism, guardianrockspirit}, nil, function(addr) local pawn = CPawn(addr) return pawn.HP > 4 and (not pawn.Lootable) end) -- check for spawns
 		local tiles =  player:findNearestNameOrId(treasuretile, nil, clicktile) -- check if any tiles need opening
 
 		if trash then -- add in options for aoe and ranged here
@@ -71,9 +71,9 @@
 		end
 
 		if 1 > player.HP or not player.Alive then
-			RoMScript("UseSelfRevive();");	-- first try self revive
-			yrest(500);
-			RoMScript("BrithRevive();");
+			RoMScript("UseSelfRevive();")	-- first try self revive
+			yrest(500)
+			RoMScript("BrithRevive();")
 			if waitForLoadingScreen(30) then
 				-- Give chance to run back from rez point.
 				yrest(5000)
@@ -85,25 +85,27 @@
 		end
 
 		checkRelog()
-	</waypoint>
+</waypoint>
 
 	<!--    Return from res point    -->
-	<!-- #  1 --><waypoint x="2273" z="1801" y="53">	</waypoint>
-	<!-- #  2 --><waypoint x="2376" z="1697" y="33">	</waypoint>
-	<!-- #  3 --><waypoint x="2433" z="1618" y="19">	</waypoint>
-	<!-- #  4 --><waypoint x="2481" z="1524" y="0">	</waypoint>
-	<!-- #  5 --><waypoint x="2507" z="1432" y="-2">	</waypoint>
-	<!-- #  6 --><waypoint x="2535" z="1297" y="12">	</waypoint>
-	<!-- #  7 --><waypoint x="2582" z="1204" y="24">	</waypoint>
-	<!-- #  8 --><waypoint x="2674" z="1071" y="44">	</waypoint>
+	<!-- #  1 --><waypoint x="2273" z="1801" y="53"></waypoint>
+	<!-- #  2 --><waypoint x="2376" z="1697" y="33"></waypoint>
+	<!-- #  3 --><waypoint x="2433" z="1618" y="19"></waypoint>
+	<!-- #  4 --><waypoint x="2481" z="1524" y="0"></waypoint>
+	<!-- #  5 --><waypoint x="2507" z="1432" y="-2"></waypoint>
+	<!-- #  6 --><waypoint x="2535" z="1297" y="12"></waypoint>
+	<!-- #  7 --><waypoint x="2582" z="1204" y="24"></waypoint>
+	<!-- #  8 --><waypoint x="2674" z="1071" y="44"></waypoint>
 	<!-- #  9 --><waypoint x="2762" z="970" y="53">
-		player:target_NPC("Lieve"); yrest(1000)
-		sendMacro("ChoiceOption(2);"); yrest(500)
-		sendMacro("ChoiceOption(2);");
+		player:target_NPC("Lieve")
+		yrest(1000)
+		sendMacro("ChoiceOption(2);")
+		yrest(500)
+		sendMacro("ChoiceOption(2);")
 		waitForLoadingScreen(10)
-	</waypoint>
-	<!-- # 12 --><waypoint x="4765" z="-1955" y="115">	</waypoint>
-	<!-- # 13 --><waypoint x="4798" z="-1919" y="109">	</waypoint>
+</waypoint>
+	<!-- # 12 --><waypoint x="4765" z="-1955" y="115"></waypoint>
+	<!-- # 13 --><waypoint x="4798" z="-1919" y="109"></waypoint>
 	<!-- # 14 --><waypoint x="4857" z="-1914" y="109">
 		if logentry ~= nil then
 			checkRelog()
@@ -140,7 +142,7 @@
 		if emptylimit > empties then
 			if Not_Enough_Bag_Space == "pause" then
 				-- Wait for user to make some space in inventory.
-				cprintf(cli.yellow,"Not much space left in inventory. Are you sure you want to continue with only %d spaces left?\n",empties)
+				cprintf(cli.yellow,"Not much space left in inventory. Are you sure you want to continue with only %d spaces left?\n", empties)
 				player:sleep()
 			elseif Not_Enough_Bag_Space == "skip" then
 				print("Not enough bag space.")
@@ -166,12 +168,12 @@
 					elseif string.find(item.Name,"Quiver") then
 						arrows = arrows + 999
 					end
-				end;
-			end;
+				end
+			end
 
 			if 200 > arrows then
 				-- Wait for user to get more arrows
-				cprintf(cli.yellow,"Low on arrows. Only %d left?\n",arrows)
+				cprintf(cli.yellow,"Low on arrows. Only %d left?\n", arrows)
 				player:sleep()
 			end
 		end
@@ -188,11 +190,11 @@
 			player:target_NPC(Malatina) yrest(1000)
 		end
 
-		sendMacro("ChoiceOption(1);");
+		sendMacro("ChoiceOption(1);")
 		yrest(2000)
 
 		if RoMScript("GetNumSpeakOption()") > 0 then -- enter game
-			sendMacro("ChoiceOption(1);");
+			sendMacro("ChoiceOption(1);")
 			if not waitForLoadingScreen(30) then
 				print("Failed to teleport into Survival")
 				logentry = "Failed to teleport into Survival."
@@ -203,5 +205,5 @@
 			logentry = "Already did Survival."
 			checkRelog()
 		end
-	</waypoint>
+</waypoint>
 </waypoints>

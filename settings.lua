@@ -149,33 +149,33 @@ settings_default = {
 			onUnstickFailure = nil,
 		}
 	},
-};
+}
 
 bot =	{ 		-- global bot values
 		ClientLanguage,		-- ingame language of the game [ DE|RU|FR|ENUS|ENEU
 		GetTimeFrequency,	-- calculated CPU frequency for calculating with the getTime() function
 		LastSkillKeypressTime = getTime(),	-- remember last time we cast (press key)
 		IgfAddon = false,	-- check if igf addon is active
-		};
+		}
 
 
-if( table.copy == nil ) then
+if (table.copy == nil) then
 	table.copy = function (_other)
-		local t = {};
-		for i,v in pairs(_other) do
+		local t = {}
+		for i, v in pairs(_other) do
 			if type(v) == "table" then
 				t[i] = table.copy(v)
 			else
-				t[i] = v;
+				t[i] = v
 			end
 		end
-		return t;
+		return t
 	end
 end
 
-settings = table.copy(settings_default);
+settings = table.copy(settings_default)
 
-check_keys = { name = { } };
+check_keys = { name = { } }
 
 --SKILLUSES_HP = 1 -- Not used by bot
 SKILLUSES_MANA = 2
@@ -194,173 +194,173 @@ PLAYERID_MAX = 1005
 function checkKeySettings( _name, _key, _modifier)
 -- args are the VK in stringform like "VK_CONTROL", "VK_J", ..
 
-	local hf_check_where;
-	if( bindings ) then	-- keys are from bindings.txt
-		hf_check_where = language[141];		-- Datei settings.xml
+	local hf_check_where
+	if (bindings) then	-- keys are from bindings.txt
+		hf_check_where = language[141]		-- Datei settings.xml
 	else
-		hf_check_where = language[140];		-- Ingame -> System -> Tastenbelegung
+		hf_check_where = language[140]		-- Ingame -> System -> Tastenbelegung
 	end
 
-	local msg = nil;
+	local msg = nil
 	-- no empty keys pls
-	if( _key == nil) then
-		msg = sprintf(language[115], _name);	-- key for \'%s\' is empty!
-		msg = msg .. hf_check_where;
+	if (_key == nil) then
+		msg = sprintf(language[115], _name)	-- key for \'%s\' is empty!
+		msg = msg .. hf_check_where
 	end
 
 	-- check if all keys are valid virtual keys (VK)
-	if( _key ) then
-		if( key[_key]  == nil  and
-			string.upper(_key) ~= "MACRO" ) then	-- hotekey MACRO is a special case / it's not a virtual key
-			msg = sprintf(language[116], _key, _name);	-- The hotkey ... is not a valid key
-			msg = msg .. hf_check_where;
+	if (_key) then
+		if (key[_key]  == nil  and
+			string.upper(_key) ~= "MACRO") then	-- hotekey MACRO is a special case / it's not a virtual key
+			msg = sprintf(language[116], _key, _name)	-- The hotkey ... is not a valid key
+			msg = msg .. hf_check_where
 		end
-	end;
+	end
 
 	-- no modifiers allowed at the moment
-	if( _modifier ) then
-		if( key[_modifier]  == nil ) then
-			msg = sprintf(language[117], _modifier, _name);	-- The modifier ... is not a valid key
-			msg = msg .. hf_check_where;
+	if (_modifier) then
+		if (key[_modifier]  == nil) then
+			msg = sprintf(language[117], _modifier, _name)	-- The modifier ... is not a valid key
+			msg = msg .. hf_check_where
 		end
-	end;
+	end
 
 	-- now we check for double key settings
 	-- we translate the strings "VK..." to the VK numbers
-	if( string.upper(_key) ~= "MACRO" ) then
-		_key = key[_key];
+	if (string.upper(_key) ~= "MACRO") then
+		_key = key[_key]
 	end
-	_modifier = key[_modifier];
+	_modifier = key[_modifier]
 
 	-- check the using of modifiers
 	-- they are not usable at the moment
 
 	-- error output
-	if( msg ~= nil) then
+	if (msg ~= nil) then
 		-- only a warning for TARGET_FRIEND / else an error
-		if(_name == "TARGET_FRIEND") then
-			cprintf(cli.yellow, msg .. language[119]);	-- can't use the player:target_NPC() function
+		if (_name == "TARGET_FRIEND") then
+			cprintf(cli.yellow, msg .. language[119])	-- can't use the player:target_NPC() function
 		else
-			error(msg, 0);
+			error(msg, 0)
 		end
 	end
 
 	-- check for double key settings
-	for i,v in pairs(check_keys) do
-		if( v.name ~= _nil and	-- empty entries from deleted settings.xml entries
-		    v.key == _key  and
-		    string.upper(_key) ~= "MACRO" and	-- hotkey MACRO is allowed to set more then once
-		    v.modifier == _modifier ) then
-			local modname;
+	for i, v in pairs(check_keys) do
+		if (v.name ~= _nil and	-- empty entries from deleted settings.xml entries
+			v.key == _key  and
+			string.upper(_key) ~= "MACRO" and	-- hotkey MACRO is allowed to set more then once
+			v.modifier == _modifier) then
+			local modname
 
-			if( v.modifier ) then
-				modname = getKeyName(v.modifier).."+";
+			if (v.modifier) then
+				modname = getKeyName(v.modifier).."+"
 			else
-				modname = "";
-			end;
+				modname = ""
+			end
 
 			local errstr = sprintf(language[121],	-- assigned the key \'%s%s\' double
 				modname,
 				getKeyName(v.key),
 				v.name, _name) ..
-				hf_check_where;
-			error(errstr, 0);
+				hf_check_where
+			error(errstr, 0)
 		end
-	end;
+	end
 
-	check_keys[_name] = {};
-	check_keys[_name].name = _name;
-	check_keys[_name].key = _key;
-	check_keys[_name].modifier = _modifier;
+	check_keys[_name] = {}
+	check_keys[_name].name = _name
+	check_keys[_name].key = _key
+	check_keys[_name].modifier = _modifier
 end
 
 
 function settingsPrintKeys()
 -- That function prints the loaded key settings to the MM window and to the log
 
-	local msg;
-	msg ="QUICK_TURN = "..tostring(settings.profile.options.QUICK_TURN);	-- we wander around
-	logMessage(msg);		-- log keyboard settings
+	local msg
+	msg ="QUICK_TURN = "..tostring(settings.profile.options.QUICK_TURN)	-- we wander around
+	logMessage(msg)		-- log keyboard settings
 
-	if( bindings ) then		-- we read from bindings.txt
-		msg = sprintf(language[167], "bindings.txt");	-- Keyboard settings are from
+	if (bindings) then		-- we read from bindings.txt
+		msg = sprintf(language[167], "bindings.txt")	-- Keyboard settings are from
 	else				-- we read settings.xml
-		msg = sprintf(language[167], "settings.xml");	-- Keyboard settings are from
+		msg = sprintf(language[167], "settings.xml")	-- Keyboard settings are from
 	end
 
 --	cprintf(cli.green, msg.."\n");	-- Keyboard settings are from
-	logMessage(msg);		-- log keyboard settings
+	logMessage(msg)		-- log keyboard settings
 
-	for i,v in pairs(check_keys) do
+	for i, v in pairs(check_keys) do
 
-		if(v.name) then
+		if (v.name) then
 
-			msg = string.sub(v.name.."                               ", 1, 30);	-- function name
+			msg = string.sub(v.name.."                               ", 1, 30)	-- function name
 
-			local modname;
-			if( v.modifier ) then
-				modname = getKeyName(v.modifier).."+";	-- modifier name
+			local modname
+			if (v.modifier) then
+				modname = getKeyName(v.modifier).."+"	-- modifier name
 			else
-				modname = "";
-			end;
-
-			local keyname;
-			if( string.upper(v.key) == "MACRO" ) then
-				keyname = "MACRO";
-			else
-				keyname = getKeyName(v.key);
+				modname = ""
 			end
 
-			msg = msg..modname..keyname;	-- add key name
---			printf(msg.."\n");			-- print line
-			logMessage(msg);			-- log keyboard settings
+			local keyname
+			if (string.upper(v.key) == "MACRO") then
+				keyname = "MACRO"
+			else
+				keyname = getKeyName(v.key)
+			end
 
-		end;
-	end;
+			msg = msg..modname..keyname	-- add key name
+--			printf(msg.."\n");			-- print line
+			logMessage(msg)			-- log keyboard settings
+
+		end
+	end
 
 end
 
 
 function settings.load()
-	local filename = getExecutionPath() .. "/settings.xml";
-	local root = xml.open(filename);
-	local elements = root:getElements();
+	local filename = getExecutionPath() .. "/settings.xml"
+	local root = xml.open(filename)
+	local elements = root:getElements()
 
-	check_keys = { };	-- clear table, because of restart from createpath.lua
+	check_keys = { }	-- clear table, because of restart from createpath.lua
 
 	-- Specific to loading the hotkeys section of the file
 	local loadHotkeys = function (node)
-		local elements = node:getElements();
-		for i,v in pairs(elements) do
+		local elements = node:getElements()
+		for i, v in pairs(elements) do
 			-- If the hotkey doesn't exist, create it.
-			settings.hotkeys[ v:getAttribute("description") ] = { };
-			settings.hotkeys[ v:getAttribute("description") ].key = key[v:getAttribute("key")];
-			settings.hotkeys[ v:getAttribute("description") ].modifier = key[v:getAttribute("modifier")];
+			settings.hotkeys[ v:getAttribute("description") ] = { }
+			settings.hotkeys[ v:getAttribute("description") ].key = key[v:getAttribute("key")]
+			settings.hotkeys[ v:getAttribute("description") ].modifier = key[v:getAttribute("modifier")]
 
-			if( key[v:getAttribute("key")] == nil ) then
+			if (key[v:getAttribute("key")] == nil) then
 				local err = sprintf(language[122],	-- does not have a valid hotkey!
-				  v:getAttribute("description"));
-				error(err, 0);
+				  v:getAttribute("description"))
+				error(err, 0)
 			end
 
 			checkKeySettings( v:getAttribute("description"),
 			  v:getAttribute("key"),
-			  v:getAttribute("modifier") );
+			  v:getAttribute("modifier") )
 		end
 	end
 
 	local loadOptions = function (node)
-		local elements = node:getElements();
-		for i,v in pairs(elements) do
-			settings.options[ v:getAttribute("name") ] = v:getAttribute("value");
+		local elements = node:getElements()
+		for i, v in pairs(elements) do
+			settings.options[ v:getAttribute("name") ] = v:getAttribute("value")
 		end
 	end
 
 	-- Load RoM keyboard bindings.txt file
 	local function load_RoM_bindings_txt()
-		local filename, file;
+		local filename, file
 
-		local userprofilePath = os.getenv("USERPROFILE");
+		local userprofilePath = os.getenv("USERPROFILE")
 		local documentPaths = {
 			userprofilePath .. "\\My Documents\\" .. "Runes of Magic", -- English
 			userprofilePath .. "\\Eigene Dateien\\" .. "Runes of Magic", -- German
@@ -374,52 +374,52 @@ function settings.load()
 			userprofilePath .. "\\Moje dokumenty\\" .. "Runes of Magic", -- Polish
 			userprofilePath .. "\\Mis documentos\\" .. "Runes of Magic", -- Spanish
 			userprofilePath .. "\\Os Meus Documentos\\" .. "Runes of Magic", -- Portuguese
-		};
+		}
 
 		-- Use a user-specified path from settings.xml
-		if( settings.options.ROMDATA_PATH ) then
-			table.insert(documentPaths, settings.options.ROMDATA_PATH);
+		if (settings.options.ROMDATA_PATH) then
+			table.insert(documentPaths, settings.options.ROMDATA_PATH)
 		end
 
 		-- Select the first path that exists
-		for i,v in pairs(documentPaths) do
-			if( string.sub(v, -1 ) ~= "\\" and string.sub(v, -1 ) ~= "/" ) then
-				v = v .. "\\"; -- Append the trailing backslash if necessary.
+		for i, v in pairs(documentPaths) do
+			if (string.sub(v, -1 ) ~= "\\" and string.sub(v, -1 ) ~= "/") then
+				v = v .. "\\" -- Append the trailing backslash if necessary.
 			end
 
-			local filename = v .. "bindings.txt";
-			if( fileExists(filename) ) then
-				file = io.open(filename, "r");
-				local tmp = filename;
-				cprintf(cli.green, language[123], filename);	-- read the hotkey settings from your bindings.txt
+			local filename = v .. "bindings.txt"
+			if (fileExists(filename)) then
+				file = io.open(filename, "r")
+				local tmp = filename
+				cprintf(cli.green, language[123], filename)	-- read the hotkey settings from your bindings.txt
 			end
 		end
 
 		-- If we wern't able to locate a document path, return.
-		if( file == nil ) then
-			return;
+		if (file == nil) then
+			return
 		end
 
 		-- delete hotkeys from settings.xml in check table to avoid double entries / wrong checks
-		check_keys["MOVE_FORWARD"] = nil;
-		check_keys["MOVE_BACKWARD"] = nil;
-		check_keys["ROTATE_LEFT"] = nil;
-		check_keys["ROTATE_RIGHT"] = nil;
-		check_keys["STRAFF_LEFT"] = nil;
-		check_keys["STRAFF_RIGHT"] = nil;
-		check_keys["JUMP"] = nil;
-		check_keys["TARGET"] = nil;
-		check_keys["TARGET_FRIEND"] = nil;
-		check_keys["ESCAPE"] = nil;
+		check_keys["MOVE_FORWARD"] = nil
+		check_keys["MOVE_BACKWARD"] = nil
+		check_keys["ROTATE_LEFT"] = nil
+		check_keys["ROTATE_RIGHT"] = nil
+		check_keys["STRAFF_LEFT"] = nil
+		check_keys["STRAFF_RIGHT"] = nil
+		check_keys["JUMP"] = nil
+		check_keys["TARGET"] = nil
+		check_keys["TARGET_FRIEND"] = nil
+		check_keys["ESCAPE"] = nil
 
 		-- Load bindings.txt into own table structure
-		bindings = { name = { } };
+		bindings = { name = { } }
 		-- read the lines in table 'lines'
 		for line in file:lines() do
 			for name, key1, key2 in string.gmatch(line, "(%w*)%s([%w+]*)%s*([%w+]*)") do
-				bindings[name] = {};
-				bindings[name].key1 = key1;
-				bindings[name].key2 = key2;
+				bindings[name] = {}
+				bindings[name].key1 = key1
+				bindings[name].key2 = key2
 
 				--settings.hotkeys[name].key =
 			end
@@ -437,49 +437,49 @@ function settings.load()
 				TARGETNEARESTENEMY = "TARGET",
 				TARGETNEARESTFRIEND = "TARGET_FRIEND",
 				TOGGLEGAMEMENU = "ESCAPE",
-			};
+			}
 
-			local hotkeyName = bindingName;
-			if(links[bindingName] ~= nil) then
-				hotkeyName = links[bindingName];
-			end;
+			local hotkeyName = bindingName
+			if (links[bindingName] ~= nil) then
+				hotkeyName = links[bindingName]
+			end
 
 
-			if( bindings[bindingName] ~= nil ) then
-				if( bindings[bindingName].key1 ~= nil ) then
+			if (bindings[bindingName] ~= nil) then
+				if (bindings[bindingName].key1 ~= nil) then
 					-- Fix key names
-					bindings[bindingName].key1 = string.gsub(bindings[bindingName].key1, "CTRL", "CONTROL");
+					bindings[bindingName].key1 = string.gsub(bindings[bindingName].key1, "CTRL", "CONTROL")
 
-					if( string.find(bindings[bindingName].key1, '+') ) then
-						local parts = explode(bindings[bindingName].key1, '+');
+					if (string.find(bindings[bindingName].key1, '+')) then
+						local parts = explode(bindings[bindingName].key1, '+')
 						-- parts[1] = modifier
 						-- parts[2] = key
 
-						settings.hotkeys[hotkeyName].key = key["VK_" .. parts[2]];
-						settings.hotkeys[hotkeyName].modifier = key["VK_" .. parts[1]];
-						checkKeySettings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] );
+						settings.hotkeys[hotkeyName].key = key["VK_" .. parts[2]]
+						settings.hotkeys[hotkeyName].modifier = key["VK_" .. parts[1]]
+						checkKeySettings(hotkeyName, "VK_" .. parts[2], "VK_" .. parts[1] )
 					else
-						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1];
-						checkKeySettings(hotkeyName, "VK_" .. bindings[bindingName].key1 );
+						settings.hotkeys[hotkeyName].key = key["VK_" .. bindings[bindingName].key1]
+						checkKeySettings(hotkeyName, "VK_" .. bindings[bindingName].key1 )
 					end
 
 				else
-					local err = sprintf(language[124], bindingName);	-- no ingame hotkey for
-					error(err, 0);
+					local err = sprintf(language[124], bindingName)	-- no ingame hotkey for
+					error(err, 0)
 				end
 			end
 		end
 
-		bindHotkey("MOVEFORWARD");
-		bindHotkey("MOVEBACKWARD");
-		bindHotkey("TURNLEFT");
-		bindHotkey("TURNRIGHT");
-		bindHotkey("STRAFELEFT");
-		bindHotkey("STRAFERIGHT");
-		bindHotkey("JUMP");
-		bindHotkey("TARGETNEARESTENEMY");
-		bindHotkey("TARGETNEARESTFRIEND");
-		bindHotkey("TOGGLEGAMEMENU");
+		bindHotkey("MOVEFORWARD")
+		bindHotkey("MOVEBACKWARD")
+		bindHotkey("TURNLEFT")
+		bindHotkey("TURNRIGHT")
+		bindHotkey("STRAFELEFT")
+		bindHotkey("STRAFERIGHT")
+		bindHotkey("JUMP")
+		bindHotkey("TARGETNEARESTENEMY")
+		bindHotkey("TARGETNEARESTFRIEND")
+		bindHotkey("TOGGLEGAMEMENU")
 	end
 
 	-- check ingame settings
@@ -487,21 +487,21 @@ function settings.load()
 	local function check_ingame_settings( _name, _ingame_key)
 	-- no more needed, because we take the keys from the file if we found the file
 
-		if( not bindings ) then		-- no bindings.txt file loaded
+		if (not bindings) then		-- no bindings.txt file loaded
 			return
-		end;
+		end
 
-		if( settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
-		settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2] ) then
-			local msg = sprintf(language[125], _name);	-- settings.xml don't match your RoM ingame
-			error(msg, 0);
+		if (settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key1] and
+		settings.hotkeys[_name].key ~= key["VK_"..bindings[_ingame_key].key2]) then
+			local msg = sprintf(language[125], _name)	-- settings.xml don't match your RoM ingame
+			error(msg, 0)
 		end
 	end
 
 
 	function checkHotkeys(_name, _ingame_key)
-		if( not settings.hotkeys[_name] ) then
-			error(language[126] .. _name, 0);	-- Global hotkey not set
+		if (not settings.hotkeys[_name]) then
+			error(language[126] .. _name, 0)	-- Global hotkey not set
 		end
 
 		-- check if settings.lua hotkeys match the RoM ingame settings
@@ -509,13 +509,13 @@ function settings.load()
 	end
 
 
-	for i,v in pairs(elements) do
-		local name = v:getName();
+	for i, v in pairs(elements) do
+		local name = v:getName()
 
-		if( string.lower(name) == "hotkeys" ) then
-			loadHotkeys(v);
-		elseif( string.lower(name) == "options" ) then
-			loadOptions(v);
+		if (string.lower(name) == "hotkeys") then
+			loadHotkeys(v)
+		elseif (string.lower(name) == "options") then
+			loadOptions(v)
 		end
 	end
 
@@ -539,203 +539,223 @@ function settings.load()
 	-- Load language files
 	-- Load "english" first, to fill in any gaps in the users' set language.
 	local function setLanguage(name)
-		include("/language/" .. name .. ".lua");
+		include("/language/" .. name .. ".lua")
 	end
 
-	local lang_base = {};
-	setLanguage("english");
-	for i,v in pairs(language) do lang_base[i] = v; end;
-	setLanguage(settings.options.LANGUAGE);
-	for i,v in pairs(lang_base) do
-		if( language[i] == nil ) then
-			language[i] = v;
+	local lang_base = {}
+	setLanguage("english")
+	for i, v in pairs(language) do
+		lang_base[i] = v
+	end
+	setLanguage(settings.options.LANGUAGE)
+	for i, v in pairs(lang_base) do
+		if (language[i] == nil) then
+			language[i] = v
 		end
-	end;
-	lang_base = nil; -- Not needed anymore, destroy it.
-	logMessage("Language: " .. settings.options.LANGUAGE);
+	end
+	lang_base = nil -- Not needed anymore, destroy it.
+	logMessage("Language: " .. settings.options.LANGUAGE)
 
 
-	load_RoM_bindings_txt();	-- read bindings.txt from RoM user folder
+	load_RoM_bindings_txt()	-- read bindings.txt from RoM user folder
 
 	-- Check to make sure everything important is set
 	--           bot hotkey name    RoM ingame key name
-	checkHotkeys("MOVE_FORWARD",   "MOVEFORWARD");
-	checkHotkeys("MOVE_BACKWARD",  "MOVEBACKWARD");
-	checkHotkeys("ROTATE_LEFT",    "TURNLEFT");
-	checkHotkeys("ROTATE_RIGHT",   "TURNRIGHT");
-	checkHotkeys("STRAFF_LEFT",    "STRAFELEFT");
-	checkHotkeys("STRAFF_RIGHT",   "STRAFERIGHT");
-	checkHotkeys("JUMP",           "JUMP");
-	checkHotkeys("TARGET",         "TARGETNEARESTENEMY");
-	checkHotkeys("TARGET_FRIEND",  "TARGETNEARESTFRIEND");
-	checkHotkeys("ESCAPE",         "TOGGLEGAMEMENU");
+	checkHotkeys("MOVE_FORWARD",   "MOVEFORWARD")
+	checkHotkeys("MOVE_BACKWARD",  "MOVEBACKWARD")
+	checkHotkeys("ROTATE_LEFT",    "TURNLEFT")
+	checkHotkeys("ROTATE_RIGHT",   "TURNRIGHT")
+	checkHotkeys("STRAFF_LEFT",    "STRAFELEFT")
+	checkHotkeys("STRAFF_RIGHT",   "STRAFERIGHT")
+	checkHotkeys("JUMP",           "JUMP")
+	checkHotkeys("TARGET",         "TARGETNEARESTENEMY")
+	checkHotkeys("TARGET_FRIEND",  "TARGETNEARESTFRIEND")
+	checkHotkeys("ESCAPE",         "TOGGLEGAMEMENU")
 
 end
 
 
 function settings.loadProfile(_name)
-	cprintf(cli.yellow,language[186], _name)
+	cprintf(cli.yellow, language[186], _name)
 
 	-- Delete old profile settings (if they even exist), restore defaults
-	settings.profile = table.copy(settings_default.profile);
+	settings.profile = table.copy(settings_default.profile)
 
-	local filename = getExecutionPath() .. "/profiles/" .. _name .. ".xml";
-	local root = xml.open(filename);
-	local elements = root:getElements();
+	local filename = getExecutionPath() .. "/profiles/" .. _name .. ".xml"
+	local root = xml.open(filename)
+	local elements = root:getElements()
 
 	local loadOptions = function(node)
-		local elements = node:getElements();
+		local elements = node:getElements()
 
-		for i,v in pairs(elements) do
-			settings.profile.options[v:getAttribute("name")] = v:getAttribute("value");
+		for i, v in pairs(elements) do
+			settings.profile.options[v:getAttribute("name")] = v:getAttribute("value")
 		end
 	end
 
 	local loadHotkeys = function(node)
-		local elements = node:getElements();
+		local elements = node:getElements()
 
-		for i,v in pairs(elements) do
-			settings.profile.hotkeys[v:getAttribute("name")] = {};
-			settings.profile.hotkeys[v:getAttribute("name")].name = v:getAttribute("name");
-			settings.profile.hotkeys[v:getAttribute("name")].key = key[v:getAttribute("key")];
-			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")];
+		for i, v in pairs(elements) do
+			settings.profile.hotkeys[v:getAttribute("name")] = {}
+			settings.profile.hotkeys[v:getAttribute("name")].name = v:getAttribute("name")
+			settings.profile.hotkeys[v:getAttribute("name")].key = key[v:getAttribute("key")]
+			settings.profile.hotkeys[v:getAttribute("name")].modifier = key[v:getAttribute("modifier")]
 
-			if( key[v:getAttribute("key")] == nil ) then
-				local err = sprintf(language[127], tostring(v:getAttribute("name")), _name );	-- Please set a valid key
-				error(err, 0);
+			if (key[v:getAttribute("key")] == nil) then
+				local err = sprintf(language[127], tostring(v:getAttribute("name")), _name )	-- Please set a valid key
+				error(err, 0)
 			end
 
 			checkKeySettings(v:getAttribute("name"),
 			  v:getAttribute("key"),
-			  v:getAttribute("modifier") );
+			  v:getAttribute("modifier") )
 
 		end
 	end
 
 	local loadOnLoadEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onLoad = loadstring(luaCode);
-			assert(settings.profile.events.onLoad, sprintf(language[151], "onLoad"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onLoad = loadstring(luaCode)
+			assert(settings.profile.events.onLoad, sprintf(language[151], "onLoad"))
 
-			if( type(settings.profile.events.onLoad) ~= "function" ) then
-				settings.profile.events.onLoad = nil;
-			end;
+			if (type(settings.profile.events.onLoad) ~= "function") then
+				settings.profile.events.onLoad = nil
+			end
 		end
 	end
 
 	local loadOnDeathEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onDeath = loadstring(luaCode);
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onDeath = loadstring(luaCode)
 
-			assert(settings.profile.events.onDeath, sprintf(language[151], "onDeath"));
+			assert(settings.profile.events.onDeath, sprintf(language[151], "onDeath"))
 
-			if( type(settings.profile.events.onDeath) ~= "function" ) then
-				settings.profile.events.onDeath = nil;
-			end;
+			if (type(settings.profile.events.onDeath) ~= "function") then
+				settings.profile.events.onDeath = nil
+			end
 		end
 	end
 
 	local loadOnLeaveCombatEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onLeaveCombat = loadstring(luaCode);
-			assert(settings.profile.events.onLeaveCombat, sprintf(language[151], "onLeaveCombat"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onLeaveCombat = loadstring(luaCode)
+			assert(settings.profile.events.onLeaveCombat, sprintf(language[151], "onLeaveCombat"))
 
-			if( type(settings.profile.events.onLeaveCombat) ~= "function" ) then
-				settings.profile.events.onLeaveCombat = nil;
-			end;
+			if (type(settings.profile.events.onLeaveCombat) ~= "function") then
+				settings.profile.events.onLeaveCombat = nil
+			end
 		end
 	end
 
 	local loadPreCodeOnElite = function(node)
-	local luaCode = node:getValue();
-	if( luaCode == nil ) then return; end;
+	local luaCode = node:getValue()
+	if (luaCode == nil) then
+		return
+	end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.preCodeOnElite = loadstring(luaCode);
-			assert(settings.profile.events.preCodeOnElite, sprintf(language[151], "preCodeOnElite"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.preCodeOnElite = loadstring(luaCode)
+			assert(settings.profile.events.preCodeOnElite, sprintf(language[151], "preCodeOnElite"))
 
-			if( type(settings.profile.events.preCodeOnElite) ~= "function" ) then
-				settings.profile.events.preCodeOnElite = nil;
-			end;
+			if (type(settings.profile.events.preCodeOnElite) ~= "function") then
+				settings.profile.events.preCodeOnElite = nil
+			end
 		end
 	end
 
 	local loadOnLevelupEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onLevelup = loadstring(luaCode);
-			assert(settings.profile.events.onLevelup, sprintf(language[151], "onLevelup"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onLevelup = loadstring(luaCode)
+			assert(settings.profile.events.onLevelup, sprintf(language[151], "onLevelup"))
 
-			if( type(settings.profile.events.onLevelup) ~= "function" ) then
-				settings.profile.events.onLevelup = nil;
-			end;
+			if (type(settings.profile.events.onLevelup) ~= "function") then
+				settings.profile.events.onLevelup = nil
+			end
 		end
 	end
 
 	local loadOnPreSkillCastEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onPreSkillCast = loadstring(luaCode);
-			assert(settings.profile.events.onPreSkillCast, sprintf(language[151], "onPreSkillCast"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onPreSkillCast = loadstring(luaCode)
+			assert(settings.profile.events.onPreSkillCast, sprintf(language[151], "onPreSkillCast"))
 
-			if( type(settings.profile.events.onPreSkillCast) ~= "function" ) then
-				settings.profile.events.onPreSkillCast = nil;
-			end;
+			if (type(settings.profile.events.onPreSkillCast) ~= "function") then
+				settings.profile.events.onPreSkillCast = nil
+			end
 		end
 	end
 
 	local loadOnHarvestEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onHarvest = loadstring(luaCode);
-			assert(settings.profile.events.onHarvest, sprintf(language[151], "onHarvest"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onHarvest = loadstring(luaCode)
+			assert(settings.profile.events.onHarvest, sprintf(language[151], "onHarvest"))
 
-			if( type(settings.profile.events.onHarvest) ~= "function" ) then
-				settings.profile.events.onHarvest = nil;
-			end;
+			if (type(settings.profile.events.onHarvest) ~= "function") then
+				settings.profile.events.onHarvest = nil
+			end
 		end
 	end
 
 	local loadOnSkillCastEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onSkillCast= loadstring(luaCode);
-			assert(settings.profile.events.onSkillCast, sprintf(language[151], "onSkillCast"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onSkillCast= loadstring(luaCode)
+			assert(settings.profile.events.onSkillCast, sprintf(language[151], "onSkillCast"))
 
-			if( type(settings.profile.events.onSkillCast) ~= "function" ) then
-				settings.profile.events.onSkillCast = nil;
-			end;
+			if (type(settings.profile.events.onSkillCast) ~= "function") then
+				settings.profile.events.onSkillCast = nil
+			end
 		end
 	end
 
 	local loadonUnstickFailureEvent = function(node)
-		local luaCode = node:getValue();
-		if( luaCode == nil ) then return; end;
+		local luaCode = node:getValue()
+		if (luaCode == nil) then
+			return
+		end
 
-		if( string.len(luaCode) > 0 and string.find(luaCode, "%w") ) then
-			settings.profile.events.onUnstickFailure = loadstring(luaCode);
-			assert(settings.profile.events.onUnstickFailure, sprintf(language[151], "onUnstickFailure"));
+		if (string.len(luaCode) > 0 and string.find(luaCode, "%w")) then
+			settings.profile.events.onUnstickFailure = loadstring(luaCode)
+			assert(settings.profile.events.onUnstickFailure, sprintf(language[151], "onUnstickFailure"))
 
-			if( type(settings.profile.events.onUnstickFailure) ~= "function" ) then
-				settings.profile.events.onUnstickFailure = nil;
-			end;
+			if (type(settings.profile.events.onUnstickFailure) ~= "function") then
+				settings.profile.events.onUnstickFailure = nil
+			end
 		end
 	end
 
@@ -748,124 +768,124 @@ function settings.loadProfile(_name)
 		end
 		settings.profile.skillsData[classNum] = {}
 
-		local elements = node:getElements();
+		local elements = node:getElements()
 
-		for i,v in pairs(elements) do
+		for i, v in pairs(elements) do
 			local name, hotkey, modifier
-			name = v:getAttribute("name");
+			name = v:getAttribute("name")
 --			hotkey = key[v:getAttribute("hotkey")];
-			modifier = key[v:getAttribute("modifier")];
+			modifier = key[v:getAttribute("modifier")]
 
 			-- using the MACRO key as hotkey is also a valid key
-			if( string.upper( tostring(v:getAttribute("hotkey")) ) == "MACRO" ) then
-				hotkey = "MACRO";						-- set MACRO as hotkey
+			if (string.upper( tostring(v:getAttribute("hotkey")) ) == "MACRO") then
+				hotkey = "MACRO"						-- set MACRO as hotkey
 			else
-				hotkey = key[v:getAttribute("hotkey")];	-- read the virtual key numer
+				hotkey = key[v:getAttribute("hotkey")]	-- read the virtual key numer
 			end
 
 			-- Over-ride attributes
-			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut;
+			local priority, maxhpper, maxmanaper, cooldown, inbattle, pullonly, maxuse, autouse, rebuffcut
 			local reqbuffname, reqbuffcount, reqbufftarget, nobuffname, nobuffcount, nobufftarget, mobcount, minrange
-			priority = v:getAttribute("priority");
-			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")));
-			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")));
-			targetmaxhp = tonumber((string.gsub(v:getAttribute("targethp") or "","!","-")));
-			maxmanaper = tonumber((string.gsub(v:getAttribute("manaper") or "","!","-")));
-			cooldown = tonumber(v:getAttribute("cooldown"));
-			inbattle = v:getAttribute("inbattle");
-			pullonly = v:getAttribute("pullonly");
-			maxuse = tonumber(v:getAttribute("maxuse"));
-			rebuffcut = tonumber(v:getAttribute("rebuffcut"));
-			reqbuffcount = tonumber(v:getAttribute("reqbuffcount"));
-			reqbufftarget = v:getAttribute("reqbufftarget");
-			reqbuffname = v:getAttribute("reqbuffname");
-			nobuffcount = tonumber(v:getAttribute("nobuffcount"));
-			nobufftarget = v:getAttribute("nobufftarget");
-			nobuffname = v:getAttribute("nobuffname");
-			autouse = v:getAttribute("autouse");
-			mobcount = v:getAttribute("mobcount");
-			minrange = v:getAttribute("minrange");
+			priority = v:getAttribute("priority")
+			maxhpper = tonumber((string.gsub(v:getAttribute("hpper") or "","!","-")))
+			targetmaxhpper = tonumber((string.gsub(v:getAttribute("targethpper") or "","!","-")))
+			targetmaxhp = tonumber((string.gsub(v:getAttribute("targethp") or "","!","-")))
+			maxmanaper = tonumber((string.gsub(v:getAttribute("manaper") or "","!","-")))
+			cooldown = tonumber(v:getAttribute("cooldown"))
+			inbattle = v:getAttribute("inbattle")
+			pullonly = v:getAttribute("pullonly")
+			maxuse = tonumber(v:getAttribute("maxuse"))
+			rebuffcut = tonumber(v:getAttribute("rebuffcut"))
+			reqbuffcount = tonumber(v:getAttribute("reqbuffcount"))
+			reqbufftarget = v:getAttribute("reqbufftarget")
+			reqbuffname = v:getAttribute("reqbuffname")
+			nobuffcount = tonumber(v:getAttribute("nobuffcount"))
+			nobufftarget = v:getAttribute("nobufftarget")
+			nobuffname = v:getAttribute("nobuffname")
+			autouse = v:getAttribute("autouse")
+			mobcount = v:getAttribute("mobcount")
+			minrange = v:getAttribute("minrange")
 
 			-- check if 'wrong' options are set
-			if( v:getAttribute("mana")      or
-			    v:getAttribute("rage")      or
-			    v:getAttribute("energy")    or
-			    v:getAttribute("focus")      or
-			    v:getAttribute("range")     or
-			    v:getAttribute("type")      or
-			    v:getAttribute("target")    or
-			    v:getAttribute("casttime") ) then
-					local msg = sprintf(language[128], name, _name);	-- are no valid options for your skill
-					error(msg, 0);
-			end;
+			if (v:getAttribute("mana")      or
+				v:getAttribute("rage")      or
+				v:getAttribute("energy")    or
+				v:getAttribute("focus")      or
+				v:getAttribute("range")     or
+				v:getAttribute("type")      or
+				v:getAttribute("target")    or
+				v:getAttribute("casttime")) then
+					local msg = sprintf(language[128], name, _name)	-- are no valid options for your skill
+					error(msg, 0)
+			end
 
-			if( name == nil) then
-				local msg = sprintf(language[130], _name);	-- empty\' skill name
-				error(msg, 0);
-			end;
+			if (name == nil) then
+				local msg = sprintf(language[130], _name)	-- empty\' skill name
+				error(msg, 0)
+			end
 
-			if( inbattle ~= nil ) then
-				if( inbattle == "true" or
-					inbattle == true ) then
-					inbattle = true;
-				elseif( inbattle == "false"  or
-					inbattle == false ) then
-					inbattle = false;
+			if (inbattle ~= nil) then
+				if (inbattle == "true" or
+					inbattle == true) then
+					inbattle = true
+				elseif (inbattle == "false"  or
+					inbattle == false) then
+					inbattle = false
 				else
-					local msg = sprintf(language[131], inbattle, name, _name);	-- wrong option inbattle
+					local msg = sprintf(language[131], inbattle, name, _name)	-- wrong option inbattle
 
-					error(msg, 0);
-				end;
+					error(msg, 0)
+				end
 			end
 
-			if( pullonly ~= nil ) then
-				if( pullonly == "true" or
-					pullonly == true ) then
-					pullonly = true;
+			if (pullonly ~= nil) then
+				if (pullonly == "true" or
+					pullonly == true) then
+					pullonly = true
 				else
-					local msg = sprintf(language[132], pullonly, name, _name);	-- wrong option pullonly
+					local msg = sprintf(language[132], pullonly, name, _name)	-- wrong option pullonly
 
-					error(msg, 0);
-				end;
+					error(msg, 0)
+				end
 			end
 
-			if( level == nil or level < 1 ) then
-				level = 1;
+			if (level == nil or level < 1) then
+				level = 1
 			end
 
-			local baseskill = database.skills[name];
-			if( not baseskill ) then
-				local err = sprintf("ERROR: \'%s\' is not defined in the database!", name);
-				error(err, 0);
+			local baseskill = database.skills[name]
+			if (not baseskill) then
+				local err = sprintf("ERROR: \'%s\' is not defined in the database!", name)
+				error(err, 0)
 			end
 
-			local tmp = CSkill(database.skills[name]);
-			tmp.hotkey = hotkey;
-			tmp.modifier = modifier;
+			local tmp = CSkill(database.skills[name])
+			tmp.hotkey = hotkey
+			tmp.modifier = modifier
 
 			if (tmp.hotkey == "MACRO" or tmp.hotkey == "" or tmp.hotkey == nil ) and tmp.Id == 0 then
-				local msg = sprintf(language[158],tmp.Name);    -- Can't use "MACRO" without skill id.
-				error(msg,0);
+				local msg = sprintf(language[158], tmp.Name)    -- Can't use "MACRO" without skill id.
+				error(msg, 0)
 			end
 
 			if (reqbuffname and not reqbufftarget) or (not reqbuffname and reqbufftarget) then
-				local msg = sprintf(language[154], name, _name);	-- need to define both
-				error(msg, 0);
+				local msg = sprintf(language[154], name, _name)	-- need to define both
+				error(msg, 0)
 			end
 
 			if (nobuffname and not nobufftarget) or (not nobuffname and nobufftarget) then
-				local msg = sprintf(language[155], name, _name);	-- need to define both
-				error(msg, 0);
+				local msg = sprintf(language[155], name, _name)	-- need to define both
+				error(msg, 0)
 			end
 
 			if reqbufftarget ~= nil and reqbufftarget ~= "target" and reqbufftarget ~="player" then
-				local msg = sprintf(language[156], reqbufftarget, name, _name);	-- needs to be 'target' or 'player'
-				error(msg, 0);
+				local msg = sprintf(language[156], reqbufftarget, name, _name)	-- needs to be 'target' or 'player'
+				error(msg, 0)
 			end
 
 			if nobufftarget ~= nil and nobufftarget ~= "target" and nobufftarget ~="player" then
-				local msg = sprintf(language[157], nobufftarget, name, _name);	-- needs to be 'target' or 'player'
-				error(msg, 0);
+				local msg = sprintf(language[157], nobufftarget, name, _name)	-- needs to be 'target' or 'player'
+				error(msg, 0)
 			end
 
 			if minrange and minrange > tmp.Range then
@@ -873,117 +893,161 @@ function settings.loadProfile(_name)
 				cprintf(cli.yellow, msg)
 			end
 
-			if( toggleable ) then tmp.Toggleable = toggleable; end;
-			if( priority ) then tmp.priority = priority; end
-			if( targetmaxhpper ) then tmp.TargetMaxHpPer = targetmaxhpper; end;
-			if( targetmaxhp ) then tmp.TargetMaxHp = targetmaxhp; end;
-			if( maxhpper ) then tmp.MaxHpPer = maxhpper; end;
-			if( maxmanaper ) then tmp.MaxManaPer = maxmanaper; end;
-			if( cooldown ) then tmp.Cooldown = cooldown; end;
-			if( inbattle ~= nil ) then tmp.InBattle = inbattle; end;
-			if( pullonly == true ) then tmp.pullonly = pullonly; end;
-			if( maxuse ) then tmp.maxuse = maxuse; end;
-			if( rebuffcut ) then tmp.rebuffcut = rebuffcut; end;
-			if( reqbuffcount ) then tmp.ReqBuffCount = reqbuffcount; end;
-			if( reqbufftarget ) then tmp.ReqBuffTarget = reqbufftarget; end;
-			if( reqbuffname ) then tmp.ReqBuffName = reqbuffname; end;
-			if( nobuffcount ) then tmp.NoBuffCount = nobuffcount; end;
-			if( nobufftarget ) then tmp.NoBuffTarget = nobufftarget; end;
-			if( nobuffname ) then tmp.NoBuffName = nobuffname; end;
-			if( autouse ~= nil ) then tmp.AutoUse = (autouse == true) ; end;
-			if( mobcount ) then tmp.MobCount = mobcount; end;
-			if( minrange ) then tmp.MinRange = minrange; end;
+			if (toggleable) then
+				tmp.Toggleable = toggleable
+			end
+			if (priority) then
+				tmp.priority = priority
+			end
+			if (targetmaxhpper) then
+				tmp.TargetMaxHpPer = targetmaxhpper
+			end
+			if (targetmaxhp) then
+				tmp.TargetMaxHp = targetmaxhp
+			end
+			if (maxhpper) then
+				tmp.MaxHpPer = maxhpper
+			end
+			if (maxmanaper) then
+				tmp.MaxManaPer = maxmanaper
+			end
+			if (cooldown) then
+				tmp.Cooldown = cooldown
+			end
+			if (inbattle ~= nil) then
+				tmp.InBattle = inbattle
+			end
+			if (pullonly == true) then
+				tmp.pullonly = pullonly
+			end
+			if (maxuse) then
+				tmp.maxuse = maxuse
+			end
+			if (rebuffcut) then
+				tmp.rebuffcut = rebuffcut
+			end
+			if (reqbuffcount) then
+				tmp.ReqBuffCount = reqbuffcount
+			end
+			if (reqbufftarget) then
+				tmp.ReqBuffTarget = reqbufftarget
+			end
+			if (reqbuffname) then
+				tmp.ReqBuffName = reqbuffname
+			end
+			if (nobuffcount) then
+				tmp.NoBuffCount = nobuffcount
+			end
+			if (nobufftarget) then
+				tmp.NoBuffTarget = nobufftarget
+			end
+			if (nobuffname) then
+				tmp.NoBuffName = nobuffname
+			end
+			if (autouse ~= nil) then
+				tmp.AutoUse = (autouse == true)
+			end
+			if (mobcount) then
+				tmp.MobCount = mobcount
+			end
+			if (minrange) then
+				tmp.MinRange = minrange
+			end
 
-			table.insert(settings.profile.skillsData[classNum], tmp);
+			table.insert(settings.profile.skillsData[classNum], tmp)
 
 		end
 	end
 
 	local loadFriends = function(node)
-		local elements = node:getElements();
+		local elements = node:getElements()
 
-		for i,v in pairs(elements) do
+		for i, v in pairs(elements) do
 
-			local name = v:getAttribute("name");
+			local name = v:getAttribute("name")
 
-			if( name ) then name = trim(name); end;
+			if (name) then
+				name = trim(name)
+			end
 
-			if( name ) then
+			if (name) then
 
 				-- fix, because getAttribute seems not to recognize the escape characters
 				-- for special ASCII characters
-				name = string.gsub (name, "\\132", string.char(132));	-- ä
-				name = string.gsub (name, "\\142", string.char(142));	-- Ä
-				name = string.gsub (name, "\\148", string.char(148));	-- ö
-				name = string.gsub (name, "\\153", string.char(153));	-- Ö
-				name = string.gsub (name, "\\129", string.char(129));	-- ü
-				name = string.gsub (name, "\\154", string.char(154));	-- Ü
-				name = string.gsub (name, "\\225", string.char(225));	-- ß
+				name = string.gsub (name, "\\132", string.char(132))	-- ä
+				name = string.gsub (name, "\\142", string.char(142))	-- Ä
+				name = string.gsub (name, "\\148", string.char(148))	-- ö
+				name = string.gsub (name, "\\153", string.char(153))	-- Ö
+				name = string.gsub (name, "\\129", string.char(129))	-- ü
+				name = string.gsub (name, "\\154", string.char(154))	-- Ü
+				name = string.gsub (name, "\\225", string.char(225))	-- ß
 
-				table.insert(settings.profile.friends, name);
+				table.insert(settings.profile.friends, name)
 			end
 		end
 	end
 
 	local loadMobs = function(node)
-		local elements = node:getElements();
+		local elements = node:getElements()
 
-		for i,v in pairs(elements) do
+		for i, v in pairs(elements) do
 
-			local name = v:getAttribute("name");
+			local name = v:getAttribute("name")
 
-			if( name ) then name = trim(name); end;
+			if (name) then
+				name = trim(name)
+			end
 
-			if( name ) then
+			if (name) then
 
 				-- fix, because getAttribute seems not to recognize the escape characters
 				-- for special ASCII characters
-				name = string.gsub (name, "\\132", string.char(132));	-- ä
-				name = string.gsub (name, "\\142", string.char(142));	-- Ä
-				name = string.gsub (name, "\\148", string.char(148));	-- ö
-				name = string.gsub (name, "\\153", string.char(153));	-- Ö
-				name = string.gsub (name, "\\129", string.char(129));	-- ü
-				name = string.gsub (name, "\\154", string.char(154));	-- Ü
-				name = string.gsub (name, "\\225", string.char(225));	-- ß
+				name = string.gsub (name, "\\132", string.char(132))	-- ä
+				name = string.gsub (name, "\\142", string.char(142))	-- Ä
+				name = string.gsub (name, "\\148", string.char(148))	-- ö
+				name = string.gsub (name, "\\153", string.char(153))	-- Ö
+				name = string.gsub (name, "\\129", string.char(129))	-- ü
+				name = string.gsub (name, "\\154", string.char(154))	-- Ü
+				name = string.gsub (name, "\\225", string.char(225))	-- ß
 
-				table.insert(settings.profile.mobs, name);
+				table.insert(settings.profile.mobs, name)
 			end
 		end
 	end
 
-	local hf_temp = _name;	-- remember profile name shortly
+	local hf_temp = _name	-- remember profile name shortly
 
-	for i,v in pairs(elements) do
-		local name = v:getName();
-		if( string.lower(name) == "options" ) then
-			loadOptions(v);
-		elseif( string.lower(name) == "hotkeys" ) then
-			loadHotkeys(v);
-		elseif( string.lower(name) == "skills" ) then
-			loadSkills(v);
-		elseif( string.lower(name) == "friends" ) then
-			loadFriends(v);
-		elseif( string.lower(name) == "mobs" ) then
-			loadMobs(v);
-		elseif( string.lower(name) == "onload" ) then
-			loadOnLoadEvent(v);
-		elseif( string.lower(name) == "ondeath" ) then
-			loadOnDeathEvent(v);
-		elseif( string.lower(name) == "onleavecombat" ) then
-			loadOnLeaveCombatEvent(v);
-		elseif( string.lower(name) == "precodeonelite" ) then
-			loadPreCodeOnElite(v);
-		elseif( string.lower(name) == "onlevelup" ) then
-			loadOnLevelupEvent(v);
-		elseif( string.lower(name) == "onskillcast" ) then
-			loadOnSkillCastEvent(v);
-		elseif( string.lower(name) == "onharvest" ) then
-			loadOnHarvestEvent(v);
-		elseif( string.lower(name) == "onunstickfailure" ) then
-			loadonUnstickFailureEvent(v);
-		elseif( string.lower(name) == "onpreskillcast" ) then
-			loadOnPreSkillCastEvent(v);
-		elseif( string.lower(name) == "skills_warrior"  or
+	for i, v in pairs(elements) do
+		local name = v:getName()
+		if (string.lower(name) == "options") then
+			loadOptions(v)
+		elseif (string.lower(name) == "hotkeys") then
+			loadHotkeys(v)
+		elseif (string.lower(name) == "skills") then
+			loadSkills(v)
+		elseif (string.lower(name) == "friends") then
+			loadFriends(v)
+		elseif (string.lower(name) == "mobs") then
+			loadMobs(v)
+		elseif (string.lower(name) == "onload") then
+			loadOnLoadEvent(v)
+		elseif (string.lower(name) == "ondeath") then
+			loadOnDeathEvent(v)
+		elseif (string.lower(name) == "onleavecombat") then
+			loadOnLeaveCombatEvent(v)
+		elseif (string.lower(name) == "precodeonelite") then
+			loadPreCodeOnElite(v)
+		elseif (string.lower(name) == "onlevelup") then
+			loadOnLevelupEvent(v)
+		elseif (string.lower(name) == "onskillcast") then
+			loadOnSkillCastEvent(v)
+		elseif (string.lower(name) == "onharvest") then
+			loadOnHarvestEvent(v)
+		elseif (string.lower(name) == "onunstickfailure") then
+			loadonUnstickFailureEvent(v)
+		elseif (string.lower(name) == "onpreskillcast") then
+			loadOnPreSkillCastEvent(v)
+		elseif (string.lower(name) == "skills_warrior"  or
 			string.lower(name) == "skills_scout"  or
 			string.lower(name) == "skills_rogue"  or
 			string.lower(name) == "skills_mage"  or
@@ -992,35 +1056,35 @@ function settings.loadProfile(_name)
 			string.lower(name) == "skills_warden"  or
 			string.lower(name) == "skills_druid"  or
 			string.lower(name) == "skills_warlock"  or
-			string.lower(name) == "skills_champion" ) then
-				loadSkills(v);
+			string.lower(name) == "skills_champion") then
+				loadSkills(v)
 		else		-- warning for other stuff and misspellings
 			if ( string.lower(name) ~= "skills_warrior"     and
-			     string.lower(name) ~= "skills_scout"       and
-		 	     string.lower(name) ~= "skills_rogue"       and
-	 		     string.lower(name) ~= "skills_mage"        and
-			     string.lower(name) ~= "skills_priest"      and
-			     string.lower(name) ~= "skills_knight"      and
-			     string.lower(name) ~= "skills_warden"      and
-			     string.lower(name) ~= "skills_druid"       and
+				 string.lower(name) ~= "skills_scout"       and
+				 string.lower(name) ~= "skills_rogue"       and
+				 string.lower(name) ~= "skills_mage"        and
+				 string.lower(name) ~= "skills_priest"      and
+				 string.lower(name) ~= "skills_knight"      and
+				 string.lower(name) ~= "skills_warden"      and
+				 string.lower(name) ~= "skills_druid"       and
 				 string.lower(name) ~= "skills_warlock"     and
-				 string.lower(name) ~= "skills_champion" ) then
+				 string.lower(name) ~= "skills_champion") then
 				cprintf(cli.yellow, tostring(language[60]), string.lower(tostring(name)),
-					tostring(hf_temp));
-			end;
+					tostring(hf_temp))
+			end
 		end
 	end
 
 	-- checks for MACRO hotkey
 	-- print error if new macro option isn't defined
-	if( not settings.profile.hotkeys.MACRO ) then
-		cprintf(cli.yellow, language[900]);
-		cprintf(cli.yellow, language[901]);
-		cprintf(cli.yellow, language[902]);
-		cprintf(cli.yellow, language[903]);
-		cprintf(cli.yellow, language[904], "VK_0"); -- TODO: Change VK_0 to the actual hotkey we should use
-		local msg = sprintf(language[905], _name);
-		error(msg, 0);
+	if (not settings.profile.hotkeys.MACRO) then
+		cprintf(cli.yellow, language[900])
+		cprintf(cli.yellow, language[901])
+		cprintf(cli.yellow, language[902])
+		cprintf(cli.yellow, language[903])
+		cprintf(cli.yellow, language[904], "VK_0") -- TODO: Change VK_0 to the actual hotkey we should use
+		local msg = sprintf(language[905], _name)
+		error(msg, 0)
 	end
 
 	-- Setup the macros and action key.
@@ -1028,83 +1092,85 @@ function settings.loadProfile(_name)
 
 	-- check if new macro option is working / ingame macro defined and assigned
 	-- check it with a function with defined return values
-	settings.options.DEBUGGING_MACRO = true;
+	settings.options.DEBUGGING_MACRO = true
 	print("Testing 'ingamefunctions' macro. If it gets stuck here, please update the 'ingamefunctions' by copying the 'ingamefunctions' folder from 'rom/devtools' to the game's 'interface/addons' folder and ensure MicroMacro is run as administrator.")
-	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");");
-	if( hf_return ~= 1234 ) then	-- return values not found
+	local hf_return = RoMScript("1234;ChatFrame1:AddMessage(\"MACRO test: send value 1234 to macro place 2\");")
+	if (hf_return ~= 1234) then	-- return values not found
 --		RoMScript("ChatFrame1:AddMessage(\"MACRO test: test failed !!! No return values found!\");");	-- overwrite return values
-		cprintf(cli.yellow, language[906] );	-- Define ingame an empty macro
+		cprintf(cli.yellow, language[906] )	-- Define ingame an empty macro
 
 		if ( settings.profile.hotkeys.MACRO.key) then
-			hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key);
+			hf_temp = getKeyName(settings.profile.hotkeys.MACRO.key)
 		else
-			local hf_temp ="<UNKNOWN>";	-- if ignore, key must not be set, so give value
+			local hf_temp ="<UNKNOWN>"	-- if ignore, key must not be set, so give value
 		end
 
-		local msg = sprintf(language[904], hf_temp );
+		local msg = sprintf(language[904], hf_temp )
 
-		error(msg, 0);
+		error(msg, 0)
 	else								-- return values found, clear it and send message
-		cprintf(cli.green, "MACRO Test: ok\n" );
-		RoMCode("ChatFrame1:AddMessage(\"MACRO test: successful\");");	-- overwrite values
+		cprintf(cli.green, "MACRO Test: ok\n" )
+		RoMCode("ChatFrame1:AddMessage(\"MACRO test: successful\");")	-- overwrite values
 	end
-	
-	local d3d_check = RoMScript("type(d303Fix)");
-	if( d3d_check == 'nil' ) then
+
+	local d3d_check = RoMScript("type(d303Fix)")
+	if (d3d_check == 'nil') then
 		cprintf_ex("|yellow|[!]|lightgray| d303Fix is not installed; some waypoints might not work correctly.\n"
-		.. "You can fix this by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.");
-	elseif( RoMScript("d303Fix.NumVer") < 10 ) then
-		cprintf_ex("|yellow|[!]|lightgray| d303Fix is out of date.\nPlease update it by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.\n");
+		.. "You can fix this by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.")
+	elseif (RoMScript("d303Fix.NumVer") < 10) then
+		cprintf_ex("|yellow|[!]|lightgray| d303Fix is out of date.\nPlease update it by copying the '#d303fix' folder from 'rom/devtools' to the game's 'interface/addons' folder.\n")
 	end
-	
-	
-	settings.options.DEBUGGING_MACRO = false;
+
+
+	settings.options.DEBUGGING_MACRO = false
 
 
 	-- MACRO is working, we can automaticly reset the langugae
 	-- remember game client language
-	local hf_langu = RoMScript("GetLanguage();");
-	if( not hf_langu ) then
-		local msg = sprintf(language[62]);	-- Error while reading the language settings
+	local hf_langu = RoMScript("GetLanguage();")
+	if (not hf_langu) then
+		local msg = sprintf(language[62])	-- Error while reading the language settings
 --		error(msg, 0);
-		cprintf(cli.yellow, msg);
-		hf_langu = "ENEU";
+		cprintf(cli.yellow, msg)
+		hf_langu = "ENEU"
 	end
-	bot.ClientLanguage = hf_langu;	-- remember clients language
+	bot.ClientLanguage = hf_langu	-- remember clients language
 
 	-- reset bot language to clients language
-	if( settings.options.USE_CLIENT_LANGUAGE ) then
-		local hf_language;
-		if( bot.ClientLanguage == "DE" ) then
-			hf_language = "deutsch";
-		elseif(bot.ClientLanguage  == "FR" ) then
-			hf_language = "french";
-		elseif(bot.ClientLanguage  == "RU" ) then
-			hf_language = "russian";
-		elseif(bot.ClientLanguage == "PL" ) then
-			hf_language = "polish";
+	if (settings.options.USE_CLIENT_LANGUAGE) then
+		local hf_language
+		if (bot.ClientLanguage == "DE") then
+			hf_language = "deutsch"
+		elseif (bot.ClientLanguage  == "FR") then
+			hf_language = "french"
+		elseif (bot.ClientLanguage  == "RU") then
+			hf_language = "russian"
+		elseif (bot.ClientLanguage == "PL") then
+			hf_language = "polish"
 		else
-			hf_language = "english";
+			hf_language = "english"
 		end
 
-		if( settings.options.LANGUAGE ~= hf_language ) then		-- load new language?
+		if (settings.options.LANGUAGE ~= hf_language) then		-- load new language?
 
 			local function setLanguage(_name)
-				include("/language/" .. _name .. ".lua");
+				include("/language/" .. _name .. ".lua")
 			end
 
-			local lang_base = {};
+			local lang_base = {}
 
-			for i,v in pairs(language) do lang_base[i] = v; end;	-- remember current language value to fill gaps with that
+			for i, v in pairs(language) do
+				lang_base[i] = v
+			end	-- remember current language value to fill gaps with that
 
-			setLanguage(hf_language);
-			for i,v in pairs(lang_base) do
-				if( language[i] == nil ) then
-					language[i] = v;
+			setLanguage(hf_language)
+			for i, v in pairs(lang_base) do
+				if (language[i] == nil) then
+					language[i] = v
 				end
-			end;
-			lang_base = nil; -- Not needed anymore, destroy it.
-			logMessage("Load Language according to client language: " .. hf_language);
+			end
+			lang_base = nil -- Not needed anymore, destroy it.
+			logMessage("Load Language according to client language: " .. hf_language)
 
 		end
 
@@ -1119,9 +1185,9 @@ function settings.loadProfile(_name)
 	if getModuleFilename then
 		local gamefolder = getFilePath(getModuleFilename(__PROC))
 		local addonfile = gamefolder.."/interface/addons/ingamefunctions/ingamefunctions.lua"
-		if( fileExists(addonfile) ) then
-			 local file = io.open(addonfile, "r");
-			 local line = file:read('*l');
+		if (fileExists(addonfile)) then
+			 local file = io.open(addonfile, "r")
+			 local line = file:read('*l')
 			 igf_version = tonumber(string.match(line, "%d+"))
 			 file:close()
 		end
@@ -1130,7 +1196,7 @@ function settings.loadProfile(_name)
 	end
 
 	if igf_version then
-		bot.IgfAddon = true;
+		bot.IgfAddon = true
 		bot.IgfVersion = igf_version
 		-- Check version
 		if igf_version < current_version then
@@ -1141,8 +1207,8 @@ function settings.loadProfile(_name)
 	end
 
 	-- check if automatic targeting is active
-	if( settings.profile.options.AUTO_TARGET == false ) then
-		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n");
+	if (settings.profile.options.AUTO_TARGET == false) then
+		cprintf(cli.yellow, "Caution: Automatic targeting is deactivated with option AUTO_TARGET=\"false\"\n")
 	end
 
 	-- Remember original combat settings
@@ -1156,26 +1222,26 @@ function settings.loadSkillSet(class)
 	if not player then return end
 
 	local skillSort = function(tab1, tab2)
-		if( tab2.priority < tab1.priority ) then
-			return true;
-		end;
+		if (tab2.priority < tab1.priority) then
+			return true
+		end
 
-		return false;
+		return false
 	end
 
 	settings.profile.skills = {}
 	if type(settings.profile.skillsData[0]) == "table" then
-		for k,v in pairs(settings.profile.skillsData[0]) do -- general skills
+		for k, v in pairs(settings.profile.skillsData[0]) do -- general skills
 			table.insert(settings.profile.skills, v)
 		end
 	end
 	if type(settings.profile.skillsData[class]) == "table" then
-		for k,v in pairs(settings.profile.skillsData[class]) do -- class skills
+		for k, v in pairs(settings.profile.skillsData[class]) do -- class skills
 			table.insert(settings.profile.skills, v)
 		end
 	end
 
-	table.sort(settings.profile.skills, skillSort);
+	table.sort(settings.profile.skills, skillSort)
 
 	-- Setup the macros and action key.
 	if settings.profile.hotkeys.MACRO ~= nil then
@@ -1186,23 +1252,23 @@ function settings.loadSkillSet(class)
 	settings.updateSkillsAvailability()
 
 	-- Check if the player has any ranged damage skills
-	local rangedSkills = false;
+	local rangedSkills = false
 	local realRange
 	equipment.BagSlot[10]:update() -- Update bow range.
-	for i,v in pairs(settings.profile.skills) do
+	for i, v in pairs(settings.profile.skills) do
 		if v.AddWeaponRange == true then
 			realRange = v.Range + equipment.BagSlot[10].Range
 		else
 			realRange = v.Range
 		end
 
-		if( realRange > 100  and
+		if (realRange > 100  and
 			( v.Type == STYPE_DAMAGE or
 			  v.Type == STYPE_DOT ) and
 			  v.Available) then
-			rangedSkills = true;
-			printf(language[176], v.Name);		-- Ranged skill found
-			break;
+			rangedSkills = true
+			printf(language[176], v.Name)		-- Ranged skill found
+			break
 		end
 	end
 
@@ -1210,46 +1276,46 @@ function settings.loadSkillSet(class)
 	settings.profile.options.COMBAT_DISTANCE = originalCombatDistance
 	settings.profile.options.COMBAT_RANGED_PULL = originalCombatRangedPull
 
-	if( rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL ) then
-		cprintf(cli.yellow, language[200]); -- No ranged skills. Turning COMBAT_RANGED_PULL off.
-		settings.profile.options.COMBAT_RANGED_PULL = false;
+	if (rangedSkills == false and settings.profile.options.COMBAT_RANGED_PULL) then
+		cprintf(cli.yellow, language[200]) -- No ranged skills. Turning COMBAT_RANGED_PULL off.
+		settings.profile.options.COMBAT_RANGED_PULL = false
 	end
 
 	-- default combat type if not in profile defined
-	if( settings.profile.options.COMBAT_TYPE ~= "ranged" and
-	    settings.profile.options.COMBAT_TYPE ~= "melee" ) then
-		if( player.Class1 == CLASS_WARRIOR or
-		    player.Class1 == CLASS_ROGUE   or
-		    player.Class1 == CLASS_WARDEN  or
-		    player.Class1 == CLASS_KNIGHT  or
-			player.Class1 == CLASS_CHAMPION  ) then
-			settings.profile.options.COMBAT_TYPE  = "melee";
+	if (settings.profile.options.COMBAT_TYPE ~= "ranged" and
+		settings.profile.options.COMBAT_TYPE ~= "melee") then
+		if (player.Class1 == CLASS_WARRIOR or
+			player.Class1 == CLASS_ROGUE   or
+			player.Class1 == CLASS_WARDEN  or
+			player.Class1 == CLASS_KNIGHT  or
+			player.Class1 == CLASS_CHAMPION) then
+			settings.profile.options.COMBAT_TYPE  = "melee"
 		elseif(
-		    player.Class1 == CLASS_PRIEST  or
-		    player.Class1 == CLASS_SCOUT   or
-		    player.Class1 == CLASS_DRUID   or
-		    player.Class1 == CLASS_MAGE    or
-			player.Class1 == CLASS_WARLOCK ) then
-			settings.profile.options.COMBAT_TYPE  = "ranged";
+			player.Class1 == CLASS_PRIEST  or
+			player.Class1 == CLASS_SCOUT   or
+			player.Class1 == CLASS_DRUID   or
+			player.Class1 == CLASS_MAGE    or
+			player.Class1 == CLASS_WARLOCK) then
+			settings.profile.options.COMBAT_TYPE  = "ranged"
 		else
-			error("undefined player.Class1 in settings.lua", 0);
-		end;
+			error("undefined player.Class1 in settings.lua", 0)
+		end
 	end
 
 	-- check if range attack range and combat distance fit together
-	local best_range = 0;
-	for i,v in pairs(settings.profile.skills) do
+	local best_range = 0
+	for i, v in pairs(settings.profile.skills) do
 		if v.AddWeaponRange == true then
 			realRange = v.Range + equipment.BagSlot[10].Range
 		else
 			realRange = v.Range
 		end
 
-		if( realRange > best_range and
+		if (realRange > best_range and
 			( v.Type == STYPE_DAMAGE or
 			  v.Type == STYPE_DOT ) and
 			  v.Available) then
-			best_range = realRange;
+			best_range = realRange
 		end
 	end
 
@@ -1258,7 +1324,7 @@ function settings.loadSkillSet(class)
 	-- check is combat distance is greater then maximum ranged attack
 	if ( settings.profile.options.COMBAT_DISTANCE == nil or
 		best_range < settings.profile.options.COMBAT_DISTANCE) then --and
-		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE or 0, best_range);	-- Maximum range of range attack skills is lesser
+		cprintf(cli.yellow, language[179], settings.profile.options.COMBAT_DISTANCE or 0, best_range)	-- Maximum range of range attack skills is lesser
 		settings.profile.options.COMBAT_DISTANCE = best_range
 	end
 end
@@ -1278,7 +1344,7 @@ function settings.updateSkillsAvailability()
 	--   ConsumableNumber
 
 	-- First collect tab skill info
-	local tabData = GetSkillBookData({2,3,4}) -- tabs of interest 2,3 and 4
+	local tabData = GetSkillBookData({2, 3, 4}) -- tabs of interest 2,3 and 4
 
 	-- Then collect item set skills
 	for num = 1, 5 do -- 5 possible enabled item set skills
@@ -1287,7 +1353,7 @@ function settings.updateSkillsAvailability()
 			local address = GetItemAddress(id)
 			local name = GetIdName(id)
 			if name ~= nil and name ~= "" and address ~= nil then
-				local aslevel = 1;--local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
+				local aslevel = 1--local aslevel = memoryReadInt(getProc(), address + addresses.skillItemSetAsLevel_offset)
 
 				-- Get power and consumables
 				local baseAddress = GetItemAddress(id)
@@ -1378,7 +1444,7 @@ function settings.updateSkillsAvailability()
 				if tabData[realName].skillnum then database.skills[skill.Name].skillnum = tabData[realName].skillnum end
 
 				-- Check if available
-				if( skill.skilltab == 3 and player.Class2 > 0 ) then
+				if (skill.skilltab == 3 and player.Class2 > 0) then
 					if skill.aslevel > player.Level2 then
 						skill.Available = false
 					else

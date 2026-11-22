@@ -7,7 +7,7 @@ ITEMCOLOR = {
 	PURPLE = tonumber("0xFFA864A8"),
 	ORANGE = tonumber("0xFFF68E56"),
 	GOLD =   tonumber("0xFFA37D50"),
-};
+}
 
 -- making a new one because i dont know if the other is used elsewhere
 ITEMQUALITYCOLOR = {
@@ -20,7 +20,7 @@ ITEMQUALITYCOLOR = {
 	0,
 	0,
 	tonumber("0xFFA864A8"),
-};
+}
 
 ITEM_REUSE_DELAY = 1 -- How long it wont use the item after being placed.
 
@@ -30,74 +30,74 @@ ITEMFLAGs_CANBESOLD_MASK = 0X200
 
 CItem = class(
 	function( self )
-		self.BaseItemAddress = nil;
-		self.Empty = true;
-		self.Id = 0;
-		self.Name = "<EMPTY>";
-		self.ItemCount = 0;
-		self.Color = "ffffff";
-		self.Icon = "";
-		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
-		self.Durability = 0;
-		self.MaxDurability = 0;
-		self.Quality = 0; -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
-		self.Value = 0;
-		self.Worth = 0;
-		self.InUse = false;
-		self.BoundStatus = 1; -- 0 = bound on pickup, 1 = not bound, 2 = binds on equip and bound, 3 = binds on equip and not bound
+		self.BaseItemAddress = nil
+		self.Empty = true
+		self.Id = 0
+		self.Name = "<EMPTY>"
+		self.ItemCount = 0
+		self.Color = "ffffff"
+		self.Icon = ""
+		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h"
+		self.Durability = 0
+		self.MaxDurability = 0
+		self.Quality = 0 -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
+		self.Value = 0
+		self.Worth = 0
+		self.InUse = false
+		self.BoundStatus = 1 -- 0 = bound on pickup, 1 = not bound, 2 = binds on equip and bound, 3 = binds on equip and not bound
 		self.Bound = true
-		self.RequiredLvl = 0;
-		self.CoolDownTime = 0;
-		self.LastTimeUsed = 0;
-		self.MaxStack = 0;
-		self.ObjType = 0;
-		self.ObjSubType = 0;
-		self.ObjSubSubType = 0;
-		self.Stats = {}; -- list of named stats and their ids.
+		self.RequiredLvl = 0
+		self.CoolDownTime = 0
+		self.LastTimeUsed = 0
+		self.MaxStack = 0
+		self.ObjType = 0
+		self.ObjSubType = 0
+		self.ObjSubSubType = 0
+		self.Stats = {} -- list of named stats and their ids.
 		self.ItemShopItem = false
 		self.CanBeSold = false
 		self.LastMovedTime = 0
 		self.Range = 0 -- Mainly used for bow and crossbow skill range calculations
 	end
-);
+)
 
 function CItem:update()
-	local nameAddress;
-	local oldId = self.Id;
-	if( self.Address ~= nil ) then
-		self.Id = memoryReadInt( getProc(), self.Address ) or 0;
+	local nameAddress
+	local oldId = self.Id
+	if (self.Address ~= nil) then
+		self.Id = memoryReadInt( getProc(), self.Address ) or 0
 	else
-		self.Id = 0;
-		self.Address = nil;
+		self.Id = 0
+		self.Address = nil
 	end
 
 	self.Available = (self.Available ~= false)
 
-	if( self.Id == nil or self.Id <= 0 ) then
-		self.Empty = true;
+	if (self.Id == nil or self.Id <= 0) then
+		self.Empty = true
 	else
-		self.Empty = false;
+		self.Empty = false
 	end
 
 
 
 	if ( self.Id ~= nil and self.Id ~= oldId and self.Id ~= 0 ) or ( self.Id ~= 0 and self.BaseItemAddress == nil) then
-		self.BaseItemAddress = GetItemAddress( self.Id );
+		self.BaseItemAddress = GetItemAddress( self.Id )
 
-		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0 ) then
+		if ( self.BaseItemAddress == nil or self.BaseItemAddress == 0) then
 			local msg = sprintf("Wrong value returned in update of CItem id: %d\n%s\n", self.Id, debug.traceback())
-			logMessage(msg);
+			logMessage(msg)
 
-			if( settings.profile.options.DEBUG_INV ) then
-				cprintf( cli.yellow, msg);
+			if (settings.profile.options.DEBUG_INV) then
+				cprintf( cli.yellow, msg)
 			end
 
-			return;
-		end;
-		self.Name = "";
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
-		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability ) or 1000;
-		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability ) or 80;
+			return
+		end
+		self.Name = ""
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count )
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability ) or 1000
+		self.MaxDurability = memoryReadByte( getProc(), self.Address + addresses.item.max_durability ) or 80
 		--[[
 			Some items do not seem to have their durability set on the item itself. Those items always seem to have
 			a durability of 80; how the game determines when to use 80, or use the value set on the item, is unknown.
@@ -105,85 +105,85 @@ function CItem:update()
 			It may also be a percentage; ie a value of '120' indicates 120% of normal durability -- but no clear
 			indication as to w hat the normal durability is.
 		]]
-		if( self.MaxDurability < 60 or self.MaxDurability > 140 or self.MaxDurability < (self.Durability/100.0) ) then
-			self.MaxDurability = 80;
+		if (self.MaxDurability < 60 or self.MaxDurability > 140 or self.MaxDurability < (self.Durability/100.0)) then
+			self.MaxDurability = 80
 		end
 
-		if ( self.Durability > 0 ) then
-			self.Durability = self.Durability / 100;
-		end;
-		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.value ) or self.Value or 1;
-		self.Worth = self.Value / 10;
-		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
-		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.item.bound_status );
-		self.Bound = not bitAnd(self.BoundStatus,1)
-		self.RequiredLvl = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.required_level) or self.RequiredLvl;
-		self.MaxStack = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.max_stack) or self.MaxStack;
-		self.ObjType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type) or self.ObjType;
-		self.ObjSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 4) or self.ObjSubType;
-		self.ObjSubSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 8) or self.ObjSubSubType;
-		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.range) or self.Range;
+		if ( self.Durability > 0) then
+			self.Durability = self.Durability / 100
+		end
+		self.Value = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.value ) or self.Value or 1
+		self.Worth = self.Value / 10
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0
+		self.BoundStatus = memoryReadByte( getProc(), self.Address + addresses.item.bound_status )
+		self.Bound = not bitAnd(self.BoundStatus, 1)
+		self.RequiredLvl = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.required_level) or self.RequiredLvl
+		self.MaxStack = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.max_stack) or self.MaxStack
+		self.ObjType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type) or self.ObjType
+		self.ObjSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 4) or self.ObjSubType
+		self.ObjSubSubType = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.type + 8) or self.ObjSubSubType
+		self.Range = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.range) or self.Range
 
-		self.CoolDownTime = 0;
-		if ( self.ObjType == 2 ) then -- Consumables, lets try to get CD time
-			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id );
-			if ( skillItemId ~= nil and skillItemId ~= 0 ) then
-				local skillItemAddress = GetItemAddress( skillItemId );
-				if ( skillItemAddress ~= nil and skillItemAddress ~= 0 ) then
-					self.CoolDownTime = memoryReadInt(getProc(), skillItemAddress + addresses.item.cooldown) or self.CoolDownTime;
-				end;
-			end;
+		self.CoolDownTime = 0
+		if ( self.ObjType == 2) then -- Consumables, lets try to get CD time
+			local skillItemId = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.real_id )
+			if ( skillItemId ~= nil and skillItemId ~= 0) then
+				local skillItemAddress = GetItemAddress( skillItemId )
+				if ( skillItemAddress ~= nil and skillItemAddress ~= 0) then
+					self.CoolDownTime = memoryReadInt(getProc(), skillItemAddress + addresses.item.cooldown) or self.CoolDownTime
+				end
+			end
 			-- cprintf( cli.yellow, "Cool down for consumable: %d\n", self.CoolDownTime );
-		end;
+		end
 
 		-- Special case for cards
-		if ( self.Id >= 770000 and self.Id <= 772000 ) then
+		if ( self.Id >= 770000 and self.Id <= 772000) then
 			-- We need to get info from NPC...
-			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.card_or_npc_id );
-			npcInfoAddress = GetItemAddress( tmp );
+			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.card_or_npc_id )
+			npcInfoAddress = GetItemAddress( tmp )
 			if npcInfoAddress then
-				nameAddress = memoryReadUInt( getProc(), npcInfoAddress + addresses.item.name );
+				nameAddress = memoryReadUInt( getProc(), npcInfoAddress + addresses.item.name )
 			else
-				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp));
+				cprintf(cli.lightred,"Failed to get Address for NPC Id %s", tostring(tmp))
 			end
-			self.Name = getTEXT("SYS_CARD_TITLE"); -- 'Card - '
-		elseif ( self.Id >= 550000 and self.Id <=553000 ) then
+			self.Name = getTEXT("SYS_CARD_TITLE") -- 'Card - '
+		elseif ( self.Id >= 550000 and self.Id <=553000) then
 			-- We need to get info from item...
 			local tmp = memoryReadInt( getProc(), self.BaseItemAddress + addresses.item.recipe_id )
-			itemInfoAddress = GetItemAddress(  tmp );
+			itemInfoAddress = GetItemAddress(  tmp )
 			if itemInfoAddress then
-				nameAddress = memoryReadUInt( getProc(), itemInfoAddress + addresses.item.name );
+				nameAddress = memoryReadUInt( getProc(), itemInfoAddress + addresses.item.name )
 			else
-				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp));
+				cprintf(cli.lightred,"Failed to get Address for item Id %s", tostring(tmp))
 			end
-			self.Name = getTEXT("SYS_RECIPE_TITLE"); -- 'Recipe - '
+			self.Name = getTEXT("SYS_RECIPE_TITLE") -- 'Recipe - '
 		else
-			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.item.name );
-		end;
+			nameAddress = memoryReadUInt( getProc(), self.BaseItemAddress + addresses.item.name )
+		end
 
 		local tmp
-		if( nameAddress == nil or nameAddress == 0 ) then
-			tmp = "<EMPTY>";
+		if (nameAddress == nil or nameAddress == 0) then
+			tmp = "<EMPTY>"
 		else
-			tmp = memoryReadString(getProc(), nameAddress) or "";
-		end;
+			tmp = memoryReadString(getProc(), nameAddress) or ""
+		end
 
 
-		self.Name = (self.Name or "") .. tmp;
+		self.Name = (self.Name or "") .. tmp
 
-		self.Quality = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.quality) or 0;
-		local plusQuality = memoryReadByte(getProc(), self.Address + addresses.item.quality);
-		local quality, tier = math.modf ( plusQuality / 16 );
+		self.Quality = memoryReadInt(getProc(), self.BaseItemAddress + addresses.item.quality) or 0
+		local plusQuality = memoryReadByte(getProc(), self.Address + addresses.item.quality)
+		local quality, tier = math.modf ( plusQuality / 16 )
 		-- tier = tier * 16; -- Tier not really used yet...
-		if ( quality > 0 ) then
-			self.Quality = self.Quality + ( quality / 2 );
-		end;
+		if ( quality > 0) then
+			self.Quality = self.Quality + ( quality / 2 )
+		end
 
 		-- Assign color based on quality
-		self.Color = ITEMQUALITYCOLOR[ self.Quality + 1 ];
+		self.Color = ITEMQUALITYCOLOR[ self.Quality + 1 ]
 
 		-- Build an usable ItemLink
-		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name );
+		self.ItemLink = string.format( "|Hitem:%x|h|c%x[%s]|r|h", self.Id, self.Color or 0, self.Name )
 
 		-- Get Stats (only named stats)
 		-- Get Runes (only named Runes)
@@ -213,37 +213,37 @@ function CItem:update()
 		end--]]
 
 		-- Get base item flag values
-		local flags = memoryReadRepeat("int", getProc(),self.BaseItemAddress + addresses.item.flags) or 0;
-		self.ItemShopItem = bitAnd(flags,ITEMFLAGs_ITEMSHOPITEM_MASK)
-		self.CanBeSold = bitAnd(flags,ITEMFLAGs_CANBESOLD_MASK)
+		local flags = memoryReadRepeat("int", getProc(), self.BaseItemAddress + addresses.item.flags) or 0
+		self.ItemShopItem = bitAnd(flags, ITEMFLAGs_ITEMSHOPITEM_MASK)
+		self.CanBeSold = bitAnd(flags, ITEMFLAGs_CANBESOLD_MASK)
 
-	elseif ( self.Id == 0 ) then
-		self.Empty = true;
-		self.Id = 0;
-		self.Name = "<EMPTY>";
-		self.ItemCount = 0;
-		self.Color = "ffffff";
-		self.Icon = "";
-		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h";
-		self.Durability = 0;
-		self.Quality = 0; -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
-		self.Value = 0;
-		self.Worth = 0;
-		self.InUse = false;
-		self.RequiredLvl = 0;
-		self.Stats = {};
-		self.Range = 0;
+	elseif ( self.Id == 0) then
+		self.Empty = true
+		self.Id = 0
+		self.Name = "<EMPTY>"
+		self.ItemCount = 0
+		self.Color = "ffffff"
+		self.Icon = ""
+		self.ItemLink = "|Hitem:33BF1|h|cff0000ff[Empty]|r|h"
+		self.Durability = 0
+		self.Quality = 0 -- 0 = white / 1 = green / 2 = blue / 3 = purple / 4 = orange / 5 = gold
+		self.Value = 0
+		self.Worth = 0
+		self.InUse = false
+		self.RequiredLvl = 0
+		self.Stats = {}
+		self.Range = 0
 	else
 		-- if id is not 0 and hasn't changed we only update these values
-		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count );
-		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability );
-		if ( self.Durability > 0 ) then
-			self.Durability = self.Durability / 100;
-		end;
-		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0;
-		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.item.bound_status );
-		self.Bound = not bitAnd(self.BoundStatus,1)
-	end;
+		self.ItemCount = memoryReadInt( getProc(), self.Address + addresses.item.count )
+		self.Durability = memoryReadInt( getProc(), self.Address + addresses.item.durability )
+		if ( self.Durability > 0) then
+			self.Durability = self.Durability / 100
+		end
+		self.InUse = memoryReadInt( getProc(), self.Address + addresses.item.in_use ) ~= 0
+		self.BoundStatus = memoryReadInt( getProc(), self.Address + addresses.item.bound_status )
+		self.Bound = not bitAnd(self.BoundStatus, 1)
+	end
 end
 
 
@@ -251,7 +251,7 @@ function CItem:delete()
 	if self.Available and not self.Empty then
 		-- Special case for bank. Check if it's open
 		if self.Location == "bank" then
-			local base = getBaseAddress(addresses.bank.open.base);
+			local base = getBaseAddress(addresses.bank.open.base)
 			local BankClosed = memoryReadIntPtr(getProc(), base, addresses.bank.open.offset) == -1
 			if BankClosed then
 				return
@@ -315,9 +315,9 @@ function CItem:getGameTooltip(_place)
 --cprintf(cli.yellow, "it %s\n", t[5]);
 --cprintf(cli.yellow, "it %s\n", t[6]);
 
-	if( t[1]  and
-		t[1] ~= false ) then
-		return t;
+	if (t[1]  and
+		t[1] ~= false) then
+		return t
 	else
 		return false
 	end
@@ -327,10 +327,10 @@ end
 -- translate the hex color code into the color string
 function CItem:getColorString()
 
-	for i,v in pairs(ITEMCOLOR) do
+	for i, v in pairs(ITEMCOLOR) do
 
-		if( v == self.Color ) then
-			return i;
+		if (v == self.Color) then
+			return i
 		end
 	end
 
@@ -347,7 +347,7 @@ function CItem:moveTo(bag)
 
 	-- Special case for bank. Check if it's open
 	if self.Location == "bank" then
-		local BankClosed = memoryReadIntPtr(getProc(),addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
+		local BankClosed = memoryReadIntPtr(getProc(), addresses.bankOpenPtr, addresses.bankOpen_offset) == -1
 		if BankClosed then
 			return
 		end
@@ -546,7 +546,7 @@ function CItem:pickup()
 
 	-- Special case for bank. Check if it's open
 	if self.Location == "bank" then
-		local BankClosed = memoryReadIntPtr(getProc(), getBaseAddress(addresses.bank.open.base),  addresses.bank.open.offset) == -1
+		local BankClosed = memoryReadIntPtr(getProc(), getBaseAddress(addresses.bank.open.base), addresses.bank.open.offset) == -1
 		if BankClosed then
 			return
 		end
@@ -599,13 +599,13 @@ function CItem:pickup()
 		self.LastMovedTime = os.clock()
 	end
 
-	RoMCode(pickupmethod.."(".. self.BagId ..")");
+	RoMCode(pickupmethod.."(".. self.BagId ..")")
 end
 
 function CItem:getRemainingCooldown()
-	if (self.BagId ) then
-		local maxCD, currentCD = RoMScript("GetBagItemCooldown(".. self.BagId .. ")");
-		if( currentCD) then
+	if (self.BagId) then
+		local maxCD, currentCD = RoMScript("GetBagItemCooldown(".. self.BagId .. ")")
+		if (currentCD) then
 			return currentCD, true
 		end
 	end
@@ -642,20 +642,20 @@ end
 	top-left corner is 1 and bottom right corner is 30.
 --]]
 function CItem:getInventoryIndex()
-	for bag = 1,6 do
-		local startIndex = (bag - 1)*30 + 1;
-		local endIndex = startIndex + 29;
-		local cmd = sprintf("}str='' for i=%d,%d do str=str..GetBagItemInfo(i)..',' end a={str} b={", startIndex, endIndex);
-		local result = RoMScript(cmd);
-		local inventoryIndexes = explode(result, ',');
+	for bag = 1, 6 do
+		local startIndex = (bag - 1)*30 + 1
+		local endIndex = startIndex + 29
+		local cmd = sprintf("}str='' for i=%d,%d do str=str..GetBagItemInfo(i)..',' end a={str} b={", startIndex, endIndex)
+		local result = RoMScript(cmd)
+		local inventoryIndexes = explode(result, ',')
 
-		for i,v in pairs(inventoryIndexes) do
-			local bagIndex = self.SlotNumber + 1;
-			v = tonumber(v) or -1;
+		for i, v in pairs(inventoryIndexes) do
+			local bagIndex = self.SlotNumber + 1
+			v = tonumber(v) or -1
 
 			if v == bagIndex then
-				local value = i;
-				return bag, value;
+				local value = i
+				return bag, value
 			end
 		end
 	end

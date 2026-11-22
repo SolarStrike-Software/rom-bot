@@ -16,14 +16,14 @@ function doMount()
 				206560
 			}
 			local havemount = "no"
-			
+
 			--Check inventory to see if you already have an infernal or Abysmal mount:
-			for k,v in pairs(tempmounts) do
+			for k, v in pairs(tempmounts) do
 				if inventory:itemTotalCount(v) > 0 then
 					havemount = "yes"
 				end
 			end
-			
+
 			if havemount == "no" then --if no, then neither mount was found in inventory
 				-- check for items to build Abysmal mount first:
 				print("no mount found in inventory")
@@ -36,20 +36,20 @@ function doMount()
 					206639,      -- Abysmal Nightmare Statue Fragment II
 					206640      -- Abysmal Nightmare Statue Fragment III
 				}
-				for k,v in pairs(mountitems) do
+				for k, v in pairs(mountitems) do
 					if inventory:itemTotalCount(v) > 0 then
 						mycount = mycount + 1
 					end
 				end
 				if mycount >= 6 then -- all items found
 					if inventory:itemTotalCount(0) > 0 then
-						inventory:useItem(206636);
+						inventory:useItem(206636)
 						yrest(500)
 						inventory:update()
 						yrest(1000)
 						havemount = "yes"
 						-- player should now have an Abysmal mount in inventory
-						printf("%s created an Abysmal Mount.\n",player.Name)
+						printf("%s created an Abysmal Mount.\n", player.Name)
 						--logInfo(player.Name, "NEW ABYSMAL NIGHTMARE MOUNT CREATED FOR "..player.Name,true) -- optional loginfo line
 						yrest(200)
 					else
@@ -64,37 +64,37 @@ function doMount()
 						206634,      -- Infernal Nightmare Statue Fragment II
 						206635       -- Infernal Nightmare Statue Fragment III
 					}
-					for k,v in pairs(mountitems) do
+					for k, v in pairs(mountitems) do
 						if inventory:itemTotalCount(v) > 0 then
 							mycount = mycount + 1
 						end
 					end
 					if mycount >= 5 then -- all items found
 						if inventory:itemTotalCount(0) > 0 then
-							inventory:useItem(206631);
+							inventory:useItem(206631)
 							yrest(500)
 							inventory:update()
 							yrest(1000)
 							havemount = "yes"
 							-- player should now have an Infernal mount in inventory
-							printf("%s created an Infernal Mount.\n",player.Name)
+							printf("%s created an Infernal Mount.\n", player.Name)
 							--logInfo(player.Name, "NEW INFERNAL NIGHTMARE MOUNT CREATED FOR "..player.Name,true) -- optional loginfo line
 							yrest(200)
 						else
 							print("No available Backpack slots")
 						end
 					end
-				end	
+				end
 			end
 			--after running function above, if it has or created a mount, havemount will now be "yes"
 			if havemount == "no" then
 				if inventory:itemTotalCount(205821) >= 1 then
-					inventory:useItem(205821);
+					inventory:useItem(205821)
 					yrest(500)
 					inventory:update()
 					yrest(1000)
 				elseif inventory:itemTotalCount(203033) >= 1 then
-					inventory:useItem(203033);
+					inventory:useItem(203033)
 					yrest(500)
 					inventory:update()
 					yrest(1000)

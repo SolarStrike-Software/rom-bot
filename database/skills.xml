@@ -12,7 +12,7 @@
 	<skill name="MAGE_ELECTROSTATIC_CHARGE"				id="491156" range="0"	type="buff"			casttime="0"	cooldown="120"  target="self"		buffname="620209" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_PLASMA_ARROW"						id="491169" range="200" type="damage"		casttime="2"	cooldown="0"	target="enemy"		buffname="502270" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_ELECTRIC_BOLT"					id="491168" range="200" type="dot"			casttime="1"	cooldown="0"	target="enemy"		buffname="501550" /> <!-- Buff ID Verified -->
-	<skill name="MAGE_DISCHARGE"						id="490242" range="60" 	type="damage" 		casttime="0"	cooldown="15"	target="enemy"		aoecenter="player"/>
+	<skill name="MAGE_DISCHARGE"						id="490242" range="60" 	type="damage" 		casttime="0"	cooldown="15"	target="enemy"		aoecenter="player" />
 	<skill name="MAGE_METEOR_SHOWER"					id="490252" range="150" type="damage"		casttime="5"	cooldown="0"	target="enemy"		globalcooldown="true" />
 	<skill name="MAGE_PHOENIX"							id="490239" range="120" type="damage"		casttime="0"	cooldown="10"	target="enemy" />
 	<skill name="MAGE_ELECTRIC_EXPLOSION"				id="491170" range="200" type="damage"		casttime="2"	cooldown="0"	target="enemy"		reqbuffname="502270" reqbufftarget="player" /> <!-- Buff ID Verified -->
@@ -57,14 +57,14 @@
 	<skill name="MAGE_SHADOW_PROTECTION"				id="493030" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503274" /> <!-- Buff ID Verified -->
 	<!-- Mage/Scout -->
 	<skill name="MAGE_THUNDERCLAP"						id="491570" range="225" type="damage"		casttime="1"	cooldown="10" 	target="enemy" />
-	<skill name="MAGE_FIRE_ARROW"						id="497974" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501955" nobuffname="503187" nobufftarget="player"/> <!-- Buff IDs Verified -->
+	<skill name="MAGE_FIRE_ARROW"						id="497974" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501955" nobuffname="503187" nobufftarget="player" /> <!-- Buff IDs Verified -->
 	<skill name="MAGE_FIRE_ROSE"						id="491343" range="225" type="dot"			casttime="0"	cooldown="0"	target="enemy"		nobuffname="501806" nobufftarget="target" nobuffcount="3" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_FIRE_ROSE_EXPLOSION"				id="491344" range="225" type="damage"		casttime="0"	cooldown="10" 	target="enemy"		reqbuffname="501806" reqbufftarget="target" reqbuffcount="3" /> <!-- Buff ID Verified -->
 	<skill name="MAGE_FLAME_SPIRIT"						id="497791" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="MAGE_FLAME_OF_FIRE"					id="492675" range="200" type="damage"		casttime="2"	cooldown="0"	target="enemy" />
-	<skill name="MAGE_POWER_OF_THE_WIND"				id="497975" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503187,620179" nobuffname="501955" nobufftarget="player"/> <!-- Buff IDs Verified -->
+	<skill name="MAGE_POWER_OF_THE_WIND"				id="497975" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503187,620179" nobuffname="501955" nobufftarget="player" /> <!-- Buff IDs Verified -->
 	<skill name="MAGE_MAGIC_CROSSFLOW"					id="493263" range="0"	type="buff"			casttime="0"	cooldown="40"	target="self" />
-	<skill name="MAGE_WIND_FIRE_CULTIVATION"			id="499597" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503187,620179,501955"  /> <!-- Buff IDs Verified -->
+	<skill name="MAGE_WIND_FIRE_CULTIVATION"			id="499597" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="503187,620179,501955" /> <!-- Buff IDs Verified -->
 	<!-- Mage/Warden -->
 	<skill name="MAGE_EARTH_SURGE"						id="494049" range="200"	type="damage"		casttime="0"	cooldown="3"	target="enemy" />
 	<skill name="MAGE_ABSENCE"							id="494050" range="200" type="buff"			casttime="0"	cooldown="60"	target="enemy" />
@@ -115,7 +115,7 @@
 	<skill name="PRIEST_ADVANCED_RESURRECTION"			id="491176" range="150" type="resurrection"	casttime="5"	cooldown="0"	target="friendly"	inbattle="false" /> <!-- Needs Amulet of Light (203606) -->
 	<skill name="PRIEST_AMPLIFIED_ATTACK" 				id="490491" range="150" type="buff"			casttime="0"	cooldown="0"	target="friendly"	buffname="500940" /> <!-- Buff ID Verified -->
 	<skill name="PRIEST_HEALING_SALVE" 					id="490294" range="150" type="buff"			casttime="0"	cooldown="30"	target="friendly"	buffname="500527" /> <!-- Buff ID Verified -->
-	<skill name="PRIEST_BLESSING_OF_HUMILITY"			id="490301" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"	 />
+	<skill name="PRIEST_BLESSING_OF_HUMILITY"			id="490301" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="PRIEST_SUPREME_RESURRECTION"			id="491177" range="150" type="resurrection"	casttime="5"	cooldown="0"	target="friendly"	inbattle="false" /> <!-- Needs Golden Amulet (203605) -->
 	<skill name="PRIEST_HOLY_CANDLE"					id="490304" range="0"	type="buff"			casttime="0"	cooldown="600"	target="self"		buffname="500549" /> <!-- Buff ID Verified -->
 
@@ -133,11 +133,11 @@
 	<skill name="PRIEST_DIVINE_INCARNATION" 			id="491366" range="0"	type="buff" 		casttime="0"	cooldown="0"	target="self"		buffname="501793" /> <!-- Buff ID Verified -->
 	<skill name="PRIEST_CALM_HEART" 					id="492639" range="150"	type="buff"			casttime="0"	cooldown="60"   target="self" />
 	<skill name="PRIEST_SACRIFICIAL_CURE"				id="492934" range="200"	type="heal"			casttime="0"	cooldown="180"	target="friendly" /> <!-- Uses 70% HP -->
-	<skill name="PRIEST_HOLY_POWER"			 			id="493044" range="0"	type="buff" 		casttime="0"	cooldown="0"	target="self"	 /> <!-- (503308) Buff removed. 20 sec effect, 1 min cooldown -->
+	<skill name="PRIEST_HOLY_POWER"			 			id="493044" range="0"	type="buff" 		casttime="0"	cooldown="0"	target="self" /> <!-- (503308) Buff removed. 20 sec effect, 1 min cooldown -->
 	<skill name="PRIEST_LIGHT_FAIRY" 					id="493271" range="0"	type="summon"		casttime="6"	cooldown="0"	target="self"		inbattle="false" />
 	<!-- Priest/Mage -->
 	<skill name="PRIEST_FREEZE" 						id="491586" range="225"	type="damage"		casttime="1"	cooldown="0"	target="enemy"		buffname="501961" /> <!-- Buff ID Verified -->
-	<skill name="PRIEST_REMOVE_CURSE" 					id="491646" range="150" type="buff"			casttime="0"	cooldown="10"	target="friendly"  />
+	<skill name="PRIEST_REMOVE_CURSE" 					id="491646" range="150" type="buff"			casttime="0"	cooldown="10"	target="friendly" />
 	<skill name="PRIEST_ANGELS_BLESSING" 				id="491644" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="502026" /> <!-- Buff ID Verified -->
 	<skill name="PRIEST_ANGELS_CAROL" 					id="491365" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="PRIEST_ICEWIND_BLADE" 					id="493043" range="180" type="damage"		casttime="0"	cooldown="3"	target="enemy" />
@@ -180,7 +180,7 @@
 	<!-- General -->
 	<skill name="WARRIOR_SLASH" 						id="490053" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
 	<skill name="WARRIOR_ENRAGED" 						id="490492" range="0"	type="buff"			casttime="0"	cooldown="40"	target="self"		inbattle="true" />
-	<skill name="WARRIOR_WHIRLWIND" 					id="490133" range="50"	type="damage"		casttime="0"	cooldown="30"   target="enemy"		aoecenter="player"/>
+	<skill name="WARRIOR_WHIRLWIND" 					id="490133" range="50"	type="damage"		casttime="0"	cooldown="30"   target="enemy"		aoecenter="player" />
 	<skill name="WARRIOR_BERSERK" 						id="490095" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
 	<skill name="WARRIOR_DEFENSIVE_FORMATION" 			id="498031" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
 	<!-- Primary -->
@@ -189,7 +189,7 @@
 	<skill name="WARRIOR_OPEN_FLANK" 					id="491136" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		reqbuffname="501502" reqbufftarget="target" buffname="501503" /> <!-- Buff IDs Verified -->
 	<skill name="WARRIOR_TACTICAL_ATTACK" 				id="491142" range="50"	type="damage"		casttime="0"	cooldown="5"	target="enemy" />
 	<skill name="WARRIOR_THUNDER" 						id="491139" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		reqbuffname="501503" reqbufftarget="target" /> <!-- Buff ID Verified -->
-	<skill name="WARRIOR_FEINT" 						id="490089" range="50"	type="damage"		casttime="0"	cooldown="2"	target="enemy"		enemydodge="true"/>
+	<skill name="WARRIOR_FEINT" 						id="490089" range="50"	type="damage"		casttime="0"	cooldown="2"	target="enemy"		enemydodge="true" />
 	<skill name="WARRIOR_SURPRISE_ATTACK" 				id="490129" range="150"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		minrange="60" />
 	<skill name="WARRIOR_TAUNT" 						id="490130" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy" />
 	<skill name="WARRIOR_MOON_CLEAVE" 					id="490121" range="60"	type="damage"		casttime="0"	cooldown="30"	target="enemy"		aoecenter="player" />
@@ -198,7 +198,7 @@
 	<skill name="WARRIOR_AGGRESSIVENESS" 				id="490123" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="WARRIOR_SURVIVAL_INSTINCT" 			id="490122" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self"		maxhpper="25" />
 	<skill name="WARRIOR_GROUP_TAUNT" 					id="490145" range="50"	type="damage"		casttime="0"	cooldown="300"	target="enemy"		aoecenter="player" />
-	<skill name="WARRIOR_BLASTING_CYCLONE" 				id="490147" range="60"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		aoecenter="player"/>
+	<skill name="WARRIOR_BLASTING_CYCLONE" 				id="490147" range="60"	type="damage"		casttime="0"	cooldown="12"	target="enemy"		aoecenter="player" />
 
 	<!-- Warrior Elites by Subclass -->
 	<!-- Warrior/Champion -->
@@ -210,15 +210,15 @@
 	<skill name="WARRIOR_STIFLING_ATTACK"				id="498821" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="WARRIOR_VENDETTA_BLOW"					id="498822" range="50"	type="damage"		casttime="0"	cooldown="5"	target="enemy" />
 	<!-- Warrior/Druid -->
-	<skill name="WARRIOR_ROSE_VINE" 					id="494034" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504543"/>
+	<skill name="WARRIOR_ROSE_VINE" 					id="494034" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504543" />
 	<skill name="WARRIOR_TREMOR"						id="494035" range="50"	type="damage"		casttime="0"	cooldown="60"	target="enemy"		reqbuffname="501503" reqbufftarget="target" />
 	<skill name="WARRIOR_GUARDIANS_PLEDGE"				id="494036" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		buffname="504545" />
 	<skill name="WARRIOR_REMOVE_MAGIC"					id="494376" range="180"	type="heal"			casttime="0"	cooldown="60"	target="friendly" />
 	<skill name="WARRIOR_STIFLE"						id="494627" range="50"	type="damage"		casttime="0"	cooldown="60"	target="self"		reqbuffname="501502" reqbufftarget="target" buffname="505906" />
 	<!-- Warrior/Knight -->
 	<skill name="WARRIOR_THROW_SHIELD" 					id="493004" range="150" type="damage"		casttime="0"	cooldown="6" 	target="enemy" />
-	<skill name="WARRIOR_BLOCKING_STANCE" 				id="491480" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502007"/> <!-- Buff ID Verified -->
-	<skill name="WARRIOR_IGNORE_PAIN" 					id="491334" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self"  />
+	<skill name="WARRIOR_BLOCKING_STANCE" 				id="491480" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502007" /> <!-- Buff ID Verified -->
+	<skill name="WARRIOR_IGNORE_PAIN" 					id="491334" range="0"	type="buff"			casttime="0"	cooldown="300"	target="self" />
 	<skill name="WARRIOR_SHIELD_BASH" 					id="491485" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
 	<!-- Warrior/Mage -->
 	<skill name="WARRIOR_ELECTRICAL_RAGE" 				id="491474" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" 		nobuffname="501881" nobufftarget="self" nobuffcount="3" />
@@ -237,8 +237,8 @@
 	<!-- Warrior/Rogue -->
 	<skill name="WARRIOR_BLOOD_DANCE" 					id="491329" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		maxhpper="-20" />
 	<skill name="WARRIOR_FRENZIED_ATTACK" 				id="491330" range="0"	type="damage"		casttime="0"	cooldown="120"	target="enemy" />
-	<skill name="WARRIOR_KEEN_ATTACK" 					id="492619" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		reqbuffname="501502" reqbufftarget="target"/> <!-- Buff ID Verified -->
-	<skill name="WARRIOR_SPLITTING_CHOP" 				id="492911" range="50"	type="damage"		casttime="0"	cooldown="15" 	target="enemy"		reqbuffname="501503" reqbufftarget="target"/> <!-- Buff ID Verified -->
+	<skill name="WARRIOR_KEEN_ATTACK" 					id="492619" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy"		reqbuffname="501502" reqbufftarget="target" /> <!-- Buff ID Verified -->
+	<skill name="WARRIOR_SPLITTING_CHOP" 				id="492911" range="50"	type="damage"		casttime="0"	cooldown="15" 	target="enemy"		reqbuffname="501503" reqbufftarget="target" /> <!-- Buff ID Verified -->
 	<skill name="WARRIOR_DESPERATE_MEASURES"			id="499997" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" /> <!-- Cast time and Cooldown unknown" -->
 	<!-- Warrior/Scout -->
 	<skill name="WARRIOR_SKULL_BREAKER" 				id="491328" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" />
@@ -270,7 +270,7 @@
 
 	<!-- Rogue skills -->
 	<!-- General -->
-	<skill name="ROGUE_SHADOWSTAB" 						id="490306" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" 	nobuffname="620313" nobufftarget="target"/>
+	<skill name="ROGUE_SHADOWSTAB" 						id="490306" range="50"	type="damage"		casttime="0"	cooldown="0"	target="enemy" 	nobuffname="620313" nobufftarget="target" />
 	<skill name="ROGUE_THROW" 							id="490309" range="150"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="ROGUE_BLIND_STAB" 						id="490317" range="50"	type="damage"		casttime="0"	cooldown="10"	target="enemy" />
 	<skill name="ROGUE_SHADOW_STEP" 					id="490344" range="100"	type="damage"		casttime="0"	cooldown="20"	target="enemy" />
@@ -315,7 +315,7 @@
 	<skill name="ROGUE_SEARING_LIGHT" 					id="493025" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		nobuffname="500715" nobufftarget="player" buffname="503268" /> <!-- Buff IDs Verified -->
 	<!-- Rogue/Mage -->
 	<skill name="ROGUE_ENCHANTED_THROW"					id="491178" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501274" inbattle="true" /> <!-- Buff ID Verified -->
-	<skill name="ROGUE_ENLIVENED_BLADE" 				id="491180" range="200"	type="damage"		casttime="1"	cooldown="12"	target="enemy" 		clicktocast="true" globalcooldown="true"/>
+	<skill name="ROGUE_ENLIVENED_BLADE" 				id="491180" range="200"	type="damage"		casttime="1"	cooldown="12"	target="enemy" 		clicktocast="true" globalcooldown="true" />
 	<skill name="ROGUE_DAY_OF_RAIN" 					id="491183" range="50"	type="damage"		casttime="0"	cooldown="25"	target="enemy"		aoecenter="player" />
 	<skill name="ROGUE_CREATE_OPPORTUNITY" 				id="498024" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="503446" />
 	<skill name="ROGUE_INSTANT_SHADOW" 					id="497206" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="502597" playerdodge="true" />
@@ -340,7 +340,7 @@
 	<skill name="ROGUE_REVIVAL"							id="499542" range="0"	type="buff"			casttime="0"	cooldown="8"	target="self" />
 	<!-- Rogue/Warlock -->
 	<skill name="ROGUE_DARK_SOUL_BARRIER" 				id="498799" range="150"	type="buff"			casttime="0"	cooldown="120"	target="friendly"	clicktocast="true" />
-	<skill name="ROGUE_ENERGY_CONSERVATION"				id="498801" range="0"	type="buff"			casttime="0"	cooldown="30"	target="self"		maxhpper="50"/>
+	<skill name="ROGUE_ENERGY_CONSERVATION"				id="498801" range="0"	type="buff"			casttime="0"	cooldown="30"	target="self"		maxhpper="50" />
 	<skill name="ROGUE_SOUL_STAB" 						id="498803" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="ROGUE_BEGIN_WHEN_READY" 				id="498804" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self" />
 	<skill name="ROGUE_SOUL_PAIN"						id="498806" range="225" type="damage"		casttime="0"	cooldown="0"	target="enemy" />
@@ -348,12 +348,12 @@
 	<skill name="ROGUE_GHOSTLY_STRIKE"					id="498811" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<!-- Rogue/Warrior -->
 	<skill name="ROGUE_DEATHS_TOUCH" 					id="491339" range="50"	type="damage"		casttime="0"	cooldown="10"	target="enemy" />
-	<skill name="ROGUE_POISONOUS_INFECTION" 			id="492625" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		reqbuffname="500715" reqbufftarget="player" buffname="502894"/> <!-- Buff ID Verified -->
+	<skill name="ROGUE_POISONOUS_INFECTION" 			id="492625" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		reqbuffname="500715" reqbufftarget="player" buffname="502894" /> <!-- Buff ID Verified -->
 	<skill name="ROGUE_POISON_SPRAY" 					id="492920" range="50"	type="damage"		casttime="0"	cooldown="6"	target="enemy"		reqbuffname="502894" reqbufftarget="target" /> <!-- Buff ID Verified -->
 	<skill name="ROGUE_DECAY" 							id="493017" range="50"	type="damage"		casttime="0"	cooldown="4"	target="enemy"		reqbuffname="500715" reqbufftarget="player" /> <!-- Buff ID Verified -->
 	<!-- Rogue Item Set Skills -->
 	<skill name="ROGUE_YAWAKAS_BLESSING" 				id="495730" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="507485" />
-	<skill name="ROGUE_UNKNOWN_CHOICE" 					id="495715" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506868,506877,506880"  />
+	<skill name="ROGUE_UNKNOWN_CHOICE" 					id="495715" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506868,506877,506880" />
 	<skill name="ROGUE_KANCHES_REND"					id="498340" range="120"	type="damage"		casttime="0"	cooldown="60"	target="enemy" />
 	<skill name="ROGUE_PHANTOM_STAB"					id="495479" range="120"	type="damage"		casttime="0"	cooldown="60"	target="enemy" />
 
@@ -394,7 +394,7 @@
 	<skill name="KNIGHT_HOLY_ILLUMINATION"				id="491632" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self" />
 	<skill name="KNIGHT_ANGEL_SALVATION"				id="499913" range="150" type="resurrection"	casttime="5"	cooldown="0"	target="friendly"	inbattle="true" />
 	<!-- Knight/Rogue -->
-	<skill name="KNIGHT_SMASH" 							id="490019" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		enemycritical="true"/>
+	<skill name="KNIGHT_SMASH" 							id="490019" range="50"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		enemycritical="true" />
 	<skill name="KNIGHT_CRAZY_BLADES" 					id="491355" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="501796" /> <!-- Buff ID Verified -->
 	<skill name="KNIGHT_DANCE_OF_TWO_BLADES" 			id="490020" range="50"	type="damage"		casttime="0"	cooldown="10" 	target="enemy"		aoecenter="player" />
 	<skill name="KNIGHT_LEOPARD_INSTINCT" 				id="495402" range="0"	type="buff"			casttime="0"	cooldown="120" 	target="self" />
@@ -472,9 +472,9 @@
 	<skill name="SCOUT_AGGRO_LEAD"						id="493254" range="200" type="buff"			casttime="0"	cooldown="120"	target="friendly" />
 	<!-- Scout/Rogue -->
 	<skill name="SCOUT_WEAK_SPOT" 						id="491493" range="50" type="damage"		casttime="0"	cooldown="15"	target="enemy"		addweaponrange="true" />
-	<skill name="SCOUT_BLINDING_POWDER" 				id="491336" range="100"	type="buff"			casttime="0"	cooldown="60"	target="enemy"		buffname="501820"/> <!-- Buff ID Verified -->
+	<skill name="SCOUT_BLINDING_POWDER" 				id="491336" range="100"	type="buff"			casttime="0"	cooldown="60"	target="enemy"		buffname="501820" /> <!-- Buff ID Verified -->
 	<skill name="SCOUT_SAPPING_ARROW" 					id="491496" range="50"	type="buff"			casttime="0"	cooldown="20"	target="enemy"		addweaponrange="true" />
-	<skill name="SCOUT_DEADLY_POISON_BITE" 				id="492621" range="160"	type="damage"		casttime="1"	cooldown="10"	target="enemy"		reqbuffname="cxxxxxx" reqbufftarget="enemy"/> <!-- Buff ID Verified -->
+	<skill name="SCOUT_DEADLY_POISON_BITE" 				id="492621" range="160"	type="damage"		casttime="1"	cooldown="10"	target="enemy"		reqbuffname="cxxxxxx" reqbufftarget="enemy" /> <!-- Buff ID Verified -->
 	<!-- Scout/Warden -->
 	<skill name="SCOUT_THORN_ARROW" 					id="494037" range="0"	type="damage"		casttime="0"	cooldown="6"	target="enemy"		addweaponrange="true" reqbuffname="503958" reqbufftarget="player" />
 	<skill name="SCOUT_ENTLING_OFFERING" 				id="494038"	range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="504547" />
@@ -491,7 +491,7 @@
 	<skill name="SCOUT_ARCHERS_GLORY" 					id="495477" range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="506451" />
 	<skill name="SCOUT_SHATTERSTAR_STORM" 				id="495478" range="120"	type="damage"		casttime="4"	cooldown="60"	target="enemy"		clicktocast="true" aoerange="80" />
 	<skill name="SCOUT_ARROW_SHIELD" 					id="495714" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self"		buffname="506867" />
-	<skill name="SCOUT_CREATE_TENDRILS" 				id="495729" range="0"	type="buff"			casttime="4"	cooldown="0"	target="self"		autouse="false"/>
+	<skill name="SCOUT_CREATE_TENDRILS" 				id="495729" range="0"	type="buff"			casttime="4"	cooldown="0"	target="self"		autouse="false" />
 
 
 	<!-- Druid skills -->
@@ -502,7 +502,7 @@
 	<skill name="DRUID_EARTH_PULSE" 					id="493540" range="180"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
 	<skill name="DRUID_MOTHER_EARTHS_PROTECTION" 		id="493558" range="150"	type="buff"			casttime="0"	cooldown="90"	target="friendly"	buffname="503802" />
 	<!-- Primary -->
-	<skill name="DRUID_EARTH_ARROW" 					id="493538" range="200"	type="damage"		casttime="2"	cooldown="0"	target="enemy"/>
+	<skill name="DRUID_EARTH_ARROW" 					id="493538" range="200"	type="damage"		casttime="2"	cooldown="0"	target="enemy" />
 	<skill name="DRUID_PURIFY" 							id="493534" range="200"	type="buff"			casttime="0"	cooldown="10"	target="friendly" />
 	<skill name="DRUID_BRIAR_ENTWINEMENT" 				id="493539" range="180"	type="dot"			casttime="0"	cooldown="0"	target="enemy"		buffname="503808" />
 	<skill name="DRUID_RESTORE_LIFE" 					id="493526" range="250"	type="heal"			casttime="2"	cooldown="0"	target="friendly" />
@@ -520,7 +520,7 @@
 	<skill name="DRUID_SPIRIT_GUIDANCE" 				id="493536" range="180"	type="buff"			casttime="1"	cooldown="30"	target="enemy"		nature="1" buffname="503805" />
 	<skill name="DRUID_BODY_VITALIZATION" 				id="493532" range="200"	type="buff"			casttime="0"	cooldown="120"	target="friendly" />
 	<skill name="DRUID_MOTHER_EARTHS_FOUNTAIN" 			id="493529" range="200"	type="heal"			casttime="0"	cooldown="4"	target="self" />
-	<skill name="DRUID_WITHERING_SEED" 					id="493545" range="180"	type="damage"		casttime="0"	cooldown="20"	target="enemy"/>
+	<skill name="DRUID_WITHERING_SEED" 					id="493545" range="180"	type="damage"		casttime="0"	cooldown="20"	target="enemy" />
 	<skill name="DRUID_MOTHER_NATURES_WRATH" 			id="493549" range="180"	type="dot"			casttime="0"	cooldown="15"	target="enemy"		buffname="503819" />
 	<skill name="DRUID_SUMMON_SANDSTORM" 				id="493542" range="180"	type="damage"		casttime="0"	cooldown="8"	target="enemy"		clicktocast="true" aoerange="40" />
 
@@ -528,7 +528,7 @@
 	<!-- Druid/Mage -->
 	<skill name="DRUID_EARTH_CHAIN" 					id="494025" range="180"	type="damage"		casttime="2"	cooldown="4" 	target="enemy"		aoecenter="target" aoerange="60" />
 	<skill name="DRUID_SPRING_OF_BLESSINGS"				id="494026" range="120"	type="hot"			casttime="0"	cooldown="12"	target="friendly"	buffname="504535" clicktocast="true" />
-	<skill name="DRUID_SHIELD_OF_LIGHT"					id="494027" range="200"	type="buff"			casttime="0"	cooldown="60"	target="friendly"	buffname="504536" aoecenter="target" aoerange="60" clicktocast="true"/>
+	<skill name="DRUID_SHIELD_OF_LIGHT"					id="494027" range="200"	type="buff"			casttime="0"	cooldown="60"	target="friendly"	buffname="504536" aoecenter="target" aoerange="60" clicktocast="true" />
 	<skill name="DRUID_SPIRITUAL_GUSH" 					id="494370" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		buffname="505163" />
 	<skill name="DRUID_SUMMER_BANQUET" 					id="494936" range="250"	type="buff"			casttime="0"	cooldown="360"	target="friendly"	buffname="505909" />
 	<!-- Druid/Rogue -->
@@ -547,11 +547,11 @@
 	<skill name="DRUID_WARM_SPRING"		 				id="494366"	range="0"	type="buff"			casttime="0"	cooldown="180"	target="self"		buffname="505159" />
 	<skill name="DRUID_MOTHER_EARTHS_BLESSING"			id="494367"	range="0"	type="buff"			casttime="0"	cooldown="60"	target="self" />
 	<!-- Druid/Warden -->
-	<skill name="DRUID_BRIAR_SHIELD"					id="494062" range="50" 	type="buff"			casttime="0"	cooldown="0"	target="friendly"	/>
+	<skill name="DRUID_BRIAR_SHIELD"					id="494062" range="50" 	type="buff"			casttime="0"	cooldown="0"	target="friendly" />
 	<skill name="DRUID_HEALING_RIPPLE"	 				id="494323" range="250"	type="heal"			casttime="2"	cooldown="0"	target="friendly" />
 	<skill name="DRUID_MYSTERIOUS_GRACE" 				id="494372" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="505165" />
 	<skill name="DRUID_ESSENCE_EXTRACTION" 				id="494373" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" />
-	<skill name="DRUID_GRACE_OF_THE_FOREST"				id="494937" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="505901"/>
+	<skill name="DRUID_GRACE_OF_THE_FOREST"				id="494937" range="0"	type="buff"			casttime="0"	cooldown="0"	target="self"		buffname="505901" />
 	<skill name="DRUID_SPIRIT_OF_LIFE"	 				id="494938" range="0"	type="hot"			casttime="0"	cooldown="240"	target="self" />
 	<skill name="DRUID_GIFT_PULSE"		 				id="499936" range="0"	type="heal"			casttime="0"	cooldown="0"	target="self" 		nature="4" />
 	<!-- Druid/Warrior -->
@@ -569,7 +569,7 @@
 	<skill name="WARDEN_CHARGED_CHOP" 					id="493395" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		globalcooldown="false" />
 	<skill name="SCOUT_CHARGED_CHOP" 					id="494336" range="180"	type="damage"		casttime="1"	cooldown="15"	target="enemy" />
 	<skill name="WARDEN_BRIAR_SHIELD" 					id="493642" range="0"	type="buff"			casttime="0" 	cooldown="0"	target="self"		buffname="503958,504537,623126" />
-	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false"/>
+	<skill name="WARDEN_POWER_OF_THE_WOOD_SPIRIT" 		id="493392" range="50"	type="damage"		casttime="0"	cooldown="1"	target="enemy"		aoecenter="target" globalcooldown="false" />
 	<skill name="WARDEN_ELVEN_AMULET" 					id="493402" range="0"	type="buff"			casttime="0"	cooldown="70"	target="self"		maxhpper="50" inbattle="true" />
 	<skill name="WARDEN_SAVAGE_POWER" 					id="493406" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self"		inbattle="true" />
 	<!-- Primary -->
@@ -578,7 +578,7 @@
 	<skill name="WARDEN_SUMMON_SPIRIT_OF_THE_OAK" 		id="493333" range="0"	type="summon"		casttime="4"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_THORNY_VINES" 					id="493393" range="50"	type="dot"			casttime="0"	cooldown="8"	target="target" />
 	<skill name="WARDEN_ELVEN_PRAYER" 					id="493398" range="0"	type="heal"			casttime="0"	cooldown="60"	target="self" />
-	<skill name="WARDEN_MOVEMENT_RESTRICTION" 			id="493400" range="150"	type="buff"			casttime="0"	cooldown="45"	target="enemy"		minrange="80"/>
+	<skill name="WARDEN_MOVEMENT_RESTRICTION" 			id="493400" range="150"	type="buff"			casttime="0"	cooldown="45"	target="enemy"		minrange="80" />
 	<skill name="WARDEN_SUMMON_NATURE_CRYSTAL" 			id="493344" range="0"	type="summon"		casttime="4"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_DAMAGE_TRANSFER" 				id="493399" range="0"	type="buff"			casttime="0"	cooldown="180"  target="self" />
 	<skill name="WARDEN_HEART_OF_THE_OAK" 				id="491668" range="0"	type="buff"			casttime="0"	cooldown="60"	target="self"		buffname="503946" />
@@ -615,7 +615,7 @@
 	<skill name="WARDEN_UNTAMABLE" 						id="494006"	range="50"	type="damage"		casttime="0"	cooldown="4"	target="enemy" />
 	<skill name="WARDEN_SUMMON_CHIRON_THE_CENTAUR" 		id="494212" range="0"	type="summon"		casttime="8"	cooldown="0"	target="self"		minmanaper="15" inbattle="false" />
 	<skill name="WARDEN_MORALE_BOOST" 					id="494357" range="0"	type="buff"			casttime="0"	cooldown="90"	target="self" />
-	<skill name="WARDEN_SACRIFICE" 						id="494613" range="0"	type="heal"			casttime="0"	cooldown="180"	target="self"		maxhpper="50"/>
+	<skill name="WARDEN_SACRIFICE" 						id="494613" range="0"	type="heal"			casttime="0"	cooldown="180"	target="self"		maxhpper="50" />
 	<!-- Warden/Warrior -->
 	<skill name="WARDEN_DOUBLE_CHOP" 					id="494001"	range="50"	type="damage"		casttime="0"	cooldown="3"	target="enemy" />
 	<skill name="WARDEN_BEAST_CHOP" 					id="494002"	range="50"	type="damage"		casttime="0"	cooldown="7"	target="enemy"		buffname="503580" />
@@ -645,13 +645,13 @@
 	<skill name="WARLOCK_SUBLIMATION_WEAVE_CURSE" 		id="498914" range="100"	type="buff"			casttime="0"	cooldown="0"	target="party"		buffname="621736" /> <!-- Buff ID Verified -->
 	<skill name="WARLOCK_MIND_BARRIER" 					id="498542" range="150"	type="buff"			casttime="0"	cooldown="0"	target="friendly"	reqbuffname="501572" reqbufftarget="player" buffname="621196" clicktocast="true" /> <!-- First Buff ID Verified -->
 	<skill name="WARLOCK_RUTHLESS_JUDGMENT" 			id="498544" range="225"	type="damage"		casttime="2"	cooldown="0"	target="enemy"		reqbuffname="501571" reqbufftarget="player" /> <!-- Buff ID Verified -->
-	<skill name="WARLOCK_HEART_COLLECTION_STRIKE" 		id="498545" range="225"	type="damage"		casttime="0"	cooldown="8"	target="enemy"/>
+	<skill name="WARLOCK_HEART_COLLECTION_STRIKE" 		id="498545" range="225"	type="damage"		casttime="0"	cooldown="8"	target="enemy" />
 	<skill name="WARLOCK_BEASTS_ROAR" 					id="498547" range="50"	type="damage"		casttime="0"	cooldown="30"	target="enemy"		aoecenter="player" />
-	<skill name="WARLOCK_DEFENSE_NET" 					id="498549" range="200"	type="buff"			casttime="0"	cooldown="120"	target="friendly"/>
-	<skill name="WARLOCK_SOUL_TRAUMA" 					id="498550" range="200"	type="damage"		casttime="0"	cooldown="15"	target="enemy"/>
+	<skill name="WARLOCK_DEFENSE_NET" 					id="498549" range="200"	type="buff"			casttime="0"	cooldown="120"	target="friendly" />
+	<skill name="WARLOCK_SOUL_TRAUMA" 					id="498550" range="200"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
 	<skill name="WARLOCK_OTHERWORLDLY_WHISPER" 			id="498551" range="0"	type="buff"			casttime="8"	cooldown="0"	target="self"		reqbuffname="501572" reqbufftarget="player" buffname="621276" /> <!-- First Buff ID Verified -->
 	<skill name="WARLOCK_KNOWLEDGE_ACQUISITION" 		id="498552" range="0"	type="buff"			casttime="8"	cooldown="0"	target="self"		reqbuffname="501571" reqbufftarget="player" buffname="621277" /> <!-- First Buff ID Verified -->
-	<skill name="WARLOCK_PUZZLEMENT" 					id="498553" range="225"	type="damage"		casttime="2"	cooldown="25"	target="enemy"/>
+	<skill name="WARLOCK_PUZZLEMENT" 					id="498553" range="225"	type="damage"		casttime="2"	cooldown="25"	target="enemy" />
 	<skill name="WARLOCK_CALM_PARADOX" 					id="498554" range="150"	type="buff"			casttime="1"	cooldown="30"	target="friendly"	clicktocast="true" />
 	<skill name="WARLOCK_SURGE_OF_AWARENESS" 			id="498555" range="150"	type="buff"			casttime="1"	cooldown="30"	target="friendly"	clicktocast="true" />
 	<skill name="WARLOCK_SACES_EMBRACE" 				id="498558" range="150"	type="damage"		casttime="1"	cooldown="5"	target="enemy"		clicktocast="true" />
@@ -724,7 +724,7 @@
 	<skill name="CHAMPION_HIGH_ENERGY_BARRIER"			id="498687" range="200"	type="buff"			casttime="0"	cooldown="15"	target="friendly"	buffname="621416" /> <!-- Buff ID Verified -->
 	<skill name="CHAMPION_RAPID_SPREAD"					id="498690" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy" />
 	<skill name="CHAMPION_ELEMENTAL_RAMPAGE"			id="499842" range="150"	type="damage"		casttime="0"	cooldown="300"	target="enemy"		reqbuffname="621218" reqbufftarget="player" buffname="623403" /> <!-- May require clicktocast="true" -->
-	<skill name="CHAMPION_ELEMENTAL_DEFENSE"			id="499840" range="0"	type="buff"			casttime="0"	cooldown="10"	target="self"/>
+	<skill name="CHAMPION_ELEMENTAL_DEFENSE"			id="499840" range="0"	type="buff"			casttime="0"	cooldown="10"	target="self" />
 	<!-- Champion/Priest -->
 	<skill name="CHAMPION_DIVINE_VENGEANCE"				id="498715" range="50"	type="damage"		casttime="0"	cooldown="15"	target="enemy"		reqbuffname="621218" reqbufftarget="player" /> <!-- Buff ID Verified -->
 	<skill name="CHAMPION_RUNE_ENERGY_CONSECRATION"		id="498716" range="0"	type="buff"			casttime="0"	cooldown="120"	target="self" /> <!-- (621429) Buff removed. 8 sec effect, 2 min cooldown -->

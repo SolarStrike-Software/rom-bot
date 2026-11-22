@@ -229,4 +229,4 @@ language = {
 	[1004] = "Das Addon ingamefunctions ist nicht installiert! Wir k\148nnen keine Gegenst\132nde verkaufen! Bitte igf installieren (den Ordner 'ingamefunctions' aus 'rom/devtools' in die RoM Installation in '/interface/addons' kopieren) oder l\148schen Sie die Optionen INV_AUTOSELL_NOSELL_DURA und INV_AUTOSELL_STATS_NOSELL aus Ihrem Profil.\n",
 	[1005] = "AutoSell gescheitert: Deine Client Sprache wird nicht unterstutzt.",
 	[1006] = "Der 'ingamefunctions' Ordner im Spieleordner 'interface/addons', ist veraltet. Die aktuelle Version ist %d, Sie haben %d. Um zu updaten, rechtsklicken Sie den 'interface/addons/ingamefunctions' Ordner und w\132hlen Sie 'SVN Update' oder kopieren Sie den 'ingamefunctions' Ordner von 'rom/devtools' in den Spieleordner 'interface/addons'. Danach das Spiel neustarten.\n",
-};
+}

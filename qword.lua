@@ -1,5 +1,5 @@
-local powerOfTwoTable = {};
-local scaleFactor = 65535;
+local powerOfTwoTable = {}
+local scaleFactor = 65535
 
 --[[ Constructs a lookup table
 	This is much faster than doing it dynamically
@@ -10,15 +10,15 @@ local scaleFactor = 65535;
 	For example: 2 -> 4, 3 -> 8, ..., 9 -> 512, 10 -> 1024, etc.
 --]]
 local function createPowerOfTwoTable()
-	powerOfTwoTable = {};
-	for i = 0,30 do
-		table.insert(powerOfTwoTable, i, 2 ^ i);
+	powerOfTwoTable = {}
+	for i = 0, 30 do
+		table.insert(powerOfTwoTable, i, 2 ^ i)
 	end
 end
-createPowerOfTwoTable();
+createPowerOfTwoTable()
 
 
-QWord = class();
+QWord = class()
 
 --[[
 	Simply returns a value out of the above lookup table.
@@ -31,27 +31,27 @@ QWord = class();
 	two that fits into 768.
 --]]
 function QWord:getPowerOfTwoExponent(input)
-	for i,v in pairs(powerOfTwoTable) do
-		if( input == v ) then
-			return i;
-		elseif( input < v ) then
-			return i - 1;
+	for i, v in pairs(powerOfTwoTable) do
+		if (input == v) then
+			return i
+		elseif (input < v) then
+			return i - 1
 		end
 	end
 end
 
 
 function QWord:toQWord(value)
-	exponent	=	self:getPowerOfTwoExponent(value);
-	expPof2		=	2 ^ exponent; -- Two to the power of exponent
+	exponent	=	self:getPowerOfTwoExponent(value)
+	expPof2		=	2 ^ exponent -- Two to the power of exponent
 	--nextPof2	=	2 ^ (exponent+1); -- The 'next' power of two
-	ratio		=	(value - expPof2) / (--[[nextPof2 - ]]expPof2); -- Ratio between this power of two and next
-	
+	ratio		=	(value - expPof2) / (--[[nextPof2 - ]]expPof2) -- Ratio between this power of two and next
+
 	-- Hard to explain this one. Basically just popping all the info into the right bytes, and
 	-- inserting the 0x40000000 over top
 	result		=	bitOr(scaleFactor * (bitLShift(exponent-1, 4) + (16 * ratio)), 0x40000000)
-	
-	return result;
+
+	return result
 end
 
 function QWord:fromQWord(value)
@@ -70,17 +70,17 @@ function QWord:fromQWord(value)
 		return result
 	end
 
-	value	=	bitRShift(bitLShift(value, 4), 4); -- Chop the 0x40, we don't care about that
-	value	=	value / scaleFactor; -- Scale the value down
-	
-	exponent		=	bitRShift(value, 4) + 1; -- Our exponent is the left-most bit, + 1
-	lowerPowerOfTwo	=	2 ^ exponent;
-	
+	value	=	bitRShift(bitLShift(value, 4), 4) -- Chop the 0x40, we don't care about that
+	value	=	value / scaleFactor -- Scale the value down
+
+	exponent		=	bitRShift(value, 4) + 1 -- Our exponent is the left-most bit, + 1
+	lowerPowerOfTwo	=	2 ^ exponent
+
 	-- The "remainder" is basically: (the value - (2 to the power of 'exponent'))
 	-- Because it's stored in hex, ratio is always 1/16th of the remainder
-	remainder		=	value - bitand(value, bitLShift(exponent - 1, 4));
-	ratio			=	remainder / 16;
-	result			=	lowerPowerOfTwo + (ratio*lowerPowerOfTwo);
-	
-	return result;
+	remainder		=	value - bitand(value, bitLShift(exponent - 1, 4))
+	ratio			=	remainder / 16
+	result			=	lowerPowerOfTwo + (ratio*lowerPowerOfTwo)
+
+	return result
 end

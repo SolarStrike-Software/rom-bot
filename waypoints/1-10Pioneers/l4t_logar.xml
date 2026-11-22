@@ -21,16 +21,16 @@
 	<!-- #20 --><waypoint x="-216" z="-6547"></waypoint>
 	<!-- #21 --><waypoint x="-284" z="-6354"></waypoint>
 	<!-- #22 --><waypoint x="-538" z="-6196">
-		if(player.Class1 == CLASS_SCOUT ) then
-			player:merchant("Dimar");
+		if (player.Class1 == CLASS_SCOUT) then
+			player:merchant("Dimar")
 			for i=1, settings.profile.options.ARROW_QUIVER do
-				inventory:reloadAmmunition("arrow");
+				inventory:reloadAmmunition("arrow")
 			end
-		end;
-	</waypoint>
+		end
+</waypoint>
 	<!-- #23 --><waypoint x="-448" z="-6107"></waypoint>
 	<!-- #24 --><waypoint x="-408" z="-5995">
 		<!--  player:sleep();-->
-		loadPaths("1-10Pioneers/l4t_5-7_beetle");
-	</waypoint>
+		loadPaths("1-10Pioneers/l4t_5-7_beetle")
+</waypoint>
 </waypoints>

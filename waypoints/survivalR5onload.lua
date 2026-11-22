@@ -28,27 +28,27 @@ function checkRelog()
 	end
 
 	-- Log result
-	local filename = getExecutionPath() .. "/logs/survival.log";
-	local file, err = io.open(filename, "a+");
+	local filename = getExecutionPath() .. "/logs/survival.log"
+	local file, err = io.open(filename, "a+")
 	if file then
-		file:write("Acc: "..RoMScript("GetAccountName()").."\tName: " ..string.format("%-10s",player.Name ).." \tDate: " .. os.date() ..
+		file:write("Acc: "..RoMScript("GetAccountName()").."\tName: " ..string.format("%-10s", player.Name ).." \tDate: " .. os.date() ..
 		" \tShells gained/total: "..getCurrency("shell") - numshells.."/".. getCurrency("shell").. "\t" ..logentry .. "\n")
-		file:close();
+		file:close()
 	end
 
 	if When_Finished == "relog" then
 		ChangeChar()
-		waitForLoadingScreen();
+		waitForLoadingScreen()
 		yrest(3000)
 		loadProfile()
-		loadPaths(__WPL.FileName);
+		loadPaths(__WPL.FileName)
 	elseif When_Finished == "charlist" then
 		SetCharList(CharList)
 		LoginNextChar()
 		loadProfile()
-		loadPaths(__WPL.FileName);
+		loadPaths(__WPL.FileName)
 	elseif When_Finished == "end" then
-		error("Ending script",2)
+		error("Ending script", 2)
 	else
 		loadProfile() -- Because we messed with skills
 		loadPaths(When_Finished)
@@ -107,19 +107,19 @@ function createTileTable()
 	repeat
 		tiles = {}
 
-		local objectList = CObjectList();
-		objectList:update();
+		local objectList = CObjectList()
+		objectList:update()
 		local objSize = objectList:size()
 
-		for i = 0,objSize do
-			local obj = objectList:getObject(i);
+		for i = 0, objSize do
+			local obj = objectList:getObject(i)
 			if obj.Id == 111811 or obj.Id == 111812 then
 				table.insert(tiles, table.copy(obj))
 			end
 		end
 
 		-- sort by address
-		local function addresssortfunc(a,b)
+		local function addresssortfunc(a, b)
 			return a.Address > b.Address
 		end
 		table.sort(tiles, addresssortfunc)
@@ -128,7 +128,7 @@ function createTileTable()
 		for i = #tiles - 1, 1, -1 do
 			if tiles[i].Address == tiles[i+1].Address then
 				print("Diplicate found. Removing.\a")
-				table.remove(tiles,i)
+				table.remove(tiles, i)
 			end
 		end
 
@@ -139,11 +139,11 @@ function createTileTable()
 	until #tiles == 36
 
 	-- Sort function
-	local function sortfunc(a,b)
-		if SEsize(a.X,a.Z) == SEsize(b.X,b.Z) then
-			return NEsize(b.X,b.Z) > NEsize(a.X,a.Z)
+	local function sortfunc(a, b)
+		if SEsize(a.X, a.Z) == SEsize(b.X, b.Z) then
+			return NEsize(b.X, b.Z) > NEsize(a.X, a.Z)
 		else
-			return SEsize(b.X,b.Z) > SEsize(a.X,a.Z)
+			return SEsize(b.X, b.Z) > SEsize(a.X, a.Z)
 		end
 	end
 
@@ -153,8 +153,8 @@ end
 
 --=== look for indicator that the tile is clickable ===--
 function clicktile(address)
-	local tmp = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.attackable_flags) or 0;
-	if bitAnd(tmp,0x8) then
+	local tmp = memoryReadRepeat("int", getProc(), address + addresses.game_root.pawn.attackable_flags) or 0
+	if bitAnd(tmp, 0x8) then
 		return true
 	else
 		return false
@@ -182,7 +182,7 @@ function myfight(target)
 			yrest(50)
 			local _enemy = findaggroenemy()
 			if _enemy then
-				player:target(_enemy);
+				player:target(_enemy)
 				player:fight()
 			end
 		until _enemy == nil or player.HP < 1 or player.Alive == false
@@ -196,7 +196,7 @@ function myfight(target)
 		player:target(target)
 		if aoefound == false and (player.Class1 == CLASS_WARRIOR or player.Class1 == CLASS_CHAMPION) then Attack() end
 		-- Check skills
-		for i,v in pairs(settings.profile.skills) do
+		for i, v in pairs(settings.profile.skills) do
 			if v.AutoUse and v:canUse(false, target) and
 			   (v.Type == STYPE_DOT or v.Type == STYPE_DAMAGE) and
 			   AllowSkillCastTime >= v.CastTime then
@@ -241,17 +241,17 @@ end
 --=== First mobs to kill ===--
 function trashmelee()
 	cprintf(cli.yellow,"Clearing trash...\n")
-	while (player:findNearestNameOrId({bizarremechanism,guardianrockspirit},nil,function(addr) local pawn = CPawn(addr) return pawn.HP > 4 and pawn:isAlive() end)) do
+	while (player:findNearestNameOrId({bizarremechanism, guardianrockspirit}, nil, function(addr) local pawn = CPawn(addr) return pawn.HP > 4 and pawn:isAlive() end)) do
 		for i = 1,#orderlist do
 			if not RoMScript("TimeKeeperFrame:IsVisible()") then
 				return
 			end
 			local tile = tiles[orderlist[i]]
 			fly()
-			local x,z = GetAttackPosition(tile.X,tile.Z)
+			local x, z = GetAttackPosition(tile.X, tile.Z)
 			teleport(x, z, 18)
 			if distance(player.X, player.Z, x, z) > 5 then
-				player:moveTo(CWaypoint(x,z,18),true)
+				player:moveTo(CWaypoint(x, z, 18), true)
 			end
 
 			repeat
@@ -261,7 +261,7 @@ function trashmelee()
 				if trash then
 					player:target(trash)
 					myfight(trash)
-					player:clearTarget();
+					player:clearTarget()
 				end
 			until trash == nil or player.HP < 1 or player.Alive == false
 
@@ -270,7 +270,7 @@ function trashmelee()
 				if spawn then
 					player:target(spawn)
 					myfight(spawn)
-					player:clearTarget();
+					player:clearTarget()
 				end
 			until spawn == nil or player.HP < 1 or player.Alive == false
 			if (player.HP < 1 or player.Alive == false) then
@@ -289,7 +289,7 @@ function breaktiles()
 		aoeskill.AutoUse = false
 	end
 	--=== First run of tiles ===--
-	orderlist = {6,24,5,23,4,22,3,21,2,20,1,19,16,36,18,35,17,34,15,33,14,32,13,31,28,12,30,11,29,10,27,9,26,8,25,7}
+	orderlist = {6, 24, 5, 23, 4, 22, 3, 21, 2, 20, 1, 19, 16, 36, 18, 35, 17, 34, 15, 33, 14, 32, 13, 31, 28, 12, 30, 11, 29, 10, 27, 9, 26, 8, 25, 7}
 	for i = 1,#orderlist do
 		local tile = tiles[orderlist[i]]
 		player:checkPotions()
@@ -305,7 +305,7 @@ function breaktiles()
 				fly()
 				if player.X > tile.X+10 or tile.X-10 > player.X or player.Z > tile.Z+10 or tile.Z-10 > player.Z then
 					teleport_SetStepSize(threshold)
-					teleport(tile.X+1,tile.Z+1,18)
+					teleport(tile.X+1, tile.Z+1, 18)
 					threshold = threshold/2
 				end
 				player:update()
@@ -314,7 +314,7 @@ function breaktiles()
 					repeat
 						local _enemy = findaggroenemy()
 						if _enemy then
-							player:target(_enemy);
+							player:target(_enemy)
 							player:fight()
 						end
 					until _enemy == nil or player.HP < 1 or player.Alive == false
@@ -325,7 +325,8 @@ function breaktiles()
 					return
 				end
 
-				player:target(tile); yrest(200)
+				player:target(tile)
+				yrest(200)
 				Attack() yrest(500)
 				repeat
 					yrest(50)
@@ -334,13 +335,13 @@ function breaktiles()
 			until clicktile(tile.Address) == false
 			LastTileDug = i
 
-			yrest(500);
+			yrest(500)
 
 			-- see what's there
 			local starttime = os.clock()
 			repeat
-				local result = player:findNearestNameOrId({"^"..guardian.."$", guardiandefender,guardianswordsman,franticcliffdemon,brownwoodenchest,smallbomb,mediumbomb,largebomb})
-				if result and 15 > distance(player.X,player.Z,result.X,result.Z) then
+				local result = player:findNearestNameOrId({"^"..guardian.."$", guardiandefender, guardianswordsman, franticcliffdemon, brownwoodenchest, smallbomb, mediumbomb, largebomb})
+				if result and 15 > distance(player.X, player.Z, result.X, result.Z) then
 					result = CPawn(result.Address)
 					printf("%s found. Id %d.\n", result.Name, result.Id)
 					if result.Name == guardian or result.Name == guardiandefender or result.Name == guardianswordsman or result.Name == franticcliffdemon then
@@ -371,13 +372,14 @@ function breaktiles()
 						end
 					elseif result.Id == brownwoodenchest then
 						repeat
-							player:target(result); yrest(200)
+							player:target(result)
+							yrest(200)
 							Attack() yrest(1000)
 							repeat
 								yrest(50)
 								player:update()
 							until player.Casting == false
-							yrest(100);
+							yrest(100)
 						until clickchest(result.Address) ~= true
 					end
 					break
@@ -394,15 +396,15 @@ end
 function chests()
 	local chest
 	repeat
-		chest = player:findNearestNameOrId(brownwoodenchest,nil,clickchest)
+		chest = player:findNearestNameOrId(brownwoodenchest, nil, clickchest)
 		if chest then
 			if not RoMScript("TimeKeeperFrame:IsVisible()") then
 				return
 			end
 			fly()
-			teleport(chest.X+10,chest.Z+10,18)
+			teleport(chest.X+10, chest.Z+10, 18)
 			repeat
-				player:target_Object(chest.Id, nil, nil, true);
+				player:target_Object(chest.Id, nil, nil, true)
 			until clickchest(chest.Address) ~= true
 		end
 	until chest == nil
@@ -410,20 +412,20 @@ function chests()
 	repeat secondsleft = RoMScript("TimeKeeperFrame.startTime-GetTime()") yrest(100) until secondsleft
 	local mm = string.format("%2s", math.floor(secondsleft/ 60))
 	local ss = string.format("%02s", math.floor(math.fmod(secondsleft, 60)))
-	printf("Succeeded at Survival with %s:%s remaining.\n",mm,ss)
-	logentry = string.format("Succeeded with %s:%s remaining.",mm,ss)
+	printf("Succeeded at Survival with %s:%s remaining.\n", mm, ss)
+	logentry = string.format("Succeeded with %s:%s remaining.", mm, ss)
 end
 
 --=== find enemys that have you targeted ===--
 function findaggroenemy()
 	local obj = nil
 	local pawn = nil
-	local objectList = CObjectList();
-	objectList:update();
+	local objectList = CObjectList()
+	objectList:update()
 
-	for i = 0,objectList:size() do
-		obj = objectList:getObject(i);
-		if( obj ~= nil and obj.Type == PT_MONSTER) then
+	for i = 0, objectList:size() do
+		obj = objectList:getObject(i)
+		if (obj ~= nil and obj.Type == PT_MONSTER) then
 			pawn = CPawn(obj.Address)
 			if pawn:isAlive() and pawn.HP > 4 and pawn.TargetPtr == player.Address then
 				return pawn
@@ -450,7 +452,7 @@ function checkskills()
 	-- Recheck skills for COMBAT_DISTANCE of usuable skills
 	if settings.profile.options.COMBAT_DISTANCE > 50 then
 		local highestrange = 50
-		for k,s in pairs(settings.profile.skills) do
+		for k, s in pairs(settings.profile.skills) do
 			if s.Available and (s.Type == STYPE_DAMAGE or s.Type == STYPE_DOT) and
 				AllowSkillCastTime >= s.CastTime and s.Range > highestrange then
 					highestrange = s.Range
@@ -458,7 +460,7 @@ function checkskills()
 		end
 
 		if settings.profile.options.COMBAT_DISTANCE > highestrange then
-			cprintf(cli.lightgray,"COMBAT_DISTANCE reduced to %d\n",highestrange)
+			cprintf(cli.lightgray,"COMBAT_DISTANCE reduced to %d\n", highestrange)
 			settings.profile.options.COMBAT_DISTANCE = highestrange
 		end
 	end
@@ -476,23 +478,23 @@ function checkskills()
 	aoefound = false
 	firstskillpriority = nil
 	player:update()
-	for k,v in pairs(settings.profile.skills) do
+	for k, v in pairs(settings.profile.skills) do
 		if v.Available and (v.Type == STYPE_DAMAGE or v.Type == STYPE_DOT) then
 			if not firstskillpriority then firstskillpriority = v.priority end
 			aoeskill = settings.profile.skills[k]
-			for k,v in pairs(aoeskills) do
+			for k, v in pairs(aoeskills) do
 				if aoeskill.Name == v then
-					cprintf(cli.yellow,"AOE skill found as first skill, %s\n",aoeskill.Name)
+					cprintf(cli.yellow,"AOE skill found as first skill, %s\n", aoeskill.Name)
 					aoefound = true
 					aoeskill.AutoUse = true
 					aoeskill.MobCount = 1
 					aoeskill.maxuse = 0
 					aoeskill.priority = firstskillpriority + 1
 					if aoeskill.Range > settings.profile.options.COMBAT_DISTANCE then
-						cprintf(cli.lightgray,"COMBAT_DISTANCE increased to %d.\n",aoeskill.Range)
+						cprintf(cli.lightgray,"COMBAT_DISTANCE increased to %d.\n", aoeskill.Range)
 						settings.profile.options.COMBAT_DISTANCE = aoeskill.Range
 					end
-					table.sort(settings.profile.skills, function(a,b) return a.priority > b.priority end)
+					table.sort(settings.profile.skills, function(a, b) return a.priority > b.priority end)
 					attackdistance = 35
 					attackrange = 52
 					orderlist = {12, 30, 35, 32, 25, 7, 2, 5}
@@ -501,19 +503,19 @@ function checkskills()
 			end
 
 			if not aoefound then
-				for k,v in pairs(aoeskillsbig) do
+				for k, v in pairs(aoeskillsbig) do
 					if aoeskill.Name == v then
-						cprintf(cli.yellow,"AOE skill found as first skill, %s\n",aoeskill.Name)
+						cprintf(cli.yellow,"AOE skill found as first skill, %s\n", aoeskill.Name)
 						aoefound = true
 						aoeskill.AutoUse = true
 						aoeskill.MobCount = 1
 						aoeskill.priority = firstskillpriority + 1
 						attackrange = aoeskill.Range
 						if aoeskill.Range > settings.profile.options.COMBAT_DISTANCE then
-							cprintf(cli.lightgray,"COMBAT_DISTANCE increased to %d.\n",aoeskill.Range)
+							cprintf(cli.lightgray,"COMBAT_DISTANCE increased to %d.\n", aoeskill.Range)
 							settings.profile.options.COMBAT_DISTANCE = aoeskill.Range
 						end
-						table.sort(settings.profile.skills, function(a,b) return a.priority > b.priority end)
+						table.sort(settings.profile.skills, function(a, b) return a.priority > b.priority end)
 						attackdistance = 35
 						attackrange = 75
 						orderlist = {18, 34, 19, 3,}
@@ -529,7 +531,7 @@ function checkskills()
 end
 
 local wp = __WPL.Waypoints[__WPL.CurrentWaypoint]
-if distance(player.X,player.Z,wp.X,wp.Z) > 350 then
+if distance(player.X, player.Z, wp.X, wp.Z) > 350 then
 	print("Too far to run script.")
 	logentry = "Too far to run script."
 	checkRelog()

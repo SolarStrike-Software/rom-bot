@@ -1,7 +1,7 @@
 function checkclicked(address)
 	local proc = getProc()
-	local tmp = memoryReadRepeat("int", proc, address + addresses.game_root.pawn.attackable_flags) or 0;
-	if bitAnd(tmp,0x8) then
+	local tmp = memoryReadRepeat("int", proc, address + addresses.game_root.pawn.attackable_flags) or 0
+	if bitAnd(tmp, 0x8) then
 		return memoryReadRepeat("float", proc, address + addresses.game_root.pawn.fading) == 0
 	else
 		return false
@@ -9,34 +9,34 @@ function checkclicked(address)
 end
 
 function pawnevalfunc(address, pawn)
-	if(checkclicked(address)== true and pawn.Alive and pawn.HP >=1 and pawn.Id ~= 106882)then
+	if (checkclicked(address)== true and pawn.Alive and pawn.HP >=1 and pawn.Id ~= 106882)then
 		return true
 	else
 		return false
 	end
 end
 function myexlude(address, pawn)
-	if(pawn.Id == 106882 or pawn.Id == 106884 )then
+	if (pawn.Id == 106882 or pawn.Id == 106884 )then
 		return true
 	else
-		return false;
+		return false
 	end
 end
 function movetoBag()
 	yrest(1000)
 	inventory:update()
-	for i = 61,240 do
+	for i = 61, 240 do
 		local item = inventory.BagSlot[i]
-		if (not item.Empty) and item.Available and (item.Id == 202903 
-			or item.Id == 202904 
-			or item.Id == 202905 
-			or item.Id == 202435 
-			or item.Id == 202902 
+		if (not item.Empty) and item.Available and (item.Id == 202903
+			or item.Id == 202904
+			or item.Id == 202905
+			or item.Id == 202435
+			or item.Id == 202902
 			or item.Id == 203784
 			or item.Id == 201139
 			or item.Id == 201141
-			or (item.Id >= 207743 and item.Id <= 207750)) then 
-			cprintf(cli.yellow,"Placing %s in the itemshop backpack.\n",item.Name)
+			or (item.Id >= 207743 and item.Id <= 207750)) then
+			cprintf(cli.yellow,"Placing %s in the itemshop backpack.\n", item.Name)
 			item:moveTo("itemshop")
 			yrest(1000)
 		end
@@ -44,40 +44,40 @@ function movetoBag()
 end
 function exchange()
 	inventory:update()
-	while(inventory:itemTotalCount(241648) > 0 and inventory:itemTotalCount(241647) > 0) do
+	while (inventory:itemTotalCount(241648) > 0 and inventory:itemTotalCount(241647) > 0) do
 		repeat
 			yrest(100)
 		until player:target_NPC(121035)
-		sendMacro("ChoiceOption(2);");
-		yrest(500);
+		sendMacro("ChoiceOption(2);")
+		yrest(500)
 		inventory:update()
 	end
 end
 function exitroom(ExchangeKeys, MovetoItemBag)
-	repeat	
-		RoMScript("CloseWindows()");
+	repeat
+		RoMScript("CloseWindows()")
 		yrest(50)
-		RoMScript("CloseWindows()");
+		RoMScript("CloseWindows()")
 		repeat
-			RoMScript("CloseWindows()");
+			RoMScript("CloseWindows()")
 			yrest(100)
-		until player:target_NPC(120687);
-		sendMacro("ChoiceOption(1);");
-		yrest(500);
-		if(RoMScriptNoCheck ~= nil)then
-			yrest(100);
-			info =  RoMScriptNoCheck("StaticPopup_OnClick(StaticPopup1, 1);");
+		until player:target_NPC(120687)
+		sendMacro("ChoiceOption(1);")
+		yrest(500)
+		if (RoMScriptNoCheck ~= nil)then
+			yrest(100)
+			info =  RoMScriptNoCheck("StaticPopup_OnClick(StaticPopup1, 1);")
 		else
 			RoMScript("StaticPopup_OnClick(StaticPopup1, 1);")
 		end
-	until waitForLoadingScreen(10) 
-	RoMScript("CloseWindows()");
+	until waitForLoadingScreen(10)
+	RoMScript("CloseWindows()")
 	yrest(500)
-	if( ExchangeKeys == true)then
+	if (ExchangeKeys == true)then
 		exchange()
 	end
-	if(MovetoItemBag == true)then
-		movetoBag();
+	if (MovetoItemBag == true)then
+		movetoBag()
 	end
 end
 function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, excludeFunc)
@@ -87,42 +87,42 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 	player:updateXYZ()
 	local MobList = {}
 	local EPList = {}
-	
-    if( type(evalFunc) ~= "function" ) then
+
+    if (type(evalFunc) ~= "function") then
 		--default func
-		evalFunc = function (address,pawn)
-         	if pawn.Alive and pawn.HP >=1 and pawn.Attackable and pawn.Level > 1 then
+		evalFunc = function (address, pawn)
+			if pawn.Alive and pawn.HP >=1 and pawn.Attackable and pawn.Level > 1 then
 				return true
 			else
-			    return false
+				return false
 			end
-		end;
+		end
 	end
-	if( type(excludeFunc) ~= "function" ) then
+	if (type(excludeFunc) ~= "function") then
 		--default func
-		excludeFunc = function (address,pawn)
-         	return false;
-		end;
+		excludeFunc = function (address, pawn)
+	return false
+		end
 	end
-	local function CountMobsInRangeOfCoords(x,z)
+	local function CountMobsInRangeOfCoords(x, z)
 		local c = 0
-		local exclude = false;
-		local excludeList = false;
-		local included = false;
+		local exclude = false
+		local excludeList = false
+		local included = false
 		local list = {}
-		for k,mob in ipairs(MobList) do
-			if distance(x,z,mob.X,mob.Z) <= aoerange then
-				if(excludeFunc(mob.Address,mob))then
-					exclude = true;
+		for k, mob in ipairs(MobList) do
+			if distance(x, z, mob.X, mob.Z) <= aoerange then
+				if (excludeFunc(mob.Address, mob))then
+					exclude = true
 				end
-				table.insert(list,k)
+				table.insert(list, k)
 				c=c+1
 			end
 		end
-		if(exclude == true)then
-			return 0, list;
+		if (exclude == true)then
+			return 0, list
 		else
-			return c, list;	
+			return c, list
 		end
 	end
 
@@ -152,26 +152,26 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 --	end
 
 	-- First get list of mobs within (2 x aoerange) of this pawn and (skillrange + aoerange) from player.
-	local objectList = CObjectList();
-	objectList:update();
-	for i = 0,objectList:size() do
-		local obj = objectList:getObject(i);
+	local objectList = CObjectList()
+	objectList:update()
+	for i = 0, objectList:size() do
+		local obj = objectList:getObject(i)
 		if obj ~= nil and obj.Type == PT_MONSTER and (settings.profile.options.AOE_TARGETING_IGNORE_ALTITUDE or 0.5 > math.abs(obj.Y - self.Y)) and -- only count mobs on flat floor, results would be unpredictable on hilly surfaces when clicking.
-		  aoerange*2 >= distance(self.X,self.Z,self.Y,obj.X,obj.Z,obj.Y) and (skillrange + aoerange >= distance(player.X, player.Z, obj.X, obj.Z)) then
-			local pawn = CPawn.new(obj.Address);
+		  aoerange*2 >= distance(self.X, self.Z, self.Y, obj.X, obj.Z, obj.Y) and (skillrange + aoerange >= distance(player.X, player.Z, obj.X, obj.Z)) then
+			local pawn = CPawn.new(obj.Address)
 			pawn:updateAlive()
 			pawn:updateHP()
 			pawn:updateAttackable()
 			pawn:updateLevel()
 			pawn:updateXYZ() -- For the rest of the function
-			 if evalFunc(pawn.Address,pawn)== true then
+			 if evalFunc(pawn.Address, pawn)== true then
 				if onlyaggro == true then
 					pawn:updateTargetPtr()
 					if pawn.TargetPtr == player.Address then
-						table.insert(MobList,pawn)
+						table.insert(MobList, pawn)
 					end
 				else
-					table.insert(MobList,pawn)
+					table.insert(MobList, pawn)
 				end
 			end
 		end
@@ -203,12 +203,12 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 				end
 				if tmpcount == bestscore then
 					ep1.Mobs = tmplist
-					table.insert(EPList,ep1)
+					table.insert(EPList, ep1)
 				end
 			end
 			local dist2 = distance(player.X, player.Z, ep2.X, ep2.Z)
 			-- Check ep2 and add
-			if aoerange > distance(ep2,self)  or (settings.profile.options.FORCE_BETTER_AOE_TARGETING and dist2 < settings.profile.options.MAX_TARGET_DIST)then -- EP doesn't miss primary target(self)
+			if aoerange > distance(ep2, self)  or (settings.profile.options.FORCE_BETTER_AOE_TARGETING and dist2 < settings.profile.options.MAX_TARGET_DIST)then -- EP doesn't miss primary target(self)
 				local tmpcount, tmplist = CountMobsInRangeOfCoords(ep2.X, ep2.Z)
 				if tmpcount > bestscore then
 					bestscore = tmpcount
@@ -216,7 +216,7 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 				end
 				if tmpcount == bestscore then
 					ep2.Mobs = tmplist
-					table.insert(EPList,ep2)
+					table.insert(EPList, ep2)
 				end
 			end
 		end
@@ -236,7 +236,7 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 	local BestEPSet = {EPList[1]}
 	for i = 2, #EPList do
 		local match = true
-		for k,v in ipairs(EPList[1].Mobs) do
+		for k, v in ipairs(EPList[1].Mobs) do
 			if v ~= EPList[i].Mobs[k] then
 				match = false
 				break
@@ -244,13 +244,13 @@ function CPawn:findBestClickPoint(aoerange, skillrange, onlyaggro, evalFunc, exc
 		end
 		-- Same points
 		if match then
-			table.insert(BestEPSet,EPList[i])
+			table.insert(BestEPSet, EPList[i])
 		end
 	end
 
 	-- Get average of EP points. That is our target point
 	local totalx, totalz = 0, 0
-	for k,v in ipairs(BestEPSet) do
+	for k, v in ipairs(BestEPSet) do
 		totalx = totalx + v.X
 		totalz = totalz + v.Z
 	end
@@ -270,28 +270,29 @@ function CPlayer:findListofNameOrId(_objtable, _ignore, evalFunc)
 	end
 	local findList ={}
 	local whichList ={}
-	local testvar = 0;
-	ignore = ignore or 0;
-	local closestObject = nil;
-	local obj = nil;
-	local objectList = CObjectList();
-	objectList:update();
+	local testvar = 0
+	ignore = ignore or 0
+	local closestObject = nil
+	local obj = nil
+	local objectList = CObjectList()
+	objectList:update()
 
-	if( type(evalFunc) ~= "function" ) then
-		evalFunc = function (unused) return true; end;
+	if (type(evalFunc) ~= "function") then
+		evalFunc = function (unused) return true
+		end
 	end
 	local function sortbyrange(obja, objb)
-		if( distance(self.X, self.Z, self.Y, obja.X, obja.Z, obja.Y) <
-			distance(self.X, self.Z, self.Y, objb.X, objb.Z, objb.Y) ) then
-				return true;
+		if (distance(self.X, self.Z, self.Y, obja.X, obja.Z, obja.Y) <
+			distance(self.X, self.Z, self.Y, objb.X, objb.Z, objb.Y)) then
+				return true
 		else
-			return false;
+			return false
 		end
 	end
 	local function searchIgnoreList(obj)
-		if(_ignore)then
+		if (_ignore)then
 			for __, _ignoreAdresse in pairs(_ignore) do
-				if(obj.Adresse == _ignoreAdresse ) then
+				if (obj.Adresse == _ignoreAdresse) then
 					return false
 				end
 			end
@@ -301,27 +302,27 @@ function CPlayer:findListofNameOrId(_objtable, _ignore, evalFunc)
 	self:updateXYZ()
 	for __, _objnameorid in pairs(_objtable) do
 		local tempList = {}
-		local found = false;
-		for i = 0,objectList:size() do
-			obj = objectList:getObject(i);
-			if( obj ~= nil ) then
-				if( searchIgnoreList(obj) and obj.Address ~= player.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
-					if( evalFunc(obj.Address,obj) == true ) then
-						table.insert(tempList,obj)
-						if(whichList["".._objnameorid..""] ~= nil)then
-							whichList["".._objnameorid..""] = whichList["".._objnameorid..""] + 1;
+		local found = false
+		for i = 0, objectList:size() do
+			obj = objectList:getObject(i)
+			if (obj ~= nil) then
+				if (searchIgnoreList(obj) and obj.Address ~= player.Address and (obj.Id == tonumber(_objnameorid) or string.find(obj.Name, _objnameorid, 1, true) )) then
+					if (evalFunc(obj.Address, obj) == true) then
+						table.insert(tempList, obj)
+						if (whichList["".._objnameorid..""] ~= nil)then
+							whichList["".._objnameorid..""] = whichList["".._objnameorid..""] + 1
 						else
-							whichList["".._objnameorid..""] = 1;
+							whichList["".._objnameorid..""] = 1
 						end
 					end
 				end
 			end
 		end
-		table.sort(tempList,sortbyrange)
-		table.insert(findList,tempList)
+		table.sort(tempList, sortbyrange)
+		table.insert(findList, tempList)
 	end
-	
-   return whichList,findList;
+
+   return whichList, findList
 end
 function RoMScriptNoCheck(script)
 	-- Check if in game
@@ -342,7 +343,7 @@ function RoMScriptNoCheck(script)
 	end
 
 	--- Get the real offset of the address
-	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base));
+	local macro_address = memoryReadUInt(getProc(), getBaseAddress(addresses.macro.base))
 
 --	local scriptDef;
 
@@ -376,9 +377,9 @@ function RoMScriptNoCheck(script)
 		end
 
 		-- Check to make sure length is within bounds
-		local len = string.len(text);
-		if( len > 254 ) then
-			error("Macro text too long by "..(len - 254), 2);
+		local len = string.len(text)
+		if (len > 254) then
+			error("Macro text too long by "..(len - 254), 2)
 		end
 
 		repeat
@@ -386,31 +387,33 @@ function RoMScriptNoCheck(script)
 			writeToMacro(commandMacro, text)
 
 			-- Write something on the first address, to see when its over written
-			memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6);
+			memoryWriteByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content , 6)
 
 			-- Execute it
-			if( settings.profile.hotkeys.MACRO ) then
+			if (settings.profile.hotkeys.MACRO) then
 --				keyboardPress(settings.profile.hotkeys.MACRO.key);
-				keyboardHold(settings.profile.hotkeys.MACRO.key);
+				keyboardHold(settings.profile.hotkeys.MACRO.key)
 				rest(100)
-				keyboardRelease(settings.profile.hotkeys.MACRO.key);
+				keyboardRelease(settings.profile.hotkeys.MACRO.key)
 			end
 
 			local tryagain = false
 
 			-- A cheap version of a Mutex... wait till it is "released"
 			-- Use high-res timers to find out when to time-out
-			local startWaitTime = getTime();
-			while( memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6 ) do
-				if( deltaTime(getTime(), startWaitTime) > 800 ) then
+			local startWaitTime = getTime()
+			while (memoryReadByte(getProc(), macro_address + addresses.macro.size *(resultMacro - 1) + addresses.macro.content) == 6) do
+				if (deltaTime(getTime(), startWaitTime) > 800) then
 					if settings.options.DEBUGGING then
 						printf("0x%X\n", getBaseAddress(addresses.inputbox_base))
 					end
 					if memoryReadUInt(getProc(), getBaseAddress(addresses.inputbox_base)) == 0 then
-						keyboardPress(settings.hotkeys.ESCAPE.key); yrest(500)
+						keyboardPress(settings.hotkeys.ESCAPE.key)
+						yrest(500)
 						if RoMScript("GameMenuFrame:IsVisible()") then
 							-- Clear the game menu and reset editbox focus
-							keyboardPress(settings.hotkeys.ESCAPE.key); yrest(300)
+							keyboardPress(settings.hotkeys.ESCAPE.key)
+							yrest(300)
 							RoMCode("z = GetKeyboardFocus(); if z then z:ClearFocus() end")
 						end
 					end
@@ -418,8 +421,8 @@ function RoMScriptNoCheck(script)
 
 					tryagain = true
 					break
-				end;
-				rest(1);
+				end
+				rest(1)
 			end
 		until tryagain == false
 
@@ -431,36 +434,44 @@ function RoMScriptNoCheck(script)
 		dataPart = dataPart + 1
 	until string.len(rawPart) < 255
 
-	readsz = "";
-	ret = {};
-	cnt = 0;
+	readsz = ""
+	ret = {}
+	cnt = 0
 	for i = 1, string.len(raw), 1 do
-		local byte = string.byte(raw, i);
+		local byte = string.byte(raw, i)
 
-		if( byte == 0 or byte == null) then -- Break on NULL terminator
-			break;
-		elseif( byte == 9 ) then -- Use TAB to seperate
+		if (byte == 0 or byte == null) then -- Break on NULL terminator
+			break
+		elseif (byte == 9) then -- Use TAB to seperate
 			-- Implicit casting
-			if( string.find(readsz, "^[%-%+]?%d+%.?%d+$") ) then readsz = tonumber(readsz);  end;
-			if( string.find(readsz, "^[%-%+]?%d+$") ) then readsz = tonumber(readsz);  end;
-			if( readsz == "true" ) then readsz = true; end;
-			if( readsz == "false" ) then readsz = false; end;
+			if (string.find(readsz, "^[%-%+]?%d+%.?%d+$")) then
+				readsz = tonumber(readsz)
+			end
+			if (string.find(readsz, "^[%-%+]?%d+$")) then
+				readsz = tonumber(readsz)
+			end
+			if (readsz == "true") then
+				readsz = true
+			end
+			if (readsz == "false") then
+				readsz = false
+			end
 
-			table.insert(ret, readsz);
-			cnt = cnt+1;
-			readsz = "";
+			table.insert(ret, readsz)
+			cnt = cnt+1
+			readsz = ""
 		else
-			readsz = readsz .. string.char(byte);
+			readsz = readsz .. string.char(byte)
 		end
 	end
 
 	local err = ret[1]
 	if err == false then
-	return -1;
+	return -1
 		--error("IGF:".."\\"..script.."\\ "..ret[2],0)
 	elseif err == true then
-		table.remove(ret,1)
+		table.remove(ret, 1)
 	end
 
-	return unpack(ret);
+	return unpack(ret)
 end

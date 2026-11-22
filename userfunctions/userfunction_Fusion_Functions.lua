@@ -249,7 +249,8 @@ function Fusion_MakeMaxManaStones(_maxManaStoneLevel)
 
 	-- Open dialogs
 	print("Opening Transmutor and Fusion frames.")
-	RoMCode("MagicBoxFrame:Show(); FusionFrame:Show()"); yrest(1500)
+	RoMCode("MagicBoxFrame:Show(); FusionFrame:Show()")
+	yrest(1500)
 
 	-- Set number to make
 	if _maxManaStoneLevel ~= nil then
@@ -273,7 +274,7 @@ end
 	yrest(1500)
 
 	print("Now Fusing ...")
-	RoMCode("Fusion:Do_OnClick(FusionFrame_Do)");
+	RoMCode("Fusion:Do_OnClick(FusionFrame_Do)")
 
 	repeat
 		yrest(1500)
@@ -281,5 +282,6 @@ end
 
 	-- close
 	yrest(2000)
-	RoMCode("MagicBoxFrame:Hide()"); yrest(500)
+	RoMCode("MagicBoxFrame:Hide()")
+	yrest(500)
 end

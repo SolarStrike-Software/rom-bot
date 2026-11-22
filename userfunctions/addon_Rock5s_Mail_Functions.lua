@@ -51,9 +51,9 @@ local function markToSend(_slotnumber)
 	local item = inventory.BagSlot[_slotnumber]
 	item:update()
 	if item.Empty then return end
-	
+
 	local bagid, slotid = item:getInventoryIndex()
-	
+
 	RoMScript("UMMMassSendItemsSlotTemplate_OnClick(_G['UMMFrameTab3BagsBag"..bagid.."Slot"..slotid.."'])")
 end
 
@@ -88,23 +88,23 @@ local function findMailbox()
 	if mailboxicon and distance(mailboxicon.X, mailboxicon.Z, player.X, player.Z) < 100 then
 		if mailboxicon.Id == 110986 then -- Find mailbox near icon
 			-- Search for mailbox under icon
-			local closestObject = nil;
-			local obj = nil;
-			local objectList = CObjectList();
-			objectList:update();
+			local closestObject = nil
+			local obj = nil
+			local objectList = CObjectList()
+			objectList:update()
 
-			for i = 0,objectList:size() do
-				obj = objectList:getObject(i);
+			for i = 0, objectList:size() do
+				obj = objectList:getObject(i)
 
 				if obj ~= nil and obj.Type == PT_NPC and obj.Id ~= 110986 then
-					local dist = distance(mailboxicon.X, mailboxicon.Z, obj.X, obj.Z);
-					if( closestObject ~= nil ) then
+					local dist = distance(mailboxicon.X, mailboxicon.Z, obj.X, obj.Z)
+					if (closestObject ~= nil) then
 						if dist < distance(mailboxicon.X, mailboxicon.Z, closestObject.X, closestObject.Z) then
 							-- this node is closer
-							closestObject = obj;
+							closestObject = obj
 						end
 					elseif dist < 5 then
-						closestObject = obj;
+						closestObject = obj
 					end
 				end
 			end
@@ -185,7 +185,7 @@ local function tryRelog()
 		return false
 	end
 
-	if getLastWarning(getTEXT("SYS_CANOT_DO_IT"),30) then
+	if getLastWarning(getTEXT("SYS_CANOT_DO_IT"), 30) then
 		if not ChangeCharRestart then
 			cprintf(cli.yellow,"Mailing delayed. Userfunction LoginNextChar not installed. Cannot send. Sending stopped.\n")
 			return false
@@ -228,7 +228,8 @@ function UMM_TakeMail()
 	-- Taking mail
 	local starttimer = os.clock()
 	repeat
-		RoMScript("UMMFrameTab1Tools:ButtonClick('take');"); yrest(1000)
+		RoMScript("UMMFrameTab1Tools:ButtonClick('take');")
+		yrest(1000)
 	until RoMScript("UMMMailManager.priv_AutoRunning") == true or
 			RoMScript("UMMMailManager.MailCount") == 0 or os.clock() - starttimer > 5
 
@@ -277,7 +278,8 @@ function UMM_TakeMailSol()
 
 	-- Taking mail
 	local starttimer = os.clock()
-	RoMScript("UMMFrameTab1Tools:ButtonClick('take');"); yrest(1000)
+	RoMScript("UMMFrameTab1Tools:ButtonClick('take');")
+	yrest(1000)
 	return true
 end
 
@@ -334,7 +336,7 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 			return false
 		end
 
-		if debugfilter then printf("\n%16s slot%3d  ",string.sub(_slotitem.Name,1,15),_slotitem.SlotNumber) end
+		if debugfilter then printf("\n%16s slot%3d  ", string.sub(_slotitem.Name, 1, 15), _slotitem.SlotNumber) end
 
 		if not bitAnd(_slotitem.BoundStatus, 1) then
 			if debugfilter then printf("Bound") end
@@ -345,7 +347,7 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 		if _itemTable ~= nil then
 			local match = false
 			for __, nam in pairs(_itemTable) do
-				if string.find(string.lower(_slotitem.Name),string.lower(nam)) or (_slotitem.Id == tonumber(nam)) then
+				if string.find(string.lower(_slotitem.Name), string.lower(nam)) or (_slotitem.Id == tonumber(nam)) then
 					match = true
 					break
 				end
@@ -516,7 +518,7 @@ function UMM_SendAdvanced(_recipient, _itemTable, _quality, _reqlevel, _worth, _
 	local counter = 0
 	local sendlist = {}
 	for item = UMM_FromSlot, UMM_ToSlot, 1 do -- for each inventory
-		local slotitem = inventory.BagSlot[item];
+		local slotitem = inventory.BagSlot[item]
 		local slotNumber = slotitem.SlotNumber
 
 		if passesFilter(slotitem) then

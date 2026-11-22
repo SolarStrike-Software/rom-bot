@@ -7,12 +7,12 @@ CCursor = class(
 		self.ItemBagId = 0
 		self.DBID = nil -- Only used for house items
 
-		self:update();
+		self:update()
 	end
-);
+)
 
 function CCursor:update()
-	self.Address = memoryReadUInt(getProc(), getBaseAddress(addresses.cursor.base)) + addresses.cursor.offset;
+	self.Address = memoryReadUInt(getProc(), getBaseAddress(addresses.cursor.base)) + addresses.cursor.offset
 
 	self.ItemLocation = memoryReadInt(getProc(), self.Address + addresses.cursor.item.location)
 	if self.ItemLocation == 0 then

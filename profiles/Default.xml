@@ -141,7 +141,7 @@
 	<skills_priest>
 		<skill name="PRIEST_GRACE_OF_LIFE" 		hotkey="MACRO" priority="120" rebuffcut="10" inbattle="false" />
 		<skill name="PRIEST_SOUL_SOURCE"     	hotkey="MACRO" priority="110" inbattle="true" hpper="15" />
-		<skill name="PRIEST_URGENT_HEAL"     	hotkey="MACRO" priority="100" hpper="50"  />
+		<skill name="PRIEST_URGENT_HEAL"     	hotkey="MACRO" priority="100" hpper="50" />
 		<skill name="PRIEST_HOLY_AURA"       	hotkey="MACRO" priority="90" inbattle="true" hpper="24" />
 		<skill name="PRIEST_REGENERATE"      	hotkey="MACRO" priority="80"  hpper="80" />
 		<skill name="PRIEST_RISING_TIDE"     	hotkey="MACRO" priority="70" />
@@ -165,7 +165,7 @@
 	<skills_scout>
 		<skill name="SCOUT_COMBO_SHOT"        	hotkey="MACRO" priority="95" />
 		<skill name="SCOUT_SHOT"          		hotkey="MACRO" priority="90" />
-		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true"/>
+		<skill name="SCOUT_ARROW_OF_ESSENCE"    hotkey="MACRO" priority="90" hpper="60" inbattle="true" />
 		<skill name="SCOUT_VAMPIRE_ARROWS" 		hotkey="MACRO" priority="85" />
 		<skill name="SCOUT_AUTOSHOT"      		hotkey="MACRO" priority="80" />
 		<skill name="SCOUT_WIND_ARROWS"   		hotkey="MACRO" priority="70" />
@@ -235,32 +235,32 @@
 		-- and before the bot starts. e.g. You could overwrite profile settings here
 		-- like: changeProfileOption("HP_REST", 60);
 
-		if(player.Class1 == CLASS_SCOUT ) then
-			changeProfileOption("ARROW_QUIVER", 2);
-		end;
+		if (player.Class1 == CLASS_SCOUT) then
+			changeProfileOption("ARROW_QUIVER", 2)
+		end
 
-	]]></onLoad>
+]]></onLoad>
 
 	<onDeath><![CDATA[
 		-- Additional Lua code to execute on death
 		-- pauseOnDeath(); -- Stop the script
 		-- player:logout();	-- logout
-	]]></onDeath>
+]]></onDeath>
 
 	<preCodeOnElite><![CDATA[
 		-- code to use before a boss or tough mob
 		-- _arg1 is target pawn, _arg1.Name = target's name
-	]]></preCodeOnElite>
+]]></preCodeOnElite>
 
 	<onLeaveCombat><![CDATA[
 		-- Additional Lua code to execute after killing an enemy
-	]]></onLeaveCombat>
+]]></onLeaveCombat>
 
 	<onLevelup><![CDATA[
 		-- Additional Lua code to execute after having a levelup
 		-- and levelup the skills for a new character (mage or priest recommended)
 		-- e.g. sendMacro("SetSpellPoint(_tabnr, _skillnr);"); would levelup a skill
-	]]></onLevelup>
+]]></onLevelup>
 
 	<onSkillCast><![CDATA[
 		-- Additional Lua code to execute when casting a skill
@@ -273,7 +273,7 @@
 		--    player:cast("PRIEST_HOLY_AURA");
 		--    player:cast("PRIEST_URGENT_HEAL");
 		--    player:cast("PRIEST_URGENT_HEAL");
-	]]></onSkillCast>
+]]></onSkillCast>
 
 	<onHarvest><![CDATA[
 		-- Additional Lua code to execute directly before the actual harvesting takes place.
@@ -283,9 +283,9 @@
 		-- All other return values result in the player attempting to harvest the node.
 		-- Note that returning 'false' here breaks out of harvesting completely;
 		-- You will not attempt to harvest other nearby nodes instead.
-	]]></onHarvest>
+]]></onHarvest>
 
 	<onUnstickFailure><![CDATA[
 		-- Lua code to execute when MAX_UNSTICK_TRIALS is reached.
-	]]></onUnstickFailure>
+]]></onUnstickFailure>
 </profile>

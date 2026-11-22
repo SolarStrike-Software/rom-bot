@@ -179,10 +179,11 @@ function CEggPet:feed(foodNameOrId, number)
 		-- find food item.
 		local foodItem = inventory:findItem(foodNameOrId)
 
-		if( foodItem ~= nil ) then
+		if (foodItem ~= nil) then
 			printf("Feeding Egg Pet...\n")
 			if self.Summoned == true then -- Return pet for feeding
-				self:Return(); yrest(200)
+				self:Return()
+				yrest(200)
 				self:update()
 			end
 
@@ -224,7 +225,8 @@ end
 function CEggPet:Summon()
 	self:update()
 	if self.EggId > 0 and player.Level > self.Level-5 and self.Summoned == false and player.Alive and player.HP > 0 then
-		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key ); yrest(200)
+		keyboardRelease( settings.hotkeys.MOVE_FORWARD.key )
+		yrest(200)
 		RoMCode("SummonPet("..self.EggSlot..")")
 		repeat
 			yrest(500)
@@ -276,7 +278,7 @@ function CEggPet:craft(_craftType, indexLevel)
 		end
 
 		RoMCode("ClickPetCraftItem(".. self.EggSlot ..")")
-		RoMCode("PickupBagItem(".. emptyBagSlot.BagId ..")");
+		RoMCode("PickupBagItem(".. emptyBagSlot.BagId ..")")
 		-- wait for a maximum of 1 second
 		for i = 1, 4 do
 			yrest(250)
@@ -408,7 +410,7 @@ function CEggPet:getToolChoices()
 
 	-- check for nil values
 	if mRatio == nil or wRatio == nil or hRatio == nil then
-		mRatio, wRatio, hRatio = 1,1,1 -- default to 1:1:1 if no ratio given
+		mRatio, wRatio, hRatio = 1, 1, 1 -- default to 1:1:1 if no ratio given
 	end
 
 	-- convert to numbers
@@ -424,7 +426,7 @@ function CEggPet:getToolChoices()
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/mRatio
 		tmp.HaveSome = false
-		table.insert(tmpResults,tmp)
+		table.insert(tmpResults, tmp)
 	end
 	if wRatio > 0 then
 		local tmp = {}
@@ -432,7 +434,7 @@ function CEggPet:getToolChoices()
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/wRatio
 		tmp.HaveSome = false
-		table.insert(tmpResults,tmp)
+		table.insert(tmpResults, tmp)
 	end
 	if hRatio > 0 then
 		local tmp = {}
@@ -440,14 +442,14 @@ function CEggPet:getToolChoices()
 		tmp.Id = CRAFT_TOOLS[tmp.Type]
 		tmp.Value = countMaterials(tmp.Type)/hRatio
 		tmp.HaveSome = false
-		table.insert(tmpResults,tmp)
+		table.insert(tmpResults, tmp)
 	end
 
 	-- Sort
-	table.sort(tmpResults, function(a,b) return a.Value < b.Value end)
+	table.sort(tmpResults, function(a, b) return a.Value < b.Value end)
 
 	results = {}
-	for k,v in pairs(tmpResults) do
+	for k, v in pairs(tmpResults) do
 		results[k] = {Type = v.Type, Id = v.Id}
 	end
 
@@ -543,9 +545,9 @@ function checkEggPets()
 		end
 
 		-- Custom count function because 6 itemTotalCounts is too slow
-		inventory:update();
+		inventory:update()
 
-		local item, cake, cheese, milk, beef, favorite, dessert = 0,0,0,0,0,0,0
+		local item, cake, cheese, milk, beef, favorite, dessert = 0, 0, 0, 0, 0, 0, 0
 		for slot = 51, 240 do
 			item = inventory.BagSlot[slot]
 			if item ~= nil and item.Available then
@@ -562,8 +564,8 @@ function checkEggPets()
 				elseif item.Id == 204510 then
 					dessert = dessert + item.ItemCount
 				end
-			end;
-		end;
+			end
+		end
 
 		-- Check if needs to be fed
 

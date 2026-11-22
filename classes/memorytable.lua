@@ -1,24 +1,24 @@
 function GetItemAddress(id)
-	return MemDatabase:getAddress(id);
+	return MemDatabase:getAddress(id)
 end
 
 -- Returns the name for a given id
-local idNameMap = {};
+local idNameMap = {}
 function GetIdName(itemId, plural)
 	local tab = idNameMap[itemId]
-	if( tab ~= nil ) then
+	if (tab ~= nil) then
 		-- from cache
-		if( plural ) then
-			if( tab['plural'] ) then
-				return tab['plural'];
+		if (plural) then
+			if (tab['plural']) then
+				return tab['plural']
 			end
 		else
-			if( tab['single'] ) then
-				return tab['single'];
+			if (tab['single']) then
+				return tab['single']
 			end
 		end
 	end
-	
+
 	-- Check itemId
 	if itemId == nil or itemId == 0 then
 		return
@@ -30,13 +30,13 @@ function GetIdName(itemId, plural)
 
 	-- Instead of attempting to search the memdb, it might be quicker to just
 	-- parse the item link.
-	if( commandMacro ~= 0 and itemId >= 490000 and itemId < 540000 and MemDatabase.database[id] == nil ) then
-		local link = RoMScript(sprintf("GetItemLink(%d)", itemId));
-		if( link ~= nil ) then
-			local name = string.match(link, "%[([^%]]+)%]");
-			if( name ~= nil ) then
-				idNameMap[itemId] = {single = name, plural = name};
-				return name;
+	if (commandMacro ~= 0 and itemId >= 490000 and itemId < 540000 and MemDatabase.database[id] == nil) then
+		local link = RoMScript(sprintf("GetItemLink(%d)", itemId))
+		if (link ~= nil) then
+			local name = string.match(link, "%[([^%]]+)%]")
+			if (name ~= nil) then
+				idNameMap[itemId] = {single = name, plural = name}
+				return name
 			end
 		end
 	end
@@ -51,14 +51,14 @@ function GetIdName(itemId, plural)
 	-- If card or recipe, update itemId, itemAddress and prefix name
 	local name = ""
 	if itemId >= 770000 and itemId <= 772000 then
-		itemId = memoryReadInt( proc, itemAddress + addresses.item.card_or_npc_id );
+		itemId = memoryReadInt( proc, itemAddress + addresses.item.card_or_npc_id )
 		if itemId == 0 then return end
-		itemAddress = GetItemAddress( itemId );
+		itemAddress = GetItemAddress( itemId )
 		name = getTEXT("SYS_CARD_TITLE")	-- "Card - "
 	elseif itemId >= 550000 and itemId <= 553000 then
-		itemId = memoryReadInt( proc, itemAddress + addresses.item.recipe_id );
+		itemId = memoryReadInt( proc, itemAddress + addresses.item.recipe_id )
 		if itemId == 0 then return end
-		itemAddress = GetItemAddress( itemId );
+		itemAddress = GetItemAddress( itemId )
 		name = getTEXT("SYS_RECIPE_TITLE")	-- "Recipe - "
 	end
 
@@ -70,26 +70,26 @@ function GetIdName(itemId, plural)
 		repeat
 			yrest(5)
 			nameaddress = memoryReadInt(proc, itemAddress + addresses.item.name + pluralOffset)
-		until nameaddress ~= 0 or deltaTime(getTime(),starttime) > 200
+		until nameaddress ~= 0 or deltaTime(getTime(), starttime) > 200
 	end
 
-	
-	local name2 = memoryReadString(proc, nameaddress);
-	if( not validName(name2, 24) ) then
-		name2 = memoryReadStringPtr(proc, nameaddress, 0);
+
+	local name2 = memoryReadString(proc, nameaddress)
+	if (not validName(name2, 24)) then
+		name2 = memoryReadStringPtr(proc, nameaddress, 0)
 	end
-	name2 = name2 or "";
-	
-	local result = name .. name2;
-	
-	local cacheType = 'single';
-	if( plural ) then
-		cacheType = 'plural';
+	name2 = name2 or ""
+
+	local result = name .. name2
+
+	local cacheType = 'single'
+	if (plural) then
+		cacheType = 'plural'
 	end
-	
-	if( idNameMap[itemId] == nil or type(idNameMap[itemId]) ~= "table" ) then
-		idNameMap[itemId] = {};
+
+	if (idNameMap[itemId] == nil or type(idNameMap[itemId]) ~= "table") then
+		idNameMap[itemId] = {}
 	end
-	idNameMap[itemId][cacheType] = result;
-	return result;
+	idNameMap[itemId][cacheType] = result
+	return result
 end

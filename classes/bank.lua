@@ -1,38 +1,38 @@
-include("memorytable.lua");
-include("memdatabase.lua");
-include("bankitem.lua");
+include("memorytable.lua")
+include("memdatabase.lua")
+include("bankitem.lua")
 
 
 CBank = class(
 	function (self)
 
-		self.MaxSlots = 300;
+		self.MaxSlots = 300
 
-		self.BagSlot = {};
+		self.BagSlot = {}
 
-		local timeStart = getTime();
+		local timeStart = getTime()
 
 		for slotNumber = 1, self.MaxSlots, 1 do
-			self.BagSlot[slotNumber] = CBankItem( slotNumber );
+			self.BagSlot[slotNumber] = CBankItem( slotNumber )
 		end
 
-		if( settings.profile.options.DEBUG_INV ) then
-			printf( "Bank update took: %d\n", deltaTime( getTime(), timeStart ) );
-		end;
+		if (settings.profile.options.DEBUG_INV) then
+			printf( "Bank update took: %d\n", deltaTime( getTime(), timeStart ) )
+		end
 	end
-);
+)
 
 function CBank:update()
-	local timeStart = getTime();
+	local timeStart = getTime()
 
 	for slotNumber = 1, self.MaxSlots, 1 do
-		self.BagSlot[ slotNumber ]:update();
+		self.BagSlot[ slotNumber ]:update()
 	end
 
-	if( settings.profile.options.DEBUG_INV ) then
-		printf( "Bank update took: %d\n", deltaTime( getTime(), timeStart ) );
-	end;
-end;
+	if (settings.profile.options.DEBUG_INV) then
+		printf( "Bank update took: %d\n", deltaTime( getTime(), timeStart ) )
+	end
+end
 
 function CBank:findItem( itemNameOrId, range)
 	local first, last, location = getInventoryRange(range) -- get bag slot range
@@ -51,7 +51,7 @@ function CBank:findItem( itemNameOrId, range)
 	for slot = first, last do
 		item = self.BagSlot[slot]
 		item:update()
- 	    if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
+		if item.Available and (item.Name == itemNameOrId or item.Id == itemNameOrId) then
 			if (os.clock() - item.LastMovedTime) > ITEM_REUSE_DELAY then
 				if item.ItemCount > 1 then
 					-- find smallest stack
@@ -62,8 +62,8 @@ function CBank:findItem( itemNameOrId, range)
 					return item
 				end
 			end
-		end;
-	end;
+		end
+	end
 
 	return smallestStack
 end
@@ -87,18 +87,18 @@ function CBank:itemTotalCount(itemNameOrId, range)
 	end
 
 	local item
-	local totalCount = 0;
+	local totalCount = 0
 	for slot = first, last do
 		item = bank.BagSlot[slot]
 		item:update()
- 	    if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
+		if item.Available and (item.Id == itemNameOrId or item.Name == itemNameOrId) then
 			if itemNameOrId == "<EMPTY>" or itemNameOrId == 0 then -- so you can count empty slots
 				totalCount = totalCount + 1
 			else
-				totalCount = totalCount + item.ItemCount;
+				totalCount = totalCount + item.ItemCount
 			end
-		end;
-	end;
+		end
+	end
 
-	return totalCount;
-end;
+	return totalCount
+end

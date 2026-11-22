@@ -11,8 +11,8 @@
   <Frame name="UMMBackdropTemplate" inherits="UIPanelBackdropFrame" virtual="true">
     <Scripts>
       <OnLoad>
-        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40);
-      </OnLoad>
+        UIPanelBackdropFrame_SetTexture(this, "Interface/Common/PanelCommonBorder", 40, 40)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -37,7 +37,7 @@
           <Anchors>
             <Anchor point="LEFT">
               <Offset>
-                <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -59,8 +59,8 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMoneyFrameTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -71,7 +71,7 @@
           <Anchors>
             <Anchor point="LEFT">
               <Offset>
-                <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -93,8 +93,8 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMoneyFrameTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -105,7 +105,7 @@
           <Anchors>
             <Anchor point="LEFT">
               <Offset>
-                <AbsDimension x="0" y="0"/>
+                <AbsDimension x="0" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -127,8 +127,8 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMoneyFrameTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 	
@@ -152,7 +152,7 @@
           <Anchors>
             <Anchor point="RIGHT" relativeTo="$parentGoldCoin" relativePoint="LEFT">
               <Offset>
-                <AbsDimension x="-2" y="0"/>
+                <AbsDimension x="-2" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -161,8 +161,8 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMoneyFrameTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
@@ -186,7 +186,7 @@
           <Anchors>
             <Anchor point="RIGHT" relativeTo="$parentDiamond" relativePoint="LEFT">
               <Offset>
-                <AbsDimension x="-2" y="0"/>
+                <AbsDimension x="-2" y="0" />
               </Offset>
             </Anchor>
           </Anchors>
@@ -195,8 +195,8 @@
     </Layers>
     <Scripts>
       <OnLoad>
-        UMMMoneyFrameTemplate_OnLoad(this);
-      </OnLoad>
+        UMMMoneyFrameTemplate_OnLoad(this)
+</OnLoad>
     </Scripts>
   </Frame>
 
