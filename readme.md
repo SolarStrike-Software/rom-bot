@@ -18,6 +18,18 @@ dig into the code and configure things rather than simply click some buttons.
 6. Open `micromacro.exe` and try entering this command: `rom-bot/bot`
     - If all is set up correctly, the bot should start up and prompt you for more details
 
+# Unit tests
+
+At the MicroMacro prompt, run `rom-bot/test`. You can also run `lua test.lua`
+from the RoM-Bot directory with standalone Lua 5.1. The suite runs without
+a Runes of Magic client or a character profile.
+
+Each suite in `tests/` registers named cases with `test(name, function)`.
+Add new suite names to the list in `test.lua`. Use `loadProject(stubs, ...)`
+to load the project files under test in a fresh Lua environment and supply
+stubs for host calls. The runner prints a pass/fail summary and raises an
+error if a test fails.
+
 # Updating
 
 ## Use the updater tool
