@@ -15,23 +15,23 @@ function CStore:update()
 		self.Id = 0
 		self.Item = {}
 		self.CanRepair = false
-		return
+		return false
 	end
 
 
 	-- NPC not targeted
 	if target.Type ~= PT_NPC then
-		return
+		return false
 	end
 
 	-- store not open
 	if not RoMScript("StoreFrame:IsVisible()") then
-		return
+		return false
 	end
 
 	-- Already holds info on this store. No need update
 	if self.Id == target.Id then
-		return
+		return true
 	end
 
 	self.Id = target.Id
@@ -54,6 +54,7 @@ function CStore:update()
 
 	-- Is there a repair button.
 	self.CanRepair = RoMScript("IsStoreCanFix()")
+	return true
 end
 
 -- buys 'quantity' of items by name, id or shop index.
@@ -64,7 +65,9 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 	end
 	if quantity <= 0 then return end
 
-	self:update()
+	if not self:update() then
+		return false
+	end
 
 	-- First find the store index number
 	local buyIndex = 0
@@ -91,6 +94,9 @@ function CStore:buyItem(nameIdOrIndex, quantity)
 
 	-- Then get the maxheap
 	buyMaxHeap = self.Item[buyIndex].MaxHeap
+	if type(buyMaxHeap) ~= "number" or not (buyMaxHeap > 0) then
+		return false
+	end
 
 	-- Buy the item/s
 	printf(language[1001])  -- Shopping
@@ -161,7 +167,7 @@ function CStore:buyConsumable(type, quantity)
 	-- See how many needed
 	if totalCount < quantity then
 		numberToBuy = quantity - totalCount
-		self:buyItem(bestItemSlot, numberToBuy)
+		return self:buyItem(bestItemSlot, numberToBuy)
 	end
 
 	return true
